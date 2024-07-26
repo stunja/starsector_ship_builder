@@ -1,0 +1,5 @@
+DEV/
+old/
+.vscode/
+package.json
+node_modules/
