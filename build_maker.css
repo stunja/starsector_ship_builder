@@ -1,0 +1,299 @@
+/* Dublicate code */
+* {
+  box-sizing: content-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Nunito", serif;
+  color: white;
+  text-decoration: none;
+}
+/* 
+rgb(31,58,65)
+rgb(8, 26, 30)
+*/
+:root {
+  --main-color: #1864ab; /* Define a primary color */
+  --secondary-color: #fcc419;
+  --accent-color: #e74c3c;
+  --text-color: #2c3e50;
+  --background-color: rgb(8, 26, 30);
+}
+.d-none {
+  display: none;
+}
+/* mechanical */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--background-color);
+  /* overflow: hidden; */
+}
+/* buttons */
+button {
+  background-color: #4263eb;
+  color: white;
+}
+.button-circle {
+  font-weight: 900;
+  border-radius: 100%;
+  padding: 1px 6px;
+  background-color: var(--main-color);
+  border: none;
+}
+.button-circle:hover {
+  background-color: var(--text-color);
+}
+.button-circle:active {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+/* generic */
+.flex-flexEnd-gap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: right;
+  gap: 1rem;
+}
+input {
+  color: var(--text-color);
+}
+/* content */
+/*! build-maker  */
+.build-maker {
+  display: grid;
+
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+.build-maker li {
+  list-style-type: none;
+}
+.build-maker__nav {
+  background-color: black;
+  grid-column: 1 / -1;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+.nav_logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  text-decoration: none;
+}
+
+/* ship selector */
+.ship-selector__panel {
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: rotate(270deg);
+}
+
+/* 
+.build-maker__ship-selector {
+  background-color: blue;
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.ship-selector_ship-entry {
+  padding: 1rem;
+  background-color: darkblue;
+  border-bottom: 1px solid white;
+}
+.ship-selector_ship-entry a {
+  text-decoration: none;
+  font-weight: 800;
+} */
+/* work-area */
+.build-maker__work-area {
+  background-color: rgb(8, 26, 30);
+  /* grid-column: 2 / -1; */
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: repeat(6, 1fr);
+  gap: 10px;
+}
+.box {
+  padding: 1rem;
+  /* grid-column: span 1; */
+
+  /*   display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr); */
+}
+.box__top {
+  grid-row: 1 / 2;
+  border: 1px solid green;
+}
+.box__middle {
+  grid-row: 2 / span 4;
+  border: 1px solid blue;
+}
+.box__bottom {
+  grid-row: 6 / -1;
+
+  border: 1px solid red;
+}
+.box__full-right {
+  border: 1px solid yellow;
+
+  /* grid-column: 6 / -1; */
+  grid-row: 1 / -1;
+}
+/* content in work area */
+.box__top-left__CR-graph {
+  background-color: aqua;
+  width: 10rem;
+  height: 1rem;
+}
+
+/* Content Area Right */
+.box__full-right__top-content-group ul {
+  margin-bottom: 1rem;
+}
+
+/* ordinance grahp */
+.ordinance-graph {
+  text-align: right;
+  width: 20rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+}
+.ordinance-graph__title {
+  margin-bottom: 0.5rem;
+}
+.ordinance-graph__body {
+  padding: 0.5rem 0;
+
+  background-color: var(--main-color);
+  border-radius: 5px;
+}
+.ordinance-graph__points {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  color: var(--secondary-color);
+}
+/* speed-armor-hull */
+.box__middle-right__ship-capacitors,
+.box__middle-right__ship-vents {
+  display: flex;
+}
+/* Ship Capacitors */
+/* .ship-capacitors__edit,
+.ship-vents__edit {
+  align-items: center;
+} */
+/* Vents */
+
+/* Hull mods */
+.hull-mods {
+  text-align: right;
+}
+.hull-mods__header {
+  margin-bottom: 1rem;
+}
+.hull-mods__container {
+  margin-bottom: 2rem;
+}
+
+/* middle */
+.box__middle-center {
+  grid-row: 2 / -1;
+}
+.build-maker__ship-image {
+  height: 15rem;
+}
+/* Pilot and Fighter Bay */
+.small-image-box {
+  width: 4rem;
+  height: 4rem;
+  border: 1px solid white;
+}
+.box__middle-left__pilot {
+  margin-bottom: 1rem;
+}
+.small-image-box__icon {
+  display: block;
+
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+/* Pilot */
+.pilot-icon {
+  width: 100%;
+  height: 100%;
+  background-image: url("./starsectorData/graphics/portraits/portrait_generic_grayscale.png");
+}
+/* Fighter Bays */
+.box__middle-left__fighter-bays {
+}
+.fighter-bays--wrapper {
+  display: grid;
+  padding: 0;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-flow: row;
+  grid-auto-rows: auto;
+  row-gap: 16px;
+}
+.fighter-bay__container {
+  /* margin-bottom: 1rem; */
+}
+.fighter-bay {
+}
+.fighter-bays__header h5 {
+  margin-bottom: 1rem;
+}
+.fighter-bay__icon {
+  height: 100%;
+  width: 100%;
+  display: block;
+  background-image: url("./starsectorData/graphics/ships/longbow_intg.png"),
+    url("./starsectorData/graphics/ships/longbow_intg.png");
+
+  background-position: 25% 50%, 75% 50%;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 30%, 30%;
+}
+.fighter-bay__ordinance-points {
+  text-align: right;
+}
+
+/* Bottom Left */
+.bottom-left__button-wrapper button {
+  display: block;
+}
+/* 
+-> line color
+rgb(31,58,65)
+-> background-color of main area
+background-color: rgb(8, 26, 30);
+
+-> background-grid
+background: conic-gradient(from 90deg at 1px 1px,#051013 90deg,#11313E 0) -2px -2px/20px 20px;
+---
+.portable-infobox[data-item-name="infobox_fighter"] .pi-media, .portable-infobox[data-item-name="infobox_ship"] .pi-media {
+	background: conic-gradient(from 90deg at 1px 1px,#051013 90deg,#11313E 0) -2px -2px/20px 20px;
+	padding: 1em 0;
+}
+----
+background: conic-gradient(from 90deg at 1px 1px,#051013 90deg,#11313E 0) -2px -2px/20px 20px;
+  background-color: rgba(0, 0, 0, 0);
+  background-position-x: -2px;
+  background-position-y: -2px;
+  background-repeat: repeat;
+  background-attachment: scroll;
+  background-image: conic-gradient(from 90deg at 1px 1px, rgb(5, 16, 19) 90deg, rgb(17, 49, 62) 0deg);
+  background-size: 20px 20px;
+  background-origin: padding-box;
+  background-clip: border-box;
+padding: 1em 0;
+*/
