@@ -1,0 +1,10 @@
+.icon-generic {
+	font-size: 1.8rem;
+	transition: background-color 0.3s;
+
+	border-radius: 50%;
+}
+/* 
+.icon-generic:hover {
+	background-color: var(--main-lighter-color);
+} */

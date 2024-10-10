@@ -1,0 +1,27 @@
+/*******************************************************************/
+/*  TYPOGRAPAHY  */
+/*******************************************************************/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+li {
+	color: var(--white-text-color);
+}
+.highlight-text {
+	color: #52aeff;
+	font-size: 1.6rem;
+	font-weight: 700;
+}
+h3 {
+	font-size: 2.2rem;
+}
+h5 {
+	font-size: 1.6rem;
+}
+p {
+	font-size: 1.6rem;
+}

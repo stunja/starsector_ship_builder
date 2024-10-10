@@ -11,6 +11,7 @@ class BuilderView extends View {
         <div class="build-maker">
             <nav class="build-maker__nav"></nav>
             <main class="build-maker__work-area">
+                <section class="pop-up"></section>
                 <section class="box box__top box__top-left"></section>
                 <section class="box box__top box__top-center"></section>
                 <section class="box box__middle box__middle-left"></section>

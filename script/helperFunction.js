@@ -1,3 +1,5 @@
+import { state } from "./model.js";
+
 export const renameKeysFromCSVdata = function (obj) {
   const newObj = {};
   for (const key in obj) {
@@ -20,3 +22,6 @@ const applyGeneralRenamingRulesForKeys = function (key) {
   }
   return newKey;
 };
+
+export const calculateHullModCost = (hullMod) =>
+  Number(hullMod[state.currentShipBuild.hullModCost]);
