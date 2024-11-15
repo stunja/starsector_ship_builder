@@ -6,7 +6,7 @@ export default class View {
 	}
 
 	renderComponent([markup, localParent]) {
-		if (!markup || !localParent) console.warn(`renderComponentGeneric Error ${localParent}`);
+		// if (!markup || !localParent) console.warn(`renderComponentGeneric Error ${localParent}`);
 		this.clearRender(document.querySelector(localParent));
 
 		document.querySelector(localParent).insertAdjacentHTML("afterbegin", markup);

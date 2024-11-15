@@ -3,250 +3,275 @@
 /*******************************************************************/
 
 .weapon-pop-up {
-	position: absolute;
-	display: flex;
-	align-items: top;
-	justify-content: center;
-	/* justify-content: space-evenly; */
-	width: 100vw;
-	height: 85vh;
-	/* width: 95vw; */
+  position: absolute;
+  display: flex;
+  align-items: top;
+  justify-content: center;
 
-	top: -10rem;
+  width: 100vw;
+  height: 85vh;
+
+  top: -10rem;
+
+  /*******************************************************************/
+  /*  HEADER  */
+  /*******************************************************************/
+
+  th:not(:nth-of-type(2)) {
+    text-align: center;
+  }
+
+  .weapon-pop-up__theader th:not(:nth-of-type(1)) {
+    cursor: pointer;
+  }
+  .weapon-pop-up__theader th:first-of-type {
+    /* padding: 0 4rem; */
+  }
+  .weapon-pop-up__theader .theader-element div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 1.6rem 2.4rem;
+
+    transition: all 0.4s;
+  }
+  .weapon-pop-up__theader .theader-element:hover div {
+    background-color: #333;
+  }
+
+  /*****************************************************************/
+  /*  Weapon Sprite Parent  */
+  /*****************************************************************/
+
+  .weapon-sprite-parent {
+    position: relative;
+
+    .weapon-background-sprite__size--small {
+      height: 2rem;
+      width: 2rem;
+    }
+    .weapon-background-sprite__size--medium {
+      height: 2.5rem;
+      width: 2.5rem;
+    }
+    .weapon-background-sprite__size--large {
+      height: 3rem;
+      width: 3rem;
+    }
+
+    .weapon-sprite {
+      /* padding-bottom: 4rem; */
+      transform: rotate(-45deg);
+    }
+    .weapon-background-sprite__type--hybrid
+      .weapon-background-sprite:nth-of-type(1) {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
 }
 
 /*****************************************************************/
 /*  Hover Additional Information  */
 /*****************************************************************/
 .hover-additional-information {
-	display: flex;
-	width: 50rem;
-	/* width: 50%; */
-	position: relative;
-	justify-content: end;
-	z-index: 101;
-}
-.hover-additional-information ul {
-	display: flex;
-	flex-direction: column;
-	gap: 1.6rem;
-	padding: 2rem;
-	width: 40rem;
-	/* max-height: 75vh; */
-	overflow-y: auto;
-	transition: all 0.3s;
+  display: flex;
+  width: 35rem;
+  position: relative;
+  justify-content: end;
+  z-index: 101;
+  overflow-y: auto;
 
-	background-color: black;
-}
-.hover-additional-information li {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-}
-.hover-additional-information .weapon-divider {
-	background-color: var(--dark-text-color);
-	padding: 1.2rem 0;
-}
-.hover-additional-information .weapon-primary-data {
-	grid-template-columns: 1fr 3fr;
-	position: relative;
-}
-.hover-additional-information .weapon-primary-data_content {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-}
-.hover-additional-information .weapon-primary-data__icon {
-}
-.hover-additional-information .weapon__icon {
-	width: 8rem;
-	height: 8rem;
-	position: relative;
-}
-.hover-additional-information .weapon__icon--wrapper-parent {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-}
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    padding: 2rem;
+    /* width: 40rem; */
+    /* overflow-y: scroll; */
+    transition: all 0.3s;
+    background-color: black;
+  }
+  li {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  p {
+    font-size: 1.2rem;
+  }
+  .weapon-divider {
+    background-color: var(--dark-text-color);
+    padding: 1.2rem 0;
+  }
+  .weapon-primary-data {
+    grid-template-columns: 1fr 3fr;
+    position: relative;
+  }
+  .weapon-primary-data_content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .weapon__icon {
+    width: 8rem;
+    height: 8rem;
+    position: relative;
 
-.hover-additional-information .weapon__icon img {
-	max-height: 10rem;
-}
-.hover-additional-information .weapon-background-sprite {
-	border-width: 0.3rem;
+    img {
+      max-height: 10rem;
+    }
+  }
+
+  .weapon__icon--wrapper {
+    transform: rotate(-45deg);
+  }
 }
 
-/* size */
-.hover-additional-information .weapon-background-sprite__size--small {
-	height: 3.5rem;
-	width: 3.5rem;
-}
-.hover-additional-information .weapon-background-sprite__size--medium {
-	height: 4.5rem;
-	width: 4.5rem;
-}
-.hover-additional-information .weapon-background-sprite__size--large {
-	height: 5.5rem;
-	width: 5.5rem;
-}
-
-.hover-additional-information .weapon__type--hybrid .weapon-background-sprite:nth-of-type(1) {
-	width: 4rem;
-	height: 4rem;
-}
-/*******************************************************************/
-/*  HEADER  */
-/*******************************************************************/
-
-.weapon-pop-up p {
-	font-size: 1.4rem;
-}
-.weapon-pop-up th:not(:nth-of-type(2)) {
-	text-align: center;
-}
-
-.weapon-pop-up__theader th:not(:nth-of-type(1)) {
-	cursor: pointer;
-}
-.weapon-pop-up__theader th:first-of-type {
-	padding: 0 4rem;
-}
-.weapon-pop-up__theader .theader-element div {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 1.6rem;
-	padding: 1.6rem 2.4rem;
-
-	transition: all 0.4s;
-}
-.weapon-pop-up__theader .theader-element:hover div {
-	background-color: #333;
-}
-
-/*******************************************************************/
-/*  WEAPON SPRITE  */
-/*******************************************************************/
-
-.weapon__icon {
-	width: 6rem;
-}
-.weapon__icon--wrapper-parent {
-	position: relative;
-}
-.weapon__icon--wrapper {
-	padding-bottom: 4rem;
-	transform: rotate(-45deg);
-}
-
-.weapon__icon img {
-	max-height: 4rem;
-}
 /* weapon tier background */
 .weapon-tier-parent .weapon-tier {
-	content: "";
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	border-width: 0.16rem;
-	border-style: solid;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-width: 0.16rem;
+  border-style: solid;
 }
-.weapon__icon .weapon-sprite--gun,
-.weapon__icon .weapon-sprite--base {
-	position: absolute;
-	top: 55%;
-	left: 50%;
 
-	transform: translate(-50%, -50%);
-}
 /*******************************************************************/
 /*  TABLE  */
 /*******************************************************************/
 .weapon-pop-up__table {
-	position: relative;
-	z-index: 101;
-	height: 100%;
-}
+  position: relative;
+  z-index: 101;
+  height: 100%;
 
-.weapon-pop-up__table-wrapper {
-	overflow-x: hidden;
-	overflow-y: scroll;
-	height: 80vh;
-}
+  .weapon-pop-up__table-wrapper {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 80vh;
+  }
 
-.weapon-pop-up__table-body {
-	width: 60rem;
-	background-color: black;
-	border-collapse: collapse;
-}
-.weapon-pop-up__table .weapon {
-	cursor: pointer;
-	transition: all 0.3s;
+  /*****************************************************************/
+  /*  FILTER HEADER  */
+  /*****************************************************************/
 
-	border: 1px solid #111;
-}
+  .weapon-filter {
+    display: flex;
+    padding-right: 2rem;
 
-.weapon-pop-up__table .weapon:hover {
-	background-color: #222;
-}
-.weapon-pop-up__table td {
-	border: 2px solid rgba(0, 0, 0, 0.5);
-}
-.weapon-pop-up__table td:nth-of-type(2) {
-	padding: 0 2.4rem;
-	font-size: 1.4rem;
-}
-.weapon-pop-up__table td:not(:nth-of-type(2)) {
-	text-align: center;
-	font-size: 1.4rem;
-}
-/*****************************************************************/
-/*  CONTENT  */
-/*****************************************************************/
-.weapon__content {
-	display: flex;
-	gap: 1.2rem;
-}
-.weapon__name {
-	font-size: 1.6rem;
-	font-weight: 600;
-}
+    .weapon-filter__button {
+      font-size: 1.2rem;
+      padding: 1.2rem;
+      background-color: black;
+    }
+    .weapon-filter__button.active {
+      background-color: var(--main-grey-color);
+      color: white;
 
-.weapon__type {
-	padding: 0.5rem 1rem;
-	border-radius: 5px;
-}
-.weapon__type p {
-	letter-spacing: 0.5px;
-	font-weight: 700;
-	font-size: 1rem;
-}
+      &:hover {
+        background-color: var(--dark-text-color);
+      }
+    }
 
-.weapon__cost {
-	font-weight: 700;
-	font-size: 1.6rem;
-}
+    .weapon-filter__button:hover,
+    .weapon-filter__button--hide:hover {
+      background-color: var(--dark-text-color);
+      color: white;
+    }
+    .weapon-filter__button--hide {
+      color: white;
+      margin-left: auto;
 
-/*****************************************************************/
-/*  FILTER HEADER  */
-/*****************************************************************/
+      font-size: 1.2rem;
+      padding: 1.2rem;
+      background-color: black;
+    }
+  }
 
-.weapon__filter {
-	display: flex;
-	gap: 1rem;
-}
-.weapon__filter .filter__button {
-	font-size: 1.2rem;
-	padding: 1.2rem;
-	background-color: black;
-	/* border: 0.1rem solid rgba(255, 255, 255, 0.1); */
-}
-.weapon__filter .filter__button.active {
-	background-color: var(--main-color);
-}
-.weapon__filter .filter__button:hover {
-	background-color: white;
-	color: var(--main-color);
+  .weapon-pop-up__table-body {
+    width: 60rem;
+    background-color: black;
+    border-collapse: collapse;
+
+    /* weapon-pop-up__theader theader-element unselectable */
+    .weapon-pop-up__theader p {
+      font-size: 1.2rem;
+    }
+    .weapon {
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid #111;
+      font-size: 1.2rem;
+
+      &:hover {
+        background-color: #222;
+      }
+      .weapon__content {
+        display: flex;
+        gap: 1.2rem;
+      }
+
+      .weapon__name {
+        font-weight: 600;
+        line-height: 1.4;
+      }
+
+      .weapon__type {
+        border-radius: 5px;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+      }
+
+      .weapon__cost {
+        font-weight: 700;
+        font-size: 1.4rem;
+        /* TODO Replace with proper color */
+        color: var(--white-text-color);
+      }
+
+      &.weapon--active {
+        font-size: 1.2rem;
+        background-color: rgba(0, 126, 25, 0.5);
+
+        .weapon__icon {
+          padding: 3.6rem 0.6rem;
+        }
+      }
+
+      /*******************************************************************/
+      /*  WEAPON SPRITE  */
+      /*******************************************************************/
+
+      .weapon__icon {
+        /*! overwrites table paddings */
+        padding: 2.8rem 0.6rem;
+        width: 6rem;
+        img {
+          max-height: 4rem;
+        }
+
+        .weapon-sprite--gun,
+        .weapon-sprite--base {
+          position: absolute;
+          top: 55%;
+          left: 50%;
+
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
+
+  td {
+    border: 2px solid rgba(0, 0, 0, 0.5);
+  }
+  td:nth-of-type(2) {
+    padding: 0 2.4rem;
+  }
+  td:not(:nth-of-type(2)) {
+    text-align: center;
+  }
 }

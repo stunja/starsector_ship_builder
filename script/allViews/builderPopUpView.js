@@ -8,7 +8,9 @@ class BuilderPopUpView extends View {
     super();
   }
   #parentElement = document.querySelector(".pop-up");
-  #filterParent = document.querySelector(".hullmod-menu__header__buttons--wrapper");
+  #filterParent = document.querySelector(
+    ".hullmod-menu__header__buttons--wrapper"
+  );
   //
   masterRender(data) {
     if (!this.#data) this.#data = data;
@@ -45,41 +47,68 @@ class BuilderPopUpView extends View {
     const phaseShip = currentShipBuild.currentShipType === "phaseShip";
     const shipHasFighterBays = currentShipBuild.currentFighterBays > 0;
 
-    // console.log(currentShipBuild.currentShipType);
-
     // Map for prioritizing conditions!!
     const rules = new Map([
-      ["Already Build In", hullMod => currentShipBuild.hullMods.buildInHullMods?.some(buildIn => buildIn.id === hullMod.id)],
+      [
+        "Already Build In",
+        (hullMod) =>
+          currentShipBuild.hullMods.buildInHullMods?.some(
+            (buildIn) => buildIn.id === hullMod.id
+          ),
+      ],
 
-      this.#hullModIncompatibilityDueToShipSize("Ballistic Rangefinder", "frigate"),
+      this.#hullModIncompatibilityDueToShipSize(
+        "Ballistic Rangefinder",
+        "frigate"
+      ),
       // High Scatter Amplifier
-      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod("Advanced Optics", "High Scatter Amplifier"),
+      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod(
+        "Advanced Optics",
+        "High Scatter Amplifier"
+      ),
       // Advanced Optics
-      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod("High Scatter Amplifier", "Advanced Optics"),
+      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod(
+        "High Scatter Amplifier",
+        "Advanced Optics"
+      ),
       // Integrated Targeting Unit
-      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod("Dedicated Targeting Core", "Integrated Targeting Unit"),
+      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod(
+        "Dedicated Targeting Core",
+        "Integrated Targeting Unit"
+      ),
       [
         "Incompatible with [Distributed Fire Control]",
-        hullMod =>
-          (hullMod.name === "Integrated Targeting Unit" && this.#checkIfSelectedHullModIsBuildIn("Distributed Fire Control")) ||
-          (hullMod.name === "Dedicated Targeting Core" && this.#checkIfSelectedHullModIsBuildIn("Distributed Fire Control")),
+        (hullMod) =>
+          (hullMod.name === "Integrated Targeting Unit" &&
+            this.#checkIfSelectedHullModIsBuildIn(
+              "Distributed Fire Control"
+            )) ||
+          (hullMod.name === "Dedicated Targeting Core" &&
+            this.#checkIfSelectedHullModIsBuildIn("Distributed Fire Control")),
       ],
 
       // Dedicated Targeting Core
-      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod("Integrated Targeting Unit", "Dedicated Targeting Core"),
+      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod(
+        "Integrated Targeting Unit",
+        "Dedicated Targeting Core"
+      ),
 
       [
         "Only accessible on cruiser or capital type ship",
-        hullMod =>
-          (hullMod.name === "Dedicated Targeting Core" && currentShipBuild.shipSize === "frigate") ||
-          (hullMod.name === "Dedicated Targeting Core" && currentShipBuild.shipSize === "destroyer"),
+        (hullMod) =>
+          (hullMod.name === "Dedicated Targeting Core" &&
+            currentShipBuild.shipSize === "frigate") ||
+          (hullMod.name === "Dedicated Targeting Core" &&
+            currentShipBuild.shipSize === "destroyer"),
       ],
       // Advanced Targeting Core
       [
         "Incompatible with [Advanced Targeting Core]",
-        hullMod =>
-          (hullMod.name === "Integrated Targeting Unit" && this.#checkIfSelectedHullModIsBuildIn("Advanced Targeting Core")) ||
-          (hullMod.name === "Dedicated Targeting Core" && this.#checkIfSelectedHullModIsBuildIn("Advanced Targeting Core")),
+        (hullMod) =>
+          (hullMod.name === "Integrated Targeting Unit" &&
+            this.#checkIfSelectedHullModIsBuildIn("Advanced Targeting Core")) ||
+          (hullMod.name === "Dedicated Targeting Core" &&
+            this.#checkIfSelectedHullModIsBuildIn("Advanced Targeting Core")),
       ],
       // Escore Package
       this.#hullModIncompatibilityDueToShipSize("Escort Package", "frigate"),
@@ -88,83 +117,139 @@ class BuilderPopUpView extends View {
       this.#hullModIncompatibilityDueToShipSize("Safety Overrides", "capital"),
       [
         "Not allowed on Civilian Ship",
-        hullMod => hullMod.name === "Safety Overrides" && currentShipBuild.currentShipIsCivilian === "civilian",
+        (hullMod) =>
+          hullMod.name === "Safety Overrides" &&
+          currentShipBuild.currentShipIsCivilian === "civilian",
       ],
       [
         "Incompatible with [Flux Shunt]",
-        hullMod => hullMod.name === "Safety Overrides" && this.#checkIfSelectedHullModIsBuildIn("Flux Shunt"),
+        (hullMod) =>
+          hullMod.name === "Safety Overrides" &&
+          this.#checkIfSelectedHullModIsBuildIn("Flux Shunt"),
       ],
       // Neural Integrator
 
-      ["Only on Automated Ships, [not implemented]", hullMod => hullMod.name === "Neural Integrator"],
+      [
+        "Only on Automated Ships, [not implemented]",
+        (hullMod) => hullMod.name === "Neural Integrator",
+      ],
       // Fighter Bays
-      ["Ship has no BUILD-IN fighter bays", hullMod => hullMod.name === "Converted Fighter Bay" && !currentShipBuild._buildInFighterBays],
+      [
+        "Ship has no BUILD-IN fighter bays",
+        (hullMod) =>
+          hullMod.name === "Converted Fighter Bay" &&
+          !currentShipBuild._buildInFighterBays,
+      ],
       // Converted Hangar
 
       this.#hullModIncompatibilityDueToShipSize("Converted Hangar", "frigate"),
-      ["Not Allowed on [Phase Ship]", hullMod => hullMod.name === "Converted Hangar" && phaseShip],
+      [
+        "Not Allowed on [Phase Ship]",
+        (hullMod) => hullMod.name === "Converted Hangar" && phaseShip,
+      ],
       [
         "Not Allowed on Ships with BUILD-In fighter bays",
-        hullMod => hullMod.name === "Converted Hangar" && currentShipBuild._buildInFighterBays,
+        (hullMod) =>
+          hullMod.name === "Converted Hangar" &&
+          currentShipBuild._buildInFighterBays,
       ],
 
       // Generic Fighter Bay check
       [
         "Ship has no fighter bays",
-        hullMod => hullMod.uiTagsArray.some(e => e === "Fighters") && !shipHasFighterBays && hullMod.name !== "Converted Hangar",
+        (hullMod) =>
+          hullMod.uiTagsArray.some((e) => e === "Fighters") &&
+          !shipHasFighterBays &&
+          hullMod.name !== "Converted Hangar",
       ],
       // Logistical Tag
       [
         "Can`t add more than 2 Logistical Hull Mods",
-        hullMod => hullMod.uiTagsArray.some(e => e === "Logistics") && this.#checkIfMoreThanTwoLogiModsAlreadyInstalled(),
+        (hullMod) =>
+          hullMod.uiTagsArray.some((e) => e === "Logistics") &&
+          this.#checkIfMoreThanTwoLogiModsAlreadyInstalled(),
       ],
       // Phase Tag
       [
         "Incompatible with [Phase Anchor]",
-        hullMod => hullMod.name === "Adaptive Phase Coils" && this.#checkIfSelectedHullModIsAlreadyActive("Phase Anchor"),
+        (hullMod) =>
+          hullMod.name === "Adaptive Phase Coils" &&
+          this.#checkIfSelectedHullModIsAlreadyActive("Phase Anchor"),
       ],
       [
         "Incompatible with [Adaptive Phase Coils]",
-        hullMod => hullMod.name === "Phase Anchor" && this.#checkIfSelectedHullModIsAlreadyActive("Adaptive Phase Coils"),
+        (hullMod) =>
+          hullMod.name === "Phase Anchor" &&
+          this.#checkIfSelectedHullModIsAlreadyActive("Adaptive Phase Coils"),
       ],
-      ["Not a Phase ship", hullMod => hullMod.uiTagsArray.some(e => e === "Phase") && !phaseShip],
+      [
+        "Not a Phase ship",
+        (hullMod) =>
+          hullMod.uiTagsArray.some((e) => e === "Phase") && !phaseShip,
+      ],
 
       // Shield Tag
       // shield shunt
       [
         "Incompatible with Makeshift Shield Generator",
-        hullMod => hullMod.name === "Shield Shunt" && this.#checkIfSelectedHullModIsAlreadyActive("Makeshift Shield Generator"),
+        (hullMod) =>
+          hullMod.name === "Shield Shunt" &&
+          this.#checkIfSelectedHullModIsAlreadyActive(
+            "Makeshift Shield Generator"
+          ),
       ],
       // Makeshift Shield Generator
-      ["Ship already has a Shield", hullMod => hullMod.name === "Makeshift Shield Generator" && shipHasShield],
-      ["Not allowed on Phase Ships", hullMod => hullMod.name === "Makeshift Shield Generator" && phaseShip],
+      [
+        "Ship already has a Shield",
+        (hullMod) =>
+          hullMod.name === "Makeshift Shield Generator" && shipHasShield,
+      ],
+      [
+        "Not allowed on Phase Ships",
+        (hullMod) => hullMod.name === "Makeshift Shield Generator" && phaseShip,
+      ],
       [
         "Incompatible with Shield Shunt",
-        hullMod => hullMod.name === "Makeshift Shield Generator" && this.#checkIfSelectedHullModIsAlreadyActive("Shield Shunt"),
+        (hullMod) =>
+          hullMod.name === "Makeshift Shield Generator" &&
+          this.#checkIfSelectedHullModIsAlreadyActive("Shield Shunt"),
       ],
       // Shield FRONT - Error
       // TODO untested
       [
         "Ship Shield is already Front Facing",
-        hullMod => hullMod.name === "Shield Conversion - Front" && currentShipBuild.currentShieldType === "FRONT",
+        (hullMod) =>
+          hullMod.name === "Shield Conversion - Front" &&
+          currentShipBuild.currentShieldType === "FRONT",
       ],
       // Shield OMNI - Error
       // TODO untested
       [
         "Ship Shield is already OMNI",
-        hullMod => hullMod.name === "Shield Conversion - Omni" && currentShipBuild.currentShieldType === "OMNI",
+        (hullMod) =>
+          hullMod.name === "Shield Conversion - Omni" &&
+          currentShipBuild.currentShieldType === "OMNI",
       ],
-      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod("Shield Conversion - Omni", "Shield Conversion - Front"),
-      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod("Shield Conversion - Front", "Shield Conversion - Omni"),
+      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod(
+        "Shield Conversion - Omni",
+        "Shield Conversion - Front"
+      ),
+      this.#hullModIncompatibilityCheckAgainstSpecificActiveHullMod(
+        "Shield Conversion - Front",
+        "Shield Conversion - Omni"
+      ),
       // Shield Tag and No Shield
       [
         "Ship has No Shield",
-        hullMod => hullMod.uiTagsArray.some(e => e === "Shields") && !shipHasShield && hullMod.name !== "Makeshift Shield Generator",
+        (hullMod) =>
+          hullMod.uiTagsArray.some((e) => e === "Shields") &&
+          !shipHasShield &&
+          hullMod.name !== "Makeshift Shield Generator",
       ],
       // Add more conditions with descriptive keys
     ]);
 
-    inputArray.forEach(hullMod => {
+    inputArray.forEach((hullMod) => {
       let classified = false;
       for (const [message, check] of rules) {
         // check if hullMod already active, don`t change it.
@@ -186,47 +271,86 @@ class BuilderPopUpView extends View {
 
     return [goodArray, badArray];
   }
-  #checkIfSelectedHullModIsBuildIn = name => this.#data.currentShipBuild.hullMods?.buildInHullMods?.some(buildIn => buildIn.name === name);
+  #checkIfSelectedHullModIsBuildIn = (name) =>
+    this.#data.currentShipBuild.hullMods?.buildInHullMods?.some(
+      (buildIn) => buildIn.name === name
+    );
 
-  #checkIfSelectedHullModIsAlreadyActive = name =>
-    this.#data.currentShipBuild.hullMods?.activeHullMods?.some(hullMod => hullMod.name === name);
+  #checkIfSelectedHullModIsAlreadyActive = (name) =>
+    this.#data.currentShipBuild.hullMods?.activeHullMods?.some(
+      (hullMod) => hullMod.name === name
+    );
 
   #checkIfMoreThanTwoLogiModsAlreadyInstalled = () => {
     const { activeHullMods } = this.#data.currentShipBuild.hullMods;
     if (!activeHullMods) return false;
 
-    const numberOfLogisticalHullMods = activeHullMods.filter(hullMod => hullMod.uiTagsArray.includes("Logistics")).length;
+    const numberOfLogisticalHullMods = activeHullMods.filter((hullMod) =>
+      hullMod.uiTagsArray.includes("Logistics")
+    ).length;
 
     return numberOfLogisticalHullMods >= 2;
   };
-  //!
   #hullModIncompatibilityDueToShipSize(targetName, targetSize) {
-    return [`Not allowed on ${targetSize}`, hullMod => hullMod.name === targetName && this.#data.currentShipBuild.shipSize === targetSize];
+    return [
+      `Not allowed on ${targetSize}`,
+      (hullMod) =>
+        hullMod.name === targetName &&
+        this.#data.currentShipBuild.shipSize === targetSize,
+    ];
   }
-  #hullModIncompatibilityCheckAgainstSpecificActiveHullMod(hullModName, incompatibleModName) {
+  #hullModIncompatibilityCheckAgainstSpecificActiveHullMod(
+    hullModName,
+    incompatibleModName
+  ) {
     return [
       `Incompatible with [${incompatibleModName}]`,
-      hullMod => hullMod.name === hullModName && this.#checkIfSelectedHullModIsAlreadyActive(incompatibleModName),
+      (hullMod) =>
+        hullMod.name === hullModName &&
+        this.#checkIfSelectedHullModIsAlreadyActive(incompatibleModName),
     ];
   }
   //
   #hullModListMarkUp([goodArray, badArray]) {
     // this.#filteredArray
     const goodArrayMarkUp = goodArray
-      .map(hullMod => {
-        const { name = "name", desc = "description", sprite_ = "", uiTagsArray = [] } = hullMod;
+      .map((hullMod) => {
+        const {
+          name = "name",
+          desc = "description",
+          sprite_ = "",
+          uiTagsArray = [],
+        } = hullMod;
         if (!hullMod || hullMod === undefined) return;
 
-        return this.#hullModListMarkUpNormal(name, desc, sprite_, uiTagsArray, hullMod);
+        return this.#hullModListMarkUpNormal(
+          name,
+          desc,
+          sprite_,
+          uiTagsArray,
+          hullMod
+        );
       })
       .join("");
 
     const badArrayMarkUp = badArray
       .map(([hullMod, errorReason]) => {
-        const { name = "name", desc = "description", sprite_ = "", uiTagsArray = [] } = hullMod;
+        const {
+          name = "name",
+          desc = "description",
+          sprite_ = "",
+          uiTagsArray = [],
+        } = hullMod;
         if (!hullMod || hullMod === undefined) return;
 
-        return this.#hullModListMarkUpUnavailable(name, desc, sprite_, uiTagsArray, hullMod, errorReason);
+        return this.#hullModListMarkUpUnavailable(
+          name,
+          desc,
+          sprite_,
+          uiTagsArray,
+          hullMod,
+          errorReason
+        );
       })
       .join("");
 
@@ -234,18 +358,25 @@ class BuilderPopUpView extends View {
   }
   #hullModListMarkUpNormal(name, desc, sprite_, uiTagsArray, hullMod) {
     const { hullModCost } = this.#data.currentShipBuild;
-    const tagsArrayToRender = uiTagsArray.map(tag => `<p class="hullmod__tag">${tag}</p>`).join("");
+    const tagsArrayToRender = uiTagsArray
+      .map((tag) => `<p class="hullmod__tag">${tag}</p>`)
+      .join("");
     // console.log(desc.length);
     return `
       <tr class="hullmod-menu__hullmod" id="hullmod__${hullMod.id}">
             <td><img src="/starsectorData/${sprite_}" alt="${sprite_}-${name}" class="hullmod__sprite" /></td>
             <td><p class="hullmod__title">${name}</p></td>
-            <td><p class="hullmod__desc">${this.hullModDescriptionShrink([desc, hullMod.id])}</p></td>
+            <td><p class="hullmod__desc">${this.hullModDescriptionShrink([
+              desc,
+              hullMod.id,
+            ])}</p></td>
             <td><div class="hullmod__tags">${tagsArrayToRender}</div></td>
             <td><p class="hullmod__cost">
               ${hullMod[hullModCost]}</p>
             </td>
-              <td><button class="button hullmod__add-hull-button" data-id="${hullMod.id}">Add</button></td>
+              <td><button class="button hullmod__add-hull-button" data-id="${
+                hullMod.id
+              }">Add</button></td>
       </tr>
     `;
   }
@@ -262,13 +393,25 @@ class BuilderPopUpView extends View {
         : "err";
     return finalShrinkedText;
   }
-  #hullModListMarkUpUnavailable(name, desc, sprite_, tagsArrayToRender, hullMod, errorReason) {
+  #hullModListMarkUpUnavailable(
+    name,
+    desc,
+    sprite_,
+    tagsArrayToRender,
+    hullMod,
+    errorReason
+  ) {
     const { hullModCost } = this.#data.currentShipBuild;
     return `
-      <tr class="hullmod-menu__hullmod--unavailable" id="hullmod__${hullMod.id}">
+      <tr class="hullmod-menu__hullmod--unavailable" id="hullmod__${
+        hullMod.id
+      }">
             <td><img src="/starsectorData/${sprite_}" alt="${sprite_}-${name}" class="hullmod__sprite" /></td>
             <td><p class="hullmod__title">${name}</p></td>
-              <td><p class="hullmod__desc">${this.hullModDescriptionShrink([desc, hullMod.id])}</p></td>
+              <td><p class="hullmod__desc">${this.hullModDescriptionShrink([
+                desc,
+                hullMod.id,
+              ])}</p></td>
             <td><div class="hullmod__tags">${tagsArrayToRender}</div></td>
             <td><p class="hullmod__cost">
               ${hullMod[hullModCost]}</p>
@@ -284,12 +427,12 @@ class BuilderPopUpView extends View {
 
     const { activeHullMods } = this.#data.currentShipBuild.hullMods;
 
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       const { id } = button.dataset;
       button.textContent = "Add";
       button.classList.remove("hullmod__add-hull-button--warn");
 
-      if (activeHullMods.some(hullmod => hullmod.id === id)) {
+      if (activeHullMods.some((hullmod) => hullmod.id === id)) {
         button.textContent = "Remove";
         button.classList.add("hullmod__add-hull-button--warn");
       }
@@ -297,11 +440,11 @@ class BuilderPopUpView extends View {
   }
   #hullModFilter() {
     const { usableHullMods } = this.#data;
-    const allTags = usableHullMods.flatMap(e => e.uiTagsArray);
+    const allTags = usableHullMods.flatMap((e) => e.uiTagsArray);
     const uniqueNames = [...new Set(allTags)].sort();
     uniqueNames.unshift("all");
     const markup = uniqueNames
-      .map(uniqueTag =>
+      .map((uniqueTag) =>
         uniqueTag === this.#currentSelectedFilter
           ? `<button class="button hullmod-menu__header__button hullmod-menu__header__button--active" data-filter-tag="${uniqueTag}">${uniqueTag}</button>`
           : `<button class="button hullmod-menu__header__button" data-filter-tag="${uniqueTag}">${uniqueTag}</button>`
@@ -357,9 +500,12 @@ class BuilderPopUpView extends View {
     // regular flow
     const { filterTag } = btn.dataset;
     this.#currentSelectedFilter = filterTag;
-    if (filterTag === "all") return (this.#filteredArray = this.#data.usableHullMods);
+    if (filterTag === "all")
+      return (this.#filteredArray = this.#data.usableHullMods);
 
-    return (this.#filteredArray = this.#data.usableHullMods.filter(e => (e.uiTagsArray.includes(filterTag) ? e : "")));
+    return (this.#filteredArray = this.#data.usableHullMods.filter((e) =>
+      e.uiTagsArray.includes(filterTag) ? e : ""
+    ));
   }
   addHandlerToAddRemoveHullMod(callback) {
     const localParent = ".hullmod-menu__body";
@@ -382,373 +528,3 @@ class BuilderPopUpView extends View {
 }
 export default new BuilderPopUpView();
 /////////////
-// Usage:
-// const filterManager = createPopUpFilterManager(
-//   ".hullmod-menu__header__buttons--wrapper",
-//   ".hullmod-menu__header__button",
-//   "hullmod-menu__header__button--active"
-// );
-
-// function createPopUpFilterManager(
-//   containerSelector,
-//   buttonSelector,
-//   activeButtonClass
-// ) {
-//   let eventHandler = null;
-
-//   function getContainer() {
-//     return document.querySelector(containerSelector);
-//   }
-
-//   function getAllButtons() {
-//     return document.querySelectorAll(buttonSelector);
-//   }
-
-//   function updateButtonStates(activeButton) {
-//     getAllButtons().forEach((button) =>
-//       button.classList.toggle(activeButtonClass, button === activeButton)
-//     );
-//   }
-
-//   function addFilterHandler(callback) {
-//     eventHandler = (e) => {
-//       const btn = e.target.closest(buttonSelector);
-//       if (!btn) return;
-
-//       updateButtonStates(btn);
-//       const filterTag = btn.dataset.filterTag;
-//       callback(filterTag);
-//     };
-
-//     getContainer().addEventListener("click", eventHandler);
-//   }
-
-//   function removeFilterHandler() {
-//     if (eventHandler) {
-//       getContainer().removeEventListener("click", eventHandler);
-//       eventHandler = null;
-//     }
-//   }
-
-//   return {
-//     addFilterHandler,
-//     removeFilterHandler,
-//   };
-// }
-
-// filterManager.addFilterHandler((filterTag) => {
-//   console.log(`Filter applied: ${filterTag}`);
-//   // Additional filter logic here
-// });
-
-// To remove the handler later:
-// filterManager.removeFilterHandler();
-
-// const tagsArrayToRender = tagsArrayToUse
-//   .map((tag) => {
-//     if (hideTagsFromRenderer.includes(tag)) return;
-//     if (tag === "req_spaceport") tag = "Req. Spaceport";
-//     return `<p class="hullmod__tag">${tag}</p>`;
-//   })
-//   .join("");
-
-// // Function to get the value by key
-// function getValueByKey(key, dataArray) {
-//   for (const [itemKey, itemValue] of dataArray) {
-//     if (itemKey === key) {
-//       return itemValue;
-//     }
-//   }
-//   return null; // Return null if the key is not found
-// }
-
-//     <li class="hullmod-menu__hullmod">
-//     <img src="/starsectorData/${sprite_}" alt="" class="hullmod__sprite" />
-//     <p class="hullmod__title">${name}</p>
-//     <p class="hullmod__desc">${desc}</p>
-//     <p class="hullmod__cost"></p>
-//     <div class="hullmod__tags">${tagsArrayToRender}</div>
-//     <p class="hullmod__installed">${isCurrentModInstalled}</p>
-//     <button class="hullmod__add-hull">Add ${name}</button>
-// </li>
-// const hideTagsFromRenderer = ["non_phase", "no_build_in"];
-//    <td><button class="hullmod__add-hull-button">Add ${name}</button></td>
-// <button class="hullmod-menu__header__button hullmod-menu__header__button--active" data-filter-tag="all">All</button>
-// Store the handler function in a class property
-// this.eventHandler = (e) => {
-//   const buttonClass = "hullmod-menu__header__button";
-//   const buttonClassActive = "hullmod-menu__header__button--active";
-//   const btn = e.target.closest(`.${buttonClass}`);
-//   if (!btn) return;
-//   // Remove active class from all buttons
-//   document
-//     .querySelectorAll(`.${buttonClass}`)
-//     .forEach((button) => button.classList.remove(`${buttonClassActive}`));
-//   // Add active class to the clicked button
-//   btn.classList.add(`${buttonClassActive}`);
-//   const { filterTag } = btn.dataset;
-//   // Call the provided function with the filter tag
-//   this.#currentSelectedFilter = filterTag;
-//   callback(filterTag);
-// };
-// // Add the event listener to the container
-// document
-//   .querySelector(".hullmod-menu__header__buttons--wrapper")
-//   .addEventListener("click", this.eventHandler);
-// Add the event listener to the container
-
-////
-// document
-//   .querySelector(".hullmod-menu__body")
-//   .addEventListener("click", function (e) {
-//     const btn = e.target.closest(`.hullmod__add-hull-button`);
-//     if (!btn) return;
-
-//     callback(btn);
-//   });
-// addHandlerToAddRemoveHullMod(callback) {
-//   this.addRemoveHullModEventHandler = (e) => {
-//     const btn = e.target.closest(`.hullmod__add-hull-button`);
-//     if (!btn) return;
-
-//     callback(btn);
-//   };
-//   // Add the event listener to the container
-//   document
-//     .querySelector(".hullmod-menu__body")
-//     .addEventListener("click", this.addRemoveHullModEventHandler);
-// }
-// removeHandlerFromAddRemoveHullMod() {
-//   if (this.addRemoveHullModEventHandler) {
-//     document
-//       .querySelector(".hullmod-menu__body")
-//       .removeEventListener("click", this.addRemoveHullModEventHandler);
-//     this.addRemoveHullModEventHandler = null; // Clear the reference after removing
-//   }
-// }
-// this.addPopUpFilterEventHandler = null; // Store the event handler function for potential removal
-// this.addRemoveHullModEventHandler = null; // Store the event handler function for potential removal
-
-// addPopUpFilterHandler(callback) {
-//   // Store the handler function in a class property
-//   this.addPopUpFilterEventHandler = (e) => {
-//     const buttonClass = "hullmod-menu__header__button";
-//     const buttonClassActive = "hullmod-menu__header__button--active";
-//     const btn = e.target.closest(`.${buttonClass}`);
-//     if (!btn) return;
-
-//     // Remove active class from all buttons
-//     document
-//       .querySelectorAll(`.${buttonClass}`)
-//       .forEach((button) => button.classList.remove(`${buttonClassActive}`));
-
-//     // Add active class to the clicked button
-//     btn.classList.add(`${buttonClassActive}`);
-//     const { filterTag } = btn.dataset;
-
-//     // Call the provided function with the filter tag
-//     this.#currentSelectedFilter = filterTag;
-//     callback(filterTag);
-//   };
-
-//   // Add the event listener to the container
-//   document
-//     .querySelector(".hullmod-menu__header__buttons--wrapper")
-//     .addEventListener("click", this.addPopUpFilterEventHandler);
-// }
-// #hullModListAddRemoveButtonState(activeHullMods, name) {
-//   let buttonAction = "Add";
-//   let buttonClass = "hullmod__add-hull-button";
-//   if (activeHullMods) {
-//     activeHullMods.forEach((activeMod) => {
-//       if (name === activeMod.name) {
-//         buttonAction = "Remove";
-//         buttonClass =
-//           "hullmod__add-hull-button hullmod__add-hull-button--warn";
-//       }
-//     });
-//   }
-//   return [buttonAction, buttonClass];
-// }
-//
-// const [buttonAction, buttonClass] =
-//   this.#hullModListAddRemoveButtonState(
-//     currentShipBuild.hullMods.activeHullMods,
-//     name
-//   );
-// const hideBuildInHullModsFromRender =
-//   currentShipBuild.hullMods.buildInHullMods.some(
-//     (e) => hullMod.id === e.id
-//   );
-// if (hideBuildInHullModsFromRender) return;
-// #hullModList() {
-//   const { currentShipBuild } = this.#data;
-//   if (!this.#filteredArray) return;
-
-//   const markup = this.#filteredArray
-//     .map((hullMod) => {
-//       const {
-//         name = "name",
-//         desc = "description",
-//         sprite_ = "",
-//         uiTagsArray = [],
-//       } = hullMod;
-//       if (!hullMod || hullMod === undefined) return;
-
-//       //
-//       const hideBuildInHullModsFromRender =
-//         currentShipBuild.hullMods.buildInHullMods.some(
-//           (e) => hullMod.id === e.id
-//         );
-//       //
-//       if (hideBuildInHullModsFromRender) return;
-//       const tagsArrayToRender = uiTagsArray
-//         .map((tag) => `<p class="hullmod__tag">${tag}</p>`)
-//         .join("");
-
-//       return `
-//        <tr class="hullmod-menu__hullmod">
-//             <td><img src="/starsectorData/${sprite_}" alt="${sprite_}-${name}" class="hullmod__sprite" /></td>
-//             <td><p class="hullmod__title">${name}</p></td>
-//             <td><p class="hullmod__desc">${desc}</p></td>
-//             <td><div class="hullmod__tags">${tagsArrayToRender}</div></td>
-//             <td><p class="hullmod__cost">
-//               ${hullMod[currentShipBuild.hullModCost]}</p>
-//             </td>
-//             <td><button class="hullmod__add-hull-button"
-//             data-id="${hullMod.id}">Add</button>
-//             </td>
-//         </tr>
-//         `;
-//     })
-//     .join("");
-//   return markup;
-// }
-// console.log(badArray[0][1]);
-// const badArrayMarkUp = badArray
-//   .map((hullMod) => {
-//     const {
-//       name = "name",
-//       desc = "description",
-//       sprite_ = "",
-//       uiTagsArray = [],
-//     } = hullMod;
-//     if (!hullMod || hullMod === undefined) return;
-
-//     return this.#hullModListMarkUpUnavailable(
-//       name,
-//       desc,
-//       sprite_,
-//       uiTagsArray,
-//       hullMod
-//     );
-//   })
-
-// if (
-//   hullMod.name === "Makeshift Shield Generator" &&
-//   phaseShieldNoShield !== "noShieldShip"
-// ) {
-//   this.#hullModRejectionFunction(
-//     badArray,
-//     hullMod,
-//     "Ship has a Shield or a Phase Ship"
-//   );
-//   return;
-// }
-// if (shieldTag && hullMod.name !== "Makeshift Shield Generator")
-//   this.#hullModRejectionFunction(
-//     badArray,
-//     hullMod,
-//     "Current Ship has no shield"
-//   );
-// const shieldTag = hullMod.uiTagsArray.some(e => e === "Shields");
-// #hullModRejectionFunction = (badArray, hullMod, errorReason) =>
-//   badArray.push([hullMod, errorReason]);
-
-// #sortHullModArray(inputArray) {
-//   const arrayToSort = inputArray;
-//   const { currentShipBuild } = this.#data;
-//   const goodArray = [];
-//   const badArray = [];
-
-//   //
-//   console.log(currentShipBuild);
-//   const shipHasShield = currentShipBuild.currentShipType === "shieldShip";
-//   //
-//   arrayToSort.forEach(hullMod => {
-//     const shieldTag = hullMod.uiTagsArray.some(e => e === "Shields");
-
-//     const alreadyBuildInMod = currentShipBuild.hullMods.buildInHullMods.some(
-//       buildIn => buildIn.id === hullMod.id
-//     );
-
-//     if (alreadyBuildInMod) badArray.push([hullMod, "Already Build In"]);
-
-//     if (shieldTag && !shipHasShield)
-//       badArray.push([hullMod, "Ship has No Shield"]);
-
-//     goodArray.push(hullMod);
-//   });
-
-//   //
-//   return [goodArray, badArray];
-// }
-// #checkIfMoreThanTwoLogiModsAlreadyInstalled = () => {
-//   const numberOfLogisticalHullMods =
-//     this.#data.currentShipBuild.hullMods.activeHullMods?.map(hullMod =>
-//       hullMod.uiTagsArray.some(e => e === "Logistics")
-//     );
-//   if (numberOfLogisticalHullMods?.length >= 2) return true;
-// };
-// [
-//   "Either Frigate / Phase Ship / has BUILD-In fighter bays",
-//   hullMod =>
-//     (hullMod.name === "Converted Hangar" &&
-//       currentShipBuild.shipSize === "frigate") ||
-//     (hullMod.name === "Converted Hangar" && phaseShip) ||
-//     (hullMod.name === "Converted Hangar" &&
-//       currentShipBuild._buildInFighterBays),
-// ],
-// #hullModListCheckIfHullModIsCompatible(currentHullMod) {
-//   const { currentShipType } = this.#data.currentShipBuild;
-//   // console.log(currentShipType);
-//   if (
-//     currentShipType !== "PHASE" &&
-//     currentHullMod.uiTagsArray.some((e) => e === "Phase")
-//   ) {
-//     const reason = "Phase Ships Only";
-//     return reason;
-//   }
-//   return true;
-// }
-// #hideBuildInHullModsFromRender(hullMod) {
-//   // hide hull mod if it is buildIn by default
-//   const { buildInHullMods } = this.#data.currentShipBuild.hullMods;
-//   return buildInHullMods.some((e) => hullMod.id === e.id);
-// }
-//
-// const hideBuildInHullModsFromRender =
-//   this.#hideBuildInHullModsFromRender(hullMod);
-// if (hideBuildInHullModsFromRender) return;
-
-// const hullModCompatibility =
-//   this.#hullModListCheckIfHullModIsCompatible(hullMod);
-
-// if (hullModCompatibility === true) {
-//   return this.#hullModListMarkUpNormal(
-//     name,
-//     desc,
-//     sprite_,
-//     tagsArrayToRender,
-//     hullMod
-//   );
-// } else {
-//   return this.#hullModListMarkUpUnavailable(
-//     name,
-//     desc,
-//     sprite_,
-//     tagsArrayToRender,
-//     hullMod,
-//     hullModCompatibility
-//   );
-// }

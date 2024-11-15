@@ -9,22 +9,34 @@ font-size
     43.75% = 7px
 */
 /* Target 10px / Base 16px = 0.625 = 62.5% */
-@media screen and (min-width: 1400px) {
+@media screen and (min-width: 100em) {
 	html {
 		font-size: 62.5%;
 	}
 }
-@media screen and (max-width: 1366px) {
+@media screen and (min-width: 87.5em) {
+	html {
+		font-size: 62.5%;
+	}
+}
+@media screen and (max-width: 87.5em) {
+	html {
+		font-size: 56.25%;
+	}
+}
+@media screen and (max-width: 75em) {
 	html {
 		font-size: 50%;
 	}
 }
-@media screen and (max-width: 1200px) {
-	html {
-		font-size: 43.75%;
-	}
-}
 
+/* ship selector */
+.ship-selector__panel {
+	position: absolute;
+	left: -50px;
+	top: 50%;
+	transform: rotate(270deg);
+}
 /***************************************/
 /* GENERIC REUSABLE */
 /***************************************/
@@ -47,54 +59,48 @@ font-size
 /***************************************/
 /* HEADER */
 /***************************************/
-.nav_logo {
-	font-size: 2.4rem;
-	font-weight: 600;
-	font-family: "Inter", sans-serif;
-	text-decoration: none;
-	color: var(--white-text-color);
-}
-.search-form {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-}
-.search-form__input {
-	color: var(--dark-text-color);
-	height: 100%;
-	width: 24rem;
-	padding-left: 1rem;
-	border: none;
-}
 
-/***************************************/
-/* BUILDER SECTION */
-/***************************************/
-/*! build-maker  */
-.build-maker {
-	display: grid;
-
-	grid-template-columns: 1fr;
-	grid-template-rows: auto 1fr auto;
-	height: 100vh;
-}
-.build-maker li {
-	list-style-type: none;
-}
 .build-maker__nav {
 	background-color: var(--dark-color);
 	grid-column: 1 / -1;
 	padding: 2rem;
 	display: flex;
 	justify-content: space-between;
+
+	.nav_logo {
+		font-size: 2.4rem;
+		font-weight: 600;
+		font-family: "Inter", sans-serif;
+		text-decoration: none;
+		color: var(--white-text-color);
+	}
+	.search-form {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	.search-form__input {
+		color: var(--dark-text-color);
+		height: 100%;
+		width: 24rem;
+		padding-left: 1rem;
+		border: none;
+	}
 }
 
-/* ship selector */
-.ship-selector__panel {
-	position: absolute;
-	left: -50px;
-	top: 50%;
-	transform: rotate(270deg);
+/***************************************/
+/* BUILDER SECTION */
+/***************************************/
+.build-maker {
+	display: grid;
+
+	grid-template-columns: 1fr;
+	grid-template-rows: auto 1fr auto;
+	height: 100vh;
+
+	li {
+		list-style-type: none;
+	}
 }
 
 /* work-area */
@@ -109,62 +115,69 @@ font-size
 	z-index: 1;
 
 	background-color: var(--dark-color);
-}
-/* box */
-.box {
-	padding: 2rem;
-	position: relative;
-}
-/* .box__top {
-  border: 1px solid green;
-}
-.box__middle {
-  border: 1px solid blue;
-}
-.box__bottom {
-  border: 1px solid red;
-} */
-/* specific */
 
-.box__top-left {
-	grid-row: 1 / 2;
-	grid-column: 1 / 2;
-}
+	/* box */
+	.box {
+		padding: 2rem;
+		position: relative;
+	}
+	/* 	.box__top {
+  	border: 1px solid green;
+	} */
+	/* .box__middle {
+		border: 1px solid blue;
+	} */
+	/* .box__bottom {
+		border: 1px solid red;
+	} */
 
-.box__middle-left {
-	grid-column: 1 / 2;
-	grid-row: 2 / 3;
-}
-.box__bottom-left {
-	grid-column: 1 / 2;
-	grid-row: 3 / -1;
-}
-/* center */
-.box__top-center {
-	grid-row: 1 / 2;
-	grid-column: 2 / 3;
-}
-.box__middle-center {
-	grid-row: 2 / -1;
-	grid-column: 2 / 3;
-}
+	.box__top-left {
+		grid-row: 1 / 2;
+		grid-column: 1 / 2;
+	}
 
-.box__full-right {
-	/* border: 1px solid yellow; */
-	grid-column: 3 / -1;
-	grid-row: 1 / -1;
-}
+	.box__middle-left {
+		grid-column: 1 / 2;
+		grid-row: 2 / 3;
+	}
+	.box__bottom-left {
+		grid-column: 1 / 2;
+		grid-row: 3 / -1;
+	}
+	/* center */
+	.box__top-center {
+		grid-row: 1 / 2;
+		grid-column: 2 / 3;
+	}
+	.box__middle-center {
+		grid-row: 2 / -1;
+		grid-column: 2 / 3;
+	}
 
-/* content in work area */
-.box__top-left__CR-graph {
-	background-color: var(--accent-color);
-	width: 16rem;
-	height: 2rem;
-}
+	.box__full-right {
+		/* border: 1px solid yellow; */
+		grid-column: 3 / -1;
+		grid-row: 1 / -1;
+	}
 
-/* Content Area Right */
-.box__full-right__top-content-group ul {
-	margin-bottom: 1.6rem;
+	/* content in work area */
+	.box__top-left__CR-graph {
+		background-color: var(--accent-color);
+		width: 16rem;
+		height: 2rem;
+	}
+
+	/* Content Area Right */
+	.box__full-right__top-content-group ul {
+		margin-bottom: 1.6rem;
+	}
+
+	/*  Ship build Area */
+	.box__middle-center {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 }
 
 /* ordinance grahp */
@@ -173,59 +186,55 @@ font-size
 	width: 75%;
 	margin-bottom: 2rem;
 	margin-left: auto;
+
+	.ordinance-graph__title {
+		margin-bottom: 0.5rem;
+	}
+	.ordinance-graph__body {
+		background-color: var(--main-color);
+		padding: 1rem 1rem;
+	}
+	.ordinance-graph__points {
+		display: flex;
+		justify-content: center;
+		text-align: center;
+		gap: 2rem;
+		color: var(--secondary-color);
+	}
+	.ordinance-graph span {
+		font-size: 1.6rem;
+	}
 }
-.ordinance-graph__title {
-	margin-bottom: 0.5rem;
-}
-.ordinance-graph__body {
-	background-color: var(--main-color);
-	padding: 1rem 1rem;
-}
-.ordinance-graph__points {
-	display: flex;
-	justify-content: center;
-	text-align: center;
-	gap: 2rem;
-	color: var(--secondary-color);
-}
-.ordinance-graph span {
-	font-size: 1.6rem;
-}
+
 /* speed-armor-hull */
 .box__middle-right__ship-capacitors,
 .box__middle-right__ship-vents {
 	display: flex;
 }
-/* Ship Capacitors */
-/* .ship-capacitors__edit,
-.ship-vents__edit {
-  align-items: center;
-} */
-/* Vents */
-
 /* Hull mods */
 .hullmods {
 	text-align: right;
-}
-.hullmods__header {
-	margin-bottom: 1.5rem;
-}
-.hullmods__container {
-	/* margin-bottom: 2rem; */
-	display: flex;
-	/* padding: 2rem 0 2rem 0; */
-	width: max-content;
-	flex-direction: column;
-	margin-left: auto;
-	gap: 2rem;
-}
-.hullmods__container__build-in-hullmods {
-	background-color: rgba(0, 0, 0, 0.1);
-	border: 1px solid rgba(0, 0, 0, 0.5);
-}
-.build-in-hullmods__hullmod {
-	/* border-bottom: 1px solid rgba(0, 0, 0, 0.5); */
-	padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+
+	.hullmods__header {
+		margin-bottom: 1.5rem;
+	}
+	.hullmods__container {
+		/* margin-bottom: 2rem; */
+		display: flex;
+		/* padding: 2rem 0 2rem 0; */
+		width: max-content;
+		flex-direction: column;
+		margin-left: auto;
+		gap: 2rem;
+	}
+	.hullmods__container__build-in-hullmods {
+		background-color: rgba(0, 0, 0, 0.1);
+		border: 1px solid rgba(0, 0, 0, 0.5);
+	}
+	.build-in-hullmods__hullmod {
+		/* border-bottom: 1px solid rgba(0, 0, 0, 0.5); */
+		padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+	}
 }
 
 /* Pilot and Fighter Bay */
@@ -236,23 +245,23 @@ font-size
 }
 .box__middle-left__pilot {
 	margin-bottom: 1rem;
-}
-.small-image-box__icon {
-	display: block;
 
-	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: contain;
+	.small-image-box__icon {
+		display: block;
+
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: contain;
+	}
+	/* Pilot */
+	.pilot-icon {
+		width: 100%;
+		height: 100%;
+		background-image: url("../starsectorData/graphics/portraits/portrait_generic_grayscale.png");
+	}
 }
-/* Pilot */
-.pilot-icon {
-	width: 100%;
-	height: 100%;
-	background-image: url("../starsectorData/graphics/portraits/portrait_generic_grayscale.png");
-}
+
 /* Fighter Bays */
-.box__middle-left__fighter-bays {
-}
 .fighter-bays--wrapper {
 	display: grid;
 	padding: 0;
@@ -260,27 +269,23 @@ font-size
 	grid-auto-flow: row;
 	grid-auto-rows: auto;
 	row-gap: 1.6rem;
-}
-.fighter-bay__container {
-	/* margin-bottom: 1rem; */
-}
-.fighter-bay {
-}
-.fighter-bays__header h5 {
-	margin-bottom: 1rem;
-}
-.fighter-bay__icon {
-	height: 100%;
-	width: 100%;
-	display: block;
-	background-image: url("./starsectorData/graphics/ships/longbow_intg.png"), url("./starsectorData/graphics/ships/longbow_intg.png");
 
-	background-position: 25% 50%, 75% 50%;
-	background-repeat: no-repeat, no-repeat;
-	background-size: 30%, 30%;
-}
-.fighter-bay__ordinance-points {
-	text-align: right;
+	.fighter-bays__header h5 {
+		margin-bottom: 1rem;
+	}
+	.fighter-bay__icon {
+		height: 100%;
+		width: 100%;
+		display: block;
+		background-image: url("./starsectorData/graphics/ships/longbow_intg.png"), url("./starsectorData/graphics/ships/longbow_intg.png");
+
+		background-position: 25% 50%, 75% 50%;
+		background-repeat: no-repeat, no-repeat;
+		background-size: 30%, 30%;
+	}
+	.fighter-bay__ordinance-points {
+		text-align: right;
+	}
 }
 
 /* Bottom Left */
@@ -299,125 +304,126 @@ font-size
 	height: 100%;
 	overflow-y: scroll;
 	overflow-x: hidden;
-}
 
-.pop-up--wrapper {
-	min-height: 100%;
-	background-color: rgba(0, 0, 0, 0.9);
-}
-/* Table Styles */
-.pop-up__hullmod-menu--open {
-	background-color: rgba(0, 0, 0, 0.9);
-}
-.hullmod-menu__header {
-}
-.hullmod-menu__header th {
-}
-.hullmod-menu__header__filter {
-}
-.hullmod-menu__header__filter th {
-	padding: 1rem 1rem;
-	font-size: 1rem;
-	background-color: rgba(0, 0, 0, 0.55);
-}
-.hullmod-menu__header__button {
-	background-color: transparent;
-}
-.hullmod-menu__header__button--active {
-	background-color: var(--main-color);
+	.pop-up--wrapper {
+		min-height: 100%;
+		background-color: rgba(0, 0, 0, 0.9);
+	}
+	/* Table Styles */
+	.pop-up__hullmod-menu--open {
+		background-color: rgba(0, 0, 0, 0.9);
+	}
+	/* hullmod-menu__body */
+	.hullmod-menu__header {
+		th {
+		}
+		.hullmod-menu__header__filter {
+			th {
+				padding: 1rem 1rem;
+				font-size: 1rem;
+				background-color: rgba(0, 0, 0, 0.55);
+			}
+		}
+		.hullmod-menu__header__button {
+			background-color: transparent;
+		}
+		.hullmod-menu__header__button--active {
+			background-color: var(--main-color);
 
-	font-weight: 800;
-	color: var(--white-text-color);
-}
-.hullmod-menu__header_names {
-	position: sticky;
-	top: 0;
-	z-index: 101;
-	font-size: 1rem;
-}
-.hullmod-menu__header_names th {
-	background-color: black;
-	border: 1px solid #343a40;
+			font-weight: 800;
+			color: var(--white-text-color);
+		}
+		.hullmod-menu__header_names {
+			position: sticky;
+			top: 0;
+			z-index: 101;
+			font-size: 1rem;
 
-	padding: 0.5rem 1rem;
-}
-.hullmod-menu__body {
-}
-td {
-	text-align: left;
-	padding: 1rem 1rem;
-}
-tbody tr:nth-child(odd) {
-	background-color: rgba(255, 255, 255, 0.05);
-}
+			th {
+				background-color: black;
+				border: 1px solid #343a40;
 
-tbody tr:nth-child(even) {
-	background-color: rgba(255, 255, 255, 0.025);
-}
+				padding: 0.5rem 1rem;
+			}
+		}
+	}
 
-.hullmod__add-hull-button {
-	text-align: center;
-}
-.hullmod-menu__hullmod,
-.hullmod-menu__hullmod--unavailable {
-	font-size: 1rem;
-}
-.hullmod-menu__body .hullmod-menu__hullmod--unavailable {
-	background-color: rgba(201, 42, 42, 0.3);
-}
-.hullmod-menu__body .hullmod-menu__hullmod--unavailable td {
-	border: none;
-}
-.hullmod-menu__hullmod--unavailable .hullmod__title,
-.hullmod-menu__hullmod--unavailable .hullmod__desc,
-.hullmod-menu__hullmod--unavailable .highlight-text,
-.hullmod-menu__hullmod--unavailable .hullmod__tags .hullmod__tag,
-.hullmod-menu__hullmod--unavailable .hullmod__cost,
-.hullmod-menu__hullmod--unavailable .hullmod__unavailable-reason-text {
-	color: #fff5f5;
-}
-.hullmod-menu__hullmod--unavailable .highlight-text {
-	color: #e03131;
-}
-/*  */
-.hullmod__desc {
-	overflow-y: auto; /* Vertical scrollbar when content overflows */
-	overflow-x: hidden; /* Hide horizontal scrollbar */
-}
-.hullmod__desc .hullmod__desc__show-more {
-	/* margin-top: 0.5rem; */
-	background-color: transparent;
-	padding: 0;
-	display: inline;
-	color: var(--white-text-color);
-	font-weight: 500;
-	text-transform: none;
-	font-size: 1rem;
-}
-.hullmod__desc .hullmod__desc__show-more:hover {
-	color: var(--main-lighter-color);
-}
-.hullmod__tags {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-	gap: 0.75rem;
-	text-align: center;
-}
-.hullmod__tag {
-	/* font-size: 1rem; */
-	text-transform: capitalize;
-}
-.hullmod__cost {
-	text-align: center;
-}
+	.hullmod-menu__body {
+		td {
+			text-align: left;
+			padding: 1rem 1rem;
+		}
+		tbody tr:nth-child(odd) {
+			background-color: rgba(255, 255, 255, 0.05);
+		}
 
-/*  Ship build Area */
-.box__middle-center {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+		tbody tr:nth-child(even) {
+			background-color: rgba(255, 255, 255, 0.025);
+		}
+
+		.hullmod__add-hull-button {
+			text-align: center;
+		}
+		.hullmod-menu__hullmod,
+		.hullmod-menu__hullmod--unavailable {
+			font-size: 1rem;
+		}
+		.hullmod-menu__body .hullmod-menu__hullmod--unavailable {
+			background-color: rgba(201, 42, 42, 0.3);
+		}
+		.hullmod-menu__body .hullmod-menu__hullmod--unavailable td {
+			border: none;
+		}
+		.hullmod-menu__hullmod--unavailable {
+			.hullmod__title,
+			.hullmod__desc,
+			.highlight-text,
+			.hullmod__tags .hullmod__tag,
+			.hullmod__cost,
+			.hullmod__unavailable-reason-text {
+				color: #fff5f5;
+			}
+			.highlight-text {
+				color: #e03131;
+			}
+		}
+
+		/*  */
+		.hullmod__desc {
+			overflow-y: auto; /* Vertical scrollbar when content overflows */
+			overflow-x: hidden; /* Hide horizontal scrollbar */
+
+			.hullmod__desc__show-more {
+				/* margin-top: 0.5rem; */
+				background-color: transparent;
+				padding: 0;
+				display: inline;
+				color: var(--white-text-color);
+				font-weight: 500;
+				text-transform: none;
+				font-size: 1rem;
+			}
+			.hullmod__desc__show-more:hover {
+				color: var(--main-lighter-color);
+			}
+		}
+
+		.hullmod__tags {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+			gap: 0.75rem;
+			text-align: center;
+		}
+		.hullmod__tag {
+			/* font-size: 1rem; */
+			text-transform: capitalize;
+		}
+		.hullmod__cost {
+			text-align: center;
+		}
+	}
 }
 
 .ship-sprite {
@@ -428,141 +434,251 @@ tbody tr:nth-child(even) {
 .weapon-slots {
 	position: relative;
 	z-index: 2;
+
+	.weapon-sprite-parent {
+		.weapon-sprite--gun {
+			z-index: 200;
+		}
+		.weapon-sprite--base {
+			z-index: 201;
+		}
+		.weapon-sprite--gun,
+		.weapon-sprite--base {
+			position: absolute;
+			top: 55%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			transition: all 0.5s;
+		}
+	}
+
+	.weapon-slot {
+		position: absolute;
+		z-index: 3;
+		content: "";
+		border: none;
+
+		transform: translate(-50%, -50%);
+	}
 }
-.weapon-slot {
+
+.weapon-arc {
 	position: absolute;
-	z-index: 3;
-	content: "";
-	border: none;
+	top: 0;
+	left: 0;
+	transform: translate(-50%, -50%) rotate(var(--weapon-angle, 0deg));
 
-	transform: translate(-50%, -50%);
+	z-index: -100;
+	pointer-events: none;
+	border-radius: 50%;
 }
-.weapon-background-sprite {
-	border-width: 0.2rem;
-	/* 0.16 */
-	border-style: solid;
+.weapon-arc::before {
+	transform: translate(-50%, -50%) rotate(var(--before-rotate, 0deg));
+}
+.weapon-arc::after {
+	transform: translate(-50%, -50%) rotate(var(--after-rotate, 0deg));
+}
+.weapon-arc::before,
+.weapon-arc::after {
+	background: linear-gradient(to bottom, transparent 15%, rgba(255, 255, 255, 0.75) 35%, transparent 45%);
 
+	position: absolute;
+	top: 0%;
+	left: 50%;
+	/* mask-image: linear-gradient(to top, transparent 56%, black 50%); */
+
+	height: 30rem;
+	width: 0.2rem;
+	transition: all 0.2s;
 	content: "";
+}
+.weapon-arc__sprite {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
-}
+	transform: translate(-50%, -50%) rotate(var(--arc-angle));
 
-/* color */
-.weapon-background-sprite__type--ballistic {
-	border-color: var(--ballistic-slot);
-}
-.weapon-background-sprite__type--energy {
-	border-color: var(--energy-slot);
-}
-.weapon-background-sprite__type--missile {
-	border-color: var(--missile-slot);
-}
+	border-radius: 50%;
+	/* background-color: red; */
+	/* mask-image: conic-gradient(from 0deg, transparent 120deg, black 120deg); */
 
-.weapon-background-sprite__type--hybrid {
-	border-color: var(--hydrid-slot);
+	/* border: 1px solid red; */
 }
-.weapon-background-sprite__type--composite {
-	border-color: var(--composite-slot);
-}
-.weapon-background-sprite__type--synergy {
-	border-color: var(--synergy-slot);
-}
-.weapon-background-sprite__type--universal {
-	border-color: var(--universal-slot);
-}
-/* opacity */
-.weapon-background-sprite__opacity--full {
-	opacity: 0.85;
-}
-.weapon-background-sprite__opacity--medium {
-	opacity: 0.65;
-}
-.weapon-background-sprite__opacity--light {
-	opacity: 0.45;
-}
-/* size */
-.weapon-background-sprite__size--small {
-	height: 1.6rem;
-	width: 1.6rem;
-}
-.weapon-background-sprite__size--medium {
-	height: 2.6rem;
-	width: 2.6rem;
-}
-.weapon-background-sprite__size--large {
-	height: 3.6rem;
-	width: 3.6rem;
-}
-/* weapon icon */
-.weapon__icon .weapon-sprite--gun,
-.weapon__icon .weapon-sprite--base {
+.weapon-arc__sprite::after {
+	mask-image: conic-gradient(from var(--before-rotate), black var(--arc-mask-color), transparent var(--arc-mask-transparent));
+
 	position: absolute;
-	top: 55%;
+	top: 0;
 	left: 50%;
-
 	transform: translate(-50%, -50%);
-}
-
-.weapon-background-sprite__opacity--full,
-.weapon-background-sprite__opacity--medium,
-.weapon-background-sprite__opacity--light,
-.weapon-background-sprite__size--small,
-.weapon-background-sprite__size--medium,
-.weapon-background-sprite__size--large {
 	transition: all 0.2s;
-}
-/* Different style by Type */
-.weapon__type--composite .weapon-background-sprite:nth-of-type(2) {
-	width: 1.75rem;
-	height: 1.75rem;
-}
-.weapon__type--composite:hover .weapon-background-sprite:nth-of-type(2) {
-	width: 3rem;
-	height: 3rem;
-}
-.weapon__type--missile .weapon-background-sprite,
-.weapon__type--synergy .weapon-background-sprite:nth-of-type(2),
-.weapon__type--composite .weapon-background-sprite:nth-of-type(2) {
-	transform: translate(-50%, -50%) rotate(45deg);
-}
-.weapon__type--energy .weapon-background-sprite,
-.weapon__type--hybrid .weapon-background-sprite:nth-of-type(1),
-.weapon__type--synergy .weapon-background-sprite:nth-of-type(1) {
+
+	content: "";
+	height: 10rem;
+	width: 10rem;
+
+	border: 0.2rem solid;
+	border-color: rgba(255, 255, 255, 0.5);
 	border-radius: 50%;
 }
-.weapon__type--hybrid .weapon-background-sprite:nth-of-type(1) {
-	width: 2rem;
-	height: 2rem;
+.weapon-arc__sprite::before {
+	/* mask-image: conic-gradient(from var(--before-rotate), black var(--arc-mask-color), transparent var(--arc-mask-transparent)); */
 }
+.weapon-arc__sprite::after,
+.weapon-arc__sprite::before {
+}
+/* Different style by Type */
+.weapon-background-sprite-parent {
+	.weapon-background-sprite {
+		border-width: 0.2rem;
+		/* 0.16 */
+		border-style: solid;
+
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	/* color */
+	.weapon-background-sprite__type--ballistic {
+		border-color: var(--ballistic-slot);
+	}
+	.weapon-background-sprite__type--energy {
+		border-color: var(--energy-slot);
+	}
+	.weapon-background-sprite__type--missile {
+		border-color: var(--missile-slot);
+	}
+
+	.weapon-background-sprite__type--hybrid {
+		border-color: var(--hydrid-slot);
+	}
+	.weapon-background-sprite__type--composite {
+		border-color: var(--composite-slot);
+	}
+	.weapon-background-sprite__type--synergy {
+		border-color: var(--synergy-slot);
+	}
+	.weapon-background-sprite__type--universal {
+		border-color: var(--universal-slot);
+	}
+	/* opacity */
+	.weapon-background-sprite__opacity--full {
+		opacity: 0.65;
+	}
+	.weapon-background-sprite__opacity--medium {
+		opacity: 0.5;
+	}
+	.weapon-background-sprite__opacity--light {
+		opacity: 0.45;
+	}
+	/* size */
+	.weapon-background-sprite__size--small {
+		height: 1.6rem;
+		width: 1.6rem;
+	}
+	.weapon-background-sprite__size--medium {
+		height: 2.6rem;
+		width: 2.6rem;
+	}
+	.weapon-background-sprite__size--large {
+		height: 3.6rem;
+		width: 3.6rem;
+	}
+
+	.weapon-background-sprite__opacity--full,
+	.weapon-background-sprite__opacity--medium,
+	.weapon-background-sprite__opacity--light,
+	.weapon-background-sprite__size--small,
+	.weapon-background-sprite__size--medium,
+	.weapon-background-sprite__size--large {
+		transition: all 0.2s;
+	}
+
+	.weapon-background-sprite__type--missile,
+	.weapon-background-sprite__type--synergy:nth-of-type(2),
+	.weapon-background-sprite__type--composite:nth-of-type(2) {
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+	.weapon-background-sprite__type--energy,
+	.weapon-background-sprite__type--hybrid:nth-of-type(1),
+	.weapon-background-sprite__type--synergy:nth-of-type(1) {
+		border-radius: 50%;
+	}
+
+	.weapon-background-sprite__type--hybrid .weapon-background-sprite:nth-of-type(1) {
+		width: 2rem;
+		height: 2rem;
+	}
+
+	.weapon__type--composite .weapon-background-sprite:nth-of-type(2) {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+	.weapon__type--composite:hover .weapon-background-sprite:nth-of-type(2) {
+		width: 3rem;
+		height: 3rem;
+	}
+}
+
 /* hover size */
 .weapon-slot:hover {
 	background-color: transparent;
 	z-index: 100;
-}
-.weapon-slot:hover .weapon-background-sprite {
-	border-width: 0.3rem;
-}
-.weapon-slot:hover .weapon-background-sprite__size--small {
-	height: 3rem;
-	width: 3rem;
-}
-.weapon-slot:hover .weapon-background-sprite__size--medium {
-	height: 4.5rem;
-	width: 4.5rem;
-}
-.weapon-slot:hover .weapon-background-sprite__size--large {
-	height: 6rem;
-	width: 6rem;
-}
-/* opacity hover */
-.weapon-slot:hover .weapon-background-sprite__opacity--full {
-	opacity: 1;
-}
-.weapon-slot:hover .weapon-background-sprite__opacity--medium {
-	opacity: 0.75;
-}
-.weapon-slot:hover .weapon-background-sprite__opacity--light {
-	opacity: 0.5;
+
+	.weapon-background-sprite {
+		border-width: 0.3rem;
+	}
+	.weapon-background-sprite__size--small {
+		height: 3rem;
+		width: 3rem;
+	}
+	.weapon-background-sprite__size--medium {
+		height: 4.5rem;
+		width: 4.5rem;
+	}
+	.weapon-background-sprite__size--large {
+		height: 6rem;
+		width: 6rem;
+	}
+	/* opacity hover */
+	.weapon-background-sprite__opacity--full {
+		opacity: 1;
+	}
+	.weapon-background-sprite__opacity--medium {
+		opacity: 0.75;
+	}
+	.weapon-background-sprite__opacity--light {
+		opacity: 0.5;
+	}
+	.weapon-sprite--gun,
+	.weapon-sprite--base {
+		transform: scale(1.2) translate(-42%, -48%);
+		transition: all 0.45s;
+	}
+	/* .weapon-sprite--gun,
+	.weapon-sprite--base {
+		position: absolute;
+		top: 55%;
+		left: 50%;
+
+		transform: translate(-50%, -50%), scale(1.2);
+		transition: all 0.2;
+	} */
+
+	.weapon-arc::before,
+	.weapon-arc::after {
+		height: 50rem;
+		transition: all 0.2s;
+	}
+	.weapon-arc__sprite {
+	}
+	.weapon-arc__sprite::after,
+	.weapon-arc__sprite::before {
+		height: 14rem;
+		width: 14rem;
+		transition: all 0.2s;
+	}
 }

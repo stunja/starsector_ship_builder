@@ -48,3 +48,6 @@ body {
 	color: var(--white-text-color);
 	overflow: hidden;
 }
+html {
+	font-size: 62.5%;
+}
