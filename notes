@@ -6,14 +6,29 @@
   should be unchangable. For example Hybrid should stay Hubrid.
   - to Solve I need to add purposeString, to specify the purpose of the background sprite element -->
 
+- No, too hard. Rockets are not in packs, but as separate enteties
+<!-- - I need to add rocket sprite to rocket turret base -->
+
+<!-- - Correctly rotate Weapons. -->
+
 2. Weapon Pop Up
 
 <!-- - Filter doesnt work. Should Filter by category.
   When I click on the category it eventListener Dont work -->
 <!-- TODO I removed the filters -->
 
-- Active Weapon Should Be fixed at the top of the weapon selection screen.
+<!-- - Active Weapon Should Be fixed at the top of the weapon selection screen. -->
+<!-- - Issue with Active class, when clicking on sorting button -->
+
 - Tons of visual bugs
+
+3. Weapon Pop Up Hover
+
+<!-- - Fix Alignment of weapon Icon -->
+<!-- - Fix Sprite Icons -->
+<!-- - add icon for damage type -->
+
+<!-- - Issue with data. For example Beam weapons -->
 
 3. Hullmod Menu Pop Up
 
@@ -21,8 +36,9 @@
 
 ## Shit to Do
 
-- Weapon Slot Arcs
-  I need to make two lines, vertical, and a sphere. So I can make a single border on the top part of the arch
+<!-- - Weapon Slot Arcs -->
+  <!-- I need to make two lines, vertical, and a sphere. So I can make a single border on the top part of the arch -->
+
 - Weapon Slot With Weapon, when hovering display basic info like name / type / range.
 
 - Smods Menu
@@ -30,7 +46,7 @@
 
 ### Errors
 
-- 1051 model.js - Error processing weapon amsrm: TypeError: NetworkError when attempting to fetch resource. -
+<!-- - 1051 model.js - Error processing weapon amsrm: TypeError: NetworkError when attempting to fetch resource. - -->
 
 - Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content.
 
