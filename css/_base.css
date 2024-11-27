@@ -1,0 +1,53 @@
+:root {
+	/* --main-color: #1864ab; */
+	--main-color: #1c7ed6;
+	--main-darker-color: #1971c1;
+	--main-lighter-color: #338bda;
+
+	--secondary-color: #fcc419;
+	--accent-color: #e74c3c;
+	--accent-darker-color: #a2352a;
+	--accent-lighter-color: #ee8277;
+
+	/* --white-text-color: #e7f5ff; */
+	/* --white-text-color: #f8f9fa; */
+	--white-text-color: #e8f2fb;
+
+	--dark-text-color: #2c3e50;
+	--main-grey-color: #495057;
+	--dark-color: rgb(8, 26, 30);
+	--cyan-color: rgb(31, 58, 65);
+
+	--cyan-alt-color: #343a40;
+	/*  */
+	/* --ballistic-slot: rgba(255, 192, 120, 0.5); */
+	--ballistic-slot: rgba(218, 187, 27, 1);
+	--energy-slot: rgb(27, 148, 255);
+	--high-explosive-slot: rgba(201, 42, 42, 0.5);
+
+	--synergy-slot: rgba(0, 184, 144, 1);
+	--hydrid-slot: rgba(255, 136, 0, 1);
+	--missile-slot: rgba(68, 204, 68, 1);
+	--composite-slot: rgba(170, 221, 68, 1);
+	--universal-slot: rgba(170, 170, 170, 1);
+	--fragmentation-color: rgba(255, 224, 102, 0.5);
+}
+* {
+	box-sizing: content-box;
+	margin: 0;
+	padding: 0;
+	/* font-family: "Nunito", serif; */
+	font-family: "Inter", sans-serif;
+	text-decoration: none;
+}
+body {
+	height: 100%;
+	margin: 0;
+
+	background-color: var(--dark-color);
+	color: var(--white-text-color);
+	overflow: hidden;
+}
+html {
+	font-size: 62.5%;
+}

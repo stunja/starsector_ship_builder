@@ -1,0 +1,73 @@
+## Issues to solve
+
+1. Builder Center
+
+<!-- - when clicking on a weapon, to add to the ship, it overwrites the weapon slot class/type.
+  should be unchangable. For example Hybrid should stay Hubrid.
+  - to Solve I need to add purposeString, to specify the purpose of the background sprite element -->
+
+- No, too hard. Rockets are not in packs, but as separate enteties
+<!-- - I need to add rocket sprite to rocket turret base -->
+
+<!-- - Correctly rotate Weapons. -->
+
+2. Weapon Pop Up
+
+<!-- - Filter doesnt work. Should Filter by category.
+  When I click on the category it eventListener Dont work -->
+<!-- TODO I removed the filters -->
+
+<!-- - Active Weapon Should Be fixed at the top of the weapon selection screen. -->
+<!-- - Issue with Active class, when clicking on sorting button -->
+
+- Tons of visual bugs
+
+3. Weapon Pop Up Hover
+
+<!-- - Fix Alignment of weapon Icon -->
+<!-- - Fix Sprite Icons -->
+<!-- - add icon for damage type -->
+
+<!-- - Issue with data. For example Beam weapons -->
+
+3. Hullmod Menu Pop Up
+
+- I dont remember, but something was bugged there with hullmods. Either incorrect hullmod features.
+
+## Shit to Do
+
+<!-- - Weapon Slot Arcs -->
+  <!-- I need to make two lines, vertical, and a sphere. So I can make a single border on the top part of the arch -->
+
+- Weapon Slot With Weapon, when hovering display basic info like name / type / range.
+
+- Smods Menu
+- HullMod Menu close if clicked outside of the hullMod pop up
+
+### Errors
+
+<!-- - 1051 model.js - Error processing weapon amsrm: TypeError: NetworkError when attempting to fetch resource. - -->
+
+- Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content.
+
+---
+
+## Weapon Slot Types
+
+- Mount Types
+- Name Icon Supported weapon types Support smaller weapons
+- Ballistic Yellow Square Ballistic Yes
+- Energy Blue Circle Energy Yes
+- Missile Green Diamond Missile Yes
+- Hybrid Orange Square-in-Circle Ballistic / Energy Only Hybrid weapons
+- Composite Lime Diamond-in-Square Ballistic / Missile Only Composite weapons
+- Synergy Turquoise Diamond-in-Circle Energy / Missile Only Synergy weapons
+- Universal Grey Diamond-in-Square-in-Circle All Only Universal weapons
+
+- Medium & Large mounts can accommodate a weapon one size smaller, but only if it has the same type as the mount.
+- For example, a medium ballistic mount can fit a small ballistic weapon, and a medium hybrid mount can fit a small hybrid weapon (see below), but a medium hybrid mount cannot fit a small ballistic or energy weapon.
+- Certain weapons have a combination weapon type (Hybrid, Composite or Synergy). Such weapons can go in a matching combination mount, a mount matching one of the two underlying basic types, or a Universal mount.
+
+- Hybrid weapons can fit in Ballistic, Energy, Hybrid or Universal mounts.
+- Composite weapons can fit in Ballistic, Missile, Composite or Universal mounts.
+- Synergy weapons can fit in Energy, Missile, Synergy or Universal mounts.

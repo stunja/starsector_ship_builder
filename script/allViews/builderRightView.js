@@ -1,16 +1,120 @@
 import View from "./view.js";
-
+import { calculateHullModCost } from "../helperFunction.js";
 class BuilderRightView extends View {
-  #data;
-  #parentElement = document.querySelector(".box__full-right");
-  shieldDataRender = (ship) => {
-    const shieldFluxSec = ship.flux_dissipation * ship.shield_upkeep;
+	#data;
+	// parents probably don`t work due to async
+	#parentElement = document.querySelector(".box__full-right");
+	ordinancePointsRenderTextClass = "ordinance-graph__points__current-points";
 
-    return ` 
-        <ul class="flex-flexEnd-gap box__middle-right__cloak-flux">
+	constructor() {
+		super();
+		this.speedArmorHullParent = "box__top-right__speed-armor-hull";
+		this.shipCapacitorParent = "box__middle-right__ship-capacitors";
+		this.shipVentAndDissipationParent = "box__middle-right__ship-vents";
+		this.ordinancePointsParent = "ordinance-graph";
+		this.phaseDataParent = "box__middle-right__cloak-flux";
+		this.shieldDataParent = "box__middle-right__shield";
+		this.weaponFluxParent = "box__middle-right__weaponFlux";
+	}
+
+	ordinancePointsRender() {
+		const { currentShipBuild } = this.#data;
+		const markup = `
+           <li>
+             <h5 class="ordinance-graph__title">
+               [Current / Total] Ordinance Points
+             </h5>
+           </li>
+           <li class="ordinance-graph__body">
+             <div class="ordinance-graph__points">
+               <h5 class="${this.ordinancePointsRenderTextClass}">${currentShipBuild.currentOrdinancePoints}</h5>
+               <span> / </span>
+               <h5 class="ordinance-graph__points__max-points">${currentShipBuild.maxOrdinancePoints}</h5>
+             </div>
+           </li>
+          `;
+		return [markup, `.${this.ordinancePointsParent}`];
+	}
+	speedArmorHullRender() {
+		const { currentShipBuild } = this.#data;
+		const markup = `
+            <li class="speed-armor-hull__speed">
+              <h5>Top Speed</h5>
+              <p>${currentShipBuild.currentSpeed}</p>
+            </li>
+            <li class="speed-armor-hull__armor">
+              <h5 class="speed-armor-hull__armor-title">Armor</h5>
+              <p class="speed-armor-hull__armor-value">${currentShipBuild.currentArmor}</p>
+            </li>
+            <li class="speed-armor-hull__hull">
+              <h5>Hull</h5>
+              <p>${currentShipBuild.currentHitPoints}</p>
+            </li>
+          `;
+		return [markup, `.${this.speedArmorHullParent}`];
+	}
+	shipCapacitorsRender() {
+		const { currentShipBuild } = this.#data;
+		const markup = `
+          <li class="flex-flexEnd-gap ship-capacitors__edit">
+            <h5 class="ship-capacitors__edit__title">Capacitors</h5>
+            <button class="button button-circle unselectable ship-capacitors__edit--minus" data-button-value="-1">-</button>
+            <h5 class="ship-capacitors__edit__value">${currentShipBuild.activeCapacitors}</h5>
+            <button class="button button-circle unselectable ship-capacitors__edit--plus" data-button-value="+1">+</button>
+          </li>
+          <li class="ship-capacitors__flux-capacity">
+            <h5 class="flux-capacity__title">Flux Capacity</h5>
+            <p class="flux-capacity__value">${currentShipBuild.currentFluxCapacity}</p>
+          </li>
+          `;
+
+		return [markup, `.${this.shipCapacitorParent}`];
+	}
+	ventsAndDissipationRender() {
+		const { currentShipBuild } = this.#data;
+		const markup = `
+              <li class="flex-flexEnd-gap ship-vents__edit">
+                   <h5>Vents</h5>
+                   <button class="button button-circle unselectable ship-vents__edit--minus" data-button-value="-1">-</button>
+                   <h5 class="ship-vents__edit__value">${currentShipBuild.activeVents}</h5>
+                   <button class="button button-circle unselectable ship-vents__edit--plus" data-button-value="+1">+</button>
+              </li>
+              <li class="ship-vents__flux-dissipation">
+                   <h5>Flux Dissipation</h5>
+                   <p class="ship-vents__flux-dissipation__value">${currentShipBuild.currentFluxDissipation}</p>
+              </li>
+          `;
+
+		return [markup, `.${this.shipVentAndDissipationParent}`];
+	}
+	phaseDataRender() {
+		const { currentShipBuild } = this.#data;
+		const markup = `
+              <li class="cloak-flux__per-sec">
+                <h5>Cloak Flux / Sec</h5>
+                <p>320</p>
+              </li>
+              <li class="cloak-flux__activation">
+                  <h5>Cloak Activation</h5>
+                  <p>0</p>
+              </li>
+          `;
+
+		return [markup, `.${this.phaseDataParent}`];
+	}
+	shieldDataRender() {
+		const { currentShipBuild } = this.#data;
+		const shieldFluxSec = currentShipBuild._baseFluxDissipation * currentShipBuild.currentShieldUpkeep;
+		// currentShipBuild.currentShipType === "shieldShip"
+		//   ? currentShipBuild._baseFluxDissipation *
+		//     currentShipBuild.currentShieldUpkeep
+		//   : "---";
+		//
+
+		const markup = `
             <li class="shield_arc">
                 <h5>Shield Arc</h5>
-                <p>${ship.shield_arc}</p>
+                <p>${currentShipBuild.currentShieldArc}</p>
             </li>
             <li class="shield_flux-per-sec">
                 <h5>Shield Flux / Sec</h5>
@@ -18,177 +122,233 @@ class BuilderRightView extends View {
             </li>
             <li class="shield_flux-per-dmg">
                 <h5>Shield Flux / Dmg</h5>
-                <p>${ship.shield_efficiency}</p>
+                <p>${currentShipBuild.currentShieldEfficiency}</p>
             </li>
-        </ul>`;
-  };
-  phaseDataRender = (ship) => {
-    return `
-        <ul class="flex-flexEnd-gap box__middle-right__cloak-flux">
-            <li class="cloak-flux__per-sec">
-            <h5>Cloak Flux / Sec</h5>
-            <p>320</p>
-            </li>
-            <li class="cloak-flux__activation">
-                <h5>Cloak Activation</h5>
-                <p>0</p>
-            </li>
-        </ul>`;
-  };
-  hullmodsRender = (ship) => {
-    const hullMods = ship.hullMods;
-    // const renderHullMods = `
-    //             <li class="flex-flexEnd-gap hull-mods__first">
-    //               <h5>Expanded Magazines</h5>
-    //               <p>30</p>
-    //               <button>-</button>
-    //               <img src="./starsectorData/graphics/hullmods/expanded_magazines2.png"
-    //               alt="hull mod pic" />
-    //             </li>`;
-    return hullMods.buildInHullMods.map(
-      (currentMod) => `
-                <li class="flex-flexEnd-gap hull-mods__first">
-                  <h5>${currentMod.name}</h5>
-                  <img src="./starsectorData/${currentMod.sprite_}"
-                  alt="${currentMod.short}" />
-                </li>`
-    );
-  };
-  updateText = (target, value) => {
-    document.querySelector(`${target}`).textContent = `${value}`;
-  };
-
-  capacitorAndCapacityRender = (currentBuild) =>
-    `
-              <li class="flex-flexEnd-gap ship-capacitors__edit">
-                <h5 class="ship-capacitors__edit__title">Capacitors</h5>
-                <button class="button-circle ship-capacitors__edit--minus" value="shipCapacitorsMinus">-</button>
-                <h5 class="ship-capacitors__edit__value">${currentBuild.activeCapacitors}</h5>
-                <button class="button-circle ship-capacitors__edit--plus" value="shipCapacitorsPlus">+</button>
-              </li>
-              <li class="ship-capacitors__flux-capacity">
-                <h5 class="flux-capacity__title">Flux Capacity</h5>
-                <p class="flux-capacity__value">${currentBuild.currentFluxCapacity}</p>
-              </li>
-            `;
-
-  ventsAndDissapationRender = (currentBuild) =>
-    `    
-                <li class="flex-flexEnd-gap ship-vents__edit">
-                  <h5>Vents</h5>
-                  <button class="button-circle ship-vents__edit--minus" value="shipVentsMinus">-</button>
-                  <h5 class="ship-vents__edit__value">${currentBuild.activeVents}</h5>
-                  <button class="button-circle ship-vents__edit--plus" value="shipVentsPlus">+</button>
-                </li>
-                <li class="ship-vents__flux-dissapation">
-                  <h5>Flux Dissapation</h5>
-                  <p class="ship-vents__flux-dissapation__value">${currentBuild.currentFluxDissapation}</p>
-                </li>
           `;
-  render(data) {
-    this.#data = data;
-    if (!this.#parentElement) this.#assignParentElement();
 
-    const { currentShip, currentShipBuild } = this.#data;
+		return [markup, `.${this.shieldDataParent}`];
+	}
+	weaponFluxRender() {
+		const { currentShipBuild } = this.#data;
+		const weaponFluxSec = 999999; //! rework or complete remove
 
-    const isPhased = currentShip.shield_type === "PHASE" ? true : false;
-    const weaponFluxSec = 999999; //! rework or complete remove
+		const markup = `
+            <li>
+              <h5>Weapon Flux / sec</h5>
+              <p>${weaponFluxSec}</p>
+            </li>
+          `;
 
-    const markup = `
-                    <ul class="ordinance-graph">
+		return [markup, `.${this.weaponFluxParent}`];
+	}
+	// Hull Mods
+	hullModMarkUp() {
+		const localParent = ".hullmods";
+		const hideBuildInHullModIfUndefined = !this.#data.currentShipBuild.hullMods.buildInHullMods ? "d-none" : "";
+		const markup = `
+                    <h3 class="hullmods__header">Hull features & mods</h3>
+                    <ul class="hullmods__container">
+                      <div class="hullmods__container__build-in-hullmods ${hideBuildInHullModIfUndefined}"></div>
+                      <div class="hullmods__container__added-hullmods"></div>
+                    </ul>
+                    <ul class="flex-flexEnd-gap hullmods__buttons">
                       <li>
-                        <h5 class="ordinance-graph__title">
-                          [Current / Total] Ordinance Points
-                        </h5>
+                        <button class="button hullmods__buttons__open-hullmod-menu" data-type="regular">Open HullMod Menu</button>
                       </li>
-                      <li class="ordinance-graph__body">
-                        <div class="ordinance-graph__points">
-                          <h5 class="ordinance-graph__points__current-points">${
-                            currentShipBuild.currentOrdinancePoints
-                          }</h5>
-                          <span></span>
-                          <h5>${currentShipBuild.maxOrdinancePoints}</h5>
-                        </div>
+                      <li>
+                        <button class="button hullmods__buttons-smods" data-type="smods">S-Mods</button>
                       </li>
                     </ul>
+      `;
+		return [markup, localParent];
+	}
+	buildInHullModRender() {
+		const localParent = ".hullmods__container__build-in-hullmods";
+		const hullMods = this.#data.currentShipBuild.hullMods;
+
+		if (!hullMods.buildInHullMods) return [` <li class="flex-flexEnd-gap build-in-hullmods__hullmod"></li>`, localParent];
+		// if (!hullMods.buildInHullMods) return ["", localParent];
+		const markup = hullMods.buildInHullMods
+			.map(
+				(currentMod) => `
+                  <li class="flex-flexEnd-gap build-in-hullmods__hullmod">
+                    <h5>${currentMod.name}</h5>
+                    <img src="./starsectorData/${currentMod.sprite_}"
+                    alt="${currentMod.short}" />
+                  </li>`
+			)
+			.join("");
+		return [markup, localParent];
+	}
+	addNewHullModRender() {
+		const localParent = ".hullmods__container__added-hullmods";
+		const { hullMods } = this.#data.currentShipBuild;
+		const markup = hullMods.activeHullMods.map(
+			(hullmod) => `
+                  <li class="flex-flexEnd-gap added-hullmods__hullmod">
+                    <h5>${hullmod.name}</h5>
+                    <p>(${calculateHullModCost(hullmod)})</p>
+                    <button class="button button-circle added-hullmod__remove-button" data-id="${hullmod.id}">-</button>
+                    <img src="./starsectorData/${hullmod.sprite_}"
+                    alt="${hullmod.short}" />
+                  </li>`
+		);
+		return [markup, localParent];
+	}
+	// Render
+	render(data) {
+		this.#data = data;
+		if (!this.#parentElement) this.#assignParentElement();
+
+		const markup = `
+                    <ul class="${this.ordinancePointsParent}"></ul>
                     <div class="box__full-right__top-content-group">
-                      <ul class="flex-flexEnd-gap box__top-right__speed-armor-hull">
-                        <li class="speed-armor-hull__speed">
-                          <h5>Top Speed</h5>
-                          <p>${currentShip.max_speed}</p>
-                        </li>
-                        <li class="speed-armor-hull__armor">
-                          <h5>Armor</h5>
-                          <p>${currentShip.armor_rating}</p>
-                        </li>
-                        <li class="speed-armor-hull__hull">
-                          <h5>Hull</h5>
-                          <p>${currentShip.hitpoints}</p>
-                        </li>
-                      </ul>
-                      <ul class="flex-flexEnd-gap box__middle-right__ship-capacitors">
-                        ${this.capacitorAndCapacityRender(currentShipBuild)}
-                      </ul>
-                      <ul class="flex-flexEnd-gap box__middle-right__ship-vents">
-                        ${this.ventsAndDissapationRender(currentShipBuild)}
-                      </ul>
-                      ${
-                        !isPhased
-                          ? this.shieldDataRender(currentShip)
-                          : this.phaseDataRender(currentShip)
-                      }
-                      <ul class="flex-flexEnd-gap">
-                        <li>
-                          <h5>Weapon Flux / sec</h5>
-                          <p>${weaponFluxSec}</p>
-                        </li>
-                      </ul>
+                      <ul class="flex-flexEnd-gap ${this.speedArmorHullParent}"></ul>
+                      <ul class="flex-flexEnd-gap ${this.shipCapacitorParent}"></ul>
+                      <ul class="flex-flexEnd-gap ${this.shipVentAndDissipationParent}"></ul>
+                      <ul class="flex-flexEnd-gap ${this.phaseDataParent}"></ul>
+                      <ul class="flex-flexEnd-gap ${this.shieldDataParent}"></ul>
+                      <ul class="flex-flexEnd-gap ${this.weaponFluxParent}"></ul>
                     </div>
-                    <div class="hull-mods">
-                      <h3 class="hull-mods__header">Hull features & mods</h3>
-                      <ul class="hull-mods__container">
-                        ${this.hullmodsRender(currentShipBuild)}
-                      </ul>
-                      <ul class="flex-flexEnd-gap hull-mods__buttons">
-                        <li>
-                          <button>Add Hull Mod</button>
-                        </li>
-                        <li>
-                          <button>S-Mods</button>
-                        </li>
-                      </ul>
-                    </div>
+                    <div class="hullmods"></div>
           `;
-    this.clearRender(this.#parentElement);
-    this.#parentElement.insertAdjacentHTML("afterbegin", markup);
-  }
-  #assignParentElement() {
-    this.#parentElement = document.querySelector(".box__full-right");
-  }
-  #clearInput() {
-    this.#parentElement.querySelector(".search-form__input").value = "";
-  }
-  addVentsHandler(inputFunction) {
-    this.#parentElement.addEventListener("click", function (e) {
-      const btn = e.target.closest(".ship-capacitors__edit");
-      if (!btn) return;
-      inputFunction();
-    });
-  }
+		this.clearRender(this.#parentElement);
+		this.#parentElement.insertAdjacentHTML("afterbegin", markup);
+	}
+
+	//
+	#assignParentElement() {
+		this.#parentElement = document.querySelector(".box__full-right");
+	}
+
+	// Handlers
+	addCapacitorsHandler(callback) {
+		const localParent = ".ship-capacitors__edit";
+		const eventTarget = ".button-circle";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
+	addVentsHandler(callback) {
+		const localParent = ".ship-vents__edit";
+		const eventTarget = ".button-circle";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
+	openHullModMenuHandler(callback) {
+		const localParent = ".hullmods";
+		const eventTarget = ".hullmods__buttons button";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
+	addedRegularHullModsHandler(callback) {
+		const localParent = ".hullmods__container__added-hullmods";
+		const eventTarget = ".added-hullmod__remove-button";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
 }
 export default new BuilderRightView();
 
+/////////////////////
 //   const phaseData =
 // <dt>Peak CR Sec:</dt>
 // <dd>${ship.peak_CR_sec}</dd>
 // <dt>CR loss/sec:</dt>
 // <dd>${ship.CR_loss_sec}</dd>
+// renderHullModsSection(state) {
+//   const markup = `
+//                 <h3 class="hullmods__header">Hull features & mods</h3>
+//                 <ul class="hullmods__container">
+//                   ${this.hullmodsRender(this.#data.currentShipBuild)}
+//                 </ul>
+//                 <ul class="flex-flexEnd-gap hullmods__buttons">
+//                   <li>
+//                     <button class="hullmods__buttons-add" data-type="regular">Add Hull Mod</button>
+//                   </li>
+//                   <li>
+//                     <button class="hullmods__buttons-smods" data-type="smods">S-Mods</button>
+//                   </li>
+//                 </ul>
+//   `;
+//   this.clearRender(this.#hullModsLocalParent);
+//   this.#hullModsLocalParent.insertAdjacentHTML("afterbegin", markup);
+// }
+// hullmodsRender = (ship) => {
+//   const hullMods = ship.hullMods;
+//   const parentElement = document.querySelector(".hullmods__container");
+//   console.log(parentElement);
+//   // console.log(hullMods);
+//   console.log("test");
+//   const addHullModsMarkUp = hullMods.buildInHullMods.map(
+//     (currentMod) => `
+//               <li class="flex-flexEnd-gap hullmods__first">
+//                 <h5>${currentMod.name}</h5>
+//                 <img src="./starsectorData/${currentMod.sprite_}"
+//                 alt="${currentMod.short}" />
+//               </li>`
+//   );
 
-// addHandlerUpdateServings(handler) {
-//   this._parentElement.addEventListener('click', function (e) {
-//     const btn = e.target.closest('.btn--update-servings');
+//   const buildInHullModsMarkUp = hullMods.buildInHullMods.map(
+//     (currentMod) => `
+//               <li class="flex-flexEnd-gap hullmods__first">
+//                 <h5>${currentMod.name}</h5>
+//                 <img src="./starsectorData/${currentMod.sprite_}"
+//                 alt="${currentMod.short}" />
+//               </li>`
+//   );
+//   const markup = `${buildInHullModsMarkUp}`;
+//   return markup;
+// };
+// ${this.hullmodsRender(this.#data.currentShipBuild)}
+// addHullModsHandler(inputFunction) {
+//   this.#hullModsLocalParent.addEventListener("click", function (e) {
+//     const btn = e.target.closest(".hullmods__buttons button");
 //     if (!btn) return;
-//     const { updateTo } = btn.dataset;
-//     if (+updateTo > 0) handler(+updateTo);
+//     const { type } = btn.dataset;
+//     inputFunction(type);
 //   });
 // }
+// addVentsHandler(inputFunction) {
+//   this.#ventsLocalParent.addEventListener("click", function (e) {
+//     const btn = e.target.closest(".button-circle");
+//     if (!btn) return;
+//     const { buttonValue } = btn.dataset;
+//     inputFunction(buttonValue);
+//   });
+// }
+// addCapacitorsHandler(inputFunction) {
+//   this.#capacitorLocalParent.addEventListener("click", function (e) {
+//     const btn = e.target.closest(".button-circle");
+//     if (!btn) return;
+//     const { buttonValue } = btn.dataset;
+//     inputFunction(buttonValue);
+//   });
+// }
+// #capacitorLocalParent = document.querySelector(".ship-capacitors__edit");
+// #ventsLocalParent = document.querySelector(".ship-vents__edit");
+// #hullModsLocalParent = document.querySelector(".hullmods");
+// #localSectionParents() {
+// this.#capacitorLocalParent = document.querySelector(
+//   ".ship-capacitors__edit"
+// );
+// this.#ventsLocalParent = document.querySelector(".ship-vents__edit");
+// this.#hullModsLocalParent = document.querySelector(".hullmods");
+//
+// }
+// #clearInput() {
+//   this.#parentElement.querySelector(".search-form__input").value = "";
+// }
+// capacitorAndCapacityRender = (currentBuild) =>
+//   `
+
+//   `;
+
+//                 ${this.speedArmorHull(currentShipBuild)}
+// ${this.speedArmorHullParent}
+//${this.renderGenericComponent(this.speedArmorHull())}
+// ${this.capacitorAndCapacityRender(currentShipBuild)}
+
+// ventsAndDissapationRender = (currentBuild) =>
+//   `
+//
+//         `;
