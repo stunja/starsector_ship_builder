@@ -5,7 +5,7 @@ import { renameKeysFromCSVdata } from "./helperFunction.js";
 // const shipNameDev = "hound";
 // const shipNameDev = "ox"; // civ
 // const shipNameDev = "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "pegasus";
+const shipNameDev = "legion";
 
 //
 //invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
