@@ -6,8 +6,9 @@
   should be unchangable. For example Hybrid should stay Hubrid.
   - to Solve I need to add purposeString, to specify the purpose of the background sprite element -->
 
-- No, too hard. Rockets are not in packs, but as separate enteties
 <!-- - I need to add rocket sprite to rocket turret base -->
+
+- No, too hard. Rockets are not in packs, but as separate enteties. Not sure how to even implement them, performance issue is going to be massive
 
 <!-- - Correctly rotate Weapons. -->
 
@@ -20,7 +21,11 @@
 <!-- - Active Weapon Should Be fixed at the top of the weapon selection screen. -->
 <!-- - Issue with Active class, when clicking on sorting button -->
 
+- Weapon Slot is still bugged, I need to make sure it is properly pop up properly works after I add weapon. Currently parent container blocks mouse clicks
+- Issue with PopUpContianerHeader, for example COST, you have to click cost two times.
+
 - Tons of visual bugs
+<!-- - Fighter PopUp Issue with remove active class from Fighter -->
 
 3. Weapon Pop Up Hover
 
@@ -34,12 +39,25 @@
 
 - I dont remember, but something was bugged there with hullmods. Either incorrect hullmod features.
 
+4. Fighters
+
+<!-- - Fetch Fighters -->
+<!-- - Inject Additional Information into Fighters -->
+<!-- - Add / Remove Active Selection  -->
+<!-- - Sort Function -->
+
+- Handler Close on External Click
+<!-- - Handler Click to Add  -->
+- Handler Hover on Weapon, give addit info
+
 ## Shit to Do
 
 <!-- - Weapon Slot Arcs -->
   <!-- I need to make two lines, vertical, and a sphere. So I can make a single border on the top part of the arch -->
 
 - Weapon Slot With Weapon, when hovering display basic info like name / type / range.
+- Fighters
+- Skills
 
 - Smods Menu
 - HullMod Menu close if clicked outside of the hullMod pop up

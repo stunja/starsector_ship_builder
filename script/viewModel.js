@@ -242,6 +242,9 @@ const builderLogic = {
 		builderCenterView.weaponArcAndAngleChangeCoords();
 		builderCenterView.shipSpriteUpdate();
 
+		// click on fighter Slot
+		builderLeftView.removeEventListener(builderLogic.fighterBay);
+		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterSlotHandler(builderLogic.fighterBay));
 		// click on slot, open table
 		builderCenterView.removeEventListener(builderLogic.weaponButton);
 		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponButtonHandler(builderLogic.weaponButton));
@@ -257,35 +260,81 @@ const builderLogic = {
 		// Table Hover Effect Handler
 		builderCenterView.removeEventListener(builderLogic.showAdditionalInformationOnHover);
 		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpHoverEffect(builderLogic.showAdditionalInformationOnHover));
+		//? Very different Logic (runs once)
+		builderCenterView.weaponPopUpHideWhenClickOutsideHandler();
 
-		// Hide PopUp Handler
+		// Hide PopUp via Button Handler
 		// builderCenterView.removeEventListener(builderLogic.weaponPopUpHide);
 		// builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpHideButtonHandler(builderLogic.weaponPopUpHide));
 	},
-	weaponPopUpHide() {
-		builderCenterView.weaponPopUpFormRemover();
+	fighterPopUpHandlers() {
+		// Table Head Handler
+		builderLeftView.removeEventListener(builderLogic.fighterPopUpTableSorter);
+		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpHeaderHandler(builderLogic.fighterPopUpTableSorter));
+
+		builderLeftView.removeEventListener(builderLogic.addCurrentWeaponFromPopUpToTheShip);
+		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpTableHandler(builderLogic.addCurrentWeaponFromPopUpToTheShip));
+		// Table Hover Effect Handler
+		// builderLeftView.removeEventListener(builderLogic.showAdditionalInformationOnHover);
+		// builderLeftView.addEventListenerReturnDataSet(builderLeftView.weaponPopUpHoverEffect(builderLogic.showAdditionalInformationOnHover));
+		// //
+		builderLeftView.fighterPopUpHideWhenClickOutsideHandler();
 	},
+	// weaponPopUpHide() {
+	// 	builderCenterView.weaponPopUpFormRemover();
+	// },
+
 	weaponPopUpRender() {
-		const { currentWeaponArray, currentWeaponSlot } = model.uiState.weaponPopUp;
-		const { currentInstalledWeapons } = model.state.currentShipBuild;
+		const currentWeaponArray = model.uiState.weaponPopUp.currentWeaponArray;
+		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
+		const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
-		// console.log(currentInstalledWeapons); // weapon and dragonPod
 		builderCenterView.renderComponent(builderCenterView.weaponPopUpRender());
-
 		builderCenterView.renderComponent(builderCenterView.weaponPopUpTableHeader());
 		builderCenterView.renderComponent(builderCenterView.weaponPopUpTableContentRender(currentWeaponArray, currentInstalledWeapons, currentWeaponSlot));
 		// Handlers
+		//! why this is here?
 		builderCenterView.removeEventListener(builderLogic.removeCurrentWeaponFromPopUpToTheShip);
 		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpRemoveCurrentWeapon(builderLogic.removeCurrentWeaponFromPopUpToTheShip));
 	},
+	fighterPopUpRender() {
+		const currentFighterArray = model.uiState.fighterPopUp.currentFighterArray;
+		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
+		const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
+		builderLeftView.renderComponent(builderLeftView.fighterPopUpRender());
+		builderLeftView.renderComponent(builderLeftView.fighterPopUpTableHeader());
+		builderLeftView.renderComponent(builderLeftView.fighterPopUpTableContentRender(currentFighterArray, currentInstalledWeapons, currentWeaponSlot));
+
+		//! why this is here?
+		builderLeftView.removeEventListener(builderLogic.removeCurrentFighterFromPopUpToTheShip);
+		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpRemoveCurrentWeapon(builderLogic.removeCurrentFighterFromPopUpToTheShip));
+	},
+	fighterBay(btn) {
+		const { fighterId } = btn.dataset;
+		const allFighters = model.state.allFighters;
+		const _baseWeaponSlots = model.state.currentShipBuild._baseWeaponSlots;
+
+		// const { currentInstalledWeapons } = model.state.currentShipBuild;
+		const [currentFighterSlot] = _baseWeaponSlots.filter((slot) => slot.id === fighterId);
+		const sortedFighterArray = allFighters.toSorted((a, b) => b.op_cost - a.op_cost);
+
+		// model.uiState.weaponPopUp.currentWeaponTypes = currentWeaponTypes;
+		model.uiState.fighterPopUp.currentFighterArray = sortedFighterArray;
+		model.uiState.currentWeaponSlot = currentFighterSlot;
+		// eventListener to close fighter menu
+		// builderLogic.fighterPopUpTableSorter(btn);
+		builderLogic.fighterPopUpRender();
+		builderLogic.fighterPopUpHandlers();
+		//
+	},
 	weaponButton(btn) {
 		const { id } = btn.dataset;
 		const { _baseWeaponSlots } = model.state.currentShipBuild;
 		const { allWeapons } = model.state;
 
-		const [currentWeaponSlot] = (model.uiState.weaponPopUp.currentWeaponSlot = _baseWeaponSlots.filter((slot) => slot.id === id));
-
+		// const [currentWeaponSlot] = (model.uiState.weaponPopUp.currentWeaponSlot = _baseWeaponSlots.filter((slot) => slot.id === id));
+		const [currentWeaponSlot] = _baseWeaponSlots.filter((slot) => slot.id === id);
 		const generalFilter = (weaponArray, currentSlot) => {
 			const SIZE = {
 				LARGE: "LARGE",
@@ -345,100 +394,166 @@ const builderLogic = {
 
 			return sizeFilterArray.sort((a, b) => Number.parseInt(b.OPs) - Number.parseInt(a.OPs));
 		};
-
+		//
 		const currentWeaponArray = (model.uiState.weaponPopUp.currentArrayState = generalFilter(allWeapons, currentWeaponSlot));
 		const currentWeaponTypes = [...new Set(currentWeaponArray.map((wpn) => wpn.type))];
-
+		//
 		model.uiState.weaponPopUp.currentWeaponTypes = currentWeaponTypes;
 		model.uiState.weaponPopUp.currentWeaponArray = currentWeaponArray;
 		model.uiState.currentWeaponSlot = currentWeaponSlot;
 		//
-		builderLogic.weaponPopUpRender();
-
-		// update position and keep one weaponSlot active
-		// builderCenterView.weaponPopUpUpdatePos(btn);
 		builderCenterView.weaponSlotActiveClass(btn);
-
+		builderLogic.weaponPopUpRender();
 		builderLogic.weaponPopUpHandlers();
-		builderCenterView.weaponPopUpHideWhenClickOutsideHandler();
 	},
-	weaponPopUpTableSorter(btn) {
-		const { category } = btn.dataset;
-		const { previousSortState } = model.uiState.weaponPopUp;
+	//! Should be united into ONE
+	fighterPopUpTableSorter(btn) {
+		const category = btn.dataset.category;
+		const { previousSortState, isAscending, currentFighterArray: originalArrayState } = model.uiState.fighterPopUp;
 		const currentWeaponSlot = model.uiState.currentWeaponSlot;
-		const { currentInstalledWeapons } = model.state.currentShipBuild;
+		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
 
-		let { isAscending, currentArrayState } = model.uiState.weaponPopUp;
-		//
-		const sortToggleAscendDescent = (categoryToSort, sortType) => {
-			return currentArrayState.toSorted((a, b) => {
-				if (sortType === "text") {
-					return isAscending ? a[categoryToSort].localeCompare(b[categoryToSort]) : b[categoryToSort].localeCompare(a[categoryToSort]);
-				} else if (sortType === "number") {
-					return isAscending ? b[categoryToSort] - a[categoryToSort] : a[categoryToSort] - b[categoryToSort];
-				}
-			});
+		// Mapping of sort categories to their corresponding object keys and sort types
+		const SORT_CONFIGS = {
+			name: { key: "id", type: "text" },
+			role: { key: "role", type: "text" },
+			wing: { key: "num", type: "number" },
+			range: { key: "range", type: "number" },
+			cost: { key: "op_cost", type: "number" },
 		};
 
-		if (previousSortState !== category) isAscending = true;
+		// Determine the new sort direction
+		const newIsAscending = previousSortState !== category ? true : !isAscending;
 
-		switch (category) {
-			case "name":
-				currentArrayState = sortToggleAscendDescent("name", "text");
-				break;
-			case "type":
-				currentArrayState = sortToggleAscendDescent("type", "text");
-				break;
-			case "range":
-				currentArrayState = sortToggleAscendDescent("range", "number");
-				break;
-			case "cost":
-				currentArrayState = sortToggleAscendDescent("OPs", "number");
-				break;
+		// Perform sorting if the category is valid
+		const sortConfig = SORT_CONFIGS[category];
+		if (!sortConfig) {
+			console.warn(`Invalid sort category: ${category}`);
+			return;
 		}
-		//
-		model.uiState.weaponPopUp.isAscending = !isAscending;
-		model.uiState.weaponPopUp.previousSortState = category;
-		model.uiState.weaponPopUp.currentArrayState = currentArrayState;
-		//
+
+		const currentArrayState = originalArrayState.toSorted((a, b) => {
+			const valueA = a[sortConfig.key];
+			const valueB = b[sortConfig.key];
+
+			if (sortConfig.type === "text") {
+				return newIsAscending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+			}
+
+			if (sortConfig.type === "number") {
+				return newIsAscending ? valueB - valueA : valueA - valueB;
+			}
+		});
+
+		// Update model state
+		model.uiState.fighterPopUp = {
+			...model.uiState.fighterPopUp,
+			isAscending: newIsAscending,
+			previousSortState: category,
+			currentArrayState,
+		};
+		// Render updated component
+		builderLeftView.renderComponent(builderLeftView.fighterPopUpTableContentRender(currentArrayState, currentInstalledWeapons, [currentWeaponSlot]));
+	},
+	weaponPopUpTableSorter(btn) {
+		const { previousSortState, isAscending, currentArrayState: originalArrayState } = model.uiState.weaponPopUp;
+		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
+		const currentWeaponSlot = model.uiState.currentWeaponSlot;
+		const category = btn.dataset.category;
+		// Mapping of sort categories to their corresponding object keys and sort types
+		const SORT_CONFIGS = {
+			name: { key: "name", type: "text" },
+			type: { key: "type", type: "text" },
+			range: { key: "range", type: "number" },
+			cost: { key: "OPs", type: "number" },
+		};
+
+		// Determine the new sort direction
+		const newIsAscending = previousSortState !== category ? true : !isAscending;
+
+		// Perform sorting if the category is valid
+		const sortConfig = SORT_CONFIGS[category];
+		if (!sortConfig) {
+			console.warn(`Invalid sort category: ${category}`);
+			return;
+		}
+		const currentArrayState = originalArrayState.toSorted((a, b) => {
+			const valueA = a[sortConfig.key];
+			const valueB = b[sortConfig.key];
+
+			if (sortConfig.type === "text") {
+				return newIsAscending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+			}
+
+			if (sortConfig.type === "number") {
+				return newIsAscending ? valueB - valueA : valueA - valueB;
+			}
+		});
+		// Update model state
+		model.uiState.weaponPopUp = {
+			...model.uiState.weaponPopUp,
+			isAscending: newIsAscending,
+			previousSortState: category,
+			currentArrayState,
+		};
+
+		// Render updated component
 		builderCenterView.renderComponent(builderCenterView.weaponPopUpTableContentRender(currentArrayState, currentInstalledWeapons, [currentWeaponSlot]));
 	},
-
+	//
 	addCurrentWeaponFromPopUpToTheShip(btn) {
-		const { id } = btn.dataset;
-		const { currentInstalledWeapons } = model.state.currentShipBuild;
+		const weaponId = btn.dataset.id;
+		const { currentShipBuild } = model.state;
+		const { currentWeaponSlot } = model.uiState;
+		let popUpType = currentWeaponSlot.type === "LAUNCH_BAY" ? "fighter" : "weapon";
+
+		currentShipBuild.currentInstalledWeapons = currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
+			slotId === currentWeaponSlot.id ? [slotId, weaponId] : [slotId, currentWeapon]
+		);
+
+		popUpType === "weapon" && builderLogic.replaceCurrentWeaponSprite(weaponId, currentWeaponSlot);
+
+		builderCenterView.weaponPopUpFormRemover(`${popUpType}`);
+	},
+	// Similiar but different
+	removeCurrentWeaponFromPopUpToTheShip(btn) {
+		const weaponId = btn.dataset.id;
+		const { currentShipBuild } = model.state;
+		const { currentWeaponArray } = model.uiState.weaponPopUp;
 		const { currentWeaponSlot } = model.uiState;
 
-		model.state.currentShipBuild.currentInstalledWeapons = currentInstalledWeapons.map((wpn) => {
-			if (wpn[0] === currentWeaponSlot.id) return [wpn[0], id];
-			return wpn;
-		});
+		currentShipBuild.currentInstalledWeapons = currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
+			slotId === currentWeaponSlot.id ? [slotId, weaponId] : [slotId, currentWeapon]
+		);
 
-		// hide the form
-		builderLogic.replaceCurrentWeaponSprite(id, currentWeaponSlot);
-		builderLogic.weaponPopUpHide();
-	},
-	removeCurrentWeaponFromPopUpToTheShip(btn) {
-		const { id } = btn.dataset;
-		const { currentInstalledWeapons } = model.state.currentShipBuild;
-		const { currentWeaponArray } = model.uiState.weaponPopUp;
-		const slotId = model.uiState.currentWeaponSlot.id;
+		builderLogic.removeCurrentWeaponSprite(weaponId);
+		builderCenterView.renderComponent(
+			builderCenterView.weaponPopUpTableContentRender(currentWeaponArray, currentShipBuild.currentInstalledWeapons, currentWeaponSlot.id)
+		);
 
-		model.state.currentShipBuild.currentInstalledWeapons = currentInstalledWeapons.map((wpn) => {
-			const isWeaponIdEqualToButtonDatasetId = wpn[1] === id;
-			const isCurrentSlotIdEqualToIn = wpn[0] === slotId;
-
-			if (isWeaponIdEqualToButtonDatasetId && isCurrentSlotIdEqualToIn) return [wpn[0], ""];
-			return wpn;
-		});
-
-		builderLogic.removeCurrentWeaponSprite(id);
-		builderCenterView.renderComponent(builderCenterView.weaponPopUpTableContentRender(currentWeaponArray, currentInstalledWeapons, slotId));
-
-		// bad implementation, but it works
+		//! bad implementation, but it works
 		builderCenterView.removeEventListener(builderLogic.addCurrentWeaponFromPopUpToTheShip);
 		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpTableHandler(builderLogic.addCurrentWeaponFromPopUpToTheShip));
 	},
+	removeCurrentFighterFromPopUpToTheShip(btn) {
+		const weaponId = btn.dataset.id;
+		const { currentShipBuild } = model.state;
+		const { currentFighterArray } = model.uiState.fighterPopUp;
+		const { currentWeaponSlot } = model.uiState;
+
+		currentShipBuild.currentInstalledWeapons = currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
+			slotId === currentWeaponSlot.id ? [slotId, weaponId] : [slotId, currentWeapon]
+		);
+
+		builderLeftView.renderComponent(
+			builderLeftView.fighterPopUpTableContentRender(currentFighterArray, currentShipBuild.currentInstalledWeapons, currentWeaponSlot.id)
+		);
+
+		//! bad implementation, but it works
+		builderLeftView.removeEventListener(builderLogic.addCurrentWeaponFromPopUpToTheShip);
+		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpTableHandler(builderLogic.addCurrentWeaponFromPopUpToTheShip));
+	},
+	//
 	showAdditionalInformationOnHover(btn) {
 		const { id } = btn.dataset;
 		if (model.uiState.weaponPopUp.currentWeaponHover !== id) {
@@ -455,9 +570,11 @@ const builderLogic = {
 	replaceCurrentWeaponSprite(id, currentWeaponSlot) {
 		const { allWeapons } = model.state;
 		const [weaponObject] = allWeapons.filter((wpn) => wpn.id === id);
+
 		builderCenterView.renderComponent(builderCenterView.addCurrentWeaponSpriteToShipRender(currentWeaponSlot, weaponObject));
-		builderLogic.currentWeaponSpritePxIntoRemConversion(currentWeaponSlot.id);
 		builderCenterView.weaponArcAndAngleChangeCoords();
+
+		builderLogic.currentWeaponSpritePxIntoRemConversion(currentWeaponSlot.id);
 		builderLogic.weaponSpriteRotate(currentWeaponSlot);
 	},
 	weaponSpriteRotate(currentWeaponSlot) {
@@ -804,3 +921,60 @@ const ventController = {
 
 // Start the program
 init();
+// weaponPopUpTableSorter(btn) {
+// 	const { category } = btn.dataset;
+// 	const { previousSortState } = model.uiState.weaponPopUp;
+// 	const currentWeaponSlot = model.uiState.currentWeaponSlot;
+// 	const { currentInstalledWeapons } = model.state.currentShipBuild;
+
+// 	let { isAscending, currentArrayState } = model.uiState.weaponPopUp;
+// 	//
+// 	const sortToggleAscendDescent = (categoryToSort, sortType) => {
+// 		return currentArrayState.toSorted((a, b) => {
+// 			if (sortType === "text") {
+// 				return isAscending ? a[categoryToSort].localeCompare(b[categoryToSort]) : b[categoryToSort].localeCompare(a[categoryToSort]);
+// 			} else if (sortType === "number") {
+// 				return isAscending ? b[categoryToSort] - a[categoryToSort] : a[categoryToSort] - b[categoryToSort];
+// 			}
+// 		});
+// 	};
+
+// 	if (previousSortState !== category) isAscending = true;
+
+// 	switch (category) {
+// 		case "name":
+// 			currentArrayState = sortToggleAscendDescent("name", "text");
+// 			break;
+// 		case "type":
+// 			currentArrayState = sortToggleAscendDescent("type", "text");
+// 			break;
+// 		case "range":
+// 			currentArrayState = sortToggleAscendDescent("range", "number");
+// 			break;
+// 		case "cost":
+// 			currentArrayState = sortToggleAscendDescent("OPs", "number");
+// 			break;
+// 	}
+// 	//
+// 	model.uiState.weaponPopUp.isAscending = !isAscending;
+// 	model.uiState.weaponPopUp.previousSortState = category;
+// 	model.uiState.weaponPopUp.currentArrayState = currentArrayState;
+// 	//
+// 	builderCenterView.renderComponent(builderCenterView.weaponPopUpTableContentRender(currentArrayState, currentInstalledWeapons, [currentWeaponSlot]));
+// },
+//
+// addCurrentWeaponFromPopUpToTheShip(btn) {
+// 	const { id } = btn.dataset;
+// 	const { currentInstalledWeapons } = model.state.currentShipBuild;
+// 	const { currentWeaponSlot } = model.uiState;
+
+// 	model.state.currentShipBuild.currentInstalledWeapons = currentInstalledWeapons.map((wpn) => {
+// 		if (wpn[0] === currentWeaponSlot.id) return [wpn[0], id];
+// 		return wpn;
+// 	});
+// 	//
+// 	// hide the form
+// 	builderLogic.replaceCurrentWeaponSprite(id, currentWeaponSlot);
+// 	// builderLogic.weaponPopUpHide();
+// 	builderCenterView.weaponPopUpFormRemover();
+// },

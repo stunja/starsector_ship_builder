@@ -1,12 +1,24 @@
 {
-  "name": "ship_editor",
-  "version": "1.0.0",
-  "description": "Ship editor project",
-  "main": "main.js",
-  "scripts": {
-    "compile:sass": "sass --watch sass/main.scss css/style.css",
-    "compile:node-sass": "sass --watch sass/main.scss css/style.css"
-  },
-  "author": "Ruslan Pashynskyi",
-  "license": "MIT"
+	"name": "ship_editor",
+	"version": "1.0.0",
+	"description": "Ship editor project",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"author": "Ruslan Pashynskyi",
+	"license": "MIT",
+	"devDependencies": {
+		"vite": "^6.0.3"
+	},
+	"source": "src/index.html",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/stunja/starsector_ship_builder.git"
+	},
+	"bugs": {
+		"url": "https://github.com/stunja/starsector_ship_builder/issues"
+	},
+	"homepage": "https://github.com/stunja/starsector_ship_builder#readme"
 }

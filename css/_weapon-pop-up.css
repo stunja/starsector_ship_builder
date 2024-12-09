@@ -23,7 +23,28 @@
 	width: 100%;
 
 	gap: 34rem;
+}
+.fighter-pop-up {
+	position: absolute;
+	top: 50%;
+	left: 20rem;
+	transform: translate(0, -50%);
+	z-index: 1000;
 
+	.fighter-pop-up__container {
+	}
+	.fighter__sprite {
+		width: 2.5rem;
+		height: 2.5rem;
+		padding-right: 2rem;
+		padding-left: 2rem;
+	}
+}
+.fighter-pop-up__container {
+}
+
+.weapon-pop-up,
+.fighter-pop-up {
 	/*******************************************************************/
 	/*  HEADER  */
 	/*******************************************************************/
@@ -186,30 +207,6 @@
 	}
 }
 
-/* weapon-sprite-parent
-	weapon-sprite
-	weapon-sprite--base
-	weapon-sprite--gun */
-
-/* .weapon-sprite-parent {
-	
-		.weapon-sprite--gun {
-			z-index: 200;
-		}
-		.weapon-sprite--base {
-			z-index: 201;
-		}
-		.weapon-sprite--gun,
-		.weapon-sprite--base {
-			position: absolute;
-			top: 55%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			transition: all 0.5s;
-		}
-	
-}
-
 /* weapon tier background */
 .weapon-tier-parent .weapon-tier {
 	content: "";
@@ -235,7 +232,7 @@
 	/*  FILTER HEADER  */
 	/*****************************************************************/
 
-	.weapon-filter {
+	/* .weapon-filter {
 		display: flex;
 		padding-right: 2rem;
 
@@ -266,18 +263,18 @@
 			padding: 1.2rem;
 			background-color: black;
 		}
-	}
+	} */
 
 	.weapon-pop-up__table-body {
 		width: 60rem;
 		background-color: black;
 		border-collapse: collapse;
 
-		/* weapon-pop-up__theader theader-element unselectable */
 		.weapon-pop-up__theader p {
 			font-size: 1.2rem;
 		}
-		.weapon {
+		.weapon,
+		.fighter {
 			cursor: pointer;
 			transition: all 0.3s;
 			border: 1px solid #111;
@@ -286,23 +283,27 @@
 			&:hover {
 				background-color: #222;
 			}
-			.weapon__content {
+			.weapon__content,
+			.fighter__content {
 				display: flex;
 				gap: 1.2rem;
 			}
 
-			.weapon__name {
+			.weapon__name,
+			.fighter__name {
 				font-weight: 600;
 				line-height: 1.4;
 			}
 
-			.weapon__type {
+			.weapon__type,
+			.fighter__type {
 				border-radius: 5px;
 				font-size: 1rem;
 				letter-spacing: 0.5px;
 			}
 
-			.weapon__cost {
+			.weapon__cost,
+			.fighter__cost {
 				font-weight: 700;
 				font-size: 1.4rem;
 				/* TODO Replace with proper color */
@@ -310,11 +311,13 @@
 			}
 
 			/* ! I need to change the class itself */
-			&.weapon--active {
+			&.weapon--active,
+			&.fighter--active {
 				font-size: 1.2rem;
 				background-color: rgba(0, 126, 25, 0.5);
 
-				.weapon__icon {
+				.weapon__icon,
+				.fighter__icon {
 					padding: 3.6rem 0.6rem;
 				}
 			}
@@ -322,8 +325,11 @@
 			/*******************************************************************/
 			/*  WEAPON SPRITE  */
 			/*******************************************************************/
-
-			.weapon__icon {
+			.fighter__icon {
+				padding: 1.4rem 0.6rem;
+			}
+			.weapon__icon,
+			.fighter__icon {
 				/*! overwrites table paddings */
 				padding: 2.8rem 0.6rem;
 				width: 6rem;
@@ -353,3 +359,28 @@
 		text-align: center;
 	}
 }
+
+/* weapon-sprite-parent
+	weapon-sprite
+	weapon-sprite--base
+	weapon-sprite--gun 
+
+ .weapon-sprite-parent {
+	
+		.weapon-sprite--gun {
+			z-index: 200;
+		}
+		.weapon-sprite--base {
+			z-index: 201;
+		}
+		.weapon-sprite--gun,
+		.weapon-sprite--base {
+			position: absolute;
+			top: 55%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			transition: all 0.5s;
+		}
+	
+}
+*/

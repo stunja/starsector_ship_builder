@@ -1,6 +1,13 @@
 export default class View {
 	// #parentElement = document.querySelector("body");
 	#parentElement;
+
+	dNoneClass = "d-none";
+	weaponPopUpClass = "weapon-pop-up";
+	weaponPopUpParentClass = "weapon-pop-up-parent";
+	#fighterPopUp = "fighter-pop-up";
+	#fighterPopUpContainer = "fighter-pop-up__container";
+
 	constructor() {
 		this.eventListenerFolder = new Map();
 	}
@@ -9,13 +16,30 @@ export default class View {
 		// if (!markup || !localParent) console.warn(`renderComponentGeneric Error ${localParent}`);
 		this.clearRender(document.querySelector(localParent));
 
-		document.querySelector(localParent).insertAdjacentHTML("afterbegin", markup);
+		document
+			.querySelector(localParent)
+			.insertAdjacentHTML("afterbegin", markup);
 	}
 	updateText = (target, value) => {
 		document.querySelector(`.${target}`).textContent = `${value}`;
 	};
 	clearRender = (parentElement) => (parentElement.innerHTML = "");
 
+	weaponPopUpFormRemover(type) {
+		const targetClass =
+			type === "weapon" ? this.weaponPopUpClass : this.#fighterPopUp;
+		const targetParentClass =
+			type === "weapon"
+				? this.weaponPopUpParentClass
+				: this.#fighterPopUpContainer;
+
+		const target = document.querySelector(`.${targetClass}`);
+		const targetParent = document.querySelector(`.${targetParentClass}`);
+		const dClass = `${this.dNoneClass}`;
+		//
+		target.textContent = "";
+		targetParent.classList.add(dClass);
+	}
 	// eventListenerReturnDataSet = ([
 	//   localParent,
 	//   eventTarget,
@@ -30,7 +54,12 @@ export default class View {
 	//       callback(btn);
 	//     });
 
-	addEventListenerReturnDataSet([localParent, eventTarget, actionType, callback]) {
+	addEventListenerReturnDataSet([
+		localParent,
+		eventTarget,
+		actionType,
+		callback,
+	]) {
 		const localParentQuery = document.querySelector(localParent);
 
 		const wrappedCallback = (e) => {
