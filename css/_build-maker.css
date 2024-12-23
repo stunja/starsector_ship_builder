@@ -62,6 +62,7 @@ font-size
 
 .build-maker__nav {
 	background-color: var(--dark-color);
+	border-bottom: 0.2rem solid rgba(0, 0, 0, 0.25);
 	grid-column: 1 / -1;
 	padding: 2rem;
 	display: flex;
@@ -272,15 +273,27 @@ font-size
 		grid-template-columns: repeat(2, 1fr);
 		grid-auto-flow: row;
 		grid-auto-rows: auto;
-		row-gap: 1.6rem;
+		/* row-gap: 1.6rem; */
+		gap: 1.6rem;
 	}
 	.fighter-slot {
 		cursor: pointer;
-		background-color: rgba(0, 0, 0, 0.1);
+		background-image: radial-gradient(rgba(0, 0, 0, 1), rgba(31, 58, 65, 0.25));
+		border: 0.2rem solid rgba(255, 255, 255, 0.5);
 	}
 	.fighter-slot:hover {
-		background-color: rgba(0, 0, 0, 0.5);
+		background-image: radial-gradient(rgba(0, 0, 0, 1), rgb(31, 58, 65, 0.5));
+		border: 0.2rem solid rgba(255, 255, 255, 0.75);
 	}
+
+	.fighter-slot.fighter-slot--active {
+		border: 0.2rem solid rgba(25, 113, 193, 1);
+	}
+	.fighter-slot.fighter-slot--active:hover {
+		border: 0.2rem solid rgba(51, 139, 218, 1);
+		background-image: radial-gradient(rgba(0, 0, 0, 1), rgb(31, 58, 65, 0.75));
+	}
+
 	/* .fighter-slots--wrapper {
 		display: grid;
 		padding: 0;

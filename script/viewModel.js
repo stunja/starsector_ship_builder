@@ -6,6 +6,12 @@ import builderCenterView from "./allViews/builderCenterView.js";
 import builderRightView from "./allViews/builderRightView.js";
 import searchView from "./allViews/searchView.js";
 import builderPopUpView from "./allViews/builderPopUpView.js";
+import FighterPopUpTableHover from "./allViews/Fighter/FighterPopUpTableHover.js";
+import FighterPopUpTable from "./allViews/Fighter/FighterPopUpTable.js";
+import EventHandlers from "./eventHandlers/EventHandlers.js";
+import classNames from "./helper/DomClassNames.js";
+
+import DataSet from "./helper/DataSet.js";
 import { calculateHullModCost } from "./helperFunction.js";
 
 const defaultRemSize = 10;
@@ -24,7 +30,7 @@ const init = async function () {
 		//? correct order
 		builderView.render();
 		searchView.render();
-		searchView.addSearchHandler(findCreateDisplayCurrentShip);
+		// searchView.addSearchHandler(findCreateDisplayCurrentShip);
 		//
 		builderRender();
 		//
@@ -60,24 +66,36 @@ const shipShieldRenderBasedOnShipType = function () {
 	}
 };
 const capacitorRender = function () {
-	builderRightView.removeEventListener(capacitorController.changeCurrentActiveCapacitors);
 	builderRightView.renderComponent(builderRightView.shipCapacitorsRender());
-	builderRightView.addEventListenerReturnDataSet(builderRightView.addCapacitorsHandler(capacitorController.changeCurrentActiveCapacitors));
+	EventHandlers.removeEventListener(
+		capacitorController.changeCurrentActiveCapacitors
+	);
+	EventHandlers.addEventListenerReturnDataSet(
+		builderRightView.addCapacitorsHandler(
+			capacitorController.changeCurrentActiveCapacitors
+		)
+	);
 };
 const ventsRender = function () {
-	builderRightView.removeEventListener(ventController.changeCurrentActiveVents);
-	builderRightView.renderComponent(builderRightView.ventsAndDissipationRender());
-	builderRightView.addEventListenerReturnDataSet(builderRightView.addVentsHandler(ventController.changeCurrentActiveVents));
+	EventHandlers.removeEventListener(ventController.changeCurrentActiveVents);
+	builderRightView.renderComponent(
+		builderRightView.ventsAndDissipationRender()
+	);
+	EventHandlers.addEventListenerReturnDataSet(
+		builderRightView.addVentsHandler(ventController.changeCurrentActiveVents)
+	);
 };
 const openHullModMenuController = () => {
 	// openHullModMenuHandler Handler Pair
-	builderRightView.removeEventListener(hullModController.hullModsMenu);
 	builderRightView.renderComponent(builderRightView.hullModMarkUp());
 	builderRightView.renderComponent(builderRightView.buildInHullModRender());
 	//
 	// hullModController.hullModsMenuRegular();
 	//
-	builderRightView.addEventListenerReturnDataSet(builderRightView.openHullModMenuHandler(hullModController.hullModsMenu));
+	EventHandlers.removeEventListener(hullModController.hullModsMenu);
+	EventHandlers.addEventListenerReturnDataSet(
+		builderRightView.openHullModMenuHandler(hullModController.hullModsMenu)
+	);
 };
 const resetData = {
 	// array to store keys names of properties that were changed (currentShipBuild)
@@ -96,9 +114,13 @@ const resetData = {
 		// simply by replacing the currentName with BaseName and assign value
 		this.propertiesToReset.forEach((currentPropertyName) => {
 			if (model.state.currentShipBuild[currentPropertyName]) {
-				const basePropertyName = currentPropertyName.replace("current", "_base");
+				const basePropertyName = currentPropertyName.replace(
+					"current",
+					"_base"
+				);
 
-				model.state.currentShipBuild[currentPropertyName] = model.state.currentShipBuild[basePropertyName];
+				model.state.currentShipBuild[currentPropertyName] =
+					model.state.currentShipBuild[basePropertyName];
 			}
 		});
 		// clear propertiesToReset array
@@ -153,16 +175,28 @@ const weaponObjectData = (weaponObject) => {
 		return Math.round(num * 100) / 100;
 	};
 
-	const refireDelay = stats.timing.chargeDown + stats.timing.chargeUp + stats.timing.burstDelay * (stats.ammo.burstSize - 1);
-	const burstSizeString = stats.timing.burstSize && stats.timing.burstSize > 1 ? `x${stats.ammo.burstSize}` : "";
+	const refireDelay =
+		stats.timing.chargeDown +
+		stats.timing.chargeUp +
+		stats.timing.burstDelay * (stats.ammo.burstSize - 1);
+	const burstSizeString =
+		stats.timing.burstSize && stats.timing.burstSize > 1
+			? `x${stats.ammo.burstSize}`
+			: "";
 	const weaponDescription = information.description.split(".");
 
 	const isWeaponBeam = stats.projectile.projectileOrBeam === "beam";
 	const isWeaponProjectile = stats.projectile.projectileOrBeam === "projectile";
 	//
-	const damagePerSecond = Math.round((stats.damage.perShot * stats.ammo.burstSize) / refireDelay);
-	const fluxPerSecond = isWeaponProjectile ? Math.round(stats.flux.perShot / refireDelay) : stats.flux.perSecond;
-	const fluxPerDamage = isWeaponProjectile ? roundFloat(stats.flux.perShot / stats.damage.perShot) : 1;
+	const damagePerSecond = Math.round(
+		(stats.damage.perShot * stats.ammo.burstSize) / refireDelay
+	);
+	const fluxPerSecond = isWeaponProjectile
+		? Math.round(stats.flux.perShot / refireDelay)
+		: stats.flux.perSecond;
+	const fluxPerDamage = isWeaponProjectile
+		? roundFloat(stats.flux.perShot / stats.damage.perShot)
+		: 1;
 
 	// Strings
 	const damageString = `${stats.damage.perShot}${burstSizeString}`;
@@ -230,6 +264,7 @@ const weaponObjectData = (weaponObject) => {
 		},
 	};
 };
+
 const builderLogic = {
 	controller() {
 		const baseWeaponSlots = model.state.currentShipBuild._baseWeaponSlots;
@@ -237,31 +272,53 @@ const builderLogic = {
 		builderLogic.shipBuilder(baseWeaponSlots);
 	},
 	shipBuilder(baseWeaponSlots) {
-		builderCenterView.renderComponent(builderCenterView.weaponSlotRender(baseWeaponSlots));
+		builderCenterView.renderComponent(
+			builderCenterView.weaponSlotRender(baseWeaponSlots)
+		);
 		builderCenterView.weaponSlotChangePosition(model.state);
 		builderCenterView.weaponArcAndAngleChangeCoords();
 		builderCenterView.shipSpriteUpdate();
 
 		// click on fighter Slot
-		builderLeftView.removeEventListener(builderLogic.fighterBay);
-		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterSlotHandler(builderLogic.fighterBay));
+		EventHandlers.removeEventListener(builderLogic.fighterBayButton);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderLeftView.fighterSlotHandler(builderLogic.fighterBayButton)
+		);
 		// click on slot, open table
-		builderCenterView.removeEventListener(builderLogic.weaponButton);
-		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponButtonHandler(builderLogic.weaponButton));
+		EventHandlers.removeEventListener(builderLogic.weaponButton);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderCenterView.weaponButtonHandler(builderLogic.weaponButton)
+		);
 	},
 
 	weaponPopUpHandlers() {
 		// Table Head Handler
-		builderCenterView.removeEventListener(builderLogic.weaponPopUpTableSorter);
-		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpHeaderHandler(builderLogic.weaponPopUpTableSorter));
+		EventHandlers.removeEventListener(builderLogic.weaponPopUpTableSorter);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderCenterView.weaponPopUpHeaderHandler(
+				builderLogic.weaponPopUpTableSorter
+			)
+		);
 
-		builderCenterView.removeEventListener(builderLogic.addCurrentWeaponFromPopUpToTheShip);
-		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpTableHandler(builderLogic.addCurrentWeaponFromPopUpToTheShip));
+		EventHandlers.removeEventListener(
+			builderLogic.addCurrentWeaponFromPopUpToTheShip
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderCenterView.weaponPopUpTableHandler(
+				builderLogic.addCurrentWeaponFromPopUpToTheShip
+			)
+		);
 		// Table Hover Effect Handler
-		builderCenterView.removeEventListener(builderLogic.showAdditionalInformationOnHover);
-		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpHoverEffect(builderLogic.showAdditionalInformationOnHover));
+		EventHandlers.removeEventListener(
+			builderLogic.showAdditionalInformationOnHover
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderCenterView.weaponPopUpHoverEffect(
+				builderLogic.showAdditionalInformationOnHover
+			)
+		);
 		//? Very different Logic (runs once)
-		builderCenterView.weaponPopUpHideWhenClickOutsideHandler();
+		EventHandlers.weaponPopUpHideWhenClickOutsideHandler();
 
 		// Hide PopUp via Button Handler
 		// builderCenterView.removeEventListener(builderLogic.weaponPopUpHide);
@@ -269,72 +326,186 @@ const builderLogic = {
 	},
 	fighterPopUpHandlers() {
 		// Table Head Handler
-		builderLeftView.removeEventListener(builderLogic.fighterPopUpTableSorter);
-		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpHeaderHandler(builderLogic.fighterPopUpTableSorter));
+		EventHandlers.removeEventListener(builderLogic.fighterPopUpTableSorter);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderLeftView.fighterPopUpHeaderHandler(
+				builderLogic.fighterPopUpTableSorter
+			)
+		);
 
-		builderLeftView.removeEventListener(builderLogic.addCurrentWeaponFromPopUpToTheShip);
-		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpTableHandler(builderLogic.addCurrentWeaponFromPopUpToTheShip));
+		EventHandlers.removeEventListener(
+			builderLogic.addCurrentWeaponFromPopUpToTheShip
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderLeftView.fighterPopUpTableHandler(
+				builderLogic.addCurrentWeaponFromPopUpToTheShip
+			)
+		);
 		// Table Hover Effect Handler
-		// builderLeftView.removeEventListener(builderLogic.showAdditionalInformationOnHover);
-		// builderLeftView.addEventListenerReturnDataSet(builderLeftView.weaponPopUpHoverEffect(builderLogic.showAdditionalInformationOnHover));
-		// //
-		builderLeftView.fighterPopUpHideWhenClickOutsideHandler();
+		EventHandlers.removeEventListener(
+			builderLogic.showAdditionalInformationOnHoverForFighter
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderLeftView.fighterPopUpHoverEffect(
+				builderLogic.showAdditionalInformationOnHoverForFighter
+			)
+		);
+		//
+		// EventHandlers.fighterPopUpHideWhenClickOutsideHandler();
+		EventHandlers.fighterPopUpHideWhenClickOutsideHandler(
+			builderLogic.clearFighterPopUp
+		);
 	},
+
 	// weaponPopUpHide() {
 	// 	builderCenterView.weaponPopUpFormRemover();
 	// },
 
 	weaponPopUpRender() {
 		const currentWeaponArray = model.uiState.weaponPopUp.currentWeaponArray;
-		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
+		const currentInstalledWeapons =
+			model.state.currentShipBuild.currentInstalledWeapons;
 		const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
+		// Why Do i render 3 different thing here
 		builderCenterView.renderComponent(builderCenterView.weaponPopUpRender());
-		builderCenterView.renderComponent(builderCenterView.weaponPopUpTableHeader());
-		builderCenterView.renderComponent(builderCenterView.weaponPopUpTableContentRender(currentWeaponArray, currentInstalledWeapons, currentWeaponSlot));
+		builderCenterView.renderComponent(
+			builderCenterView.weaponPopUpTableHeader()
+		);
+		builderCenterView.renderComponent(
+			builderCenterView.weaponPopUpTableContentRender(
+				currentWeaponArray,
+				currentInstalledWeapons,
+				currentWeaponSlot
+			)
+		);
+
 		// Handlers
-		//! why this is here?
-		builderCenterView.removeEventListener(builderLogic.removeCurrentWeaponFromPopUpToTheShip);
-		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpRemoveCurrentWeapon(builderLogic.removeCurrentWeaponFromPopUpToTheShip));
+		//! why this is here? It should not be here
+		//! This removes weapon from weapon slot.
+		EventHandlers.removeEventListener(
+			builderLogic.removeCurrentWeaponFromPopUpToTheShip
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderCenterView.weaponPopUpRemoveCurrentWeapon(
+				builderLogic.removeCurrentWeaponFromPopUpToTheShip
+			)
+		);
 	},
 	fighterPopUpRender() {
 		const currentFighterArray = model.uiState.fighterPopUp.currentFighterArray;
-		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
+		const currentInstalledWeapons =
+			model.state.currentShipBuild.currentInstalledWeapons;
 		const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
-		builderLeftView.renderComponent(builderLeftView.fighterPopUpRender());
-		builderLeftView.renderComponent(builderLeftView.fighterPopUpTableHeader());
-		builderLeftView.renderComponent(builderLeftView.fighterPopUpTableContentRender(currentFighterArray, currentInstalledWeapons, currentWeaponSlot));
-
+		FighterPopUpTable.renderComponent(FighterPopUpTable.render());
+		FighterPopUpTable.renderComponent(FighterPopUpTable.tableHeaderRender());
+		FighterPopUpTable.renderComponent(
+			FighterPopUpTable.tableContentRender(
+				currentFighterArray,
+				currentInstalledWeapons,
+				currentWeaponSlot
+			)
+		);
 		//! why this is here?
-		builderLeftView.removeEventListener(builderLogic.removeCurrentFighterFromPopUpToTheShip);
-		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpRemoveCurrentWeapon(builderLogic.removeCurrentFighterFromPopUpToTheShip));
+		EventHandlers.removeEventListener(
+			builderLogic.removeCurrentFighterFromPopUpToTheShip
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderLeftView.fighterPopUpRemoveCurrentWeapon(
+				builderLogic.removeCurrentFighterFromPopUpToTheShip
+			)
+		);
 	},
-	fighterBay(btn) {
+	//
+	clearFighterPopUp(isPopUpOpen) {
+		builderLeftView.fighterBayButtonRemoveAllActiveClasses();
+		model.uiState.fighterPopUp.isPopUpOpen = !isPopUpOpen;
+		model.uiState.currentWeaponSlot = "";
+	},
+	// Buttons
+	fighterBayButton(btn) {
 		const { fighterId } = btn.dataset;
 		const allFighters = model.state.allFighters;
 		const _baseWeaponSlots = model.state.currentShipBuild._baseWeaponSlots;
+		const currentWeaponSlot = model.uiState.currentWeaponSlot;
+		const isPopUpOpen = model.uiState.fighterPopUp.isOpen;
 
-		// const { currentInstalledWeapons } = model.state.currentShipBuild;
-		const [currentFighterSlot] = _baseWeaponSlots.filter((slot) => slot.id === fighterId);
-		const sortedFighterArray = allFighters.toSorted((a, b) => b.op_cost - a.op_cost);
+		const [newWeaponSlot] = _baseWeaponSlots.filter(
+			(slot) => slot.id === fighterId
+		);
+
+		if (currentWeaponSlot === newWeaponSlot && isPopUpOpen) {
+			builderLogic.clearFighterPopUp(isPopUpOpen);
+			return;
+		}
+
+		const sortedFighterArray = allFighters.toSorted(
+			(a, b) => b.op_cost - a.op_cost
+		);
 
 		// model.uiState.weaponPopUp.currentWeaponTypes = currentWeaponTypes;
 		model.uiState.fighterPopUp.currentFighterArray = sortedFighterArray;
-		model.uiState.currentWeaponSlot = currentFighterSlot;
+		model.uiState.currentWeaponSlot = newWeaponSlot;
+
 		// eventListener to close fighter menu
 		// builderLogic.fighterPopUpTableSorter(btn);
 		builderLogic.fighterPopUpRender();
 		builderLogic.fighterPopUpHandlers();
-		//
+		builderLeftView.fighterBayActiveWeaponSlot(fighterId);
+	},
+	fighterBayAddFightersToButton(wpnId, currentWeaponSlot) {
+		const currentWeaponsArray = model.uiState.fighterPopUp.currentFighterArray;
+		const currentWeapon = currentWeaponsArray.find(
+			(currentWeapon) => currentWeapon.id === wpnId
+		);
+
+		builderLeftView.renderComponent(
+			builderLeftView.figherBayAddFighterRender(
+				currentWeapon,
+				currentWeaponSlot
+			)
+		);
+
+		// // Table Hover Effect Handler
+		// builderLeftView.removeEventListener(
+		// 	builderLogic.showAdditionalInformationOnHoverForFighter
+		// );
+		// builderLeftView.addEventListenerReturnDataSet(
+		// 	builderLeftView.fighterPopUpHoverEffect(
+		// 		builderLogic.showAdditionalInformationOnHoverForFighter
+		// 	)
+		// );
+		//! 23/12
+		// Add Hover Handler
+		// Table Hover Effect Handler
+		EventHandlers.removeEventListener(builderLogic.fighterTest);
+		EventHandlers.addEventListenerReturnDataSet(
+			EventHandlers.fighterShowAdditionaInformation(builderLogic.fighterTest)
+		);
+	},
+	fighterTest() {
+		console.log("test");
 	},
 	weaponButton(btn) {
 		const { id } = btn.dataset;
 		const { _baseWeaponSlots } = model.state.currentShipBuild;
 		const { allWeapons } = model.state;
 
+		//? Filter from 170 => 110
+		const filteredWeapons = allWeapons.filter(
+			(weapon) =>
+				weapon.id !== "" &&
+				weapon.tier !== "" &&
+				weapon.hints !== "SYSTEM" &&
+				weapon.tags !== "SYSTEM" &&
+				"restricted" &&
+				weapon.groupTag !== "restricted"
+		);
 		// const [currentWeaponSlot] = (model.uiState.weaponPopUp.currentWeaponSlot = _baseWeaponSlots.filter((slot) => slot.id === id));
-		const [currentWeaponSlot] = _baseWeaponSlots.filter((slot) => slot.id === id);
+		const [currentWeaponSlot] = _baseWeaponSlots.filter(
+			(slot) => slot.id === id
+		);
 		const generalFilter = (weaponArray, currentSlot) => {
 			const SIZE = {
 				LARGE: "LARGE",
@@ -352,17 +523,23 @@ const builderLogic = {
 			};
 
 			const sizeFilter = {
-				[SIZE.LARGE]: (wpn) => wpn.additionalWeaponData.size === SIZE.LARGE || wpn.additionalWeaponData.size === SIZE.MEDIUM,
+				[SIZE.LARGE]: (wpn) =>
+					wpn.additionalWeaponData.size === SIZE.LARGE ||
+					wpn.additionalWeaponData.size === SIZE.MEDIUM,
 				[SIZE.MEDIUM]: (wpn) =>
 					wpn.additionalWeaponData.size === SIZE.MEDIUM ||
-					(wpn.additionalWeaponData.size === SIZE.SMALL && wpn.type === wpn.additionalWeaponData.mountTypeOverride),
+					(wpn.additionalWeaponData.size === SIZE.SMALL &&
+						wpn.type === wpn.additionalWeaponData.mountTypeOverride),
 				[SIZE.SMALL]: (wpn) => wpn.additionalWeaponData.size === SIZE.SMALL,
 			};
 
 			const typeFilter = {
-				[mountType.BALLISTIC]: (wpn) => wpn.additionalWeaponData.type === mountType.BALLISTIC,
-				[mountType.ENERGY]: (wpn) => wpn.additionalWeaponData.type === mountType.ENERGY,
-				[mountType.MISSILE]: (wpn) => wpn.additionalWeaponData.type === mountType.MISSILE,
+				[mountType.BALLISTIC]: (wpn) =>
+					wpn.additionalWeaponData.type === mountType.BALLISTIC,
+				[mountType.ENERGY]: (wpn) =>
+					wpn.additionalWeaponData.type === mountType.ENERGY,
+				[mountType.MISSILE]: (wpn) =>
+					wpn.additionalWeaponData.type === mountType.MISSILE,
 				[mountType.HYBRID]: (wpn) =>
 					wpn.additionalWeaponData.type === mountType.BALLISTIC ||
 					wpn.additionalWeaponData.type === mountType.ENERGY ||
@@ -392,11 +569,17 @@ const builderLogic = {
 					})
 			);
 
-			return sizeFilterArray.sort((a, b) => Number.parseInt(b.OPs) - Number.parseInt(a.OPs));
+			return sizeFilterArray.sort(
+				(a, b) => Number.parseInt(b.OPs) - Number.parseInt(a.OPs)
+			);
 		};
 		//
-		const currentWeaponArray = (model.uiState.weaponPopUp.currentArrayState = generalFilter(allWeapons, currentWeaponSlot));
-		const currentWeaponTypes = [...new Set(currentWeaponArray.map((wpn) => wpn.type))];
+		const currentWeaponArray = (model.uiState.weaponPopUp.currentArrayState =
+			generalFilter(filteredWeapons, currentWeaponSlot));
+
+		const currentWeaponTypes = [
+			...new Set(currentWeaponArray.map((wpn) => wpn.type)),
+		];
 		//
 		model.uiState.weaponPopUp.currentWeaponTypes = currentWeaponTypes;
 		model.uiState.weaponPopUp.currentWeaponArray = currentWeaponArray;
@@ -409,9 +592,14 @@ const builderLogic = {
 	//! Should be united into ONE
 	fighterPopUpTableSorter(btn) {
 		const category = btn.dataset.category;
-		const { previousSortState, isAscending, currentFighterArray: originalArrayState } = model.uiState.fighterPopUp;
+		const {
+			previousSortState,
+			isAscending,
+			currentFighterArray: originalArrayState,
+		} = model.uiState.fighterPopUp;
 		const currentWeaponSlot = model.uiState.currentWeaponSlot;
-		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
+		const currentInstalledWeapons =
+			model.state.currentShipBuild.currentInstalledWeapons;
 
 		// Mapping of sort categories to their corresponding object keys and sort types
 		const SORT_CONFIGS = {
@@ -437,7 +625,9 @@ const builderLogic = {
 			const valueB = b[sortConfig.key];
 
 			if (sortConfig.type === "text") {
-				return newIsAscending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+				return newIsAscending
+					? valueA.localeCompare(valueB)
+					: valueB.localeCompare(valueA);
 			}
 
 			if (sortConfig.type === "number") {
@@ -453,11 +643,22 @@ const builderLogic = {
 			currentArrayState,
 		};
 		// Render updated component
-		builderLeftView.renderComponent(builderLeftView.fighterPopUpTableContentRender(currentArrayState, currentInstalledWeapons, [currentWeaponSlot]));
+		FighterPopUpTable.renderComponent(
+			FighterPopUpTable.tableContentRender(
+				currentArrayState,
+				currentInstalledWeapons,
+				[currentWeaponSlot]
+			)
+		);
 	},
 	weaponPopUpTableSorter(btn) {
-		const { previousSortState, isAscending, currentArrayState: originalArrayState } = model.uiState.weaponPopUp;
-		const currentInstalledWeapons = model.state.currentShipBuild.currentInstalledWeapons;
+		const {
+			previousSortState,
+			isAscending,
+			currentArrayState: originalArrayState,
+		} = model.uiState.weaponPopUp;
+		const currentInstalledWeapons =
+			model.state.currentShipBuild.currentInstalledWeapons;
 		const currentWeaponSlot = model.uiState.currentWeaponSlot;
 		const category = btn.dataset.category;
 		// Mapping of sort categories to their corresponding object keys and sort types
@@ -482,7 +683,9 @@ const builderLogic = {
 			const valueB = b[sortConfig.key];
 
 			if (sortConfig.type === "text") {
-				return newIsAscending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+				return newIsAscending
+					? valueA.localeCompare(valueB)
+					: valueB.localeCompare(valueA);
 			}
 
 			if (sortConfig.type === "number") {
@@ -498,80 +701,157 @@ const builderLogic = {
 		};
 
 		// Render updated component
-		builderCenterView.renderComponent(builderCenterView.weaponPopUpTableContentRender(currentArrayState, currentInstalledWeapons, [currentWeaponSlot]));
+		builderCenterView.renderComponent(
+			builderCenterView.weaponPopUpTableContentRender(
+				currentArrayState,
+				currentInstalledWeapons,
+				[currentWeaponSlot]
+			)
+		);
 	},
 	//
 	addCurrentWeaponFromPopUpToTheShip(btn) {
 		const weaponId = btn.dataset.id;
 		const { currentShipBuild } = model.state;
-		const { currentWeaponSlot } = model.uiState;
-		let popUpType = currentWeaponSlot.type === "LAUNCH_BAY" ? "fighter" : "weapon";
+		const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
-		currentShipBuild.currentInstalledWeapons = currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
-			slotId === currentWeaponSlot.id ? [slotId, weaponId] : [slotId, currentWeapon]
-		);
+		currentShipBuild.currentInstalledWeapons =
+			currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
+				slotId === currentWeaponSlot.id
+					? [slotId, weaponId]
+					: [slotId, currentWeapon]
+			);
 
-		popUpType === "weapon" && builderLogic.replaceCurrentWeaponSprite(weaponId, currentWeaponSlot);
+		currentWeaponSlot.type !== "LAUNCH_BAY"
+			? builderLogic.replaceCurrentWeaponSprite(weaponId, currentWeaponSlot)
+			: builderLogic.fighterBayAddFightersToButton(weaponId, currentWeaponSlot);
 
-		builderCenterView.weaponPopUpFormRemover(`${popUpType}`);
+		builderCenterView.weaponPopUpFormRemover(currentWeaponSlot);
+		builderLeftView.fighterBayButtonRemoveAllActiveClasses();
+		//
+		model.uiState.currentWeaponSlot = "";
 	},
 	// Similiar but different
+	// I can probably compress them
 	removeCurrentWeaponFromPopUpToTheShip(btn) {
-		const weaponId = btn.dataset.id;
+		// const weaponId = btn.dataset.id;
 		const { currentShipBuild } = model.state;
 		const { currentWeaponArray } = model.uiState.weaponPopUp;
 		const { currentWeaponSlot } = model.uiState;
 
-		currentShipBuild.currentInstalledWeapons = currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
-			slotId === currentWeaponSlot.id ? [slotId, weaponId] : [slotId, currentWeapon]
-		);
+		currentShipBuild.currentInstalledWeapons =
+			currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
+				slotId === currentWeaponSlot.id ? [slotId, ""] : [slotId, currentWeapon]
+			);
 
-		builderLogic.removeCurrentWeaponSprite(weaponId);
+		builderLogic.removeCurrentWeaponAndFighterSlot("weapon");
 		builderCenterView.renderComponent(
-			builderCenterView.weaponPopUpTableContentRender(currentWeaponArray, currentShipBuild.currentInstalledWeapons, currentWeaponSlot.id)
+			builderCenterView.weaponPopUpTableContentRender(
+				currentWeaponArray,
+				currentShipBuild.currentInstalledWeapons,
+				currentWeaponSlot.id
+			)
 		);
 
 		//! bad implementation, but it works
-		builderCenterView.removeEventListener(builderLogic.addCurrentWeaponFromPopUpToTheShip);
-		builderCenterView.addEventListenerReturnDataSet(builderCenterView.weaponPopUpTableHandler(builderLogic.addCurrentWeaponFromPopUpToTheShip));
+		EventHandlers.removeEventListener(
+			builderLogic.addCurrentWeaponFromPopUpToTheShip
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderCenterView.weaponPopUpTableHandler(
+				builderLogic.addCurrentWeaponFromPopUpToTheShip
+			)
+		);
 	},
 	removeCurrentFighterFromPopUpToTheShip(btn) {
-		const weaponId = btn.dataset.id;
-		const { currentShipBuild } = model.state;
-		const { currentFighterArray } = model.uiState.fighterPopUp;
-		const { currentWeaponSlot } = model.uiState;
+		// const weaponId = btn.dataset.id;
+		const currentInstalledWeapons =
+			model.state.currentShipBuild.currentInstalledWeapons;
+		const currentFighterArray = model.uiState.fighterPopUp.currentFighterArray;
+		const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
-		currentShipBuild.currentInstalledWeapons = currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
-			slotId === currentWeaponSlot.id ? [slotId, weaponId] : [slotId, currentWeapon]
+		const newInstalledWeapons = currentInstalledWeapons.map(
+			([slotId, currentWeapon]) =>
+				slotId === currentWeaponSlot.id ? [slotId, ""] : [slotId, currentWeapon]
 		);
 
-		builderLeftView.renderComponent(
-			builderLeftView.fighterPopUpTableContentRender(currentFighterArray, currentShipBuild.currentInstalledWeapons, currentWeaponSlot.id)
+		builderLogic.removeCurrentWeaponAndFighterSlot("fighter");
+		FighterPopUpTable.renderComponent(
+			FighterPopUpTable.tableContentRender(
+				currentFighterArray,
+				newInstalledWeapons,
+				currentWeaponSlot.id
+			)
 		);
 
 		//! bad implementation, but it works
-		builderLeftView.removeEventListener(builderLogic.addCurrentWeaponFromPopUpToTheShip);
-		builderLeftView.addEventListenerReturnDataSet(builderLeftView.fighterPopUpTableHandler(builderLogic.addCurrentWeaponFromPopUpToTheShip));
+		EventHandlers.removeEventListener(
+			builderLogic.addCurrentWeaponFromPopUpToTheShip
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderLeftView.fighterPopUpTableHandler(
+				builderLogic.addCurrentWeaponFromPopUpToTheShip
+			)
+		);
+
+		model.state.currentShipBuild.currentInstalledWeapons = newInstalledWeapons;
 	},
 	//
+
 	showAdditionalInformationOnHover(btn) {
 		const { id } = btn.dataset;
-		if (model.uiState.weaponPopUp.currentWeaponHover !== id) {
-			const { currentArrayState } = model.uiState.weaponPopUp;
-			const [currentHoveredWeapon] = currentArrayState.filter((weaponObj) => weaponObj.id === id);
+		const { weaponPopUp } = model.uiState;
 
-			builderCenterView.renderComponent(
-				builderCenterView.weaponPopUpHoverAdditionalInformationRender(weaponObjectData(currentHoveredWeapon), currentHoveredWeapon)
-			);
-		}
-		model.uiState.weaponPopUp.currentWeaponHover = id;
+		if (weaponPopUp.currentWeaponHover === id) return;
+
+		const currentHoveredWeapon = weaponPopUp.currentArrayState.find(
+			(weaponObj) => weaponObj.id === id
+		);
+		const weaponObject = weaponObjectData(currentHoveredWeapon);
+
+		builderCenterView.renderComponent(
+			builderCenterView.weaponPopUpHoverAdditionalInformationRender(
+				weaponObject,
+				currentHoveredWeapon
+			)
+		);
+
+		weaponPopUp.currentWeaponHover = id;
+	},
+	//!
+	showAdditionalInformationOnHoverForFighter(btn) {
+		const { id } = btn.dataset;
+		const { fighterPopUp } = model.uiState;
+		const { allWeapons, allShipHulls } = model.state;
+
+		//
+		if (fighterPopUp.currentWeaponHover === id) return;
+
+		const currentHoveredWeapon = fighterPopUp.currentFighterArray.find(
+			(fighterObject) => fighterObject.id === id
+		);
+
+		FighterPopUpTableHover.renderComponent(
+			FighterPopUpTableHover.hoverAdditionalInformationRender(
+				currentHoveredWeapon,
+				allWeapons,
+				allShipHulls
+			)
+		);
+
+		fighterPopUp.currentWeaponHover = id;
 	},
 
 	replaceCurrentWeaponSprite(id, currentWeaponSlot) {
 		const { allWeapons } = model.state;
 		const [weaponObject] = allWeapons.filter((wpn) => wpn.id === id);
 
-		builderCenterView.renderComponent(builderCenterView.addCurrentWeaponSpriteToShipRender(currentWeaponSlot, weaponObject));
+		builderCenterView.renderComponent(
+			builderCenterView.addCurrentWeaponSpriteToShipRender(
+				currentWeaponSlot,
+				weaponObject
+			)
+		);
 		builderCenterView.weaponArcAndAngleChangeCoords();
 
 		builderLogic.currentWeaponSpritePxIntoRemConversion(currentWeaponSlot.id);
@@ -579,18 +859,18 @@ const builderLogic = {
 	},
 	weaponSpriteRotate(currentWeaponSlot) {
 		const { id: weaponSlotId, angle } = currentWeaponSlot;
-		const localParent = `[data-id="${weaponSlotId}"]`;
+		const localParent = `[${DataSet.dataId}="${weaponSlotId}"]`;
 
-		const weaponSprite = builderCenterView.weaponSprite;
-		const weaponSlotClass = builderCenterView.weaponSlotClass;
-
-		const targetElement = document.querySelector(`.${weaponSlotClass}${localParent} .${weaponSprite}`);
+		const targetElement = document.querySelector(
+			`.${classNames.weaponSlot}${localParent} .${classNames.weaponSprite}`
+		);
 		targetElement.style.setProperty("--weapon-rotate", `${-angle}deg`);
 	},
 	currentWeaponSpritePxIntoRemConversion(weaponSlotId) {
-		const localParent = `[data-id="${weaponSlotId}"]`;
-		// TODO import class name from view
-		const target = document.querySelector(`${localParent} .${builderCenterView.weaponSprite}`);
+		const localParent = `[${DataSet.dataId}="${weaponSlotId}"]`;
+		const target = document.querySelector(
+			`${localParent} .${classNames.weaponSprite}`
+		);
 		const targetChildren = Array.from(target.children);
 
 		const [base, gun] = targetChildren;
@@ -612,11 +892,18 @@ const builderLogic = {
 			gun.style.height = `${calc(gunHeight)}rem`;
 		}
 	},
-	removeCurrentWeaponSprite(id) {
-		const weaponSlotId = model.uiState.currentWeaponSlot.id;
+	removeCurrentWeaponAndFighterSlot(type) {
+		const id = model.uiState.currentWeaponSlot.id;
+		const selectors = {
+			weapon: `[${DataSet.dataId}="${id}"] .${classNames.weaponSprite}`,
+			fighter: `[${DataSet.dataFighterId}="${id}"] .${classNames.weaponSpriteParent}`,
+		};
 
-		builderCenterView.removeCurrentWeaponSpriteToShipRender(weaponSlotId);
-		builderCenterView.renderComponent(builderCenterView.removeCurrentWeaponSpriteToShipRender(weaponSlotId));
+		const selector = selectors[type];
+		if (selector) {
+			const element = document.querySelector(selector);
+			builderCenterView.clearRender(element);
+		}
 	},
 	hullModLogic() {
 		const { activeHullMods } = model.state.currentShipBuild.hullMods;
@@ -625,7 +912,8 @@ const builderLogic = {
 		// then apply new values.
 		//
 		resetData.resetDataController();
-		const listOfAllModifiedCurrentShipBuildProperties = this.initAllActiveHullModsEffects(activeHullMods, hullModEffectLibrary);
+		const listOfAllModifiedCurrentShipBuildProperties =
+			this.initAllActiveHullModsEffects(activeHullMods, hullModEffectLibrary);
 
 		this.saveNamesOfChangedData(listOfAllModifiedCurrentShipBuildProperties);
 
@@ -663,7 +951,9 @@ const builderLogic = {
 	toCamelCase(str) {
 		return str
 			.replace(/-/g, "") // Remove all hyphens
-			.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => (index === 0 ? letter.toLowerCase() : letter.toUpperCase()))
+			.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) =>
+				index === 0 ? letter.toLowerCase() : letter.toUpperCase()
+			)
 			.replace(/\s+/g, "");
 	},
 };
@@ -676,11 +966,21 @@ const hullModController = {
 
 		//? Filter (Header)
 		// popUpHullModMenuBehavior Handler Pair
-		builderPopUpView.removeEventListener(hullModController.popUpHullModMenuBehavior);
-		builderPopUpView.addEventListenerReturnDataSet(builderPopUpView.popUpFilterHandler(hullModController.popUpHullModMenuBehavior));
+		EventHandlers.removeEventListener(
+			hullModController.popUpHullModMenuBehavior
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderPopUpView.popUpFilterHandler(
+				hullModController.popUpHullModMenuBehavior
+			)
+		);
 		// Add Remove Hull Mod Handler Pair
-		builderPopUpView.removeEventListener(hullModController.addRemoveHullMod);
-		builderPopUpView.addEventListenerReturnDataSet(builderPopUpView.addHandlerToAddRemoveHullMod(hullModController.addRemoveHullMod));
+		EventHandlers.removeEventListener(hullModController.addRemoveHullMod);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderPopUpView.addHandlerToAddRemoveHullMod(
+				hullModController.addRemoveHullMod
+			)
+		);
 	},
 	hullModsMenu(btn) {
 		const { type } = btn.dataset;
@@ -694,7 +994,9 @@ const hullModController = {
 	},
 	hullModsMenuRegular(btn) {
 		//
-		model.uiState.hullModsMenu.menuState === "closed" ? (model.uiState.hullModsMenu.menuState = "open") : (model.uiState.hullModsMenu.menuState = "closed");
+		model.uiState.hullModsMenu.menuState === "closed"
+			? (model.uiState.hullModsMenu.menuState = "open")
+			: (model.uiState.hullModsMenu.menuState = "closed");
 		//
 		if (model.uiState.hullModsMenu.menuState === "open") {
 			// initializations
@@ -718,19 +1020,37 @@ const hullModController = {
 		builderPopUpView.masterRender(model.state);
 
 		// Pop Up Menu Handler
-		builderPopUpView.removeEventListener(hullModController.popUpHullModMenuBehavior);
-		builderPopUpView.addEventListenerReturnDataSet(builderPopUpView.popUpFilterHandler(hullModController.popUpHullModMenuBehavior));
+		EventHandlers.removeEventListener(
+			hullModController.popUpHullModMenuBehavior
+		);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderPopUpView.popUpFilterHandler(
+				hullModController.popUpHullModMenuBehavior
+			)
+		);
 
 		// Add / Remove Buttons Handler
-		builderPopUpView.removeEventListener(hullModController.addRemoveHullMod);
-		builderPopUpView.addEventListenerReturnDataSet(builderPopUpView.addHandlerToAddRemoveHullMod(hullModController.addRemoveHullMod));
+		EventHandlers.removeEventListener(hullModController.addRemoveHullMod);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderPopUpView.addHandlerToAddRemoveHullMod(
+				hullModController.addRemoveHullMod
+			)
+		);
 
 		// Show More Description Btn Handler
-		builderPopUpView.removeEventListener(hullModController.showMoreButtonToggle);
-		builderPopUpView.addEventListenerReturnDataSet(builderPopUpView.showMoreHullModDescriptionHandler(hullModController.showMoreButtonToggle));
+		EventHandlers.removeEventListener(hullModController.showMoreButtonToggle);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderPopUpView.showMoreHullModDescriptionHandler(
+				hullModController.showMoreButtonToggle
+			)
+		);
 		// Hide Description Btn Handler
-		builderPopUpView.removeEventListener(hullModController.hideHullModDescription);
-		builderPopUpView.addEventListenerReturnDataSet(builderPopUpView.hideHullModDescriptionHandler(hullModController.hideHullModDescription));
+		EventHandlers.removeEventListener(hullModController.hideHullModDescription);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderPopUpView.hideHullModDescriptionHandler(
+				hullModController.hideHullModDescription
+			)
+		);
 		// Render
 		builderPopUpView.addRemoveHullModToggleButtonRender();
 	},
@@ -740,9 +1060,14 @@ const hullModController = {
 	addRemoveHullMod(btn) {
 		if (!btn) return;
 
-		const [activeHullMods, filteredHullMod, isHullModActive] = hullModController.addRemoveHullModFilterHelperFunction(btn);
+		const [activeHullMods, filteredHullMod, isHullModActive] =
+			hullModController.addRemoveHullModFilterHelperFunction(btn);
 
-		hullModController.addRemoveHullModToggle(activeHullMods, filteredHullMod, isHullModActive);
+		hullModController.addRemoveHullModToggle(
+			activeHullMods,
+			filteredHullMod,
+			isHullModActive
+		);
 		// checks and renders change in button state. Fancy, as should check if menu closed or open.
 		builderPopUpView.addRemoveHullModToggleButtonRender();
 		//
@@ -761,7 +1086,9 @@ const hullModController = {
 		const { id } = btn.dataset;
 		const filteredHullMod = state.usableHullMods.find((e) => e.id === id);
 
-		const isHullModActive = activeHullMods.some((hullMod) => hullMod.id === filteredHullMod.id);
+		const isHullModActive = activeHullMods.some(
+			(hullMod) => hullMod.id === filteredHullMod.id
+		);
 		return [activeHullMods, filteredHullMod, isHullModActive];
 	},
 	addRemoveHullModToggle(activeHullMods, filteredHullMod, isHullModActive) {
@@ -774,15 +1101,24 @@ const hullModController = {
 	},
 	addHullMod(hullMod, activeHullMods) {
 		activeHullMods.push(hullMod);
-		ordinancePointsController.updateCurrentOrdinancePoints(calculateHullModCost(hullMod));
+		ordinancePointsController.updateCurrentOrdinancePoints(
+			calculateHullModCost(hullMod)
+		);
 		// Add new hull mod, and new controller for it, so you can remove it on the right side.
-		builderRightView.removeEventListener(hullModController.addRemoveHullMod);
-		builderRightView.addEventListenerReturnDataSet(builderRightView.addedRegularHullModsHandler(hullModController.addRemoveHullMod));
+		EventHandlers.removeEventListener(hullModController.addRemoveHullMod);
+		EventHandlers.addEventListenerReturnDataSet(
+			builderRightView.addedRegularHullModsHandler(
+				hullModController.addRemoveHullMod
+			)
+		);
 		builderLogic.hullModLogic();
 	},
 	removeHullMod(hullMod, activeHullMods) {
-		ordinancePointsController.updateCurrentOrdinancePoints(-calculateHullModCost(hullMod));
-		model.state.currentShipBuild.hullMods.activeHullMods = activeHullMods.filter((mod) => mod.id !== hullMod.id);
+		ordinancePointsController.updateCurrentOrdinancePoints(
+			-calculateHullModCost(hullMod)
+		);
+		model.state.currentShipBuild.hullMods.activeHullMods =
+			activeHullMods.filter((mod) => mod.id !== hullMod.id);
 
 		builderLogic.hullModLogic();
 	},
@@ -791,22 +1127,30 @@ const hullModController = {
 		const target = document.querySelector(`#hullmod__${id} .hullmod__desc`);
 
 		//
-		const fullText = model.state.usableHullMods.map((hullMod) => (hullMod.id === id ? hullMod.desc : "")).join("");
+		const fullText = model.state.usableHullMods
+			.map((hullMod) => (hullMod.id === id ? hullMod.desc : ""))
+			.join("");
 
-		target.innerHTML = `${fullText} <button class="hullmod__desc__close hullmod__desc__show-more" data-id="${id}">[Close]</button>`;
+		target.innerHTML = `${fullText} <button class="hullmod__desc__close hullmod__desc__show-more" ${DataSet.dataId}="${id}">[Close]</button>`;
 	},
 	hideHullModDescription(btn) {
 		const { id } = btn.dataset;
 		const target = document.querySelector(`#hullmod__${id} .hullmod__desc`);
-		const hullModDescription = model.state.usableHullMods.map((hullMod) => (hullMod.id === id ? hullMod.desc : "")).join("");
-		const fullText = builderPopUpView.hullModDescriptionShrink([hullModDescription, id]);
+		const hullModDescription = model.state.usableHullMods
+			.map((hullMod) => (hullMod.id === id ? hullMod.desc : ""))
+			.join("");
+		const fullText = builderPopUpView.hullModDescriptionShrink([
+			hullModDescription,
+			id,
+		]);
 
 		target.innerHTML = `${fullText}`;
 	},
 };
 
 const ordinancePointsController = {
-	currentOrdinancePointsTextClass: builderRightView.ordinancePointsRenderTextClass,
+	currentOrdinancePointsTextClass:
+		builderRightView.ordinancePointsRenderTextClass,
 	updateCurrentOrdinancePoints(value) {
 		model.state.currentShipBuild.currentOrdinancePoints += value;
 		builderRightView.renderComponent(builderRightView.ordinancePointsRender());
@@ -849,8 +1193,10 @@ const capacitorController = {
 	changeCurrentActiveCapacitors(btn) {
 		const { buttonValue } = btn.dataset;
 		const { activeCapacitors, maxCapacitors } = model.state.currentShipBuild;
-		if (buttonValue < 0 && activeCapacitors > 0) capacitorController.changeCurrentCapacitors(-1);
-		if (buttonValue > 0 && activeCapacitors < maxCapacitors) capacitorController.changeCurrentCapacitors(+1);
+		if (buttonValue < 0 && activeCapacitors > 0)
+			capacitorController.changeCurrentCapacitors(-1);
+		if (buttonValue > 0 && activeCapacitors < maxCapacitors)
+			capacitorController.changeCurrentCapacitors(+1);
 	},
 
 	changeCurrentCapacitors(value) {
@@ -867,20 +1213,29 @@ const capacitorController = {
 
 	increaseDecreaseCurrentFluxCapacity(value = 0) {
 		const { currentShipBuild } = model.state;
-		const { currentFluxCapacity, currentFluxCapacityPerSingleActiveCapacitor } = currentShipBuild;
+		const { currentFluxCapacity, currentFluxCapacityPerSingleActiveCapacitor } =
+			currentShipBuild;
 
 		if (value === -1) {
-			model.state.currentShipBuild.currentFluxCapacity = currentFluxCapacity - currentFluxCapacityPerSingleActiveCapacitor;
+			model.state.currentShipBuild.currentFluxCapacity =
+				currentFluxCapacity - currentFluxCapacityPerSingleActiveCapacitor;
 		}
 		if (value === 1) {
-			model.state.currentShipBuild.currentFluxCapacity = currentFluxCapacity + currentFluxCapacityPerSingleActiveCapacitor;
+			model.state.currentShipBuild.currentFluxCapacity =
+				currentFluxCapacity + currentFluxCapacityPerSingleActiveCapacitor;
 		}
 	},
 	fluxCapacityCalcBasedOnActiveCapacitors() {
 		// used for resetData function
-		const { _baseFluxCapacity, activeCapacitors, currentFluxCapacityPerSingleActiveCapacitor } = model.state.currentShipBuild;
+		const {
+			_baseFluxCapacity,
+			activeCapacitors,
+			currentFluxCapacityPerSingleActiveCapacitor,
+		} = model.state.currentShipBuild;
 
-		model.state.currentShipBuild.currentFluxCapacity = _baseFluxCapacity + activeCapacitors * currentFluxCapacityPerSingleActiveCapacitor;
+		model.state.currentShipBuild.currentFluxCapacity =
+			_baseFluxCapacity +
+			activeCapacitors * currentFluxCapacityPerSingleActiveCapacitor;
 	},
 };
 const ventController = {
@@ -888,34 +1243,49 @@ const ventController = {
 		const { buttonValue } = btn.dataset;
 
 		const { activeVents, maxVents } = model.state.currentShipBuild;
-		if (buttonValue < 0 && activeVents > 0) ventController.changeCurrentVents(-1);
-		if (buttonValue > 0 && activeVents < maxVents) ventController.changeCurrentVents(+1);
+		if (buttonValue < 0 && activeVents > 0)
+			ventController.changeCurrentVents(-1);
+		if (buttonValue > 0 && activeVents < maxVents)
+			ventController.changeCurrentVents(+1);
 	},
 	changeCurrentVents(value) {
 		const { currentShipBuild } = model.state;
 
 		currentShipBuild.activeVents += value;
 
-		ordinancePointsController.updateCurrentOrdinancePoints(currentShipBuild.activeVentsOrdinanceCost + value - 1);
+		ordinancePointsController.updateCurrentOrdinancePoints(
+			currentShipBuild.activeVentsOrdinanceCost + value - 1
+		);
 		ventController.increaseDecreaseCurrentFluxDissipation(value);
 		ventsRender();
 	},
 
 	increaseDecreaseCurrentFluxDissipation(value = 0) {
-		const { currentFluxDissipation, currentFluxDissipationPerSingleActiveVent } = model.state.currentShipBuild;
+		const {
+			currentFluxDissipation,
+			currentFluxDissipationPerSingleActiveVent,
+		} = model.state.currentShipBuild;
 
 		if (value === -1) {
-			model.state.currentShipBuild.currentFluxDissipation = currentFluxDissipation - currentFluxDissipationPerSingleActiveVent;
+			model.state.currentShipBuild.currentFluxDissipation =
+				currentFluxDissipation - currentFluxDissipationPerSingleActiveVent;
 		}
 		if (value === 1) {
-			model.state.currentShipBuild.currentFluxDissipation = currentFluxDissipation + currentFluxDissipationPerSingleActiveVent;
+			model.state.currentShipBuild.currentFluxDissipation =
+				currentFluxDissipation + currentFluxDissipationPerSingleActiveVent;
 		}
 	},
 	ventDissipationCalcBasedOnActiveVents() {
 		// used for resetData function
-		const { _baseFluxDissipation, activeVents, currentFluxDissipationPerSingleActiveVent } = model.state.currentShipBuild;
+		const {
+			_baseFluxDissipation,
+			activeVents,
+			currentFluxDissipationPerSingleActiveVent,
+		} = model.state.currentShipBuild;
 
-		model.state.currentShipBuild.currentFluxDissipation = _baseFluxDissipation + activeVents * currentFluxDissipationPerSingleActiveVent;
+		model.state.currentShipBuild.currentFluxDissipation =
+			_baseFluxDissipation +
+			activeVents * currentFluxDissipationPerSingleActiveVent;
 	},
 };
 

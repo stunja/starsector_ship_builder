@@ -51,3 +51,6 @@ button:hover {
 .d-grid {
 	display: grid;
 }
+.text-align-right {
+	text-align: right;
+}
