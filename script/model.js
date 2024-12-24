@@ -26,13 +26,11 @@ export const uiState = {
 	weaponPopUp: {
 		previousSortState: "cost",
 		isAscending: false,
-		currentWeaponHover: "",
 		currentWeaponTypes: {},
 	},
 	fighterPopUp: {
 		previousSortState: "cost",
 		isAscending: false,
-		currentWeaponHover: "",
 		allWeaponTypes: {
 			ALL: "ALL",
 			ENERGY: "ENERGY",
@@ -44,17 +42,12 @@ export const uiState = {
 		isOpen: true,
 	},
 	currentWeaponSlot: "",
-	currentFighterSlot: "",
+	// currentFighterSlot: "",
+	currentWeaponHover: "",
 };
 
 const hullModsHolder = {
-	hullModGenericBasedOnHullSizeCalc(
-		shipSize,
-		capitalValue,
-		cruiserValue,
-		destroyerValue,
-		frigateValue
-	) {
+	hullModGenericBasedOnHullSizeCalc(shipSize, capitalValue, cruiserValue, destroyerValue, frigateValue) {
 		return shipSize === "capital"
 			? capitalValue
 			: shipSize === "cruiser"
@@ -74,27 +67,17 @@ const hullModsHolder = {
 		// const percentValue = 2; 100% old data shows 100%
 		const percentValue = 0.5; // 50% in game for some reason
 		//
-		state.currentShipBuild[target] +=
-			state.currentShipBuild[base] * percentValue;
+		state.currentShipBuild[target] += state.currentShipBuild[base] * percentValue;
 		return target;
 	},
 	cargoFuelCrewGenericCalc(target, base) {
 		const { currentShipBuild } = state;
-		const valueByShipSize = hullModsHolder.hullModGenericBasedOnHullSizeCalc(
-			state.currentShipBuild.shipSize,
-			200,
-			100,
-			60,
-			30
-		);
+		const valueByShipSize = hullModsHolder.hullModGenericBasedOnHullSizeCalc(state.currentShipBuild.shipSize, 200, 100, 60, 30);
 
 		const percentValue = 0.3; // 30% of base value
 		const valueByPercentFromBase = currentShipBuild[base] * percentValue;
 
-		const finalValue =
-			valueByShipSize > valueByPercentFromBase
-				? valueByShipSize
-				: valueByPercentFromBase;
+		const finalValue = valueByShipSize > valueByPercentFromBase ? valueByShipSize : valueByPercentFromBase;
 		//
 		state.currentShipBuild[target] += finalValue;
 		//
@@ -122,10 +105,7 @@ const hullModsHolder = {
 			const target = "currentMaxCrew";
 			const base = "_baseMaxCrew";
 
-			return [
-				hullModsHolder.cargoFuelCrewGenericCalc(target, base),
-				hullModsHolder.supplyIncreaseIfCivilianShip(),
-			];
+			return [hullModsHolder.cargoFuelCrewGenericCalc(target, base), hullModsHolder.supplyIncreaseIfCivilianShip()];
 		},
 		advancedOptics() {
 			console.log("advancedOptics");
@@ -143,8 +123,7 @@ const hullModsHolder = {
 			const base = "_baseArmor";
 			const percentValue = 0.1;
 
-			state.currentShipBuild[target] +=
-				state.currentShipBuild[base] * percentValue;
+			state.currentShipBuild[target] += state.currentShipBuild[base] * percentValue;
 			return [target];
 		},
 
@@ -167,10 +146,7 @@ const hullModsHolder = {
 			const target = "currentFuelCap";
 			const base = "_baseFuelCap";
 
-			return [
-				hullModsHolder.cargoFuelCrewGenericCalc(target, base),
-				hullModsHolder.supplyIncreaseIfCivilianShip(),
-			];
+			return [hullModsHolder.cargoFuelCrewGenericCalc(target, base), hullModsHolder.supplyIncreaseIfCivilianShip()];
 		},
 		auxiliaryThrusters() {
 			console.log("auxiliaryThrusters");
@@ -192,8 +168,7 @@ const hullModsHolder = {
 			const base = "_baseHitPoints";
 			const percentValue = 0.2;
 
-			state.currentShipBuild[target] +=
-				state.currentShipBuild[base] * percentValue;
+			state.currentShipBuild[target] += state.currentShipBuild[base] * percentValue;
 			return [target];
 		},
 		civilianGradeHull() {
@@ -214,22 +189,16 @@ const hullModsHolder = {
 			const increaseCargoSize = () => {
 				const targetProperty = "currentCargoCap";
 				const value = 50;
-				state.currentShipBuild[targetProperty] +=
-					state.currentShipBuild[baseFighterBayProperty] * value;
+				state.currentShipBuild[targetProperty] += state.currentShipBuild[baseFighterBayProperty] * value;
 				return targetProperty;
 			};
 			const decreaseMinCrewReq = () => {
 				const targetProperty = "currentMinCrew";
 				const baseProperty = "_baseMinCrew";
-				const fighterBayLimit =
-					state.currentShipBuild[baseFighterBayProperty] > 4
-						? 4
-						: state.currentShipBuild[baseFighterBayProperty];
+				const fighterBayLimit = state.currentShipBuild[baseFighterBayProperty] > 4 ? 4 : state.currentShipBuild[baseFighterBayProperty];
 
 				const percentValue = 0.2;
-				const calc =
-					state.currentShipBuild[baseProperty] *
-					(fighterBayLimit * percentValue);
+				const calc = state.currentShipBuild[baseProperty] * (fighterBayLimit * percentValue);
 
 				state.currentShipBuild[targetProperty] -= calc;
 				//
@@ -327,10 +296,7 @@ const hullModsHolder = {
 			console.log("expandedCargoHolds");
 			const target = "currentCargoCap";
 			const base = "_baseCargoCap";
-			return [
-				hullModsHolder.cargoFuelCrewGenericCalc(target, base),
-				hullModsHolder.supplyIncreaseIfCivilianShip(),
-			];
+			return [hullModsHolder.cargoFuelCrewGenericCalc(target, base), hullModsHolder.supplyIncreaseIfCivilianShip()];
 		},
 		expandedDeckCrew() {
 			console.log("expandedDeckCrew");
@@ -340,8 +306,7 @@ const hullModsHolder = {
 			if (state.currentShipBuild[currentfighterBays] < 1) return;
 			//Increases the crew required by 20 per fighter bay.
 			const value = 20;
-			state.currentShipBuild[target] +=
-				state.currentShipBuild[currentfighterBays] * value;
+			state.currentShipBuild[target] += state.currentShipBuild[currentfighterBays] * value;
 
 			return [target];
 		},
@@ -369,13 +334,7 @@ const hullModsHolder = {
 		fluxCoilAdjunct() {
 			console.log("fluxCoilAdjunct");
 			const target = "currentFluxCapacity";
-			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(
-				state.currentShipBuild.shipSize,
-				3000,
-				1800,
-				1200,
-				600
-			);
+			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(state.currentShipBuild.shipSize, 3000, 1800, 1200, 600);
 			// Increases the ship's flux capacity by 600/1200/1800/3000, depending on hull size.
 			state.currentShipBuild[target] += value;
 
@@ -384,13 +343,7 @@ const hullModsHolder = {
 		fluxDistributor() {
 			console.log("fluxDistributor");
 			const target = "currentFluxDissipation";
-			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(
-				state.currentShipBuild.shipSize,
-				150,
-				90,
-				60,
-				30
-			);
+			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(state.currentShipBuild.shipSize, 150, 90, 60, 30);
 			state.currentShipBuild[target] += value;
 
 			return [target];
@@ -414,8 +367,7 @@ const hullModsHolder = {
 			//   state.currentShipBuild[target] -=
 			//     state.currentShipBuild[target] * percentValue;
 			// }
-			state.currentShipBuild[target] -=
-				state.currentShipBuild[base] * percentValue;
+			state.currentShipBuild[target] -= state.currentShipBuild[base] * percentValue;
 
 			return [target];
 		},
@@ -425,8 +377,7 @@ const hullModsHolder = {
 			const base = "_basePeakPerformanceSec";
 			const percentValue = 0.5;
 
-			state.currentShipBuild[target] +=
-				state.currentShipBuild[base] * percentValue;
+			state.currentShipBuild[target] += state.currentShipBuild[base] * percentValue;
 
 			return [target];
 		},
@@ -435,13 +386,7 @@ const hullModsHolder = {
 			const target = "currentArmor";
 			// const base = "_baseArmor";
 			// Increases the ship's armor by 150/300/400/500 points, depending on hull size.
-			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(
-				state.currentShipBuild.shipSize,
-				500,
-				400,
-				300,
-				150
-			);
+			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(state.currentShipBuild.shipSize, 500, 400, 300, 150);
 
 			state.currentShipBuild[target] += value;
 			return [target];
@@ -466,8 +411,7 @@ const hullModsHolder = {
 			const base = "_baseHitPoints";
 			const percentValue = 0.1;
 
-			state.currentShipBuild[target] +=
-				state.currentShipBuild[base] * percentValue;
+			state.currentShipBuild[target] += state.currentShipBuild[base] * percentValue;
 			return [target];
 		},
 		integratedPointDefenseAI() {
@@ -496,13 +440,7 @@ const hullModsHolder = {
 				state.currentShipBuild[shipShieldEfficiency] = 1.2;
 				state.currentShipBuild[shipCurrentShieldUpkeep] = 0.5; // upkeep is half your flux.
 
-				return [
-					shieldArcTarget,
-					shieldTypeTarget,
-					shipTypeTarget,
-					shipShieldEfficiency,
-					shipCurrentShieldUpkeep,
-				];
+				return [shieldArcTarget, shieldTypeTarget, shipTypeTarget, shipShieldEfficiency, shipCurrentShieldUpkeep];
 			};
 			//  The shield generator draws much of its power from engines and reduces the ship's top speed by 20%.
 			const decreaseCurrentSpeed = () => {
@@ -510,8 +448,7 @@ const hullModsHolder = {
 				const target = "currentSpeed";
 				const percentValue = 0.2;
 
-				state.currentShipBuild[target] -=
-					state.currentShipBuild[base] * percentValue;
+				state.currentShipBuild[target] -= state.currentShipBuild[base] * percentValue;
 
 				return target;
 			};
@@ -547,11 +484,7 @@ const hullModsHolder = {
 				state.currentShipBuild[target] = "military";
 				return target;
 			};
-			return [
-				increaseBurnRate(),
-				increaseMinCrewRequirment(),
-				changeCurrentShipToMil(),
-			];
+			return [increaseBurnRate(), increaseMinCrewRequirment(), changeCurrentShipToMil()];
 		},
 		missileAutoforge() {
 			console.log("missileAutoforge");
@@ -599,8 +532,7 @@ const hullModsHolder = {
 			const base = "_baseHitPoints";
 			const percentValue = 0.4;
 
-			state.currentShipBuild[target] +=
-				state.currentShipBuild[base] * percentValue;
+			state.currentShipBuild[target] += state.currentShipBuild[base] * percentValue;
 			return [target];
 		},
 		resistantFluxConduits() {
@@ -613,13 +545,7 @@ const hullModsHolder = {
 			// Disabling safety protocols increases the ship's top speed in combat by null/50/30/20
 			const increaseSpeed = () => {
 				const target = "currentSpeed";
-				const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(
-					state.currentShipBuild.shipSize,
-					null,
-					20,
-					30,
-					50
-				);
+				const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(state.currentShipBuild.shipSize, null, 20, 30, 50);
 				state.currentShipBuild[target] += value;
 				return target;
 			};
@@ -628,13 +554,7 @@ const hullModsHolder = {
 
 			const increaseAcceleration = () => {
 				const target = "currentAcceleration";
-				const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(
-					state.currentShipBuild.shipSize,
-					null,
-					20,
-					30,
-					50
-				);
+				const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(state.currentShipBuild.shipSize, null, 20, 30, 50);
 				state.currentShipBuild[target] += value;
 				return target;
 			};
@@ -644,8 +564,7 @@ const hullModsHolder = {
 				const base = "_baseFluxDissipation";
 				const { activeVents } = state.currentShipBuild;
 				const ventsValue = activeVents > 0 ? activeVents : 1;
-				state.currentShipBuild[target] =
-					state.currentShipBuild[base] * 2 + ventsValue * 20;
+				state.currentShipBuild[target] = state.currentShipBuild[base] * 2 + ventsValue * 20;
 				return target;
 			};
 			// active vents dissipation from 10 to 20 per vetn
@@ -662,17 +581,10 @@ const hullModsHolder = {
 				const target = "currentPeakPerformanceSec";
 				const base = "_basePeakPerformanceSec";
 				const percentValue = 3;
-				state.currentShipBuild[target] -=
-					(state.currentShipBuild[base] / percentValue) * 2;
+				state.currentShipBuild[target] -= (state.currentShipBuild[base] / percentValue) * 2;
 				return target;
 			};
-			return [
-				increaseSpeed(),
-				increaseAcceleration(),
-				doubleBaseDissipation(),
-				doubleActiveVentDissipation(),
-				reducePeakPerformance(),
-			];
+			return [increaseSpeed(), increaseAcceleration(), doubleBaseDissipation(), doubleActiveVentDissipation(), reducePeakPerformance()];
 			// Can not be installed on civilian or capital ships.
 		},
 		salvageGantry() {
@@ -695,8 +607,7 @@ const hullModsHolder = {
 				const fullCircle = 360;
 
 				state.currentShipBuild[target] += state.currentShipBuild[base];
-				if (state.currentShipBuild[target] >= fullCircle)
-					state.currentShipBuild[target] = fullCircle;
+				if (state.currentShipBuild[target] >= fullCircle) state.currentShipBuild[target] = fullCircle;
 				return target;
 			};
 			return [changeFrontToOmni(), increaseArc()];
@@ -714,8 +625,7 @@ const hullModsHolder = {
 				const target = "currentShieldArc";
 				const base = "_baseShieldArc";
 				const percentValue = 0.3;
-				state.currentShipBuild[target] -=
-					state.currentShipBuild[base] * percentValue;
+				state.currentShipBuild[target] -= state.currentShipBuild[base] * percentValue;
 				return target;
 			};
 			return [changeShieldToOmni(), decreaseArc()];
@@ -750,13 +660,7 @@ const hullModsHolder = {
 				state.currentShipBuild[shipShieldEfficiency] = "---";
 				state.currentShipBuild[shipCurrentShieldUpkeep] = "---"; // upkeep is half your flux.
 
-				return [
-					shieldArcTarget,
-					shieldTypeTarget,
-					shipTypeTarget,
-					shipShieldEfficiency,
-					shipCurrentShieldUpkeep,
-				];
+				return [shieldArcTarget, shieldTypeTarget, shipTypeTarget, shipShieldEfficiency, shipCurrentShieldUpkeep];
 			};
 			console.log(state.currentShipBuild);
 
@@ -772,8 +676,7 @@ const hullModsHolder = {
 			const base = "_baseShieldUpkeep";
 			// Reduces the amount of soft flux raised shields generate per second by 50%.
 			const percentValue = 0.5;
-			state.currentShipBuild[target] -=
-				state.currentShipBuild[base] * percentValue;
+			state.currentShipBuild[target] -= state.currentShipBuild[base] * percentValue;
 
 			return [target];
 		},
@@ -785,13 +688,7 @@ const hullModsHolder = {
 			console.log("unstableInjector");
 			const target = "currentSpeed";
 			// Increases the ship's top speed in combat by 25/20/15/15 su/second, depending on hull size.
-			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(
-				state.currentShipBuild.shipSize,
-				15,
-				15,
-				20,
-				25
-			);
+			const value = hullModsHolder.hullModGenericBasedOnHullSizeCalc(state.currentShipBuild.shipSize, 15, 15, 20, 25);
 
 			state.currentShipBuild[target] += value;
 			return [target];
@@ -813,11 +710,7 @@ const hullModsHolder = {
 			});
 		},
 		injectDataIntoHullMod: (hullMods, hullModName, regularValue) =>
-			hullMods.forEach((hullMod) =>
-				hullMod.name === hullModName
-					? (hullMod.importedValues = regularValue)
-					: ""
-			),
+			hullMods.forEach((hullMod) => (hullMod.name === hullModName ? (hullMod.importedValues = regularValue) : "")),
 		covertAndInjectMissingDescriptions() {
 			this.textInjectionData.forEach((e) => {
 				const [key] = Object.keys(e);
@@ -826,26 +719,18 @@ const hullModsHolder = {
 			});
 		},
 		injectTextIntoHullMod: (hullMods, hullModNameToEdit, stringToParse) =>
-			hullMods.forEach((hullMod) =>
-				hullMod.name === hullModNameToEdit ? (hullMod.desc = stringToParse) : ""
-			),
+			hullMods.forEach((hullMod) => (hullMod.name === hullModNameToEdit ? (hullMod.desc = stringToParse) : "")),
 		updateUsableHullsDescriptionsWithInjectedData() {
 			state.usableHullMods.forEach((hullMod) => {
 				hullMod.importedValues === undefined ? console.log(hullMod) : "";
 				if (hullMod.importedValues === undefined) return;
 				const replacePlaceholders = (desc, values) => {
 					values.forEach((value) => {
-						desc = desc.replace(
-							"%s",
-							`<span class="highlight-text">${value}</span>`
-						);
+						desc = desc.replace("%s", `<span class="highlight-text">${value}</span>`);
 					});
 					return desc;
 				};
-				hullMod.desc = replacePlaceholders(
-					hullMod.desc,
-					hullMod.importedValues[0]
-				);
+				hullMod.desc = replacePlaceholders(hullMod.desc, hullMod.importedValues[0]);
 			});
 		},
 		data: {
@@ -969,37 +854,19 @@ const hullModsHolder = {
 		// Alphabetic Sorting
 		//? If you need d-mod try filtering for HIDDEN (=== TRUE)
 		state.usableHullMods = data
-			.filter((hullMod) =>
-				hullMod.hidden !== "TRUE" &&
-				hullMod.hidden !== undefined &&
-				hullMod.name !== "Assault Package"
-					? hullMod
-					: ""
-			)
+			.filter((hullMod) => (hullMod.hidden !== "TRUE" && hullMod.hidden !== undefined && hullMod.name !== "Assault Package" ? hullMod : ""))
 			.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 	},
 };
 const modelFetcher = {
 	fetchSpecializedShipData: async function () {
 		try {
-			const res = await fetch(
-				`/${URL.DATA_HULLS}/${state.currentShip.id}.ship`
-			);
+			const res = await fetch(`/${URL.DATA_HULLS}/${state.currentShip.id}.ship`);
 			if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 			const specificShipData = await res.text();
 			const dataNormalized = JSON.parse(specificShipData);
 			// Only grabs specific data, check .SHIP file for more positions
-			const whatToExtract = [
-				"spriteName",
-				"builtInMods",
-				"weaponSlots",
-				"hullSize",
-				"builtInWings",
-				"width",
-				"height",
-				"center",
-				"viewOffset",
-			];
+			const whatToExtract = ["spriteName", "builtInMods", "weaponSlots", "hullSize", "builtInWings", "width", "height", "center", "viewOffset"];
 			Object.entries(dataNormalized).forEach(([key, value]) => {
 				if (whatToExtract.includes(key)) {
 					state.currentShip[key] = value;
@@ -1096,9 +963,7 @@ const modelFetcher = {
 				row
 					.replace(/\r/g, "")
 					.split("\n")
-					.filter(
-						(e) => e.trim() !== "" && !e.startsWith("#") && !/^[,]+$/.test(e)
-					)
+					.filter((e) => e.trim() !== "" && !e.startsWith("#") && !/^[,]+$/.test(e))
 			);
 			const returnBack = clearRow.slice(0, 1).map((e) => e[1]);
 			const finalRow = clearRow.slice(1);
@@ -1165,15 +1030,7 @@ const modelFetcher = {
 		};
 
 		const extractAdditionalWeaponData = (weaponDataFinal) => {
-			const keysToInject = [
-				"size",
-				"specClass",
-				"turretSprite",
-				"type",
-				"turretGunSprite",
-				"turretOffsets",
-				"mountTypeOverride",
-			];
+			const keysToInject = ["size", "specClass", "turretSprite", "type", "turretGunSprite", "turretOffsets", "mountTypeOverride"];
 			return keysToInject.reduce((acc, key) => {
 				acc[key] = weaponDataFinal[key];
 				return acc;
@@ -1185,8 +1042,7 @@ const modelFetcher = {
 				const dirtyData = await fetchWeaponData(weaponObj.id);
 				const cleanData = await cleanWeaponData(dirtyData);
 				const weaponDataFinal = JSON.parse(cleanData);
-				const additionalWeaponData =
-					extractAdditionalWeaponData(weaponDataFinal);
+				const additionalWeaponData = extractAdditionalWeaponData(weaponDataFinal);
 				return { ...weaponObj, additionalWeaponData };
 			} catch (err) {
 				// console.error(`Error processing weapon ${weaponObj.id}: ${err}`); //! TURN ON
@@ -1212,12 +1068,7 @@ const modelFetcher = {
 
 		state.globalDescriptions = rows.slice(1).map((row) => {
 			const values = row.split(commaNotInQuotes);
-			const clearedValues = values.map((singleValue) =>
-				singleValue
-					.replaceAll("\r", " ")
-					.replaceAll('"', "")
-					.replaceAll("  ", "")
-			);
+			const clearedValues = values.map((singleValue) => singleValue.replaceAll("\r", " ").replaceAll('"', "").replaceAll("  ", ""));
 			let obj = headers.reduce((object, header, index) => {
 				object[header] = clearedValues[index];
 				return object;
@@ -1270,10 +1121,7 @@ const modelFetcher = {
 						.split(",")
 						.filter((tag) => tag !== ""),
 				}))
-				.filter(
-					(currentFighter) =>
-						!currentFighter.tags.includes(hideFightersWithThisTag)
-				);
+				.filter((currentFighter) => !currentFighter.tags.includes(hideFightersWithThisTag));
 		} catch (error) {
 			console.error("Error:", error);
 			throw error; // Re-throw the error after logging it
@@ -1281,8 +1129,7 @@ const modelFetcher = {
 	},
 	fetchAndInjectInitialFighterData: async function () {
 		try {
-			const updatedId = (fighterObject) =>
-				fighterObject.id.replaceAll("_wing", "");
+			const updatedId = (fighterObject) => fighterObject.id.replaceAll("_wing", "");
 			const convertIdToDifferentIdSpecialRule = (fighterId) => {
 				// for some reason different id for two fighters
 				if (fighterId === "borer") {
@@ -1295,11 +1142,7 @@ const modelFetcher = {
 			};
 
 			const fetchFighterData = async (fighterIdOnly) => {
-				const res = await fetch(
-					`/${URL.DATA_HULLS}/${convertIdToDifferentIdSpecialRule(
-						fighterIdOnly
-					)}.ship`
-				);
+				const res = await fetch(`/${URL.DATA_HULLS}/${convertIdToDifferentIdSpecialRule(fighterIdOnly)}.ship`);
 				if (!res.ok) {
 					throw new Error(`HTTP error! status: ${res.status}`);
 				}
@@ -1318,17 +1161,14 @@ const modelFetcher = {
 				try {
 					const cleanData = await fetchFighterData(updatedId(fighterObject));
 					const weaponDataFinal = JSON.parse(cleanData);
-					const additionalFighterData =
-						extractAdditionalFighterData(weaponDataFinal);
+					const additionalFighterData = extractAdditionalFighterData(weaponDataFinal);
 					return { ...fighterObject, additionalFighterData };
 				} catch (err) {
 					console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
 					return fighterObject; // Return original object if processing fails
 				}
 			};
-			state.allFighters = await Promise.all(
-				state.allFighters.map(processWeapon)
-			);
+			state.allFighters = await Promise.all(state.allFighters.map(processWeapon));
 		} catch (err) {
 			console.log(err);
 		}
@@ -1338,24 +1178,10 @@ const modelFetcher = {
 		const { allFighters, allShips } = state;
 
 		// Additional properties take from AllShips CVS
-		const KEYS_TO_EXTRACT = [
-			"shield_type",
-			"tech_manufacturer",
-			"shield_arc",
-			"armor_rating",
-			"hitpoints",
-			"name",
-			"max_crew",
-			"system_id",
-			"max_speed",
-		];
+		const KEYS_TO_EXTRACT = ["shield_type", "tech_manufacturer", "shield_arc", "armor_rating", "hitpoints", "name", "max_crew", "system_id", "max_speed"];
 
 		const normalizeFighterId = (fighterId) => {
-			const normalized = fighterId
-				.replaceAll("_wing", "")
-				.split("_")
-				.join(" ")
-				.toLowerCase();
+			const normalized = fighterId.replaceAll("_wing", "").split("_").join(" ").toLowerCase();
 
 			const specialIdMappings = {
 				borer: "drone_borer",
@@ -1366,9 +1192,7 @@ const modelFetcher = {
 			return specialIdMappings[normalized] || normalized;
 		};
 		const extractDescription = (id) => {
-			return state.globalDescriptions.find(
-				(description) => description.id === id
-			);
+			return state.globalDescriptions.find((description) => description.id === id);
 		};
 
 		state.allFighters = allFighters.map((fighterObject) => {
@@ -1377,14 +1201,8 @@ const modelFetcher = {
 			const fighterId = normalizeFighterId(fighterObject.id);
 
 			// Strip values from One array and assign to DataShipHull subObject
-			const currentFighter = allShips.find(
-				(shipObject) => shipObject.id === fighterId
-			);
-			const additionalFighterDataShipHull = currentFighter
-				? Object.fromEntries(
-						KEYS_TO_EXTRACT.map((key) => [key, currentFighter[key]])
-				  )
-				: {};
+			const currentFighter = allShips.find((shipObject) => shipObject.id === fighterId);
+			const additionalFighterDataShipHull = currentFighter ? Object.fromEntries(KEYS_TO_EXTRACT.map((key) => [key, currentFighter[key]])) : {};
 
 			// There are more parameters like text2 / test3 etc. Text1 Is main text.
 			const description = extractDescription(fighterId).text1;
@@ -1411,9 +1229,7 @@ const modelFetcher = {
 			};
 			const variantTargeting = (fighterObject) => {
 				// hoplon_Escort => kopesh_Bomber // Why I dont know
-				return fighterObject.variant !== "hoplon_Escort"
-					? fighterObject.variant
-					: "khopesh_Bomber";
+				return fighterObject.variant !== "hoplon_Escort" ? fighterObject.variant : "khopesh_Bomber";
 			};
 
 			const fetchVariantData = async (variantId) => {
@@ -1442,9 +1258,7 @@ const modelFetcher = {
 
 			const processWeapon = async (fighterObject) => {
 				try {
-					const fetchedData = await fetchVariantData(
-						variantTargeting(fighterObject)
-					);
+					const fetchedData = await fetchVariantData(variantTargeting(fighterObject));
 					const cleanedData = cleanToJson(fetchedData);
 					const additionalFighterDataFromVariant = JSON.parse(cleanedData);
 					// console.log(additionalFighterDataFromVariant);
@@ -1454,9 +1268,7 @@ const modelFetcher = {
 					return fighterObject; // Return original object if processing fails
 				}
 			};
-			state.allFighters = await Promise.all(
-				state.allFighters.map(processWeapon)
-			);
+			state.allFighters = await Promise.all(state.allFighters.map(processWeapon));
 		} catch (err) {
 			console.log(`${err} in fetchAndInjectFighterVariantData`);
 		}
@@ -1471,27 +1283,20 @@ const currentShipBuildHolder = {
 
 		const hullModsMap = new Map(allShipHulls.map((hull) => [hull.id, hull]));
 
-		const buildInHullMods = builtInMods
-			.map((modId) => hullModsMap.get(modId))
-			.filter(Boolean); // Removes undefined entries in case of missing mods
+		const buildInHullMods = builtInMods.map((modId) => hullModsMap.get(modId)).filter(Boolean); // Removes undefined entries in case of missing mods
 
 		state.currentShipBuild = { hullMods: { buildInHullMods: buildInHullMods } };
 	},
 	findAndCreateCurrentShip: async function (inputShipName) {
 		let { allShips } = state;
-		[state.currentShip] = allShips.filter((ship) =>
-			ship.id === inputShipName ? ship.id : ""
-		);
+		[state.currentShip] = allShips.filter((ship) => (ship.id === inputShipName ? ship.id : ""));
 	},
 	//! Base Ship Data is here
 	//TODO (15/12/2024) I need to rework this
 	assingInitialCurrentShipData() {
 		const { currentShip, currentShipBuild } = state;
 
-		genericHelperFunction.setHullSizeProperties(
-			currentShipBuild,
-			currentShip.hullSize
-		);
+		genericHelperFunction.setHullSizeProperties(currentShipBuild, currentShip.hullSize);
 
 		Object.assign(currentShipBuild, {
 			//! dont change base values, they are foundation
@@ -1606,12 +1411,8 @@ const currentShipBuildHolder = {
 			currentWeaponSlots: this.weaponSlotIdEdit(currentShip.weaponSlots),
 
 			// Current Installed Weapons
-			_baseInstalledWeapons: this.injectCurrentShipSlotsIntoWeapons(
-				currentShip.weaponSlots
-			),
-			currentInstalledWeapons: this.injectCurrentShipSlotsIntoWeapons(
-				currentShip.weaponSlots
-			),
+			_baseInstalledWeapons: this.injectCurrentShipSlotsIntoWeapons(currentShip.weaponSlots),
+			currentInstalledWeapons: this.injectCurrentShipSlotsIntoWeapons(currentShip.weaponSlots),
 		});
 	},
 
@@ -1625,20 +1426,12 @@ const currentShipBuildHolder = {
 		});
 	},
 	checkIfShipIsCiv() {
-		return state.currentShipBuild.hullMods.buildInHullMods?.some(
-			(hullmod) => hullmod.id === "civgrade"
-		)
-			? "civilian"
-			: "military";
+		return state.currentShipBuild.hullMods.buildInHullMods?.some((hullmod) => hullmod.id === "civgrade") ? "civilian" : "military";
 	},
 };
 
 const genericHelperFunction = {
-	convertTagsFromStringIntoAndArray(
-		data = [],
-		stringProperty = "",
-		newArrayName = ""
-	) {
+	convertTagsFromStringIntoAndArray(data = [], stringProperty = "", newArrayName = "") {
 		//! Why forEach 15/12
 		data.forEach((item) => {
 			if (item[stringProperty] && item[stringProperty].trim() !== "") {
@@ -1658,12 +1451,7 @@ const genericHelperFunction = {
 		data.forEach(
 			(hullMod) =>
 				(hullMod.tagsArrayToUse = hullMod.tagsArray.filter(
-					(e) =>
-						e !== "merc" &&
-						e !== "standard" &&
-						e !== "no_drop" &&
-						e !== "no_drop_salvage" &&
-						e !== "phase_brawler"
+					(e) => e !== "merc" && e !== "standard" && e !== "no_drop" && e !== "no_drop_salvage" && e !== "phase_brawler"
 				))
 		);
 	},
@@ -1680,33 +1468,12 @@ const genericHelperFunction = {
 		});
 	},
 	shieldTypeCheck() {
-		const {
-			shield_arc,
-			shield_efficiency,
-			shield_type,
-			shield_upkeep,
-			phase_upkeep,
-			phase_cost,
-		} = state.currentShip;
+		const { shield_arc, shield_efficiency, shield_type, shield_upkeep, phase_upkeep, phase_cost } = state.currentShip;
 
 		let shipType;
-		if (
-			shield_arc === "" &&
-			shield_efficiency === "" &&
-			shield_type === "PHASE" &&
-			shield_upkeep === "" &&
-			phase_upkeep !== "" &&
-			phase_cost !== ""
-		) {
+		if (shield_arc === "" && shield_efficiency === "" && shield_type === "PHASE" && shield_upkeep === "" && phase_upkeep !== "" && phase_cost !== "") {
 			shipType = "phaseShip";
-		} else if (
-			shield_arc !== "" &&
-			shield_efficiency !== "" &&
-			shield_type !== "PHASE" &&
-			shield_upkeep !== "" &&
-			phase_upkeep === "" &&
-			phase_cost === ""
-		) {
+		} else if (shield_arc !== "" && shield_efficiency !== "" && shield_type !== "PHASE" && shield_upkeep !== "" && phase_upkeep === "" && phase_cost === "") {
 			shipType = "shieldShip";
 		} else {
 			shipType = "noShieldShip";
@@ -1790,8 +1557,7 @@ const genericHelperFunction = {
 			listOfPropertiesToConvert.forEach((property) => {
 				if (!property) return;
 				const convertedString = Number.parseFloat(weaponObject[property]);
-				weaponObject[property] =
-					isNaN(convertedString) === false ? convertedString : undefined;
+				weaponObject[property] = isNaN(convertedString) === false ? convertedString : undefined;
 			});
 			return weaponObject;
 		});
@@ -1800,9 +1566,7 @@ const genericHelperFunction = {
 		try {
 			state.allWeapons = state.allWeapons.map((weaponObject) => {
 				const currentWeaponDescriptionObject = state.globalDescriptions
-					.filter(
-						(descriptionObject) => descriptionObject.id === weaponObject.id
-					)
+					.filter((descriptionObject) => descriptionObject.id === weaponObject.id)
 					.map((descriptionObject) => descriptionObject.text1);
 				[weaponObject.description] = currentWeaponDescriptionObject;
 				return weaponObject;
@@ -1815,8 +1579,7 @@ const genericHelperFunction = {
 		try {
 			const newArray = state.allWeapons.map(
 				(weapon) =>
-					(weapon.additionalWeaponData.type = weapon.additionalWeaponData
-						.mountTypeOverride
+					(weapon.additionalWeaponData.type = weapon.additionalWeaponData.mountTypeOverride
 						? weapon.additionalWeaponData.mountTypeOverride
 						: weapon.additionalWeaponData.type)
 			);
@@ -1864,16 +1627,8 @@ export const modelInit = async function () {
 	genericHelperFunction.cleanUpHullModDescription(state.usableHullMods);
 
 	// convert strings into Tags Array
-	genericHelperFunction.convertTagsFromStringIntoAndArray(
-		state.usableHullMods,
-		"tags",
-		"tagsArray"
-	);
-	genericHelperFunction.convertTagsFromStringIntoAndArray(
-		state.usableHullMods,
-		"uiTags",
-		"uiTagsArray"
-	);
+	genericHelperFunction.convertTagsFromStringIntoAndArray(state.usableHullMods, "tags", "tagsArray");
+	genericHelperFunction.convertTagsFromStringIntoAndArray(state.usableHullMods, "uiTags", "uiTagsArray");
 	hullModsHolder.hullModDataInjection.controller();
 	// Filter tags
 	// cleanDescriptionArray();

@@ -4,58 +4,38 @@ class EventHandlers {
 	constructor() {
 		this.eventListenerFolder = new Map();
 	}
-	// Copy of Each other. I can fuse them
-	fighterPopUpHideWhenClickOutsideHandler(callback) {
-		const localParent = document.querySelector(`.${classNames.fighterPopUp}`);
+
+	hidePopUpIfClickOutsideHandler(parent, eventTarget, callback) {
+		const localParent = document.querySelector(`.${parent}`);
+		const localTarget = document.querySelector(`.${eventTarget}`);
+		// target direct children NODELIST
+		const localChildren = localParent.querySelectorAll(`:scope > *`);
 		const actionType = "click";
 
 		document.addEventListener(
 			actionType,
 			function (e) {
-				if (!localParent.contains(e.target)) {
-					localParent.textContent = "";
-					return callback(localParent);
+				// check if click is outside target (for example table)
+				if (!localTarget.contains(e.target)) {
+					// NODELIST
+					localChildren.forEach((child) => (child.textContent = ""));
+
+					if (callback) return callback();
 				}
 			},
 			{ once: true }
 		);
 	}
-
-	weaponPopUpHideWhenClickOutsideHandler() {
-		const localParent = document.querySelector(
-			`.${classNames.weaponPopUpTable}`
-		);
-		const targetToRemove = document.querySelector(
-			`.${classNames.weaponPopUpParent}`
-		);
-		const actionType = "click";
-
-		document.addEventListener(
-			actionType,
-			function (e) {
-				if (!localParent.contains(e.target)) {
-					targetToRemove.innerHTML = "";
-				}
-			},
-			{ once: true }
-		);
-	}
-
 	fighterShowAdditionaInformation(callback) {
-		// fighter-slots
-		// fighter-slot-container
+		// classNames.fighterSlots
+		// fighterSlotContainer
 		const localParent = `.${classNames.fighterSlots}`;
-		const eventTarget = `.${classNames.fighterSlotContainer}`;
+		const eventTarget = `.${classNames.fighterSlot}`;
 		const actionType = "mouseover";
 		return [localParent, eventTarget, actionType, callback];
 	}
 
-	addEventListenerReturnDataSet([
-		localParent,
-		eventTarget,
-		actionType,
-		callback,
-	]) {
+	addEventListenerReturnDataSet([localParent, eventTarget, actionType, callback]) {
 		const localParentQuery = document.querySelector(localParent);
 
 		const wrappedCallback = (e) => {

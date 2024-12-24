@@ -74,8 +74,7 @@
 			/* padding-bottom: 4rem; */
 			transform: rotate(-45deg);
 		}
-		.weapon-background-sprite__type--hybrid
-			.weapon-background-sprite:nth-of-type(1) {
+		.weapon-background-sprite__type--hybrid .weapon-background-sprite:nth-of-type(1) {
 			width: 2rem;
 			height: 2rem;
 		}
@@ -154,8 +153,7 @@
 				width: 6rem;
 			}
 
-			.weapon-background-sprite__type--hybrid
-				.weapon-background-sprite:nth-of-type(1) {
+			.weapon-background-sprite__type--hybrid .weapon-background-sprite:nth-of-type(1) {
 				width: 3rem;
 				height: 3rem;
 			}
@@ -203,9 +201,12 @@
 }
 
 .weapon-pop-up__table {
-	height: 70vh;
-	overflow-y: scroll;
+	/* height: 70vh; */
 
+	.weapon-pop-up__table-wrapper {
+		height: 60rem;
+		overflow-y: scroll;
+	}
 	.weapon-pop-up__table-body {
 		width: 60rem;
 		background-color: black;
@@ -302,6 +303,10 @@
 		text-align: center;
 	}
 }
+/*******************************************************************/
+/*  FIGHTER POP UP CLASS  */
+/*******************************************************************/
+
 .fighter-pop-up {
 	position: absolute;
 	top: 50%;
@@ -310,6 +315,11 @@
 	z-index: 1000;
 
 	gap: 4rem;
+
+	.fighter-container {
+		width: 5rem;
+		height: 5rem;
+	}
 
 	.fighter-pop-up__container {
 		display: flex;
@@ -321,249 +331,132 @@
 		/* align-self: flex-end; */
 		align-self: flex-start;
 	}
-	.fighter-container {
-		width: 5rem;
-		height: 5rem;
 
-		.fighter__sprite {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-
-			width: 1.5rem;
-			height: 1.5rem;
-		}
-
-		/* Fighters = 1 */
-		.fighter__sprites-max--1 {
-			width: 2.5rem;
-			height: 2.5rem;
-		}
-
-		/* Fighters = 2 */
-		.fighter__sprites-max--2 {
-			width: 2rem;
-			height: 2rem;
-		}
-		.fighter__sprites-max--2.fighter__sprite--1 {
-			top: 30%;
-			left: 30%;
-		}
-		.fighter__sprites-max--2.fighter__sprite--2 {
-			top: 70%;
-			left: 70%;
-		}
-
-		/* Fighters = 3 */
-		.fighter__sprites-max--3 {
-			width: 2rem;
-			height: 2rem;
-		}
-		.fighter__sprites-max--3.fighter__sprite--1 {
-			top: 30%;
-			left: 50%;
-		}
-		.fighter__sprites-max--3.fighter__sprite--2 {
-			top: 70%;
-			left: 70%;
-		}
-		.fighter__sprites-max--3.fighter__sprite--3 {
-			top: 70%;
-			left: 30%;
-		}
-
-		/* Fighters = 4 */
-		.fighter__sprites-max--4 {
-			width: 1.8rem;
-			height: 1.8rem;
-		}
-		.fighter__sprites-max--4.fighter__sprite--1 {
-			top: 30%;
-			left: 70%;
-		}
-		.fighter__sprites-max--4.fighter__sprite--2 {
-			top: 70%;
-			left: 70%;
-		}
-		.fighter__sprites-max--4.fighter__sprite--3 {
-			top: 70%;
-			left: 30%;
-		}
-		.fighter__sprites-max--4.fighter__sprite--4 {
-			top: 30%;
-			left: 30%;
-		}
-
-		/* Fighters = 5 */
-		.fighter__sprites-max--5.fighter__sprite--2 {
-			top: 25%;
-			left: 25%;
-		}
-		.fighter__sprites-max--5.fighter__sprite--3 {
-			top: 75%;
-			left: 75%;
-		}
-		.fighter__sprites-max--5.fighter__sprite--4 {
-			top: 25%;
-			left: 75%;
-		}
-		.fighter__sprites-max--5.fighter__sprite--5 {
-			top: 75%;
-			left: 25%;
-		}
-		/* Fighters = 6 */
-		.fighter__sprites-max--6.fighter__sprite--1 {
-			top: 30%;
-			left: 25%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--2 {
-			top: 30%;
-			left: 50%;
-		}
-
-		.fighter__sprites-max--6.fighter__sprite--3 {
-			top: 30%;
-			left: 75%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--4 {
-			top: 70%;
-			left: 25%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--5 {
-			top: 70%;
-			left: 50%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--6 {
-			top: 70%;
-			left: 75%;
-		}
-	}
 	.weapon-pop-up__table {
-		/*? Not idea way, but I fixes the issue with container hover  */
-		padding-bottom: 2rem;
-
 		.weapon-pop-up__table-body {
 			width: 45rem;
 		}
+	}
+}
+.fighter-container {
+	.fighter__sprite {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	/* Fighters = 1 */
+	.fighter__sprites-max--1 {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+
+	/* Fighters = 2 */
+	.fighter__sprites-max--2 {
+		width: 2rem;
+		height: 2rem;
+	}
+	.fighter__sprites-max--2.fighter__sprite--1 {
+		top: 30%;
+		left: 30%;
+	}
+	.fighter__sprites-max--2.fighter__sprite--2 {
+		top: 70%;
+		left: 70%;
+	}
+
+	/* Fighters = 3 */
+	.fighter__sprites-max--3 {
+		width: 2rem;
+		height: 2rem;
+	}
+	.fighter__sprites-max--3.fighter__sprite--1 {
+		top: 30%;
+		left: 50%;
+	}
+	.fighter__sprites-max--3.fighter__sprite--2 {
+		top: 70%;
+		left: 70%;
+	}
+	.fighter__sprites-max--3.fighter__sprite--3 {
+		top: 70%;
+		left: 30%;
+	}
+
+	/* Fighters = 4 */
+	.fighter__sprites-max--4 {
+		width: 1.8rem;
+		height: 1.8rem;
+	}
+	.fighter__sprites-max--4.fighter__sprite--1 {
+		top: 30%;
+		left: 70%;
+	}
+	.fighter__sprites-max--4.fighter__sprite--2 {
+		top: 70%;
+		left: 70%;
+	}
+	.fighter__sprites-max--4.fighter__sprite--3 {
+		top: 70%;
+		left: 30%;
+	}
+	.fighter__sprites-max--4.fighter__sprite--4 {
+		top: 30%;
+		left: 30%;
+	}
+
+	/* Fighters = 5 */
+	.fighter__sprites-max--5.fighter__sprite--2 {
+		top: 25%;
+		left: 25%;
+	}
+	.fighter__sprites-max--5.fighter__sprite--3 {
+		top: 75%;
+		left: 75%;
+	}
+	.fighter__sprites-max--5.fighter__sprite--4 {
+		top: 25%;
+		left: 75%;
+	}
+	.fighter__sprites-max--5.fighter__sprite--5 {
+		top: 75%;
+		left: 25%;
+	}
+	/* Fighters = 6 */
+	.fighter__sprites-max--6.fighter__sprite--1 {
+		top: 30%;
+		left: 25%;
+	}
+	.fighter__sprites-max--6.fighter__sprite--2 {
+		top: 30%;
+		left: 50%;
+	}
+
+	.fighter__sprites-max--6.fighter__sprite--3 {
+		top: 30%;
+		left: 75%;
+	}
+	.fighter__sprites-max--6.fighter__sprite--4 {
+		top: 70%;
+		left: 25%;
+	}
+	.fighter__sprites-max--6.fighter__sprite--5 {
+		top: 70%;
+		left: 50%;
+	}
+	.fighter__sprites-max--6.fighter__sprite--6 {
+		top: 70%;
+		left: 75%;
 	}
 }
 /*! Not a popup, move it to different file */
 .fighter-slot-container {
 	position: relative;
 	.weapon-sprite-parent {
-	}
-	.fighter-container {
-		/* width: 5rem;
-		height: 5rem; */
-
-		.fighter__sprite {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-
-			width: 1.5rem;
-			height: 1.5rem;
-		}
-
-		.fighter__sprites-max--1 {
-			width: 2.5rem;
-			height: 2.5rem;
-		}
-
-		.fighter__sprites-max--2 {
-			width: 2rem;
-			height: 2rem;
-		}
-		.fighter__sprites-max--2.fighter__sprite--1 {
-			top: 30%;
-			left: 30%;
-		}
-		.fighter__sprites-max--2.fighter__sprite--2 {
-			top: 70%;
-			left: 70%;
-		}
-
-		.fighter__sprites-max--3 {
-			width: 2rem;
-			height: 2rem;
-		}
-		.fighter__sprites-max--3.fighter__sprite--1 {
-			top: 30%;
-			left: 50%;
-		}
-		.fighter__sprites-max--3.fighter__sprite--2 {
-			top: 70%;
-			left: 70%;
-		}
-		.fighter__sprites-max--3.fighter__sprite--3 {
-			top: 70%;
-			left: 30%;
-		}
-
-		.fighter__sprites-max--4 {
-			width: 1.8rem;
-			height: 1.8rem;
-		}
-		.fighter__sprites-max--4.fighter__sprite--1 {
-			top: 30%;
-			left: 70%;
-		}
-		.fighter__sprites-max--4.fighter__sprite--2 {
-			top: 70%;
-			left: 70%;
-		}
-		.fighter__sprites-max--4.fighter__sprite--3 {
-			top: 70%;
-			left: 30%;
-		}
-		.fighter__sprites-max--4.fighter__sprite--4 {
-			top: 30%;
-			left: 30%;
-		}
-
-		.fighter__sprites-max--5.fighter__sprite--2 {
-			top: 25%;
-			left: 25%;
-		}
-		.fighter__sprites-max--5.fighter__sprite--3 {
-			top: 75%;
-			left: 75%;
-		}
-		.fighter__sprites-max--5.fighter__sprite--4 {
-			top: 25%;
-			left: 75%;
-		}
-		.fighter__sprites-max--5.fighter__sprite--5 {
-			top: 75%;
-			left: 25%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--1 {
-			top: 30%;
-			left: 25%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--2 {
-			top: 30%;
-			left: 50%;
-		}
-
-		.fighter__sprites-max--6.fighter__sprite--3 {
-			top: 30%;
-			left: 75%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--4 {
-			top: 70%;
-			left: 25%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--5 {
-			top: 70%;
-			left: 50%;
-		}
-		.fighter__sprites-max--6.fighter__sprite--6 {
-			top: 70%;
-			left: 75%;
-		}
 	}
 
 	.fighter-sprite-cost {
