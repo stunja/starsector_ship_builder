@@ -3,7 +3,8 @@ import { state } from "./model.js";
 export const renameKeysFromCSVdata = function (obj) {
 	const newObj = {};
 	for (const key in obj) {
-		let newKey = specificKeyReplacements[key] || applyGeneralRenamingRulesForKeys(key);
+		let newKey =
+			specificKeyReplacements[key] || applyGeneralRenamingRulesForKeys(key);
 		newObj[newKey] = obj[key];
 	}
 	return newObj;
@@ -15,7 +16,7 @@ const specificKeyReplacements = {
 const applyGeneralRenamingRulesForKeys = function (key) {
 	// Replace all non alphabetical characters with underscore __
 	let newKey = key.replace(/[^a-zA-Z0-9]/g, "_");
-	// remove underscore from the end of the string
+	// remove underscore from the end of the stringas
 	if (newKey.endsWith("_")) {
 		newKey.slice(0, -1);
 	}
@@ -26,4 +27,5 @@ export const capitalizeFirstLetter = (string) => {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export const calculateHullModCost = (hullMod) => Number(hullMod[state.currentShipBuild.hullModCost]);
+export const calculateHullModCost = (hullMod) =>
+	Number(hullMod[state.currentShipBuild.hullModCost]);

@@ -6,12 +6,15 @@
   should be unchangable. For example Hybrid should stay Hubrid.
   - to Solve I need to add purposeString, to specify the purpose of the background sprite element -->
 
-- No, too hard. Rockets are not in packs, but as separate enteties
 <!-- - I need to add rocket sprite to rocket turret base -->
+
+- # No, too hard. Rockets are not in packs, but as separate enteties. Not sure how to even implement them, performance issue is going to be massive. Low priority
 
 <!-- - Correctly rotate Weapons. -->
 
-2. Weapon Pop Up
+- Composite Weapon Slot: Issue in hover effect
+
+2. Weapon
 
 <!-- - Filter doesnt work. Should Filter by category.
   When I click on the category it eventListener Dont work -->
@@ -20,7 +23,13 @@
 <!-- - Active Weapon Should Be fixed at the top of the weapon selection screen. -->
 <!-- - Issue with Active class, when clicking on sorting button -->
 
+- Weapon Slot is still bugged, I need to make sure it is properly pop up properly works after I add weapon. Currently parent container blocks mouse clicks
+- Issue with PopUpContianerHeader, for example COST, you have to click cost two times.
+
 - Tons of visual bugs
+<!-- - Fighter PopUp Issue with remove active class from Fighter -->
+
+- If I hover over already placed weapon, should display hover information.
 
 3. Weapon Pop Up Hover
 
@@ -30,18 +39,47 @@
 
 <!-- - Issue with data. For example Beam weapons -->
 
+- When you close open pop up, first position is bugged on Hover
+- Small Issue with hover animation, due to different size of hover container and table
+  -- Issue is due to size container, current implementation is a MESS
+
 3. Hullmod Menu Pop Up
 
 - I dont remember, but something was bugged there with hullmods. Either incorrect hullmod features.
+- I need to go over every hullmod effect, and check if conditions are correct.
+- The way it is implemented is nightmarefuel. I do need to fully rework them.
 
-## Shit to Do
+4. Fighters
+
+<!-- - Fetch Fighters -->
+<!-- - Inject Additional Information into Fighters -->
+<!-- - Add / Remove Active Selection  -->
+<!-- - Sort Function -->
+
+<!-- - Handler Close on External Click -->
+<!-- - Handler Click to Add  -->
+
+<!-- - handle and Button to Close form -->
+<!-- - Handler Hover on Weapon, give additional info -->
+<!-- - I need to fix description for fighters, way to long, I need similiar approach to weapons (1sentence max) -->
+<!-- - Adding Fighter Icon -->
+<!-- - Weapon equiped on Fighter, WHEN ARE THEY? (15/12/24) -->
+
+<!-- - Show Fighter Active Slot (Green or Blue Border || grey out the other slots) -->
+<!-- - Display Multipul fighters in the same slot -->
+
+- If I hover over already placed fighter, should display hover information.
+
+## Things to Do
 
 <!-- - Weapon Slot Arcs -->
   <!-- I need to make two lines, vertical, and a sphere. So I can make a single border on the top part of the arch -->
 
 - Weapon Slot With Weapon, when hovering display basic info like name / type / range.
+- Fighters
+<!-- - Skills (Cool idea, just copy hullmod effect, maybe after project is finished.) -->
 
-- Smods Menu
+- Smods Menu (Just copy hullmods with a different paint)
 - HullMod Menu close if clicked outside of the hullMod pop up
 
 ### Errors

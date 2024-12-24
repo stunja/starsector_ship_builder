@@ -1,12 +1,9 @@
+"use strict";
 import { renameKeysFromCSVdata } from "./helperFunction.js";
-// const shipNameDev = "astral";
-// const shipNameDev = "gryphon";
-// const shipNameDev = "drover";
-// const shipNameDev = "hound";
-// const shipNameDev = "ox"; // civ
-// const shipNameDev = "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "pegasus";
+import * as URL from "./url.js";
 
+// "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
+const shipNameDev = "astral";
 //
 //invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead //
@@ -29,7 +26,11 @@ export const uiState = {
 	weaponPopUp: {
 		previousSortState: "cost",
 		isAscending: false,
-		currentWeaponHover: "",
+		currentWeaponTypes: {},
+	},
+	fighterPopUp: {
+		previousSortState: "cost",
+		isAscending: false,
 		allWeaponTypes: {
 			ALL: "ALL",
 			ENERGY: "ENERGY",
@@ -38,8 +39,11 @@ export const uiState = {
 			FRAGMENTATION: "FRAGMENTATION",
 		},
 		currentWeaponTypes: {},
+		isOpen: true,
 	},
 	currentWeaponSlot: "",
+	// currentFighterSlot: "",
+	currentWeaponHover: "",
 };
 
 const hullModsHolder = {
@@ -854,12 +858,10 @@ const hullModsHolder = {
 			.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 	},
 };
-
 const modelFetcher = {
 	fetchSpecializedShipData: async function () {
-		const shipName = state.currentShip.id;
 		try {
-			const res = await fetch(`./starsectorData/hulls/${shipName}.ship`);
+			const res = await fetch(`/${URL.DATA_HULLS}/${state.currentShip.id}.ship`);
 			if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 			const specificShipData = await res.text();
 			const dataNormalized = JSON.parse(specificShipData);
@@ -874,10 +876,10 @@ const modelFetcher = {
 			console.log(err);
 		}
 	},
-
 	fetchAllShipData: async function () {
 		try {
-			const res = await fetch("./starsectorData/hulls/ship_data.csv");
+			const res = await fetch(`/${URL.DATA_HULLS}/${URL.SHIPDATA_CVS}`);
+
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
@@ -904,7 +906,7 @@ const modelFetcher = {
 	},
 	fetchAllWeaponData: async function () {
 		try {
-			const res = await fetch("./starsectorData/weapons/weapon_data.csv");
+			const res = await fetch(`/${URL.DATA_WEAPONS}/${URL.WEAPONDATA_CVS}`);
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
@@ -925,7 +927,6 @@ const modelFetcher = {
 				// if (obj.id !== "") return obj;
 				return obj;
 			});
-			// console.log(weaponArray);
 			state.allWeapons = weaponArray
 				.map((weapons) =>
 					Object.fromEntries(
@@ -938,10 +939,6 @@ const modelFetcher = {
 					)
 				)
 				.filter((weapons) => weapons.id !== "")
-				.filter((weapons) => weapons.tier !== "")
-				.filter((weapons) => weapons.hints !== "SYSTEM")
-				.filter((weapons) => weapons.tags !== "SYSTEM")
-				.filter((weapons) => weapons.groupTag !== "restricted")
 				.filter((weapons) => weapons.id !== undefined);
 		} catch (error) {
 			console.error("Error:", error);
@@ -951,7 +948,7 @@ const modelFetcher = {
 
 	fetchAllHullModsData: async function () {
 		try {
-			const res = await fetch("./starsectorData/hullmods/hull_mods.csv");
+			const res = await fetch(`/${URL.DATA_HULLMODS}/${URL.HULLMODS_CVS}`);
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
@@ -1025,7 +1022,7 @@ const modelFetcher = {
 		};
 
 		const fetchWeaponData = async (weaponId) => {
-			const res = await fetch(`./starsectorData/weapons/${weaponId}.wpn`);
+			const res = await fetch(`/${URL.DATA_WEAPONS}/${weaponId}.wpn`);
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`);
 			}
@@ -1057,7 +1054,7 @@ const modelFetcher = {
 		state.allWeapons = await Promise.all(state.allWeapons.map(processWeapon));
 	},
 	fetchDescriptions: async function () {
-		const res = await fetch(`./starsectorData/strings/descriptions.csv`);
+		const res = await fetch(`/${URL.DATA_STRINGS}/${URL.DESCRIPTION_CVS}`);
 		if (!res.ok) {
 			throw new Error(`HTTP error! status: ${res.status}`);
 		}
@@ -1071,9 +1068,7 @@ const modelFetcher = {
 
 		state.globalDescriptions = rows.slice(1).map((row) => {
 			const values = row.split(commaNotInQuotes);
-			// const clearedValues = values;
 			const clearedValues = values.map((singleValue) => singleValue.replaceAll("\r", " ").replaceAll('"', "").replaceAll("  ", ""));
-			// console.log(values);
 			let obj = headers.reduce((object, header, index) => {
 				object[header] = clearedValues[index];
 				return object;
@@ -1082,6 +1077,201 @@ const modelFetcher = {
 			obj = renameKeysFromCSVdata(obj);
 			return obj;
 		});
+	},
+	fetchAllFighters: async function () {
+		try {
+			// wing data
+			const res = await fetch(`/${URL.DATA_HULLS}/${URL.FIGHTER_CVS}`);
+			if (!res.ok) {
+				throw new Error(`HTTP error! status: ${res.status}`);
+			}
+			const csvData = await res.text();
+			const hideFightersWithThisTag = "leader_no_swarm"; // to target OMEGA fighters
+
+			const rows = csvData.split("\n");
+			const headers = rows[0].split(",");
+			const fighterArray = rows.slice(1).map((row) => {
+				//shipData
+				const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+				let obj = headers.reduce((object, header, index) => {
+					object[header] = values[index];
+					return object;
+				}, {});
+				// keys conversion
+				obj = renameKeysFromCSVdata(obj);
+				return obj;
+			});
+			const newFighterArray = fighterArray
+				.map((fighters) =>
+					Object.fromEntries(
+						Object.entries(fighters).map(([key, value]) => {
+							if (!key || !value) return [];
+							const newValue = value.trimStart().replace(/[""]/g, "");
+							return [key, newValue];
+						})
+					)
+				)
+				.filter((fighters) => fighters.id !== "" && fighters.id !== undefined);
+
+			state.allFighters = newFighterArray
+				.map((fighter) => ({
+					...fighter,
+					tags: fighter.tags
+						.replaceAll(" ", "")
+						.split(",")
+						.filter((tag) => tag !== ""),
+				}))
+				.filter((currentFighter) => !currentFighter.tags.includes(hideFightersWithThisTag));
+		} catch (error) {
+			console.error("Error:", error);
+			throw error; // Re-throw the error after logging it
+		}
+	},
+	fetchAndInjectInitialFighterData: async function () {
+		try {
+			const updatedId = (fighterObject) => fighterObject.id.replaceAll("_wing", "");
+			const convertIdToDifferentIdSpecialRule = (fighterId) => {
+				// for some reason different id for two fighters
+				if (fighterId === "borer") {
+					return (fighterId = "drone_borer");
+				}
+				if (fighterId === "terminator") {
+					return (fighterId = "drone_terminator");
+				}
+				return fighterId;
+			};
+
+			const fetchFighterData = async (fighterIdOnly) => {
+				const res = await fetch(`/${URL.DATA_HULLS}/${convertIdToDifferentIdSpecialRule(fighterIdOnly)}.ship`);
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`);
+				}
+				return res.text();
+			};
+
+			const extractAdditionalFighterData = (fighterDataFinal) => {
+				const keysToInject = ["height", "spriteName", "width"];
+				return keysToInject.reduce((acc, key) => {
+					acc[key] = fighterDataFinal[key];
+					return acc;
+				}, {});
+			};
+
+			const processWeapon = async (fighterObject) => {
+				try {
+					const cleanData = await fetchFighterData(updatedId(fighterObject));
+					const weaponDataFinal = JSON.parse(cleanData);
+					const additionalFighterData = extractAdditionalFighterData(weaponDataFinal);
+					return { ...fighterObject, additionalFighterData };
+				} catch (err) {
+					console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
+					return fighterObject; // Return original object if processing fails
+				}
+			};
+			state.allFighters = await Promise.all(state.allFighters.map(processWeapon));
+		} catch (err) {
+			console.log(err);
+		}
+	},
+
+	fetchAndInjectAdditionalFighterDataFromShipData: async function () {
+		const { allFighters, allShips } = state;
+
+		// Additional properties take from AllShips CVS
+		const KEYS_TO_EXTRACT = ["shield_type", "tech_manufacturer", "shield_arc", "armor_rating", "hitpoints", "name", "max_crew", "system_id", "max_speed"];
+
+		const normalizeFighterId = (fighterId) => {
+			const normalized = fighterId.replaceAll("_wing", "").split("_").join(" ").toLowerCase();
+
+			const specialIdMappings = {
+				borer: "drone_borer",
+				terminator: "drone_terminator",
+				"mining drone": "mining_drone",
+			};
+
+			return specialIdMappings[normalized] || normalized;
+		};
+		const extractDescription = (id) => {
+			return state.globalDescriptions.find((description) => description.id === id);
+		};
+
+		state.allFighters = allFighters.map((fighterObject) => {
+			// different Id in different databases for some reason
+			// some with dagger_wing, some dagger.
+			const fighterId = normalizeFighterId(fighterObject.id);
+
+			// Strip values from One array and assign to DataShipHull subObject
+			const currentFighter = allShips.find((shipObject) => shipObject.id === fighterId);
+			const additionalFighterDataShipHull = currentFighter ? Object.fromEntries(KEYS_TO_EXTRACT.map((key) => [key, currentFighter[key]])) : {};
+
+			// There are more parameters like text2 / test3 etc. Text1 Is main text.
+			const description = extractDescription(fighterId).text1;
+			return {
+				...fighterObject,
+				additionalFighterDataShipHull,
+				description,
+			};
+		});
+	},
+	fetchAndInjectFighterVariantData: async function () {
+		//? WHY THE DATA IS IN VARIANTS/FIGHTERS I HAVE NOT IDEA
+		//? WHY ARE SOME IN DIFFERENT FOLDERS
+		//? WHY FLASH IS IN REMNANT
+		//? HOPLON IS KOPESH (OLD NAME)
+
+		try {
+			const cleanToJson = (fileContent) => {
+				fileContent = fileContent.replace(/#.*$/gm, ""); // Remove inline comments
+				fileContent = fileContent.replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas
+				fileContent = fileContent.replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":'); // Add quotes around keys
+
+				return fileContent;
+			};
+			const variantTargeting = (fighterObject) => {
+				// hoplon_Escort => kopesh_Bomber // Why I dont know
+				return fighterObject.variant !== "hoplon_Escort" ? fighterObject.variant : "khopesh_Bomber";
+			};
+
+			const fetchVariantData = async (variantId) => {
+				const SPECIAL_RULES = {
+					drone_borer: URL.DATA_VARIANTS_DRONES,
+					drone_terminator: URL.DATA_VARIANTS_DRONES,
+					flash_Bomber: URL.DATA_VARIANTS_REMNANT,
+					spark_Interceptor: URL.DATA_VARIANTS_REMNANT,
+					lux_Fighter: URL.DATA_VARIANTS_REMNANT,
+				};
+
+				const regularURL = (urlCheck) => {
+					if (urlCheck === undefined) {
+						return `/${URL.DATA_VARIANTS_FIGHTERS}/${variantId}.variant`;
+					}
+					return `/${urlCheck}/${variantId}.variant`;
+				};
+
+				//
+				const res = await fetch(regularURL(SPECIAL_RULES[variantId]));
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`);
+				}
+				return res.text();
+			};
+
+			const processWeapon = async (fighterObject) => {
+				try {
+					const fetchedData = await fetchVariantData(variantTargeting(fighterObject));
+					const cleanedData = cleanToJson(fetchedData);
+					const additionalFighterDataFromVariant = JSON.parse(cleanedData);
+					// console.log(additionalFighterDataFromVariant);
+					return { ...fighterObject, additionalFighterDataFromVariant };
+				} catch (err) {
+					console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
+					return fighterObject; // Return original object if processing fails
+				}
+			};
+			state.allFighters = await Promise.all(state.allFighters.map(processWeapon));
+		} catch (err) {
+			console.log(`${err} in fetchAndInjectFighterVariantData`);
+		}
 	},
 };
 const currentShipBuildHolder = {
@@ -1102,6 +1292,7 @@ const currentShipBuildHolder = {
 		[state.currentShip] = allShips.filter((ship) => (ship.id === inputShipName ? ship.id : ""));
 	},
 	//! Base Ship Data is here
+	//TODO (15/12/2024) I need to rework this
 	assingInitialCurrentShipData() {
 		const { currentShip, currentShipBuild } = state;
 
@@ -1224,17 +1415,9 @@ const currentShipBuildHolder = {
 			currentInstalledWeapons: this.injectCurrentShipSlotsIntoWeapons(currentShip.weaponSlots),
 		});
 	},
-	injectCurrentShipSlotsIntoWeapons(weaponSlotInput) {
-		const weaponSlots = this.weaponSlotIdEdit(weaponSlotInput);
-		const weaponSlotsPair = weaponSlots
-			.filter((wpn) => {
-				if (wpn.mount !== "HIDDEN") {
-					return wpn;
-				}
-			})
-			.map((wpn) => [wpn.id, ""]);
 
-		return weaponSlotsPair;
+	injectCurrentShipSlotsIntoWeapons(weaponSlotInput) {
+		return this.weaponSlotIdEdit(weaponSlotInput).map((wpn) => [wpn.id, ""]);
 	},
 	weaponSlotIdEdit(weaponSlots) {
 		return weaponSlots.map((slot) => {
@@ -1249,6 +1432,7 @@ const currentShipBuildHolder = {
 
 const genericHelperFunction = {
 	convertTagsFromStringIntoAndArray(data = [], stringProperty = "", newArrayName = "") {
+		//! Why forEach 15/12
 		data.forEach((item) => {
 			if (item[stringProperty] && item[stringProperty].trim() !== "") {
 				item[newArrayName] = item[stringProperty]
@@ -1411,13 +1595,22 @@ const gameRulesInjection = {
 };
 
 export const modelInit = async function () {
+	//TODO strange place to put it in.
+	await modelFetcher.fetchDescriptions();
 	// remember the order
 	await modelFetcher.fetchAllShipData();
 	await modelFetcher.fetchAllWeaponData();
 	await modelFetcher.fetchAndInjectAdditionalWeaponProperties();
-	await modelFetcher.fetchDescriptions();
+
 	//
+	await modelFetcher.fetchAllFighters();
+	await modelFetcher.fetchAndInjectInitialFighterData();
+	await modelFetcher.fetchAndInjectAdditionalFighterDataFromShipData();
+	await modelFetcher.fetchAndInjectFighterVariantData();
+	//
+	//TODO I need to insert it in regular Weapon Fetching same As I did with FighterData
 	await genericHelperFunction.injectWeaponDescriptions();
+	//
 	await genericHelperFunction.overwriteWeaponTypeWithForcedOverwrite();
 	await genericHelperFunction.weaponDataConversionFromStringIntoNumber();
 
@@ -1441,11 +1634,24 @@ export const modelInit = async function () {
 	// cleanDescriptionArray();
 	//! assing effects to hullMods
 };
-export const fetchSpecializedShipData = modelFetcher.fetchSpecializedShipData;
-export const fetchAllShipData = modelFetcher.fetchAllShipData;
-export const fetchAllWeaponData = modelFetcher.fetchAllWeaponData;
-export const fetchAllHullModsData = modelFetcher.fetchAllHullModsData;
-export const hullModEffectData = hullModsHolder.hullModEffectData;
-export const addBuildInHullModsToCurrentShipBuild = currentShipBuildHolder.addBuildInHullModsToCurrentShipBuild;
-export const findAndCreateCurrentShip = currentShipBuildHolder.findAndCreateCurrentShip;
-export const assingInitialCurrentShipData = currentShipBuildHolder.assingInitialCurrentShipData;
+//! I dont remember why I export all of this???
+//! review before pushing
+//! I doesnt work?
+// bruh
+// export const fetchSpecializedShipData = modelFetcher.fetchSpecializedShipData;
+// export const fetchAllShipData = modelFetcher.fetchAllShipData;
+// export const fetchAllWeaponData = modelFetcher.fetchAllWeaponData;
+// export const fetchAllHullModsData = modelFetcher.fetchAllHullModsData;
+// export const fetchAllFighters = modelFetcher.fetchAllFighters;
+// export const fetchAndInjectInitialFighterData =
+// 	modelFetcher.fetchAndInjectInitialFighterData;
+// export const fetchAndInjectAdditionalFighterDataFromShipData =
+// 	modelFetcher.fetchAndInjectAdditionalFighterDataFromShipData;
+
+// export const hullModEffectData = hullModsHolder.hullModEffectData;
+// export const addBuildInHullModsToCurrentShipBuild =
+// 	currentShipBuildHolder.addBuildInHullModsToCurrentShipBuild;
+// export const findAndCreateCurrentShip =
+// 	currentShipBuildHolder.findAndCreateCurrentShip;
+// export const assingInitialCurrentShipData =
+// 	currentShipBuildHolder.assingInitialCurrentShipData;
