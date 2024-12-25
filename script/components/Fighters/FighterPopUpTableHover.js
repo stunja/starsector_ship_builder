@@ -1,5 +1,6 @@
-import View from "../view.js";
+import View from "../../allViews/view.js";
 import classNames from "../../helper/DomClassNames.js";
+
 //
 //! Much cleaner implementation. I will use this component as a guide for full structure rework
 class FighterPopUpTableHover extends View {

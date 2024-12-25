@@ -5,3 +5,7 @@
 @import "_fonts.css";
 @import "_weapon-pop-up.css";
 @import "_build-maker.css";
+
+@import "./Weapons/_weaponSprite.css";
+@import "./Weapons/_weaponBackgroundSprite.css";
+@import "./Weapons/_weaponSlot.css";

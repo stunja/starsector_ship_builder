@@ -34,8 +34,20 @@ class EventHandlers {
 		const actionType = "mouseover";
 		return [localParent, eventTarget, actionType, callback];
 	}
-
-	addEventListenerReturnDataSet([localParent, eventTarget, actionType, callback]) {
+	// Fighter Button
+	fighterSlotHandler(callback) {
+		const localParent = `.${classNames.fighterSlotsContainer}`;
+		const eventTarget = `.${classNames.fighterSlot}`;
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
+	// Generic
+	addEventListenerReturnDataSet([
+		localParent,
+		eventTarget,
+		actionType,
+		callback,
+	]) {
 		const localParentQuery = document.querySelector(localParent);
 
 		const wrappedCallback = (e) => {
@@ -63,6 +75,33 @@ class EventHandlers {
 			localParentQuery.removeEventListener(actionType, wrappedCallback);
 			this.eventListenerFolder.delete(callback);
 		}
+	}
+
+	// Right View Handlers
+	// Handlers
+	addCapacitorsHandler(callback) {
+		const localParent = ".ship-capacitors__edit";
+		const eventTarget = ".button-circle";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
+	addVentsHandler(callback) {
+		const localParent = ".ship-vents__edit";
+		const eventTarget = ".button-circle";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
+	openHullModMenuHandler(callback) {
+		const localParent = ".hullmods";
+		const eventTarget = ".hullmods__buttons button";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
+	}
+	addedRegularHullModsHandler(callback) {
+		const localParent = ".hullmods__container__added-hullmods";
+		const eventTarget = ".added-hullmod__remove-button";
+		const actionType = "click";
+		return [localParent, eventTarget, actionType, callback];
 	}
 }
 

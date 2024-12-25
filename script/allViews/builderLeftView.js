@@ -2,7 +2,7 @@ import View from "./view";
 
 import classNames from "../helper/DomClassNames.js";
 import DataSet from "../helper/DataSet.js";
-import FighterSprites from "./Fighter/FighterSprites.js";
+import FighterSprites from "../components/Fighters/FighterSprites.js";
 //
 
 class BuilderLeftView extends View {
@@ -126,30 +126,6 @@ class BuilderLeftView extends View {
 		return [markup, localParent];
 	}
 	// Handler
-	fighterSlotHandler(callback) {
-		const localParent = `.${classNames.fighterSlotsContainer}`;
-		const eventTarget = `.${classNames.fighterSlot}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	fighterPopUpHeaderHandler(callback) {
-		const localParent = `.${classNames.weaponPopUpTableHeader}`;
-		const eventTarget = `.${classNames.tableHeader}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	fighterPopUpTableHandler(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.fighter}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	fighterPopUpRemoveCurrentWeapon(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.weaponPopUpActive}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
 
 	// weaponPopUpHideWhenClickOutsideHandler() {
 	// 	const localParent = document.querySelector(
@@ -168,12 +144,6 @@ class BuilderLeftView extends View {
 	// 		{ once: true }
 	// 	);
 	// }
-	fighterPopUpHoverEffect(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.fighter}`;
-		const actionType = "mouseover";
-		return [localParent, eventTarget, actionType, callback];
-	}
 }
 export default new BuilderLeftView();
 

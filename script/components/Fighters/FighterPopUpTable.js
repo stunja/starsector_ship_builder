@@ -1,9 +1,9 @@
-import View from "../view.js";
+import View from "../../allViews/view.js";
 import classNames from "../../helper/DomClassNames.js";
 import FighterSprites from "./FighterSprites.js";
 
-import { capitalizeFirstLetter } from "../../helperFunction.js";
-import * as URL from "../../url.js";
+import { capitalizeFirstLetter } from "../../helper/helperFunction.js";
+import * as URL from "../../helper/url.js";
 
 class FighterPopUpTable extends View {
 	#fighterStringConversion(fighterId) {

@@ -5,7 +5,9 @@ export default class View {
 		// if (!markup || !localParent) console.warn(`renderComponentGeneric Error ${localParent}`);
 		this.clearRender(document.querySelector(localParent));
 
-		document.querySelector(localParent).insertAdjacentHTML("afterbegin", markup);
+		document
+			.querySelector(localParent)
+			.insertAdjacentHTML("afterbegin", markup);
 	}
 	updateText = (target, value) => {
 		document.querySelector(`.${target}`).textContent = `${value}`;
@@ -13,9 +15,13 @@ export default class View {
 	clearRender = (parentElement) => (parentElement.textContent = "");
 
 	weaponPopUpFormRemover(currentWeaponSlot) {
-		const weaponTypeCheck = currentWeaponSlot.type === "LAUNCH_BAY" ? "fighter" : "weapon";
+		const weaponTypeCheck =
+			currentWeaponSlot.type === "LAUNCH_BAY" ? "fighter" : "weapon";
 
-		const targetClass = weaponTypeCheck === "weapon" ? classNames.weaponPopUp : classNames.fighterPopUp;
+		const targetClass =
+			weaponTypeCheck === "weapon"
+				? classNames.weaponPopUp
+				: classNames.fighterPopUp;
 
 		// hover-additional-information
 		// weapon-pop-up__table

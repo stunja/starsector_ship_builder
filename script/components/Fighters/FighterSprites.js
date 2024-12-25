@@ -1,5 +1,5 @@
 import classNames from "../../helper/DomClassNames.js";
-import * as URL from "../../url.js";
+import * as URL from "../../helper/url.js";
 
 class FighterSprites {
 	// Draw the sprite | Sprites can be drawn up to 6 in the same component

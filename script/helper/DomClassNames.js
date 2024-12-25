@@ -1,7 +1,7 @@
 const classNames = {
 	// Generic
 	dNone: "d-none",
-	hoverAdditionalInformation: "hover-additional-information",
+	// hoverAdditionalInformation: "hover-additional-information",
 	unselectable: "unselectable",
 	textBoldGeneric: "text-bold",
 	smallImageBox: `small-image-box`,
@@ -38,7 +38,7 @@ const classNames = {
 	// Weapon Classes
 	weaponDivider: "weapon-divider",
 	weaponDescription: "weapon-desc",
-	weaponPopUpFilter: "weapon-filter",
+	// weaponPopUpFilter: "weapon-filter",
 	weaponPopUpActive: "weapon--active",
 	weaponContentGroup: "weapon-content-group",
 
@@ -46,13 +46,13 @@ const classNames = {
 
 	// Weapon Hover Additional Information
 	// Weapon Pop Up
-	weaponPopUp: "weapon-pop-up",
-	weaponPopUpParent: "weapon-pop-up-parent",
-	weaponPopUpTable: "weapon-pop-up__table",
+	// weaponPopUp: "weapon-pop-up",
+	// weaponPopUpParent: "weapon-pop-up-parent",
+	// weaponPopUpTable: "weapon-pop-up__table",
 
 	// Weapon Pop Up Table
-	weaponPopUpTableWrapper: "weapon-pop-up__table-wrapper",
-	weaponPopUpTableBody: "weapon-pop-up__table-body",
+	// weaponPopUpTableWrapper: "weapon-pop-up__table-wrapper",
+	// weaponPopUpTableBody: "weapon-pop-up__table-body",
 	weaponPopUpTableHeader: `weapon-pop-up__theader`,
 	tableHeader: `theader-element`,
 	//
@@ -107,6 +107,27 @@ const classNames = {
 	weaponArcSprite: "weapon-arc__sprite",
 	//
 	fighterSlotActive: "fighter-slot--active",
+	/////
+	//! 24 Dec
+	weaponPopUp: "weapon-pop-up",
+	// Hover Container
+	hoverContainer: "hover-container",
+	// Table Container
+	tableContainer: "table-container",
+
+	// tableContainerHeader: "table-container__header",
+
+	tableContainerBody: "table-container__body",
+	tableHeader: "table-header",
+	tableEntries: "table-entries",
+	tableHeaderEntry: "table-header-entry",
+	tableEntry: "table-entry",
+
+	tableIcon: "table__icon",
+	tableName: "table__name",
+	// tableType: "table__type",
+	// tableRange: "table__range",
+	// tableCost: "table__cost",
 };
 
 export default classNames;

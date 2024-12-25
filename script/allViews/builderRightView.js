@@ -1,5 +1,6 @@
 import View from "./view.js";
-import { calculateHullModCost } from "../helperFunction.js";
+import { calculateHullModCost } from "../helper/helperFunction.js";
+
 class BuilderRightView extends View {
 	#data;
 	// parents probably don`t work due to async
@@ -104,7 +105,9 @@ class BuilderRightView extends View {
 	}
 	shieldDataRender() {
 		const { currentShipBuild } = this.#data;
-		const shieldFluxSec = currentShipBuild._baseFluxDissipation * currentShipBuild.currentShieldUpkeep;
+		const shieldFluxSec =
+			currentShipBuild._baseFluxDissipation *
+			currentShipBuild.currentShieldUpkeep;
 		// currentShipBuild.currentShipType === "shieldShip"
 		//   ? currentShipBuild._baseFluxDissipation *
 		//     currentShipBuild.currentShieldUpkeep
@@ -144,7 +147,10 @@ class BuilderRightView extends View {
 	// Hull Mods
 	hullModMarkUp() {
 		const localParent = ".hullmods";
-		const hideBuildInHullModIfUndefined = !this.#data.currentShipBuild.hullMods.buildInHullMods ? "d-none" : "";
+		const hideBuildInHullModIfUndefined = !this.#data.currentShipBuild.hullMods
+			.buildInHullMods
+			? "d-none"
+			: "";
 		const markup = `
                     <h3 class="hullmods__header">Hull features & mods</h3>
                     <ul class="hullmods__container">
@@ -166,7 +172,11 @@ class BuilderRightView extends View {
 		const localParent = ".hullmods__container__build-in-hullmods";
 		const hullMods = this.#data.currentShipBuild.hullMods;
 
-		if (!hullMods.buildInHullMods) return [` <li class="flex-flexEnd-gap build-in-hullmods__hullmod"></li>`, localParent];
+		if (!hullMods.buildInHullMods)
+			return [
+				` <li class="flex-flexEnd-gap build-in-hullmods__hullmod"></li>`,
+				localParent,
+			];
 		// if (!hullMods.buildInHullMods) return ["", localParent];
 		const markup = hullMods.buildInHullMods
 			.map(
@@ -188,7 +198,9 @@ class BuilderRightView extends View {
                   <li class="flex-flexEnd-gap added-hullmods__hullmod">
                     <h5>${hullmod.name}</h5>
                     <p>(${calculateHullModCost(hullmod)})</p>
-                    <button class="button button-circle added-hullmod__remove-button" data-id="${hullmod.id}">-</button>
+                    <button class="button button-circle added-hullmod__remove-button" data-id="${
+											hullmod.id
+										}">-</button>
                     <img src="./starsectorData/${hullmod.sprite_}"
                     alt="${hullmod.short}" />
                   </li>`
@@ -219,32 +231,6 @@ class BuilderRightView extends View {
 	//
 	#assignParentElement() {
 		this.#parentElement = document.querySelector(".box__full-right");
-	}
-
-	// Handlers
-	addCapacitorsHandler(callback) {
-		const localParent = ".ship-capacitors__edit";
-		const eventTarget = ".button-circle";
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	addVentsHandler(callback) {
-		const localParent = ".ship-vents__edit";
-		const eventTarget = ".button-circle";
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	openHullModMenuHandler(callback) {
-		const localParent = ".hullmods";
-		const eventTarget = ".hullmods__buttons button";
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	addedRegularHullModsHandler(callback) {
-		const localParent = ".hullmods__container__added-hullmods";
-		const eventTarget = ".added-hullmod__remove-button";
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
 	}
 }
 export default new BuilderRightView();

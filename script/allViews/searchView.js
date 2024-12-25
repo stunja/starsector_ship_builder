@@ -2,7 +2,9 @@ class SearchView {
 	#parentElement = document.querySelector(".build-maker__nav");
 
 	getInputValue = () => {
-		const inputValue = this.#parentElement.querySelector(".search-form__input").value;
+		const inputValue = this.#parentElement.querySelector(
+			".search-form__input"
+		).value;
 		// this.#clearInput(); //
 		return inputValue;
 	};
