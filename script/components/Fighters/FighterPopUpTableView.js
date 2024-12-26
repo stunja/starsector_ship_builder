@@ -1,11 +1,11 @@
 import View from "../../allViews/view.js";
 import classNames from "../../helper/DomClassNames.js";
-import FighterSprites from "./FighterSprites.js";
+import FighterSpritesView from "./FighterSpritesView.js";
 
 import { capitalizeFirstLetter } from "../../helper/helperFunction.js";
 import * as URL from "../../helper/url.js";
 
-class FighterPopUpTable extends View {
+class FighterPopUpTableView extends View {
 	#fighterStringConversion(fighterId) {
 		return fighterId
 			.replaceAll("_wing", "")
@@ -172,7 +172,7 @@ class FighterPopUpTable extends View {
 				const markup = `
                     <tr class="${classNames.fighter}${this.#activeClass(fighterObj, currentInstalledWeapons, currentWeaponSlot)}" data-id="${fighterObj.id}">
                             <td class="${classNames.fighterSprites}">
-                                ${FighterSprites.render(fighterObj)}
+                                ${FighterSpritesView.render(fighterObj)}
                             </td>
 							<td class="${classNames.fighterName}">
                                 ${this.#fighterStringConversion(fighterObj.id)}
@@ -189,4 +189,4 @@ class FighterPopUpTable extends View {
 	}
 }
 // DONT FORGET TO CALL IT
-export default new FighterPopUpTable();
+export default new FighterPopUpTableView();

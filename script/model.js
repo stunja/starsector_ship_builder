@@ -1495,8 +1495,8 @@ const currentShipBuildHolder = {
 		Object.assign(currentShipBuild, {
 			//! dont change base values, they are foundation
 			// Capacitors
-			activeCapacitors: 0,
-			activeCapacitorsOrdinanceCost: 1,
+			currentCapacitors: 0,
+			currentCapacitorsOrdinanceCost: 1,
 			_baseFluxCapacity: Number(currentShip.max_flux),
 			currentFluxCapacity: Number(currentShip.max_flux),
 			_baseFluxCapacityPerSingleActiveCapacitor: 200,

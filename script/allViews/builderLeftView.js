@@ -2,7 +2,7 @@ import View from "./view";
 
 import classNames from "../helper/DomClassNames.js";
 import DataSet from "../helper/DataSet.js";
-import FighterSprites from "../components/Fighters/FighterSprites.js";
+import FighterSpritesView from "../components/Fighters/FighterSpritesView.js";
 //
 
 class BuilderLeftView extends View {
@@ -12,7 +12,7 @@ class BuilderLeftView extends View {
 	#parentElementBottom = document.querySelector(".box__bottom-left");
 
 	// Terrible implementation
-	renderRow(data) {
+	render(data) {
 		this.#data = data;
 
 		this.#renderTopBox(data);
@@ -122,28 +122,9 @@ class BuilderLeftView extends View {
 		const slotId = currentWeaponSlot.id;
 		const localParent = `.${classNames.fighterSlots} [${DataSet.dataFighterId}="${slotId}"]`;
 
-		const markup = `${FighterSprites.render(currentWeapon)}`;
+		const markup = `${FighterSpritesView.render(currentWeapon)}`;
 		return [markup, localParent];
 	}
-	// Handler
-
-	// weaponPopUpHideWhenClickOutsideHandler() {
-	// 	const localParent = document.querySelector(
-	// 		`.${classNames.fighterPopUpClass}`
-	// 	);
-
-	// 	const actionType = "click";
-
-	// 	document.addEventListener(
-	// 		actionType,
-	// 		function (e) {
-	// 			if (!localParent.contains(e.target)) {
-	// 				localParent.textContent = "";
-	// 			}
-	// 		},
-	// 		{ once: true }
-	// 	);
-	// }
 }
 export default new BuilderLeftView();
 

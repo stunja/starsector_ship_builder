@@ -1,6 +1,10 @@
 const classNames = {
 	// Generic
 	dNone: "d-none",
+	flexFlexEndGap: "flex-flexEnd-gap",
+	button: "button",
+	buttonCircle: "button-circle",
+
 	// hoverAdditionalInformation: "hover-additional-information",
 	unselectable: "unselectable",
 	textBoldGeneric: "text-bold",
@@ -114,13 +118,12 @@ const classNames = {
 	hoverContainer: "hover-container",
 	// Table Container
 	tableContainer: "table-container",
+	tableBody: "table-body",
 
-	// tableContainerHeader: "table-container__header",
-
-	tableContainerBody: "table-container__body",
+	// tableContainerBody: "table-container__body",
 	tableHeader: "table-header",
-	tableEntries: "table-entries",
 	tableHeaderEntry: "table-header-entry",
+	tableEntries: "table-entries",
 	tableEntry: "table-entry",
 
 	tableIcon: "table__icon",
@@ -128,6 +131,36 @@ const classNames = {
 	// tableType: "table__type",
 	// tableRange: "table__range",
 	// tableCost: "table__cost",
+
+	//! Cancer
+	//! I need to simplify all of this
+	// Ordinance Points
+	ordinancePointsGraph: "ordinance-graph",
+	ordinanceGraphTitle: "ordinance-graph__title",
+	ordinancePointsRenderTextClass: "ordinance-graph__points__current-points",
+	ordinanceGraphBody: "ordinance-graph__body",
+	ordinanceGraphPoints: "ordinance-graph__points",
+	ordinanceGraphPointsMaxPoints: "ordinance-graph__points__max-points",
+
+	// Speed Armor Hull
+
+	speedArmorHullContainer: "speed-armor-hull-container",
+	speedArmorHull__Speed: "speed-armor-hull__speed",
+	speedArmorHull__Armor: "speed-armor-hull__armor",
+	speedArmorHull__ArmorTitle: "speed-armor-hull__armor-title",
+	speedArmorHull__ArmorValue: "speed-armor-hull__armor-value",
+	speedArmorHull__Hull: "speed-armor-hull__hull",
+
+	// Ship Capacitors
+	shipCapacitorsContainer: "ship-capacitors-container",
+	shipCapacitors__Edit: "ship-capacitors__edit",
+	shipCapacitors__EditTitle: "ship-capacitors__edit__title",
+	shipCapacitors__EditMinus: "ship-capacitors__edit--minus",
+	shipCapacitors__EditPlus: "ship-capacitors__edit--plus",
+	shipCapacitors__Edit__Value: "ship-capacitors__edit__value",
+	shipCapacitors__FluxCapacity: "ship-capacitors__flux-capacity",
+	fluxCapacity__Title: "flux-capacity__title",
+	fluxCapacity__Value: "flux-capacity__value",
 };
 
 export default classNames;

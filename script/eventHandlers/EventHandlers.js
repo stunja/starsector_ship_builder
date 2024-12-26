@@ -5,27 +5,27 @@ class EventHandlers {
 		this.eventListenerFolder = new Map();
 	}
 
-	hidePopUpIfClickOutsideHandler(parent, eventTarget, callback) {
-		const localParent = document.querySelector(`.${parent}`);
-		const localTarget = document.querySelector(`.${eventTarget}`);
-		// target direct children NODELIST
-		const localChildren = localParent.querySelectorAll(`:scope > *`);
-		const actionType = "click";
+	// hidePopUpIfClickOutsideHandler(parent, eventTarget, callback) {
+	// 	const localParent = document.querySelector(`.${parent}`);
+	// 	const localTarget = document.querySelector(`.${eventTarget}`);
+	// 	// target direct children NODELIST
+	// 	const localChildren = localParent.querySelectorAll(`:scope > *`);
+	// 	const actionType = "click";
 
-		document.addEventListener(
-			actionType,
-			function (e) {
-				// check if click is outside target (for example table)
-				if (!localTarget.contains(e.target)) {
-					// NODELIST
-					localChildren.forEach((child) => (child.textContent = ""));
+	// 	document.addEventListener(
+	// 		actionType,
+	// 		function (e) {
+	// 			// check if click is outside target (for example table)
+	// 			if (!localTarget.contains(e.target)) {
+	// 				// NODELIST
+	// 				localChildren.forEach((child) => (child.textContent = ""));
 
-					if (callback) return callback();
-				}
-			},
-			{ once: true }
-		);
-	}
+	// 				if (callback) return callback();
+	// 			}
+	// 		},
+	// 		{ once: true }
+	// 	);
+	// }
 	fighterShowAdditionaInformation(callback) {
 		// classNames.fighterSlots
 		// fighterSlotContainer
@@ -80,8 +80,8 @@ class EventHandlers {
 	// Right View Handlers
 	// Handlers
 	addCapacitorsHandler(callback) {
-		const localParent = ".ship-capacitors__edit";
-		const eventTarget = ".button-circle";
+		const localParent = `.${classNames.shipCapacitors__Edit}`;
+		const eventTarget = `.${classNames.buttonCircle}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}

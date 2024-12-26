@@ -1,76 +1,77 @@
 import View from "./view.js";
 import { calculateHullModCost } from "../helper/helperFunction.js";
+import classNames from "../helper/DomClassNames.js";
 
 class BuilderRightView extends View {
 	#data;
 	// parents probably don`t work due to async
 	#parentElement = document.querySelector(".box__full-right");
-	ordinancePointsRenderTextClass = "ordinance-graph__points__current-points";
+	// ordinancePointsRenderTextClass = "ordinance-graph__points__current-points";
 
 	constructor() {
 		super();
-		this.speedArmorHullParent = "box__top-right__speed-armor-hull";
-		this.shipCapacitorParent = "box__middle-right__ship-capacitors";
+		// this.speedArmorHullParent = "box__top-right__speed-armor-hull";
+		// this.shipCapacitorParent = "box__middle-right__ship-capacitors";
 		this.shipVentAndDissipationParent = "box__middle-right__ship-vents";
-		this.ordinancePointsParent = "ordinance-graph";
+		// this.ordinancePointsParent = "ordinance-graph";
 		this.phaseDataParent = "box__middle-right__cloak-flux";
 		this.shieldDataParent = "box__middle-right__shield";
 		this.weaponFluxParent = "box__middle-right__weaponFlux";
 	}
 
-	ordinancePointsRender() {
-		const { currentShipBuild } = this.#data;
-		const markup = `
-           <li>
-             <h5 class="ordinance-graph__title">
-               [Current / Total] Ordinance Points
-             </h5>
-           </li>
-           <li class="ordinance-graph__body">
-             <div class="ordinance-graph__points">
-               <h5 class="${this.ordinancePointsRenderTextClass}">${currentShipBuild.currentOrdinancePoints}</h5>
-               <span> / </span>
-               <h5 class="ordinance-graph__points__max-points">${currentShipBuild.maxOrdinancePoints}</h5>
-             </div>
-           </li>
-          `;
-		return [markup, `.${this.ordinancePointsParent}`];
-	}
-	speedArmorHullRender() {
-		const { currentShipBuild } = this.#data;
-		const markup = `
-            <li class="speed-armor-hull__speed">
-              <h5>Top Speed</h5>
-              <p>${currentShipBuild.currentSpeed}</p>
-            </li>
-            <li class="speed-armor-hull__armor">
-              <h5 class="speed-armor-hull__armor-title">Armor</h5>
-              <p class="speed-armor-hull__armor-value">${currentShipBuild.currentArmor}</p>
-            </li>
-            <li class="speed-armor-hull__hull">
-              <h5>Hull</h5>
-              <p>${currentShipBuild.currentHitPoints}</p>
-            </li>
-          `;
-		return [markup, `.${this.speedArmorHullParent}`];
-	}
-	shipCapacitorsRender() {
-		const { currentShipBuild } = this.#data;
-		const markup = `
-          <li class="flex-flexEnd-gap ship-capacitors__edit">
-            <h5 class="ship-capacitors__edit__title">Capacitors</h5>
-            <button class="button button-circle unselectable ship-capacitors__edit--minus" data-button-value="-1">-</button>
-            <h5 class="ship-capacitors__edit__value">${currentShipBuild.activeCapacitors}</h5>
-            <button class="button button-circle unselectable ship-capacitors__edit--plus" data-button-value="+1">+</button>
-          </li>
-          <li class="ship-capacitors__flux-capacity">
-            <h5 class="flux-capacity__title">Flux Capacity</h5>
-            <p class="flux-capacity__value">${currentShipBuild.currentFluxCapacity}</p>
-          </li>
-          `;
+	// ordinancePointsRender() {
+	// 	const { currentShipBuild } = this.#data;
+	// 	const markup = `
+	//          <li>
+	//            <h5 class="ordinance-graph__title">
+	//              [Current / Total] Ordinance Points
+	//            </h5>
+	//          </li>
+	//          <li class="ordinance-graph__body">
+	//            <div class="ordinance-graph__points">
+	//              <h5 class="${this.ordinancePointsRenderTextClass}">${currentShipBuild.currentOrdinancePoints}</h5>
+	//              <span> / </span>
+	//              <h5 class="ordinance-graph__points__max-points">${currentShipBuild.maxOrdinancePoints}</h5>
+	//            </div>
+	//          </li>
+	//         `;
+	// 	return [markup, `.${this.ordinancePointsParent}`];
+	// }
+	// speedArmorHullRender() {
+	// 	const { currentShipBuild } = this.#data;
+	// 	const markup = `
+	//         <li class="speed-armor-hull__speed">
+	//           <h5>Top Speed</h5>
+	//           <p>${currentShipBuild.currentSpeed}</p>
+	//         </li>
+	//         <li class="speed-armor-hull__armor">
+	//           <h5 class="speed-armor-hull__armor-title">Armor</h5>
+	//           <p class="speed-armor-hull__armor-value">${currentShipBuild.currentArmor}</p>
+	//         </li>
+	//         <li class="speed-armor-hull__hull">
+	//           <h5>Hull</h5>
+	//           <p>${currentShipBuild.currentHitPoints}</p>
+	//         </li>
+	//       `;
+	// 	return [markup, `.${this.speedArmorHullParent}`];
+	// }
+	// shipCapacitorsRender() {
+	// 	const { currentShipBuild } = this.#data;
+	// 	const markup = `
+	//       <li class="flex-flexEnd-gap ship-capacitors__edit">
+	//         <h5 class="ship-capacitors__edit__title">Capacitors</h5>
+	//         <button class="button button-circle unselectable ship-capacitors__edit--minus" data-button-value="-1">-</button>
+	//         <h5 class="ship-capacitors__edit__value">${currentShipBuild.activeCapacitors}</h5>
+	//         <button class="button button-circle unselectable ship-capacitors__edit--plus" data-button-value="+1">+</button>
+	//       </li>
+	//       <li class="ship-capacitors__flux-capacity">
+	//         <h5 class="flux-capacity__title">Flux Capacity</h5>
+	//         <p class="flux-capacity__value">${currentShipBuild.currentFluxCapacity}</p>
+	//       </li>
+	//       `;
 
-		return [markup, `.${this.shipCapacitorParent}`];
-	}
+	// 	return [markup, `.${this.shipCapacitorParent}`];
+	// }
 	ventsAndDissipationRender() {
 		const { currentShipBuild } = this.#data;
 		const markup = `
@@ -213,10 +214,10 @@ class BuilderRightView extends View {
 		if (!this.#parentElement) this.#assignParentElement();
 
 		const markup = `
-                    <ul class="${this.ordinancePointsParent}"></ul>
+                    <ul class="${classNames.ordinancePointsGraph}"></ul>
                     <div class="box__full-right__top-content-group">
-                      <ul class="flex-flexEnd-gap ${this.speedArmorHullParent}"></ul>
-                      <ul class="flex-flexEnd-gap ${this.shipCapacitorParent}"></ul>
+                      <ul class="flex-flexEnd-gap ${classNames.speedArmorHullContainer}"></ul>
+                      <ul class="flex-flexEnd-gap ${classNames.shipCapacitorsContainer}"></ul>
                       <ul class="flex-flexEnd-gap ${this.shipVentAndDissipationParent}"></ul>
                       <ul class="flex-flexEnd-gap ${this.phaseDataParent}"></ul>
                       <ul class="flex-flexEnd-gap ${this.shieldDataParent}"></ul>

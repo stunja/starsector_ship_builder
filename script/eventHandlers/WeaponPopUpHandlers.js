@@ -1,6 +1,24 @@
 import classNames from "../helper/DomClassNames";
 
 class WeaponPopUpHandlers {
+	closeIfClickOutsideTargetContainer(className) {
+		const localTarget = document.querySelector(`.${className}`);
+		const actionType = "click";
+
+		console.log("click happened");
+
+		document.addEventListener(
+			actionType,
+			function (e) {
+				// check if click is outside target (for example table)
+				if (!localTarget.contains(e.target)) {
+					console.log("close me");
+					localTarget.textContent = "";
+				}
+			},
+			{ once: true }
+		);
+	}
 	// Handlers
 	headerHandler(callback) {
 		const localParent = `.${classNames.tableHeader}`;
@@ -8,9 +26,9 @@ class WeaponPopUpHandlers {
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
-	weaponPopUpTableHandler(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.weapon}`;
+	tableHandler(callback) {
+		const localParent = `.${classNames.tableBody}`;
+		const eventTarget = `.${classNames.tableEntry}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
