@@ -5,7 +5,7 @@ const BUTTON_ACTIONS = {
 	PLUS: "plus",
 	MINUS: "minus",
 };
-//! Unfinised Flux / Cap not implemented
+
 class CapacitorsController {
 	changeValue = (btn) => {
 		const buttonValue = btn.dataset.buttonValue;
@@ -22,11 +22,14 @@ class CapacitorsController {
 		const increment = buttonValue === BUTTON_ACTIONS.PLUS ? 1 : -1;
 
 		// Update State
-		const newState = this.#setNewCapacitorsValue(currentCapacitors + increment);
+		const updateCapacitorsState = this.#setNewCapacitorsValue(
+			currentCapacitors + increment
+		);
+		const finalState = this.#updateFluxCapacityValue(updateCapacitorsState);
 
-		if (newState) {
-			model.state.currentShipBuild = newState;
-			StatsController.capacitors();
+		if (finalState) {
+			model.state.currentShipBuild = finalState;
+			StatsController.capacitorsAndFluxCapacity();
 		}
 	};
 
@@ -49,53 +52,17 @@ class CapacitorsController {
 			currentCapacitors: newCapacitorsValue,
 		};
 	}
+	// Increase in number of capacitors increase flux capacity.
+	#updateFluxCapacityValue(currentState) {
+		// Base Flux is default flux for a ship
+		// currentCapacitors are current number of capacitors on a ship between 0 and max capacitors
+		// fluxCapacity per shit is value based on shipSize (Capital ship === 200)
+		const newFluxCapacity =
+			currentState._baseFluxCapacity +
+			currentState.currentCapacitors *
+				currentState.currentFluxCapacityPerSingleActiveCapacitor;
 
-	// changeCurrentActiveCapacitors(btn) {
-	// 	const buttonValue = btn.dataset.buttonValue;
-	// 	const { activeCapacitors, maxCapacitors } = model.state.currentShipBuild;
-
-	// 	if (buttonValue < 0 && activeCapacitors > 0)
-	// 		this.#changeCurrentCapacitors(-1);
-	// 	if (buttonValue > 0 && activeCapacitors < maxCapacitors)
-	// 		this.#changeCurrentCapacitors(+1);
-	// }
-
-	#changeCurrentCapacitors(value) {
-		const currentShipBuild = model.state.currentShipBuild;
-
-		currentShipBuild.activeCapacitors += value;
-
-		ordinancePointsController.updateCurrentOrdinancePoints(
-			currentShipBuild.activeCapacitorsOrdinanceCost + value - 1 // -1 because I give value in dataset -1 / +1
-		);
-		this.#increaseDecreaseCurrentFluxCapacity(value);
-		capacitorRender();
-	}
-
-	#increaseDecreaseCurrentFluxCapacity(value = 0) {
-		const { currentFluxCapacity, currentFluxCapacityPerSingleActiveCapacitor } =
-			model.state.currentShipBuild;
-
-		if (value === -1) {
-			model.state.currentShipBuild.currentFluxCapacity =
-				currentFluxCapacity - currentFluxCapacityPerSingleActiveCapacitor;
-		}
-		if (value === 1) {
-			model.state.currentShipBuild.currentFluxCapacity =
-				currentFluxCapacity + currentFluxCapacityPerSingleActiveCapacitor;
-		}
-	}
-	fluxCapacityCalcBasedOnActiveCapacitors() {
-		// used for resetData function
-		const {
-			_baseFluxCapacity,
-			activeCapacitors,
-			currentFluxCapacityPerSingleActiveCapacitor,
-		} = model.state.currentShipBuild;
-
-		model.state.currentShipBuild.currentFluxCapacity =
-			_baseFluxCapacity +
-			activeCapacitors * currentFluxCapacityPerSingleActiveCapacitor;
+		return { ...currentState, currentFluxCapacity: newFluxCapacity };
 	}
 }
 export default new CapacitorsController();

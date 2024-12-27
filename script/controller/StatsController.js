@@ -5,6 +5,7 @@ import SpeedArmorHullView from "../components/Stats/SpeedArmorHullView.js";
 import CapacitorsView from "../components/Stats/CapacitorsView.js";
 import EventHandlers from "../eventHandlers/EventHandlers";
 import CapacitorsController from "./CapacitorsController.js";
+import VentsView from "../components/Stats/VentsView.js";
 
 import * as model from "../model.js";
 // import classNames from "../helper/DomClassNames.js";
@@ -13,8 +14,8 @@ class StatsContoller {
 	init() {
 		this.#ordinancePoints();
 		this.#speedArmorHull();
-		this.capacitors();
-		// this.#vents();
+		this.capacitorsAndFluxCapacity();
+		this.ventsAndFluxDissipation();
 		// this.#weaponFlux();
 		// this.#shipShieldRenderBasedOnShipType();
 		// capacitorController.assignFluxCapacity();
@@ -25,13 +26,21 @@ class StatsContoller {
 	#speedArmorHull() {
 		builderView.renderComponent(SpeedArmorHullView.render(model.state));
 	}
-	capacitors() {
+	capacitorsAndFluxCapacity() {
 		builderView.renderComponent(CapacitorsView.render(model.state));
 
 		EventHandlers.removeEventListener(CapacitorsController.changeValue);
 		EventHandlers.addEventListenerReturnDataSet(
 			EventHandlers.addCapacitorsHandler(CapacitorsController.changeValue)
 		);
+	}
+	ventsAndFluxDissipation() {
+		builderView.renderComponent(VentsView.render(model.state));
+
+		// EventHandlers.removeEventListener(ventController.changeCurrentActiveVents);
+		// EventHandlers.addEventListenerReturnDataSet(
+		// 	EventHandlers.addVentsHandler(ventController.changeCurrentActiveVents)
+		// );
 	}
 	#shipShieldRenderBasedOnShipType() {
 		const { shipType } = model.state.currentShipBuild;
@@ -42,15 +51,6 @@ class StatsContoller {
 		}
 	}
 
-	#vents() {
-		EventHandlers.removeEventListener(ventController.changeCurrentActiveVents);
-		builderRightView.renderComponent(
-			builderRightView.ventsAndDissipationRender()
-		);
-		EventHandlers.addEventListenerReturnDataSet(
-			EventHandlers.addVentsHandler(ventController.changeCurrentActiveVents)
-		);
-	}
 	#weaponFlux() {
 		builderRightView.renderComponent(builderRightView.weaponFluxRender());
 	}

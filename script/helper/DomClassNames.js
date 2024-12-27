@@ -161,6 +161,17 @@ const classNames = {
 	shipCapacitors__FluxCapacity: "ship-capacitors__flux-capacity",
 	fluxCapacity__Title: "flux-capacity__title",
 	fluxCapacity__Value: "flux-capacity__value",
+
+	// Vents and Dissipation
+	shipVents: "ship-vents",
+	shipVents__Edit: "ship-vents__edit",
+	shipVents__Edit__Value: "ship-vents__edit__value",
+	shipVents__EditMinus: "ship-vents__edit--minus",
+	shipVents__EditPlus: "ship-vents__edit--plus",
+
+	// Dissipation
+	shipVents__FluxDissipation: "ship-vents__flux-dissipation",
+	shipVents__FluxDissipation__Value: "ship-vents__flux-dissipation__value",
 };
 
 export default classNames;

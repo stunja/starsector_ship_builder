@@ -12,7 +12,7 @@ class BuilderRightView extends View {
 		super();
 		// this.speedArmorHullParent = "box__top-right__speed-armor-hull";
 		// this.shipCapacitorParent = "box__middle-right__ship-capacitors";
-		this.shipVentAndDissipationParent = "box__middle-right__ship-vents";
+		// this.shipVentAndDissipationParent = "box__middle-right__ship-vents";
 		// this.ordinancePointsParent = "ordinance-graph";
 		this.phaseDataParent = "box__middle-right__cloak-flux";
 		this.shieldDataParent = "box__middle-right__shield";
@@ -72,23 +72,23 @@ class BuilderRightView extends View {
 
 	// 	return [markup, `.${this.shipCapacitorParent}`];
 	// }
-	ventsAndDissipationRender() {
-		const { currentShipBuild } = this.#data;
-		const markup = `
-              <li class="flex-flexEnd-gap ship-vents__edit">
-                   <h5>Vents</h5>
-                   <button class="button button-circle unselectable ship-vents__edit--minus" data-button-value="-1">-</button>
-                   <h5 class="ship-vents__edit__value">${currentShipBuild.activeVents}</h5>
-                   <button class="button button-circle unselectable ship-vents__edit--plus" data-button-value="+1">+</button>
-              </li>
-              <li class="ship-vents__flux-dissipation">
-                   <h5>Flux Dissipation</h5>
-                   <p class="ship-vents__flux-dissipation__value">${currentShipBuild.currentFluxDissipation}</p>
-              </li>
-          `;
+	// ventsAndDissipationRender() {
+	// 	const { currentShipBuild } = this.#data;
+	// 	const markup = `
+	//           <li class="flex-flexEnd-gap ship-vents__edit">
+	//                <h5>Vents</h5>
+	//                <button class="button button-circle unselectable ship-vents__edit--minus" data-button-value="-1">-</button>
+	//                <h5 class="ship-vents__edit__value">${currentShipBuild.activeVents}</h5>
+	//                <button class="button button-circle unselectable ship-vents__edit--plus" data-button-value="+1">+</button>
+	//           </li>
+	//           <li class="ship-vents__flux-dissipation">
+	//                <h5>Flux Dissipation</h5>
+	//                <p class="ship-vents__flux-dissipation__value">${currentShipBuild.currentFluxDissipation}</p>
+	//           </li>
+	//       `;
 
-		return [markup, `.${this.shipVentAndDissipationParent}`];
-	}
+	// 	return [markup, `.${this.shipVentAndDissipationParent}`];
+	// }
 	phaseDataRender() {
 		const { currentShipBuild } = this.#data;
 		const markup = `
@@ -218,7 +218,7 @@ class BuilderRightView extends View {
                     <div class="box__full-right__top-content-group">
                       <ul class="flex-flexEnd-gap ${classNames.speedArmorHullContainer}"></ul>
                       <ul class="flex-flexEnd-gap ${classNames.shipCapacitorsContainer}"></ul>
-                      <ul class="flex-flexEnd-gap ${this.shipVentAndDissipationParent}"></ul>
+                      <ul class="flex-flexEnd-gap ${classNames.shipVents}"></ul>
                       <ul class="flex-flexEnd-gap ${this.phaseDataParent}"></ul>
                       <ul class="flex-flexEnd-gap ${this.shieldDataParent}"></ul>
                       <ul class="flex-flexEnd-gap ${this.weaponFluxParent}"></ul>
