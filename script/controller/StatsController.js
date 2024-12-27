@@ -6,9 +6,10 @@ import CapacitorsView from "../components/Stats/CapacitorsView.js";
 import EventHandlers from "../eventHandlers/EventHandlers";
 import CapacitorsAndVentsController from "./CapacitorsAndVentsController.js";
 import VentsView from "../components/Stats/VentsView.js";
+import WeaponFluxView from "../components/Stats/WeaponFluxView.js";
+import ShieldOrPhaseView from "../components/Stats/ShieldOrPhaseView.js";
 
 import * as model from "../model.js";
-// import classNames from "../helper/DomClassNames.js";
 
 class StatsContoller {
 	init() {
@@ -16,9 +17,8 @@ class StatsContoller {
 		this.#speedArmorHull();
 		this.capacitorsAndFluxCapacity();
 		this.ventsAndFluxDissipation();
-		// this.#weaponFlux();
-		// this.#shipShieldRenderBasedOnShipType();
-		// capacitorController.assignFluxCapacity();
+		this.#weaponFlux();
+		this.#shieldOrPhase();
 	}
 	#ordinancePoints() {
 		builderView.renderComponent(OrdinancePointsView.render(model.state));
@@ -48,27 +48,12 @@ class StatsContoller {
 			EventHandlers.ventsHandler(CapacitorsAndVentsController.handleVentChange)
 		);
 	}
-	#shipShieldRenderBasedOnShipType() {
-		const { shipType } = model.state.currentShipBuild;
-		if (shipType === "phaseShip") {
-			builderRightView.renderComponent(builderRightView.phaseDataRender());
-		} else {
-			builderRightView.renderComponent(builderRightView.shieldDataRender());
-		}
+	#shieldOrPhase() {
+		builderView.renderComponent(ShieldOrPhaseView.render(model.state));
 	}
 
 	#weaponFlux() {
-		builderRightView.renderComponent(builderRightView.weaponFluxRender());
+		builderView.renderComponent(WeaponFluxView.render());
 	}
-	// ordinancePointsController = {
-	// 	currentOrdinancePointsTextClass:
-	// 		builderRightView.ordinancePointsRenderTextClass,
-	// 	updateCurrentOrdinancePoints(value) {
-	// 		model.state.currentShipBuild.currentOrdinancePoints += value;
-	// 		builderRightView.renderComponent(
-	// 			builderRightView.ordinancePointsRender()
-	// 		);
-	// 	},
-	// };
 }
 export default new StatsContoller();

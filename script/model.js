@@ -3,13 +3,14 @@ import { renameKeysFromCSVdata } from "./helper/helperFunction.js";
 import * as URL from "./helper/url.js";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "astral";
+const shipNameDev = "paragon";
 //
 //invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead //
 // gryphon = cruiser
 // condor = destroyer
 // hound = frigate
+// Phase = harbinger / doom // shade
 export const state = {
 	allShips: [],
 	allWeapons: [],

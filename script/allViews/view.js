@@ -31,4 +31,11 @@ export default class View {
 
 		targetToRemove.textContent = "";
 	}
+	createList(classes, title, str) {
+		return `
+			<li class="${classes}">
+                <h5>${title}</h5>
+                <p>${str}</p>
+            </li>`;
+	}
 }

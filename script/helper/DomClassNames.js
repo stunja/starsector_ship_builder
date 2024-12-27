@@ -175,6 +175,22 @@ const classNames = {
 	// Dissipation
 	shipVents__FluxDissipation: "ship-vents__flux-dissipation",
 	shipVents__FluxDissipation__Value: "ship-vents__flux-dissipation__value",
+
+	// Weapon Flux
+	weaponFlux: "weaponFlux",
+
+	// Phase or Shield
+	phaseOrShieldContainer: "phase-shield-container",
+	// Phase Data
+	phaseFlux: "cloak-flux",
+	phaseFlux__PerSec: "cloak-flux__per-sec",
+	phaseFlux__Activation: "cloak-flux__activation",
+
+	// Shield Dat
+	shieldFlux: "shield-flux",
+	shieldFlux__PerSec: "shield-flux__per-sec",
+	shieldFlux__PerDmg: "shield-flux__per-dmg",
+	shieldArc: "shield_arc",
 };
 
 export default classNames;

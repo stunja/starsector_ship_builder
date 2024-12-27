@@ -1,11 +1,12 @@
 import classNames from "../../helper/DomClassNames";
 import DataSet from "../../helper/DataSet";
+import View from "../../allViews/view";
 
 const BUTTON = {
 	PLUS: "plus",
 	MINUS: "minus",
 };
-class CapacitorsView {
+class CapacitorsView extends View {
 	render(state) {
 		const localParent = `.${classNames.shipCapacitorsContainer}`;
 		const currentShipBuild = state.currentShipBuild;
@@ -28,10 +29,12 @@ class CapacitorsView {
 	}
 	#fluxCapacityMarkup(currentShipBuild) {
 		return `
-            <li class="${classNames.shipCapacitors__FluxCapacity}">
-              <h5 class="${classNames.fluxCapacity__Title}">Flux Capacity</h5>
-              <p class="${classNames.fluxCapacity__Value}">${currentShipBuild.currentFluxCapacity}</p>
-             </li>`;
+			${this.createList(
+				classNames.shipCapacitors__FluxCapacity,
+				"Flux Capacity",
+				currentShipBuild.currentFluxCapacity
+			)}
+            `;
 	}
 }
 export default new CapacitorsView();
