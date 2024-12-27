@@ -5,5 +5,6 @@ const DataSet = {
 	dataArc: "data-arc",
 	dataAngle: "data-angle",
 	dataButtonValue: "data-button-value",
+	dataButtonName: "data-button-name",
 };
 export default DataSet;

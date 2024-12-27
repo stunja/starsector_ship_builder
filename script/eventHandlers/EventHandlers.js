@@ -79,15 +79,15 @@ class EventHandlers {
 
 	// Right View Handlers
 	// Handlers
-	addCapacitorsHandler(callback) {
+	capacitorsHandler(callback) {
 		const localParent = `.${classNames.shipCapacitors__Edit}`;
 		const eventTarget = `.${classNames.buttonCircle}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
-	addVentsHandler(callback) {
-		const localParent = ".ship-vents__edit";
-		const eventTarget = ".button-circle";
+	ventsHandler(callback) {
+		const localParent = `.${classNames.shipVents__Edit}`;
+		const eventTarget = `.${classNames.buttonCircle}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}

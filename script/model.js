@@ -1502,8 +1502,8 @@ const currentShipBuildHolder = {
 			_baseFluxCapacityPerSingleActiveCapacitor: 200,
 			currentFluxCapacityPerSingleActiveCapacitor: 200,
 			// Vents
-			activeVents: 0,
-			activeVentsOrdinanceCost: 1,
+			currentVents: 0,
+			currentVentsOrdinanceCost: 1,
 			_baseFluxDissipation: Number(currentShip.flux_dissipation),
 			currentFluxDissipation: Number(currentShip.flux_dissipation),
 			_baseFluxDissipationPerSingleActiveVent: 10,
