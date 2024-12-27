@@ -191,6 +191,22 @@ const classNames = {
 	shieldFlux__PerSec: "shield-flux__per-sec",
 	shieldFlux__PerDmg: "shield-flux__per-dmg",
 	shieldArc: "shield_arc",
+
+	// HullMods
+	hullMods: "hullmods",
+	hullMods__Header: "hullmods__header",
+	hullMods__Container: "hullmods__container",
+	hullMods__Buttons: "hullmods__buttons",
+	hullMods__ButtonOpen: "hullmods__button--open",
+	hullMods__ButtonSmods: "hullmods__button--smods",
+	// BuildIn HullMods
+	buildInHullmods: "build-in-hullmods",
+	buildInHullmods__HullMod: "build-in-hullmods__hullmod",
+
+	// Added Hull Mods
+	addedHullmods: "added-hullmods",
+	addedHullMods__hullmod: "added-hullmods__hullmod",
+	addedHullMods__RemoveButton: "added-hullmod__remove-button",
 };
 
 export default classNames;

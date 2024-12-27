@@ -26,6 +26,7 @@ import EventHandlers from "./eventHandlers/EventHandlers.js";
 import WeaponPopUpHandlers from "./eventHandlers/WeaponPopUpHandlers.js";
 import FighterPopUpHandlers from "./eventHandlers/FighterPopUpHandlers.js";
 import StatsController from "./controller/StatsController.js";
+import HullModController from "./controller/HullModController.js";
 
 const defaultRemSize = 10;
 //? I can treat officer skills the same way as hullMod Effects
@@ -67,6 +68,7 @@ const initRender = function () {
 };
 const mainController = function () {
 	StatsController.init();
+	HullModController.init();
 };
 
 //
