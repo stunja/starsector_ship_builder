@@ -1,28 +1,28 @@
 import View from "./view.js";
+import classNames from "../helper/DomClassNames.js";
 
 class BuilderView extends View {
-	#parentElement = document.querySelector("body");
-	constructor(model) {
-		super();
-		this.model = model;
-	}
 	render() {
-		const markup = `
-        <div class="build-maker">
-            <nav class="build-maker__nav"></nav>
-            <main class="build-maker__work-area">
-                <section class="pop-up"></section>
-                <section class="box box__top box__top-left"></section>
-                <section class="box box__top box__top-center"></section>
-                <section class="box box__middle box__middle-left"></section>
-                <section class="box box__middle box__middle-center"></section>
-                <section class="box box__bottom box__bottom-left"></section>
-                <section class="box box__full-right"></section>
+		const localParent = `body`;
+
+		const markup = `${this.#builderMarkup()}`;
+		return [markup, localParent];
+	}
+	#builderMarkup() {
+		return `
+         <div class="${classNames.buildMakerContainer}">
+            <nav class="${classNames.nav}"></nav>
+            <main class="${classNames.buildMaker}">
+                <section class="${classNames.hullModsPopUp}"></section>
+                <section class="${classNames.gridContainer} ${classNames.shipInfoContainer}"></section>
+                <section class="${classNames.gridContainer} ${classNames.fighterContainer}"></section>
+                <section class="${classNames.gridContainer} ${classNames.builderButtonsContainer}"></section>
+                <section class="${classNames.gridContainer} ${classNames.additionalInfoContainer}"></section>
+                <section class="${classNames.gridContainer} ${classNames.hangarContainer}"></section>
+                <section class="${classNames.gridContainer} ${classNames.statsContainer}"></section>
             </main>
         </div>
-    `;
-		this.clearRender(this.#parentElement);
-		this.#parentElement.insertAdjacentHTML("afterbegin", markup);
+        `;
 	}
 }
 export default new BuilderView();

@@ -5,14 +5,11 @@ class WeaponPopUpHandlers {
 		const localTarget = document.querySelector(`.${className}`);
 		const actionType = "click";
 
-		console.log("click happened");
-
 		document.addEventListener(
 			actionType,
 			function (e) {
 				// check if click is outside target (for example table)
 				if (!localTarget.contains(e.target)) {
-					console.log("close me");
 					localTarget.textContent = "";
 				}
 			},
@@ -28,7 +25,7 @@ class WeaponPopUpHandlers {
 	}
 	tableHandler(callback) {
 		const localParent = `.${classNames.tableBody}`;
-		const eventTarget = `.${classNames.tableEntry}`;
+		const eventTarget = `.${classNames.tableEntries}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
@@ -42,12 +39,6 @@ class WeaponPopUpHandlers {
 		const localParent = `.${classNames.weaponPopUpTable}`;
 		const eventTarget = `.${classNames.weapon}`;
 		const actionType = "mouseover";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	weaponButtonHandler(callback) {
-		const localParent = `.${classNames.weaponSlots}`;
-		const eventTarget = `.${classNames.weaponSlot}`;
-		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
 }

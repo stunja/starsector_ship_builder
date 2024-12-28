@@ -4,5 +4,6 @@
 const altTextLib = {
 	turrentGunSprite: "Turrent Gun Sprite",
 	weaponBaseSprite: "Weapon Base Sprite",
+	shipSprite: "Current Ship Sprite",
 };
 export default altTextLib;

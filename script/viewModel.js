@@ -1,91 +1,55 @@
 "use strict";
 
 // View
-// I need to rework this part
 import builderView from "./allViews/builderView.js";
-import builderLeftView from "./allViews/builderLeftView.js";
-import builderCenterView from "./allViews/builderCenterView.js";
-import builderRightView from "./allViews/builderRightView.js";
-import builderPopUpView from "./allViews/builderPopUpView.js";
-import searchView from "./allViews/searchView.js";
-// View Component
-import WeaponPopUpView from "./components/Weapons/WeaponPopUpView.js";
-import FighterPopUpTableView from "./components/Fighters/FighterPopUpTableView.js";
-import FighterPopUpTableHoverView from "./components/Fighters/FighterPopUpTableHoverView.js";
-// Logic
-import ShipBuilderLogic from "./controller/ShipBuilderController.js";
+
+// Controller
+import ShipBuilderLogic from "./controller/HangarController.js";
+import StatsController from "./controller/shipStats/StatsController.js";
+import HullModController from "./controller/HullModController.js";
+import SearchController from "./controller/SearchController.js";
+import FighterController from "./controller/FighterController.js";
 // Model
 import * as model from "./model.js";
 // Support
-import DataSet from "./helper/DataSet.js";
-import { calculateHullModCost } from "./helper/helperFunction.js";
-import classNames from "./helper/DomClassNames.js";
 
 // Handlers
 import EventHandlers from "./eventHandlers/EventHandlers.js";
 import WeaponPopUpHandlers from "./eventHandlers/WeaponPopUpHandlers.js";
 import FighterPopUpHandlers from "./eventHandlers/FighterPopUpHandlers.js";
-import StatsController from "./controller/StatsController.js";
-import HullModController from "./controller/HullModController.js";
+import BuilderButtonsContainerView from "./components/Containers/BuilderButtonsContainerView.js";
+import AdditionalInfoContainerView from "./components/Containers/AdditionalInfoContainerView.js";
+import HangarContainerView from "./components/Weapons/HangarContainerView.js";
+import ShipInfoController from "./controller/ShipInfoController.js";
+import HangarController from "./controller/HangarController.js";
+import AdditionalInfoController from "./controller/AdditionalInfoController.js";
+import BuilderButtonsController from "./controller/BuilderButtonsController.js";
+import BuilderController from "./controller/BuilderController.js";
 
 const defaultRemSize = 10;
-//? I can treat officer skills the same way as hullMod Effects
 
-// const init = function () {
-//   builderView.render();
-//   searchView.render();
-//   searchView.addSearchHandler(findCreateDisplayCurrentShip);
-//   builderPopUpView.render(model.state);
-// };
-//!!! DEV
 const init = async function () {
 	try {
 		await model.modelInit(); //! I need to use it in the future, to control the load
-		//? correct order
-
 		// searchView.addSearchHandler(findCreateDisplayCurrentShip);
-		//
-		initRender();
-		mainController();
-		//
-		// updateRighInfoSection();
-		// check if ship is phased or shielded // render appropriate type
-		// openHullModMenuController();
-		//
-		// builderLogic.controller();
-		// ShipBuilderLogic.controller();
+		BuilderController.init();
+		SearchController.init();
+
+		// Renders All main containers
+		StatsController.init();
+		ShipInfoController.init();
+		HullModController.init();
+		FighterController.init();
+		HangarController.init();
+		AdditionalInfoController.init();
+		BuilderButtonsController.init();
 	} catch (err) {
 		console.log(err);
 	}
 };
-const initRender = function () {
-	builderView.render();
-	searchView.render();
-
-	builderLeftView.render(model.state);
-	builderCenterView.render(model.state);
-	builderRightView.render(model.state);
-};
-const mainController = function () {
-	StatsController.init();
-	HullModController.init();
-};
-
-//
-
 ///////////////
-const openHullModMenuController = () => {
-	// openHullModMenuHandler Handler Pair
-	builderRightView.renderComponent(builderRightView.hullModMarkUp());
-	builderRightView.renderComponent(builderRightView.buildInHullModRender());
-	//
-	// hullModController.hullModsMenuRegular();
-	//
-	EventHandlers.removeEventListener(hullModController.hullModsMenu);
-	EventHandlers.addEventListenerReturnDataSet(
-		EventHandlers.openHullModMenuHandler(hullModController.hullModsMenu)
-	);
-};
+
+//! Dont remember this func
 const resetData = {
 	// array to store keys names of properties that were changed (currentShipBuild)
 	propertiesToReset: [],
@@ -252,197 +216,6 @@ const weaponObjectData = (weaponObject) => {
 				: "Error with Damage Type Effect";
 		},
 	};
-};
-
-const hullModController = {
-	popUpHullModMenuBehavior(btn) {
-		if (!btn) return;
-		builderPopUpView.filterArrayAccordingToSelectedFilterTag(btn);
-		builderPopUpView.render(model.state);
-		builderPopUpView.addRemoveHullModToggleButtonRender();
-
-		//? Filter (Header)
-		// popUpHullModMenuBehavior Handler Pair
-		EventHandlers.removeEventListener(
-			hullModController.popUpHullModMenuBehavior
-		);
-		EventHandlers.addEventListenerReturnDataSet(
-			builderPopUpView.popUpFilterHandler(
-				hullModController.popUpHullModMenuBehavior
-			)
-		);
-		// Add Remove Hull Mod Handler Pair
-		EventHandlers.removeEventListener(hullModController.addRemoveHullMod);
-		EventHandlers.addEventListenerReturnDataSet(
-			builderPopUpView.addHandlerToAddRemoveHullMod(
-				hullModController.addRemoveHullMod
-			)
-		);
-	},
-	hullModsMenu(btn) {
-		const { type } = btn.dataset;
-		if (!type) return;
-		if (type === "regular") {
-			hullModController.hullModsMenuRegular(btn);
-		}
-		if (type === "smods") {
-			hullModController.hullModsMenuSmods(btn);
-		}
-	},
-	hullModsMenuRegular(btn) {
-		//
-		model.uiState.hullModsMenu.menuState === "closed"
-			? (model.uiState.hullModsMenu.menuState = "open")
-			: (model.uiState.hullModsMenu.menuState = "closed");
-		//
-		if (model.uiState.hullModsMenu.menuState === "open") {
-			// initializations
-			if (btn) {
-				btn.classList.add("hullmods__buttons__open-hullmod-menu--warn");
-				btn.textContent = "Close Menu";
-			}
-			this.hullModsMenuHandlersAndRender();
-		}
-		if (model.uiState.hullModsMenu.menuState === "closed") {
-			if (btn) {
-				btn.classList.remove("hullmods__buttons__open-hullmod-menu--warn");
-				btn.textContent = "Open HullMod Menu";
-			}
-			//! remove handler
-			//! popupview reset the filter to ALL
-			builderPopUpView.removeRender();
-		}
-	},
-	hullModsMenuHandlersAndRender() {
-		builderPopUpView.masterRender(model.state);
-
-		// Pop Up Menu Handler
-		EventHandlers.removeEventListener(
-			hullModController.popUpHullModMenuBehavior
-		);
-		EventHandlers.addEventListenerReturnDataSet(
-			builderPopUpView.popUpFilterHandler(
-				hullModController.popUpHullModMenuBehavior
-			)
-		);
-
-		// Add / Remove Buttons Handler
-		EventHandlers.removeEventListener(hullModController.addRemoveHullMod);
-		EventHandlers.addEventListenerReturnDataSet(
-			builderPopUpView.addHandlerToAddRemoveHullMod(
-				hullModController.addRemoveHullMod
-			)
-		);
-
-		// Show More Description Btn Handler
-		EventHandlers.removeEventListener(hullModController.showMoreButtonToggle);
-		EventHandlers.addEventListenerReturnDataSet(
-			builderPopUpView.showMoreHullModDescriptionHandler(
-				hullModController.showMoreButtonToggle
-			)
-		);
-		// Hide Description Btn Handler
-		EventHandlers.removeEventListener(hullModController.hideHullModDescription);
-		EventHandlers.addEventListenerReturnDataSet(
-			builderPopUpView.hideHullModDescriptionHandler(
-				hullModController.hideHullModDescription
-			)
-		);
-		// Render
-		builderPopUpView.addRemoveHullModToggleButtonRender();
-	},
-	hullModsMenuSmods() {
-		console.log("smods");
-	},
-	addRemoveHullMod(btn) {
-		if (!btn) return;
-
-		const [activeHullMods, filteredHullMod, isHullModActive] =
-			hullModController.addRemoveHullModFilterHelperFunction(btn);
-
-		hullModController.addRemoveHullModToggle(
-			activeHullMods,
-			filteredHullMod,
-			isHullModActive
-		);
-		// checks and renders change in button state. Fancy, as should check if menu closed or open.
-		builderPopUpView.addRemoveHullModToggleButtonRender();
-		//
-		builderRightView.renderComponent(builderRightView.addNewHullModRender());
-	},
-	addRemoveHullModFilterHelperFunction(btn) {
-		const state = {
-			currentShipBuild: model.state.currentShipBuild,
-			usableHullMods: model.state.usableHullMods,
-		};
-
-		if (!state.currentShipBuild.hullMods.activeHullMods) {
-			state.currentShipBuild.hullMods.activeHullMods = [];
-		}
-		const { activeHullMods } = state.currentShipBuild.hullMods;
-		const { id } = btn.dataset;
-		const filteredHullMod = state.usableHullMods.find((e) => e.id === id);
-
-		const isHullModActive = activeHullMods.some(
-			(hullMod) => hullMod.id === filteredHullMod.id
-		);
-		return [activeHullMods, filteredHullMod, isHullModActive];
-	},
-	addRemoveHullModToggle(activeHullMods, filteredHullMod, isHullModActive) {
-		if (!isHullModActive) {
-			hullModController.addHullMod(filteredHullMod, activeHullMods);
-		}
-		if (isHullModActive) {
-			hullModController.removeHullMod(filteredHullMod, activeHullMods);
-		}
-	},
-	addHullMod(hullMod, activeHullMods) {
-		activeHullMods.push(hullMod);
-		ordinancePointsController.updateCurrentOrdinancePoints(
-			calculateHullModCost(hullMod)
-		);
-		// Add new hull mod, and new controller for it, so you can remove it on the right side.
-		EventHandlers.removeEventListener(hullModController.addRemoveHullMod);
-		EventHandlers.addEventListenerReturnDataSet(
-			EventHandlers.addedRegularHullModsHandler(
-				hullModController.addRemoveHullMod
-			)
-		);
-		builderLogic.hullModLogic();
-	},
-	removeHullMod(hullMod, activeHullMods) {
-		ordinancePointsController.updateCurrentOrdinancePoints(
-			-calculateHullModCost(hullMod)
-		);
-		model.state.currentShipBuild.hullMods.activeHullMods =
-			activeHullMods.filter((mod) => mod.id !== hullMod.id);
-
-		builderLogic.hullModLogic();
-	},
-	showMoreButtonToggle(btn) {
-		const { id } = btn.dataset;
-		const target = document.querySelector(`#hullmod__${id} .hullmod__desc`);
-
-		//
-		const fullText = model.state.usableHullMods
-			.map((hullMod) => (hullMod.id === id ? hullMod.desc : ""))
-			.join("");
-
-		target.innerHTML = `${fullText} <button class="hullmod__desc__close hullmod__desc__show-more" ${DataSet.dataId}="${id}">[Close]</button>`;
-	},
-	hideHullModDescription(btn) {
-		const { id } = btn.dataset;
-		const target = document.querySelector(`#hullmod__${id} .hullmod__desc`);
-		const hullModDescription = model.state.usableHullMods
-			.map((hullMod) => (hullMod.id === id ? hullMod.desc : ""))
-			.join("");
-		const fullText = builderPopUpView.hullModDescriptionShrink([
-			hullModDescription,
-			id,
-		]);
-
-		target.innerHTML = `${fullText}`;
-	},
 };
 
 const findCreateDisplayCurrentShip = async function () {

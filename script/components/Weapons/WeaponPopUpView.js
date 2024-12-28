@@ -43,7 +43,9 @@ class WeaponPopUpView extends View {
 		const localParent = `.${classNames.tableBody}`;
 
 		const entryMarkup = (crrWpn) => `
-			<ul class="${classNames.tableEntries}">
+			<ul class="${classNames.tableEntries}"  
+				${DataSet.dataWeaponId}="${crrWpn.id}">
+
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
 					${WeaponSpriteView.render(crrWpn)}
 				</li>
@@ -61,6 +63,12 @@ class WeaponPopUpView extends View {
 			.join("");
 
 		return [markup, localParent];
+	}
+	closePopUp() {
+		const locaParent = `.${classNames.tableContainer}`;
+		const markup = "";
+
+		return [markup, locaParent];
 	}
 
 	#weaponTypeStringConversion = (damageType) =>

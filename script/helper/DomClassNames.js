@@ -1,9 +1,28 @@
 const classNames = {
+	// Navigation
+	nav: "nav",
+	searchForm: "search-form",
+	navLogo: "nav_logo",
+	searchForm__Button: "search-form__button",
 	// Generic
 	dNone: "d-none",
 	flexFlexEndGap: "flex-flexEnd-gap",
 	button: "button",
 	buttonCircle: "button-circle",
+	dFlex: "d-flex",
+
+	// Builder View
+	buildMakerContainer: "build-maker-container",
+	buildMaker: "build-maker",
+
+	gridContainer: "grid-container",
+	shipInfoContainer: "ship-info-container",
+	fighterContainer: "fighter-container",
+	additionalInfoContainer: "additional-info-container",
+	builderButtonsContainer: "builder-buttons-container",
+	hangarContainer: "hangar-container",
+	statsContainer: "stats-container",
+	//
 
 	// hoverAdditionalInformation: "hover-additional-information",
 	unselectable: "unselectable",
@@ -134,6 +153,7 @@ const classNames = {
 
 	//! Cancer
 	//! I need to simplify all of this
+	topContentGroup: "top-content-group",
 	// Ordinance Points
 	ordinancePointsGraph: "ordinance-graph",
 	ordinanceGraphTitle: "ordinance-graph__title",
@@ -193,6 +213,7 @@ const classNames = {
 	shieldArc: "shield_arc",
 
 	// HullMods
+	hullModsPopUp: "hullmods-pop-up",
 	hullMods: "hullmods",
 	hullMods__Header: "hullmods__header",
 	hullMods__Container: "hullmods__container",

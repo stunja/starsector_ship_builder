@@ -1,0 +1,32 @@
+/***************************************/
+/* HEADER */
+/***************************************/
+
+.nav {
+	background-color: var(--dark-color);
+	border-bottom: 0.2rem solid rgba(0, 0, 0, 0.25);
+	grid-column: 1 / -1;
+	padding: 2rem;
+	display: flex;
+	justify-content: space-between;
+
+	.nav_logo {
+		font-size: 2.4rem;
+		font-weight: 600;
+		font-family: "Inter", sans-serif;
+		text-decoration: none;
+		color: var(--white-text-color);
+	}
+	.search-form {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	input {
+		color: var(--dark-text-color);
+		height: 100%;
+		width: 24rem;
+		padding-left: 1rem;
+		border: none;
+	}
+}

@@ -3,7 +3,7 @@ import { renameKeysFromCSVdata } from "./helper/helperFunction.js";
 import * as URL from "./helper/url.js";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "paragon";
+const shipNameDev = "astral";
 //
 //invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead //

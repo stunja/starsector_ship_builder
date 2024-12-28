@@ -1,24 +1,29 @@
-// import builderRightView from "../allViews/builderRightView";
-import builderView from "../allViews/builderView.js";
-import OrdinancePointsView from "../components/Stats/OrdinancePointsView.js";
-import SpeedArmorHullView from "../components/Stats/SpeedArmorHullView.js";
-import CapacitorsView from "../components/Stats/CapacitorsView.js";
-import EventHandlers from "../eventHandlers/EventHandlers";
-import CapacitorsAndVentsController from "./CapacitorsAndVentsController.js";
-import VentsView from "../components/Stats/VentsView.js";
-import WeaponFluxView from "../components/Stats/WeaponFluxView.js";
-import ShieldOrPhaseView from "../components/Stats/ShieldOrPhaseView.js";
+import builderView from "../../allViews/builderView.js";
 
-import * as model from "../model.js";
+import OrdinancePointsView from "../../components/Stats/OrdinancePointsView.js";
+import SpeedArmorHullView from "../../components/Stats/SpeedArmorHullView.js";
+import CapacitorsView from "../../components/Stats/CapacitorsView.js";
+import EventHandlers from "../../eventHandlers/EventHandlers";
+import CapacitorsAndVentsController from "./CapacitorsAndVentsController.js";
+import VentsView from "../../components/Stats/VentsView.js";
+import WeaponFluxView from "../../components/Stats/WeaponFluxView.js";
+import ShieldOrPhaseView from "../../components/Stats/ShieldOrPhaseView.js";
+import StatsContainerView from "../../components/Stats/StatsContainerView.js";
+
+import * as model from "../../model.js";
 
 class StatsContoller {
 	init() {
+		this.#containerRender();
 		this.#ordinancePoints();
 		this.#speedArmorHull();
 		this.capacitorsAndFluxCapacity();
 		this.ventsAndFluxDissipation();
 		this.#weaponFlux();
 		this.#shieldOrPhase();
+	}
+	#containerRender() {
+		builderView.renderComponent(StatsContainerView.render(model.state));
 	}
 	#ordinancePoints() {
 		builderView.renderComponent(OrdinancePointsView.render(model.state));

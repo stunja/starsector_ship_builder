@@ -56,130 +56,6 @@ font-size
 .hullmods__buttons__open-hullmod-menu--warn {
 	background-color: var(--accent-color);
 }
-/***************************************/
-/* HEADER */
-/***************************************/
-
-.build-maker__nav {
-	background-color: var(--dark-color);
-	border-bottom: 0.2rem solid rgba(0, 0, 0, 0.25);
-	grid-column: 1 / -1;
-	padding: 2rem;
-	display: flex;
-	justify-content: space-between;
-
-	.nav_logo {
-		font-size: 2.4rem;
-		font-weight: 600;
-		font-family: "Inter", sans-serif;
-		text-decoration: none;
-		color: var(--white-text-color);
-	}
-	.search-form {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-	.search-form__input {
-		color: var(--dark-text-color);
-		height: 100%;
-		width: 24rem;
-		padding-left: 1rem;
-		border: none;
-	}
-}
-
-/***************************************/
-/* BUILDER SECTION */
-/***************************************/
-.build-maker {
-	display: grid;
-
-	grid-template-columns: 1fr;
-	grid-template-rows: auto 1fr auto;
-	height: 100vh;
-
-	li {
-		list-style-type: none;
-	}
-}
-
-/* work-area */
-.build-maker__work-area {
-	display: grid;
-	grid-template-columns: auto 1fr auto;
-	grid-template-rows: auto 1fr auto;
-	gap: 10px;
-
-	position: relative;
-
-	z-index: 1;
-
-	background-color: var(--dark-color);
-
-	/* box */
-	.box {
-		padding: 2rem;
-		/* position: relative; */
-	}
-	/* 	.box__top {
-  	border: 1px solid green;
-	} */
-	/* .box__middle {
-		border: 1px solid blue;
-	} */
-	/* .box__bottom {
-		border: 1px solid red;
-	} */
-
-	.box__top-left {
-		grid-row: 1 / 2;
-		grid-column: 1 / 2;
-	}
-
-	.box__middle-left {
-		grid-column: 1 / 2;
-		grid-row: 2 / 3;
-	}
-	.box__bottom-left {
-		grid-column: 1 / 2;
-		grid-row: 3 / -1;
-	}
-	/* center */
-	.box__top-center {
-		grid-row: 1 / 2;
-		grid-column: 2 / 3;
-	}
-	.box__middle-center {
-		grid-row: 2 / -1;
-		grid-column: 2 / 3;
-	}
-
-	.box__full-right {
-		/* border: 1px solid yellow; */
-		grid-column: 3 / -1;
-		grid-row: 1 / -1;
-	}
-
-	/* content in work area */
-	.box__top-left__CR-graph {
-		background-color: var(--accent-color);
-		width: 16rem;
-		height: 2rem;
-	}
-
-	/* Content Area Right */
-	.box__full-right__top-content-group ul {
-		margin-bottom: 1.6rem;
-	}
-
-	/*  Ship build Area */
-	.box__middle-center {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-}
 
 /* ordinance grahp */
 .ordinance-graph {
@@ -334,7 +210,7 @@ font-size
 /* Pop Up */
 /* Hull Mod Menu */
 
-.pop-up {
+.hullmods-pop-up {
 	z-index: 100;
 	position: absolute;
 	grid-row: 1 / -1;
