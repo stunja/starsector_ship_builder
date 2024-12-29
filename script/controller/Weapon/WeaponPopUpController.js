@@ -14,6 +14,10 @@ class WeaponPopUpController {
 		this.#render();
 		this.#assignHandlers();
 	}
+	closePopUp() {
+		builderView.renderComponent(WeaponPopUpView.closePopUp());
+		model.uiState.currentWeaponSlot = "";
+	}
 	#assignHandlers() {
 		// Enables Table Head Sorting
 		EventHandlers.removeEventListener(this.#weaponPopUpTableSorter);
@@ -68,7 +72,11 @@ class WeaponPopUpController {
 
 		// Renders the Table
 		WeaponPopUpView.renderComponent(
-			WeaponPopUpView.tableBodyRender(currentWeaponArray)
+			WeaponPopUpView.tableBodyRender(
+				currentWeaponArray,
+				currentInstalledWeapons,
+				currentWeaponSlot
+			)
 		);
 
 		// Why Do i render 3 different thing here
@@ -143,97 +151,56 @@ class WeaponPopUpController {
 		);
 	}
 
-	#addCurrentWeaponToInstalledWeapons(btn) {
-		const weaponId = btn.dataset.weaponId;
-		const { currentShipBuild } = model.state;
+	// #addCurrentWeaponToInstalledWeapons(btn) {
+	// 	// Click once to add, click two times to remove
+	// 	const { weaponPopUpId } = btn.dataset;
+	// 	const { currentShipBuild } = model.state;
 
+	// 	const currentWeaponSlot = model.uiState.currentWeaponSlot;
+
+	// 	currentShipBuild.currentInstalledWeapons =
+	// 		currentShipBuild.currentInstalledWeapons.map(
+	// 			([slotId, currentWeapon]) => {
+	// 				return slotId === currentWeaponSlot.id &&
+	// 					currentWeapon === weaponPopUpId
+	// 					? [slotId, ""]
+	// 					: slotId === currentWeaponSlot.id
+	// 					? [slotId, weaponPopUpId]
+	// 					: [slotId, currentWeapon];
+	// 			}
+	// 		);
+
+	// 	HangarController.updateWeaponSprites();
+	// }
+	#addCurrentWeaponToInstalledWeapons = (btn) => {
+		const { weaponPopUpId } = btn.dataset;
+		const { currentInstalledWeapons } = model.state.currentShipBuild;
 		const currentWeaponSlot = model.uiState.currentWeaponSlot;
+		let keepPopUpOpen = false;
+		const updatedInstalledWeapons = currentInstalledWeapons.map(
+			([slotId, currentWeapon]) => {
+				// If weapon already exists in slot, remove it
+				if (currentWeapon === weaponPopUpId) {
+					keepPopUpOpen = !keepPopUpOpen;
+					return [slotId, ""];
+				}
 
-		currentShipBuild.currentInstalledWeapons =
-			currentShipBuild.currentInstalledWeapons.map(([slotId, currentWeapon]) =>
-				slotId === currentWeaponSlot.id
-					? [slotId, weaponId]
-					: [slotId, currentWeapon]
-			);
+				// if weapon dont match, keep the original
+				if (slotId !== currentWeaponSlot.id) {
+					return [slotId, currentWeapon];
+				}
 
-		// WeaponSlotsController.replaceCurrentWeaponSprite(
-		// 	weaponId,
-		// 	currentWeaponSlot
-		// );
-		// currentWeaponSlot.type !== "LAUNCH_BAY"
-		// 	? WeaponSlotsController.replaceCurrentWeaponSprite(
-		// 			weaponId,
-		// 			currentWeaponSlot
-		// 	  )
-		// 	: this.#fighterBayAddFightersToButton(weaponId, currentWeaponSlot);
-
-		//! TODO
-		// Changes class to other class?
-		// builderCenterView.weaponPopUpFormRemover(currentWeaponSlot);
-		// builderLeftView.fighterBayButtonRemoveAllActiveClasses();
-		//
-		model.uiState.currentWeaponSlot = "";
-		builderView.renderComponent(WeaponPopUpView.closePopUp());
-	}
-
-	removeCurrentWeaponFromPopUpToTheShip(btn) {
-		// if (!btn) return;
-		const weaponButtonId = btn.dataset.id;
-		const currentInstalledWeapons =
-			model.state.currentShipBuild.currentInstalledWeapons;
-		const weaponArray = model.uiState.weaponPopUp.currentWeaponArray;
-		const fighterArray = model.uiState.fighterPopUp.currentFighterArray;
-		const currentWeaponSlot = model.uiState.currentWeaponSlot;
-
-		const newInstalledWeapons = currentInstalledWeapons.map(
-			([slotId, currentWeapon]) =>
-				slotId === currentWeaponSlot.id ? [slotId, ""] : [slotId, currentWeapon]
+				// Otherwise, add the new weapon
+				return [slotId, weaponPopUpId];
+			}
 		);
 
-		console.log(model.uiState.fighterPopUp);
-		const isBtnFighter =
-			fighterArray &&
-			fighterArray.find((fighter) => fighter.id === weaponButtonId);
-		// Assign weaponArray to pass into Render.
-		const weaponArrayToPass = isBtnFighter ? fighterArray : weaponArray;
+		model.state.currentShipBuild.currentInstalledWeapons =
+			updatedInstalledWeapons;
 
-		builderLogic.removeCurrentWeaponAndFighterSlot("weapon");
-		builderCenterView.renderComponent(
-			builderCenterView.weaponPopUpTableContentRender(
-				weaponArrayToPass,
-				newInstalledWeapons,
-				currentWeaponSlot.id
-			)
-		);
-
-		//! bad implementation, but it works
-		EventHandlers.removeEventListener(
-			builderLogic.addCurrentWeaponFromPopUpToTheShip
-		);
-		EventHandlers.addEventListenerReturnDataSet(
-			builderCenterView.weaponPopUpTableHandler(
-				builderLogic.addCurrentWeaponFromPopUpToTheShip
-			)
-		);
-
-		model.state.currentShipBuild.currentInstalledWeapons = newInstalledWeapons;
-	}
-	//! should not be here
-	#fighterBayAddFightersToButton(wpnId, currentWeaponSlot) {
-		const currentWeaponsArray = model.uiState.fighterPopUp.currentFighterArray;
-		const currentWeapon = currentWeaponsArray.find(
-			(currentWeapon) => currentWeapon.id === wpnId
-		);
-
-		builderLeftView.renderComponent(
-			builderLeftView.figherBayAddFighterRender(
-				currentWeapon,
-				currentWeaponSlot
-			)
-		);
-	}
-
-	//
+		keepPopUpOpen !== false ? this.openPopUp() : this.closePopUp();
+		HangarController.updateWeaponSprites();
+	};
 
 	showAdditionalInformationOnHover(btn) {
 		const { id } = btn.dataset;
@@ -257,65 +224,47 @@ class WeaponPopUpController {
 	}
 }
 export default new WeaponPopUpController();
-//! Should be united into ONE
-// fighterPopUpTableSorter(btn) {
-// 	const category = btn.dataset.category;
-// 	const {
-// 		previousSortState,
-// 		isAscending,
-// 		currentFighterArray: originalArrayState,
-// 	} = model.uiState.fighterPopUp;
-// 	const currentWeaponSlot = model.uiState.currentWeaponSlot;
+////
+/////
+// removeCurrentWeaponFromPopUpToTheShip(btn) {
+// 	// if (!btn) return;
+// 	const weaponButtonId = btn.dataset.id;
 // 	const currentInstalledWeapons =
 // 		model.state.currentShipBuild.currentInstalledWeapons;
+// 	const weaponArray = model.uiState.weaponPopUp.currentWeaponArray;
+// 	const fighterArray = model.uiState.fighterPopUp.currentFighterArray;
+// 	const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
-// 	// Mapping of sort categories to their corresponding object keys and sort types
-// 	const SORT_CONFIGS = {
-// 		name: { key: "id", type: "text" },
-// 		role: { key: "role", type: "text" },
-// 		wing: { key: "num", type: "number" },
-// 		range: { key: "range", type: "number" },
-// 		cost: { key: "op_cost", type: "number" },
-// 	};
+// 	const newInstalledWeapons = currentInstalledWeapons.map(
+// 		([slotId, currentWeapon]) =>
+// 			slotId === currentWeaponSlot.id ? [slotId, ""] : [slotId, currentWeapon]
+// 	);
 
-// 	// Determine the new sort direction
-// 	const newIsAscending = previousSortState !== category ? true : !isAscending;
+// 	console.log(model.uiState.fighterPopUp);
+// 	const isBtnFighter =
+// 		fighterArray &&
+// 		fighterArray.find((fighter) => fighter.id === weaponButtonId);
+// 	// Assign weaponArray to pass into Render.
+// 	const weaponArrayToPass = isBtnFighter ? fighterArray : weaponArray;
 
-// 	// Perform sorting if the category is valid
-// 	const sortConfig = SORT_CONFIGS[category];
-// 	if (!sortConfig) {
-// 		console.warn(`Invalid sort category: ${category}`);
-// 		return;
-// 	}
-
-// 	const currentArrayState = originalArrayState.toSorted((a, b) => {
-// 		const valueA = a[sortConfig.key];
-// 		const valueB = b[sortConfig.key];
-
-// 		if (sortConfig.type === "text") {
-// 			return newIsAscending
-// 				? valueA.localeCompare(valueB)
-// 				: valueB.localeCompare(valueA);
-// 		}
-
-// 		if (sortConfig.type === "number") {
-// 			return newIsAscending ? valueB - valueA : valueA - valueB;
-// 		}
-// 	});
-
-// 	// Update model state
-// 	model.uiState.fighterPopUp = {
-// 		...model.uiState.fighterPopUp,
-// 		isAscending: newIsAscending,
-// 		previousSortState: category,
-// 		currentArrayState,
-// 	};
-// 	// Render updated component
-// 	FighterPopUpTableView.renderComponent(
-// 		FighterPopUpTableView.tableContentRender(
-// 			currentArrayState,
-// 			currentInstalledWeapons,
-// 			[currentWeaponSlot]
+// 	builderLogic.removeCurrentWeaponAndFighterSlot("weapon");
+// 	builderCenterView.renderComponent(
+// 		builderCenterView.weaponPopUpTableContentRender(
+// 			weaponArrayToPass,
+// 			newInstalledWeapons,
+// 			currentWeaponSlot.id
 // 		)
 // 	);
-// },
+
+// 	//! bad implementation, but it works
+// 	EventHandlers.removeEventListener(
+// 		builderLogic.addCurrentWeaponFromPopUpToTheShip
+// 	);
+// 	EventHandlers.addEventListenerReturnDataSet(
+// 		builderCenterView.weaponPopUpTableHandler(
+// 			builderLogic.addCurrentWeaponFromPopUpToTheShip
+// 		)
+// 	);
+
+// 	model.state.currentShipBuild.currentInstalledWeapons = newInstalledWeapons;
+// }

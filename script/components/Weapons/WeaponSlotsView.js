@@ -1,3 +1,4 @@
+import DataSet from "../../helper/DataSet";
 import classNames from "../../helper/DomClassNames";
 import WeaponSpriteView from "./WeaponSpriteView";
 
@@ -18,9 +19,10 @@ class WeaponSlotsView {
 		const weaponType = currentWeaponSlot.type.toLowerCase();
 
 		const markup = `
-				<button class="${classNames.weaponSlot} 
-				${classNames.weaponSize}--${weaponSize} ${classNames.weaponType}--${weaponType}"
-				data-id="${currentWeaponSlot.id}">
+				<button class="${classNames.weaponSlot} ${
+			classNames.weaponSize
+		}--${weaponSize} ${classNames.weaponType}--${weaponType}" 
+					${DataSet.dataWeaponSlotId}="${currentWeaponSlot.id}">
 
 					<div class="${classNames.weaponSpriteParent}">
 						${this.#weaponTypeBackgroundMarkup(currentWeaponSlot)}
@@ -36,7 +38,7 @@ class WeaponSlotsView {
 	};
 	#weaponArcRenderMarkup(currentWeaponSlot) {
 		if (!currentWeaponSlot) return "";
-		return `<div class="${classNames.weaponArc}" data-id="${currentWeaponSlot.id}" data-arc="${currentWeaponSlot.arc}" data-angle="${currentWeaponSlot.angle}"><div class="${classNames.weaponArcSprite}"></div></div>`;
+		return `<div class="${classNames.weaponArc}" ${DataSet.dataWeaponSlotId}="${currentWeaponSlot.id}" data-arc="${currentWeaponSlot.arc}" data-angle="${currentWeaponSlot.angle}"><div class="${classNames.weaponArcSprite}"></div></div>`;
 	}
 	#weaponBackgroundSprite(weaponType, weaponSize) {
 		return `<div class="${
@@ -91,13 +93,12 @@ class WeaponSlotsView {
 		};
 		return weaponTypeSelector();
 	}
-	addWeaponSpriteToWeaponSlot(currentWeaponSlot, weaponObject) {
-		const slotId = currentWeaponSlot.id;
-		const localParent = `[data-id="${slotId}"]`;
-		// const markup = `${this.#weaponIconMarkup(weaponObject, currentWeaponSlot)}`;
+	addWeaponSpriteViewToWeaponSlot(currentWeaponSlotId, weaponObject) {
+		const localParent = `[${DataSet.dataWeaponSlotId}="${currentWeaponSlotId.id}"]`;
+
 		const markup = `${WeaponSpriteView.render(
 			weaponObject,
-			currentWeaponSlot
+			currentWeaponSlotId
 		)}`;
 
 		return [markup, localParent];
@@ -105,25 +106,3 @@ class WeaponSlotsView {
 }
 
 export default new WeaponSlotsView();
-// 	const localParent = `.${classNames.weaponSlots}`;
-// 	const markup = baseWeaponSlots
-// 		.map((slot) => this.#weaponSlotMarkUp(slot))
-// 		.join("");
-// 	return [markup, localParent];
-// }
-// #weaponSlotMarkUp(currentWeaponSlot) {
-// 	if (currentWeaponSlot.mount.toLowerCase() === "hidden") return;
-// 	const weaponSize = currentWeaponSlot.size.toLowerCase();
-// 	const weaponType = currentWeaponSlot.type.toLowerCase();
-// 	const markup = `
-// 				<button class="${classNames.weaponSlot} ${
-// 		classNames.weaponSize
-// 	}--${weaponSize} ${classNames.weaponType}--${weaponType}"
-// 				data-id="${currentWeaponSlot.id}">
-// 					<div class="${classNames.weaponSpriteParent}">
-// 						${this.#weaponTypeBackgroundMarkup(currentWeaponSlot)}
-// 					</div>
-//         			${this.#weaponArcRenderMarkup(currentWeaponSlot)}
-// 				</button>`;
-// 	return markup;
-// }

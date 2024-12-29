@@ -10,30 +10,11 @@ import * as model from "../../model.js";
 const TARGET_REM = 10; // rem for shipSpriteSize / WeaponSlotsPosition / shipGAP
 
 class WeaponSlotsController {
-	render() {
+	init() {
 		builderView.renderComponent(WeaponSlotsView.render(model.state));
-		this.#addWeaponSprites();
 
 		this.#weaponSlotPositionUpdate();
 		this.#weaponArcsUpdate();
-	}
-	#addWeaponSprites() {
-		console.log(model.state.currentShipBuild.currentInstalledWeapons);
-	}
-	replaceCurrentWeaponSprite(id, currentWeaponSlot) {
-		// const { allWeapons } = model.state;
-		// const [weaponObject] = allWeapons.filter((wpn) => wpn.id === id);
-		// builderView.renderComponent(
-		// 	WeaponSlotsView.addWeaponSpriteToWeaponSlot(
-		// 		currentWeaponSlot,
-		// 		weaponObject
-		// 	)
-		// );
-		// builderCenterView.weaponArcAndAngleChangeCoords();
-		// this.render();
-		// TODO TEST
-		// this.#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot.id);
-		// this.#weaponSpriteRotate(currentWeaponSlot);
 	}
 
 	//
@@ -47,11 +28,13 @@ class WeaponSlotsController {
 		const centerY = center[1] - height;
 
 		//
-		allWeaponSlotsElements.forEach((el) => {
-			const { id } = el.dataset;
+
+		allWeaponSlotsElements.forEach((weaponElement) => {
+			const { weaponSlotId } = weaponElement.dataset;
 			const [currentWeaponSlotData] = weaponSlots.filter(
-				(slot) => slot.id === id
+				(slot) => slot.id === weaponSlotId
 			);
+
 			const currentWeaponSlotLocationData = currentWeaponSlotData.locations;
 			const posX = currentWeaponSlotLocationData[1];
 			const posY = currentWeaponSlotLocationData[0];
@@ -63,8 +46,8 @@ class WeaponSlotsController {
 			const posTopRem = posTop / TARGET_REM;
 
 			//
-			el.style.left = `${posLeftRem}rem`;
-			el.style.top = `${posTopRem}rem`;
+			weaponElement.style.left = `${posLeftRem}rem`;
+			weaponElement.style.top = `${posTopRem}rem`;
 		});
 	}
 	#weaponArcsUpdate() {
@@ -87,16 +70,55 @@ class WeaponSlotsController {
 			secondaryArc.style.setProperty("--arc-mask-transparent", `${arc}deg`);
 		});
 	}
+	renderWeaponSpritesFromInstalledWeapons() {
+		const { currentInstalledWeapons, currentWeaponSlots } =
+			model.state.currentShipBuild;
+		const { allWeapons } = model.state;
 
-	#currentWeaponSpritePxIntoRemConversion(weaponSlotId) {
-		const localParent = `[${DataSet.dataId}="${weaponSlotId}"]`;
+		const findWeaponObject = (currentWeaponId) =>
+			allWeapons.filter((weapon) => weapon.id === currentWeaponId);
+
+		const findCurrentWeaponSlot = (wpnSlotId) =>
+			currentWeaponSlots.filter((wpnSlot) => wpnSlot.id === wpnSlotId);
+
+		currentInstalledWeapons.forEach((installedWeapon) => {
+			const [slotId, weaponId] = installedWeapon;
+			if (weaponId === "" || !weaponId) return;
+
+			const [currentWeaponObject] = findWeaponObject(weaponId);
+			const [currentWeaponSlot] = findCurrentWeaponSlot(slotId);
+
+			builderView.renderComponent(
+				WeaponSlotsView.addWeaponSpriteViewToWeaponSlot(
+					currentWeaponSlot,
+					currentWeaponObject
+				)
+			);
+			this.#weaponSpriteRotate(currentWeaponSlot);
+			this.#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot);
+		});
+	}
+	#weaponSpriteRotate(currentWeaponSlot) {
+		const { id: weaponSlotId, angle } = currentWeaponSlot;
+		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
+
+		const targetElement = document.querySelector(
+			`.${classNames.weaponSlot}${localParent} .${classNames.weaponSprite}`
+		);
+
+		targetElement.style.setProperty("--weapon-rotate", `${-angle}deg`);
+	}
+	#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot) {
+		const { id: weaponSlotId } = currentWeaponSlot;
+
+		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
 		const target = document.querySelector(
 			`${localParent} .${classNames.weaponSprite}`
 		);
 		const targetChildren = Array.from(target.children);
 
 		const [base, gun] = targetChildren;
-		const calc = (value) => value / defaultRemSize;
+		const calc = (value) => value / TARGET_REM;
 
 		if (base) {
 			const baseHeight = base.height;
@@ -113,15 +135,6 @@ class WeaponSlotsController {
 			gun.style.width = `${calc(gunWidth)}rem`;
 			gun.style.height = `${calc(gunHeight)}rem`;
 		}
-	}
-	#weaponSpriteRotate(currentWeaponSlot) {
-		const { id: weaponSlotId, angle } = currentWeaponSlot;
-		const localParent = `[${DataSet.dataId}="${weaponSlotId}"]`;
-
-		const targetElement = document.querySelector(
-			`.${classNames.weaponSlot}${localParent} .${classNames.weaponSprite}`
-		);
-		targetElement.style.setProperty("--weapon-rotate", `${-angle}deg`);
 	}
 }
 export default new WeaponSlotsController();

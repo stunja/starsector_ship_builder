@@ -11,6 +11,37 @@ const shipNameDev = "astral";
 // condor = destroyer
 // hound = frigate
 // Phase = harbinger / doom // shade
+class Model {
+	state = {
+		allShips: [],
+		allWeapons: [],
+		allShipHulls: [],
+		allFighters: [],
+		currentShip: {},
+		currentShipBuild: {},
+		gameRules: [],
+		usableHullMods: [],
+	};
+	updateState(newState) {
+		this.state = {
+			...state,
+			...newState,
+		};
+	}
+	updateStateProperty(propertyKey, newValue) {
+		if (!propertyKey in this.state) {
+			throw new Error(`Invalid state property: ${propertyKey}`);
+		}
+		this.updateState({
+			[propertyKey]: {
+				...this.state[propertyKey],
+				...newValue,
+			},
+		});
+	}
+}
+export default new Model();
+
 export const state = {
 	allShips: [],
 	allWeapons: [],
@@ -1021,7 +1052,7 @@ const modelFetcher = {
 			const rows = csvData.split("\n");
 			const headers = rows[0].split(",");
 
-			state.allShips = rows.slice(1).map((row) => {
+			const finalArray = rows.slice(1).map((row) => {
 				//shipData
 				const values = row.split(",");
 				let obj = headers.reduce((object, header, index) => {
@@ -1032,6 +1063,8 @@ const modelFetcher = {
 				obj = renameKeysFromCSVdata(obj);
 				return obj;
 			});
+			state.allShips = finalArray;
+			model.updateStateProperty("allShips", [...finalArray]);
 		} catch (error) {
 			console.error("Error:", error);
 			throw error; // Re-throw the error after logging it
@@ -1060,7 +1093,7 @@ const modelFetcher = {
 				// if (obj.id !== "") return obj;
 				return obj;
 			});
-			state.allWeapons = weaponArray
+			const finalWeaponArray = weaponArray
 				.map((weapons) =>
 					Object.fromEntries(
 						Object.entries(weapons).map(([key, value]) => {
@@ -1073,6 +1106,9 @@ const modelFetcher = {
 				)
 				.filter((weapons) => weapons.id !== "")
 				.filter((weapons) => weapons.id !== undefined);
+
+			state.allWeapons = finalWeaponArray;
+			model.updateStateProperty("allWeapons", finalWeaponArray);
 		} catch (error) {
 			console.error("Error:", error);
 			throw error; // Re-throw the error after logging it
@@ -1120,7 +1156,7 @@ const modelFetcher = {
 
 				return edited.split(",");
 			});
-			state.allShipHulls = values.map((row) => {
+			const finalArray = values.map((row) => {
 				// const values = row.split(",");
 				let obj = header.reduce((object, header, index) => {
 					object[header] = row[index]; // Use bracket notation for dynamic property names
@@ -1130,6 +1166,8 @@ const modelFetcher = {
 				obj = renameKeysFromCSVdata(obj);
 				return obj;
 			});
+			state.allShipHulls = finalArray;
+			// model.updateStateProperty("allShipHulls", { ...finalArray });
 		} catch (error) {
 			console.error("Error:", error);
 			throw error; // Re-throw the error after logging it
@@ -1195,7 +1233,11 @@ const modelFetcher = {
 			}
 		};
 
-		state.allWeapons = await Promise.all(state.allWeapons.map(processWeapon));
+		const updatedArray = await Promise.all(state.allWeapons.map(processWeapon));
+		state.allWeapons = updatedArray;
+		model.updateState = model.updateStateProperty("allWeapons", {
+			...updatedArray,
+		});
 	},
 	fetchDescriptions: async function () {
 		const res = await fetch(`/${URL.DATA_STRINGS}/${URL.DESCRIPTION_CVS}`);
@@ -1262,7 +1304,7 @@ const modelFetcher = {
 				)
 				.filter((fighters) => fighters.id !== "" && fighters.id !== undefined);
 
-			state.allFighters = newFighterArray
+			const finalArray = newFighterArray
 				.map((fighter) => ({
 					...fighter,
 					tags: fighter.tags
@@ -1274,6 +1316,12 @@ const modelFetcher = {
 					(currentFighter) =>
 						!currentFighter.tags.includes(hideFightersWithThisTag)
 				);
+
+			state.allFighters = finalArray;
+			//! error
+			console.log(...finalArray);
+
+			// model.updateStateProperty("allFighters", "[finalArray]");
 		} catch (error) {
 			console.error("Error:", error);
 			throw error; // Re-throw the error after logging it
@@ -1831,54 +1879,54 @@ const gameRulesInjection = {
 	shipTurnRate() {},
 };
 
-export const modelInit = async function () {
-	//TODO strange place to put it in.
-	await modelFetcher.fetchDescriptions();
-	// remember the order
-	await modelFetcher.fetchAllShipData();
-	await modelFetcher.fetchAllWeaponData();
-	await modelFetcher.fetchAndInjectAdditionalWeaponProperties();
+// export const modelInit = async function () {
+// 	//TODO strange place to put it in.
+// 	await modelFetcher.fetchDescriptions();
+// 	// remember the order
+// 	await modelFetcher.fetchAllShipData();
+// 	await modelFetcher.fetchAllWeaponData();
+// 	await modelFetcher.fetchAndInjectAdditionalWeaponProperties();
 
-	//
-	await modelFetcher.fetchAllFighters();
-	await modelFetcher.fetchAndInjectInitialFighterData();
-	await modelFetcher.fetchAndInjectAdditionalFighterDataFromShipData();
-	await modelFetcher.fetchAndInjectFighterVariantData();
-	//
-	//TODO I need to insert it in regular Weapon Fetching same As I did with FighterData
-	await genericHelperFunction.injectWeaponDescriptions();
-	//
-	await genericHelperFunction.overwriteWeaponTypeWithForcedOverwrite();
-	await genericHelperFunction.weaponDataConversionFromStringIntoNumber();
+// 	//
+// 	await modelFetcher.fetchAllFighters();
+// 	await modelFetcher.fetchAndInjectInitialFighterData();
+// 	await modelFetcher.fetchAndInjectAdditionalFighterDataFromShipData();
+// 	await modelFetcher.fetchAndInjectFighterVariantData();
+// 	//
+// 	//TODO I need to insert it in regular Weapon Fetching same As I did with FighterData
+// 	await genericHelperFunction.injectWeaponDescriptions();
+// 	//
+// 	await genericHelperFunction.overwriteWeaponTypeWithForcedOverwrite();
+// 	await genericHelperFunction.weaponDataConversionFromStringIntoNumber();
 
-	await modelFetcher.fetchAllHullModsData();
-	await currentShipBuildHolder.findAndCreateCurrentShip(shipNameDev);
-	await modelFetcher.fetchSpecializedShipData();
-	await currentShipBuildHolder.addBuildInHullModsToCurrentShipBuild();
+// 	await modelFetcher.fetchAllHullModsData();
+// 	await currentShipBuildHolder.findAndCreateCurrentShip(shipNameDev);
+// 	await modelFetcher.fetchSpecializedShipData();
+// 	await currentShipBuildHolder.addBuildInHullModsToCurrentShipBuild();
 
-	currentShipBuildHolder.assingInitialCurrentShipData();
-	gameRulesInjection.shipTurnRate();
+// 	currentShipBuildHolder.assingInitialCurrentShipData();
+// 	gameRulesInjection.shipTurnRate();
 
-	// only hullMods user can select
-	hullModsHolder.usableHullMods(state.allShipHulls);
-	genericHelperFunction.cleanUpHullModDescription(state.usableHullMods);
+// 	// only hullMods user can select
+// 	hullModsHolder.usableHullMods(state.allShipHulls);
+// 	genericHelperFunction.cleanUpHullModDescription(state.usableHullMods);
 
-	// convert strings into Tags Array
-	genericHelperFunction.convertTagsFromStringIntoAndArray(
-		state.usableHullMods,
-		"tags",
-		"tagsArray"
-	);
-	genericHelperFunction.convertTagsFromStringIntoAndArray(
-		state.usableHullMods,
-		"uiTags",
-		"uiTagsArray"
-	);
-	hullModsHolder.hullModDataInjection.controller();
-	// Filter tags
-	// cleanDescriptionArray();
-	//! assing effects to hullMods
-};
+// 	// convert strings into Tags Array
+// 	genericHelperFunction.convertTagsFromStringIntoAndArray(
+// 		state.usableHullMods,
+// 		"tags",
+// 		"tagsArray"
+// 	);
+// 	genericHelperFunction.convertTagsFromStringIntoAndArray(
+// 		state.usableHullMods,
+// 		"uiTags",
+// 		"uiTagsArray"
+// 	);
+// 	hullModsHolder.hullModDataInjection.controller();
+// 	// Filter tags
+// 	// cleanDescriptionArray();
+// 	//! assing effects to hullMods
+// };
 //! I dont remember why I export all of this???
 //! review before pushing
 //! I doesnt work?

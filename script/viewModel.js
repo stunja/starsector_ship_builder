@@ -10,7 +10,9 @@ import HullModController from "./controller/HullModController.js";
 import SearchController from "./controller/SearchController.js";
 import FighterController from "./controller/FighterController.js";
 // Model
-import * as model from "./model.js";
+// import * as model from "./model.js";
+import model from "./model.js";
+
 // Support
 
 // Handlers
@@ -30,19 +32,23 @@ const defaultRemSize = 10;
 
 const init = async function () {
 	try {
-		await model.modelInit(); //! I need to use it in the future, to control the load
+		await model;
+		// await model.modelInit(); //! I need to use it in the future, to control the load
 		// searchView.addSearchHandler(findCreateDisplayCurrentShip);
 		BuilderController.init();
 		SearchController.init();
-
+		console.log(model.state);
 		// Renders All main containers
-		StatsController.init();
-		ShipInfoController.init();
-		HullModController.init();
-		FighterController.init();
-		HangarController.init();
-		AdditionalInfoController.init();
-		BuilderButtonsController.init();
+		// StatsController.init();
+		// ShipInfoController.init();
+		// HullModController.init();
+		// FighterController.init();
+		// HangarController.init();
+		// AdditionalInfoController.init();
+		// BuilderButtonsController.init();
+
+		// console.log(model.state);
+		// model.Model;
 	} catch (err) {
 		console.log(err);
 	}
@@ -50,206 +56,213 @@ const init = async function () {
 ///////////////
 
 //! Dont remember this func
-const resetData = {
-	// array to store keys names of properties that were changed (currentShipBuild)
-	propertiesToReset: [],
-	resetDataController() {
-		if (resetData.propertiesToReset.length > 0) {
-			// console.log(this.propertiesToReset);
-			resetData.resetSelectedData();
-			// Vents and Capacitors are back to base, then mult by number of active vents/cap (to return back to normal)
-			capacitorController.fluxCapacityCalcBasedOnActiveCapacitors();
-			ventController.ventDissipationCalcBasedOnActiveVents();
-		}
-	},
-	resetSelectedData() {
-		// replace current value with base value
-		// simply by replacing the currentName with BaseName and assign value
-		this.propertiesToReset.forEach((currentPropertyName) => {
-			if (model.state.currentShipBuild[currentPropertyName]) {
-				const basePropertyName = currentPropertyName.replace(
-					"current",
-					"_base"
-				);
+// const resetData = {
+// 	// array to store keys names of properties that were changed (currentShipBuild)
+// 	propertiesToReset: [],
+// 	resetDataController() {
+// 		if (resetData.propertiesToReset.length > 0) {
+// 			// console.log(this.propertiesToReset);
+// 			resetData.resetSelectedData();
+// 			// Vents and Capacitors are back to base, then mult by number of active vents/cap (to return back to normal)
+// 			capacitorController.fluxCapacityCalcBasedOnActiveCapacitors();
+// 			ventController.ventDissipationCalcBasedOnActiveVents();
+// 		}
+// 	},
+// 	resetSelectedData() {
+// 		// replace current value with base value
+// 		// simply by replacing the currentName with BaseName and assign value
+// 		this.propertiesToReset.forEach((currentPropertyName) => {
+// 			if (model.state.currentShipBuild[currentPropertyName]) {
+// 				const basePropertyName = currentPropertyName.replace(
+// 					"current",
+// 					"_base"
+// 				);
 
-				model.state.currentShipBuild[currentPropertyName] =
-					model.state.currentShipBuild[basePropertyName];
-			}
-		});
-		// clear propertiesToReset array
-		this.propertiesToReset = [];
-	},
-};
-const weaponObjectData = (weaponObject) => {
-	const information = {
-		id: weaponObject.id,
-		name: weaponObject.name,
-		primaryRole: weaponObject.primaryRoleStr,
-		op: weaponObject.OPs,
-		turretSprite: weaponObject.additionalWeaponData.turretSprite,
-		turretGunSprite: weaponObject.additionalWeaponData.turretGunSprite,
-		description: weaponObject.description,
-	};
-	const stats = {
-		ammo: {
-			perSecond: weaponObject.ammo_sec ?? 1,
-			capacity: weaponObject.ammo,
-			burstSize: weaponObject.burst_size ?? 1,
-		},
-		damage: {
-			perShot: weaponObject.damage_shot ?? 1,
-			perSecond: weaponObject.damage_second,
-		},
-		flux: {
-			perSecond: weaponObject.energy_second,
-			perShot: weaponObject.energy_shot,
-		},
-		timing: {
-			chargeUp: weaponObject.chargeup,
-			chargeDown: weaponObject.chargedown,
-			burstDelay: weaponObject.burst_delay ?? 0,
-		},
-		handling: {
-			turnRate: weaponObject.turn_rate,
-			accuracy: weaponObject.spread_shot,
-		},
-		projectile: {
-			projectileOrBeam: weaponObject.additionalWeaponData.specClass, // projectile / beam
-			type: weaponObject.type,
-		},
-		mount: {
-			type: weaponObject.additionalWeaponData.type.toLowerCase(),
-			size: weaponObject.additionalWeaponData.size.toLowerCase(),
-		},
-		range: weaponObject.range,
-	};
+// 				model.state.currentShipBuild[currentPropertyName] =
+// 					model.state.currentShipBuild[basePropertyName];
+// 			}
+// 		});
+// 		// clear propertiesToReset array
+// 		this.propertiesToReset = [];
+// 	},
+// };
+// saveNamesOfChangedData([data]) {
+// 	if (!data) return;
+// 	data.forEach((e) => {
+// 		resetData.propertiesToReset.push(e);
+// 	});
+// }
 
-	const roundFloat = (num) => {
-		return Math.round(num * 100) / 100;
-	};
+// const weaponObjectData = (weaponObject) => {
+// 	const information = {
+// 		id: weaponObject.id,
+// 		name: weaponObject.name,
+// 		primaryRole: weaponObject.primaryRoleStr,
+// 		op: weaponObject.OPs,
+// 		turretSprite: weaponObject.additionalWeaponData.turretSprite,
+// 		turretGunSprite: weaponObject.additionalWeaponData.turretGunSprite,
+// 		description: weaponObject.description,
+// 	};
+// 	const stats = {
+// 		ammo: {
+// 			perSecond: weaponObject.ammo_sec ?? 1,
+// 			capacity: weaponObject.ammo,
+// 			burstSize: weaponObject.burst_size ?? 1,
+// 		},
+// 		damage: {
+// 			perShot: weaponObject.damage_shot ?? 1,
+// 			perSecond: weaponObject.damage_second,
+// 		},
+// 		flux: {
+// 			perSecond: weaponObject.energy_second,
+// 			perShot: weaponObject.energy_shot,
+// 		},
+// 		timing: {
+// 			chargeUp: weaponObject.chargeup,
+// 			chargeDown: weaponObject.chargedown,
+// 			burstDelay: weaponObject.burst_delay ?? 0,
+// 		},
+// 		handling: {
+// 			turnRate: weaponObject.turn_rate,
+// 			accuracy: weaponObject.spread_shot,
+// 		},
+// 		projectile: {
+// 			projectileOrBeam: weaponObject.additionalWeaponData.specClass, // projectile / beam
+// 			type: weaponObject.type,
+// 		},
+// 		mount: {
+// 			type: weaponObject.additionalWeaponData.type.toLowerCase(),
+// 			size: weaponObject.additionalWeaponData.size.toLowerCase(),
+// 		},
+// 		range: weaponObject.range,
+// 	};
 
-	const refireDelay =
-		stats.timing.chargeDown +
-		stats.timing.chargeUp +
-		stats.timing.burstDelay * (stats.ammo.burstSize - 1);
-	const burstSizeString =
-		stats.timing.burstSize && stats.timing.burstSize > 1
-			? `x${stats.ammo.burstSize}`
-			: "";
-	const weaponDescription = information.description.split(".");
+// 	const roundFloat = (num) => {
+// 		return Math.round(num * 100) / 100;
+// 	};
 
-	const isWeaponBeam = stats.projectile.projectileOrBeam === "beam";
-	const isWeaponProjectile = stats.projectile.projectileOrBeam === "projectile";
-	//
-	const damagePerSecond = Math.round(
-		(stats.damage.perShot * stats.ammo.burstSize) / refireDelay
-	);
-	const fluxPerSecond = isWeaponProjectile
-		? Math.round(stats.flux.perShot / refireDelay)
-		: stats.flux.perSecond;
-	const fluxPerDamage = isWeaponProjectile
-		? roundFloat(stats.flux.perShot / stats.damage.perShot)
-		: 1;
+// 	const refireDelay =
+// 		stats.timing.chargeDown +
+// 		stats.timing.chargeUp +
+// 		stats.timing.burstDelay * (stats.ammo.burstSize - 1);
+// 	const burstSizeString =
+// 		stats.timing.burstSize && stats.timing.burstSize > 1
+// 			? `x${stats.ammo.burstSize}`
+// 			: "";
+// 	const weaponDescription = information.description.split(".");
 
-	// Strings
-	const damageString = `${stats.damage.perShot}${burstSizeString}`;
-	const refireDelayString = roundFloat(refireDelay);
-	const shortWeaponDescription = weaponDescription[0];
+// 	const isWeaponBeam = stats.projectile.projectileOrBeam === "beam";
+// 	const isWeaponProjectile = stats.projectile.projectileOrBeam === "projectile";
+// 	//
+// 	const damagePerSecond = Math.round(
+// 		(stats.damage.perShot * stats.ammo.burstSize) / refireDelay
+// 	);
+// 	const fluxPerSecond = isWeaponProjectile
+// 		? Math.round(stats.flux.perShot / refireDelay)
+// 		: stats.flux.perSecond;
+// 	const fluxPerDamage = isWeaponProjectile
+// 		? roundFloat(stats.flux.perShot / stats.damage.perShot)
+// 		: 1;
 
-	return {
-		stats,
-		information,
-		additionalStats: {
-			isWeaponBeam,
-			isWeaponProjectile,
-			damagePerSecond,
-			refireDelay,
-			fluxPerSecond,
-			fluxPerDamage,
-		},
-		string: {
-			burstSizeString,
-			weaponDescription,
-			damageString,
-			refireDelayString,
-			shortWeaponDescription,
-		},
+// 	// Strings
+// 	const damageString = `${stats.damage.perShot}${burstSizeString}`;
+// 	const refireDelayString = roundFloat(refireDelay);
+// 	const shortWeaponDescription = weaponDescription[0];
 
-		turnRateRating: () => {
-			const { turnRate } = stats.handling;
-			return turnRate > 40
-				? `Excellent  (${turnRate})`
-				: turnRate > 25
-				? `Very Fast  (${turnRate})`
-				: turnRate >= 20
-				? `Fast (${turnRate})`
-				: turnRate >= 15
-				? `Slow (${turnRate})`
-				: turnRate < 15
-				? `Very Slow (${turnRate})`
-				: "Error";
-		},
-		accuracyRating: () => {
-			const { accuracy } = stats.handling;
-			return accuracy < 0.25 || !accuracy
-				? `Perfect  (${accuracy ? accuracy : `< 0.25`})`
-				: accuracy <= 1
-				? `Good (${accuracy})`
-				: accuracy <= 2
-				? `Poor (${accuracy})`
-				: accuracy <= 3
-				? `Very Poor (${accuracy})`
-				: accuracy <= 10
-				? `Terrible (${accuracy})`
-				: "Error";
-		},
-		damageTypeEffect: () => {
-			const { type } = stats.projectile;
-			return type === "KINETIC"
-				? "200% vs Shields <br> 50% vs Armor"
-				: type === "ENERGY"
-				? "100% vs Shields <br> 100% vs Armor"
-				: type === "HIGH_EXPLOSIVE"
-				? "50% vs Shields <br> 200% vs Armor"
-				: type === "FRAGMENTATION"
-				? "25% vs Shields <br> 25% vs Armor"
-				: "Error with Damage Type Effect";
-		},
-	};
-};
+// 	return {
+// 		stats,
+// 		information,
+// 		additionalStats: {
+// 			isWeaponBeam,
+// 			isWeaponProjectile,
+// 			damagePerSecond,
+// 			refireDelay,
+// 			fluxPerSecond,
+// 			fluxPerDamage,
+// 		},
+// 		string: {
+// 			burstSizeString,
+// 			weaponDescription,
+// 			damageString,
+// 			refireDelayString,
+// 			shortWeaponDescription,
+// 		},
 
-const findCreateDisplayCurrentShip = async function () {
-	// Grab the value
-	//! Skipped
-	const userInput = userInputCapture();
-	// fetch data
-	console.log(userInput);
-	await fetchAndAssignData(userInput);
-	// display the data
-	// builderLeftView.renderRow(model.state);
-	// builderCenterView.renderRow(model.state);
-	// builderRightView.render(model.state);
-	// builderRightView.renderHullModsSection(model.state);
-	// everything rendered and ready
-	controllerHeart();
-};
-const userInputCapture = () =>
-	searchView
-		.getInputValue()
-		.toLowerCase()
-		.replace(/[^a-z]/g, "");
+// 		turnRateRating: () => {
+// 			const { turnRate } = stats.handling;
+// 			return turnRate > 40
+// 				? `Excellent  (${turnRate})`
+// 				: turnRate > 25
+// 				? `Very Fast  (${turnRate})`
+// 				: turnRate >= 20
+// 				? `Fast (${turnRate})`
+// 				: turnRate >= 15
+// 				? `Slow (${turnRate})`
+// 				: turnRate < 15
+// 				? `Very Slow (${turnRate})`
+// 				: "Error";
+// 		},
+// 		accuracyRating: () => {
+// 			const { accuracy } = stats.handling;
+// 			return accuracy < 0.25 || !accuracy
+// 				? `Perfect  (${accuracy ? accuracy : `< 0.25`})`
+// 				: accuracy <= 1
+// 				? `Good (${accuracy})`
+// 				: accuracy <= 2
+// 				? `Poor (${accuracy})`
+// 				: accuracy <= 3
+// 				? `Very Poor (${accuracy})`
+// 				: accuracy <= 10
+// 				? `Terrible (${accuracy})`
+// 				: "Error";
+// 		},
+// 		damageTypeEffect: () => {
+// 			const { type } = stats.projectile;
+// 			return type === "KINETIC"
+// 				? "200% vs Shields <br> 50% vs Armor"
+// 				: type === "ENERGY"
+// 				? "100% vs Shields <br> 100% vs Armor"
+// 				: type === "HIGH_EXPLOSIVE"
+// 				? "50% vs Shields <br> 200% vs Armor"
+// 				: type === "FRAGMENTATION"
+// 				? "25% vs Shields <br> 25% vs Armor"
+// 				: "Error with Damage Type Effect";
+// 		},
+// 	};
+// };
 
-const fetchAndAssignData = async function (shipName) {
-	try {
-		await model.findAndCreateCurrentShip(shipName);
-		// Adds additional properties to object like weapon Slots info and shipSize etc.
-		await model.fetchSpecializedShipData();
-		await model.addBuildInHullModsToCurrentShipBuild();
-		model.assingInitialCurrentShipData();
-	} catch (err) {
-		console.log(err);
-	}
-};
+// const findCreateDisplayCurrentShip = async function () {
+// 	// Grab the value
+// 	//! Skipped
+// 	const userInput = userInputCapture();
+// 	// fetch data
+// 	console.log(userInput);
+// 	await fetchAndAssignData(userInput);
+// 	// display the data
+// 	// builderLeftView.renderRow(model.state);
+// 	// builderCenterView.renderRow(model.state);
+// 	// builderRightView.render(model.state);
+// 	// builderRightView.renderHullModsSection(model.state);
+// 	// everything rendered and ready
+// 	controllerHeart();
+// };
+// const userInputCapture = () =>
+// 	searchView
+// 		.getInputValue()
+// 		.toLowerCase()
+// 		.replace(/[^a-z]/g, "");
+
+// const fetchAndAssignData = async function (shipName) {
+// 	try {
+// 		await model.findAndCreateCurrentShip(shipName);
+// 		// Adds additional properties to object like weapon Slots info and shipSize etc.
+// 		await model.fetchSpecializedShipData();
+// 		await model.addBuildInHullModsToCurrentShipBuild();
+// 		model.assingInitialCurrentShipData();
+// 	} catch (err) {
+// 		console.log(err);
+// 	}
+// };
 
 // Start the program
 init();

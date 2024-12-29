@@ -39,12 +39,27 @@ class WeaponPopUpView extends View {
 		return [markup, localParent];
 	}
 	//prettierignore
-	tableBodyRender(currentWeaponArray) {
+	tableBodyRender(
+		currentWeaponArray,
+		currentInstalledWeapons,
+		currentWeaponSlot
+	) {
 		const localParent = `.${classNames.tableBody}`;
 
+		const assignActiveClass = (crrWpn) => {
+			if (!crrWpn) return;
+
+			const isActiveClass = currentInstalledWeapons.find(
+				([slotId, wpnObjId]) =>
+					slotId === currentWeaponSlot.id && wpnObjId === crrWpn.id
+			);
+
+			return isActiveClass ? `${classNames.weaponPopUpActive}` : "";
+		};
+
 		const entryMarkup = (crrWpn) => `
-			<ul class="${classNames.tableEntries}"  
-				${DataSet.dataWeaponId}="${crrWpn.id}">
+			<ul class="${classNames.tableEntries} ${assignActiveClass(crrWpn)}"  
+				${DataSet.dataWeaponPopUpId}="${crrWpn.id}">
 
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
 					${WeaponSpriteView.render(crrWpn)}
@@ -76,58 +91,5 @@ class WeaponPopUpView extends View {
 			.split("_")
 			.map((word) => word[0] + word.slice(1).toLowerCase())
 			.join(" ");
-
-	// #findCurrentInstalledWeapon = (currentWeaponSlot, weaponId) =>
-	// 	currentInstalledWeapons.find(
-	// 		([slotId, wpnId]) => slotId === currentWeaponSlot.id && wpnId === weaponId
-	// 	);
-
-	// processWeaponArray = () => {
-	// 	let activeWeaponClassObject;
-
-	// 	const modifiedWeaponsArray = weaponArray.filter((wpnObj) => {
-	// 		const currentInstalledWeaponKeyPair = this.#findCurrentInstalledWeapon(
-	// 			currentWeaponSlot,
-	// 			wpnObj.id
-	// 		);
-
-	// 		if (currentInstalledWeaponKeyPair) {
-	// 			activeWeaponClassObject = wpnObj;
-	// 			return false;
-	// 		}
-
-	// 		return true;
-	// 	});
-
-	// 	if (activeWeaponClassObject) {
-	// 		modifiedWeaponsArray.unshift(activeWeaponClassObject);
-	// 	}
-
-	// 	return modifiedWeaponsArray;
-	// };
-	//
-	// #checkIfCorrectWeapon = (wpnObj) => {
-	// 	const [correctWeaponValue] = currentInstalledWeapons.filter((wpn) => {
-	// 		if (wpn[0] === currentWeaponSlot.id && wpn[1] === wpnObj.id) {
-	// 			return true;
-	// 		}
-	// 	});
-	// 	if (correctWeaponValue) {
-	// 		return true;
-	// 	}
-	// };
-	//
-	// activeClass = (wpnObj) => {
-	// 	if (this.#checkIfCorrectWeapon(wpnObj)) {
-	// 		return ` ${classNames.weaponPopUpActive}`;
-	// 	}
-	// 	return "";
-	// };
-
-	// #weaponTypeBackgroundMarkup = (currentWeaponSlot) => {
-	// 	const weaponType = currentWeaponSlot.type.toLowerCase();
-	// 	const weaponSize = currentWeaponSlot.size.toLowerCase();
-	// 	return this.#weaponBackgroundSprite(weaponType, weaponSize);
-	// };
 }
 export default new WeaponPopUpView();

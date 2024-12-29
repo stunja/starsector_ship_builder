@@ -58,6 +58,21 @@
 		background-color: rgba(255, 255, 255, 0.05);
 		cursor: pointer;
 	}
+
+	.table-entries.weapon--active {
+		font-size: 1.2rem;
+		background-color: rgba(0, 126, 25, 0.5);
+
+		/* .fighter__icon {
+			padding: 0rem;
+		}
+		.weapon__icon {
+			padding: 3.6rem 0.6rem;
+		} */
+	}
+	.table-entries.weapon--active:hover {
+		background-color: rgba(0, 180, 36, 0.5);
+	}
 }
 
 .weapon-pop-up img {

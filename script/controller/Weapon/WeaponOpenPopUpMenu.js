@@ -14,7 +14,7 @@ class WeaponOpenPopUpMenu {
 		);
 	}
 	#weaponOpenPopUpMenu(btn) {
-		const { id } = btn.dataset;
+		const { weaponSlotId } = btn.dataset;
 		const { _baseWeaponSlots } = model.state.currentShipBuild;
 		const { allWeapons } = model.state;
 
@@ -32,7 +32,7 @@ class WeaponOpenPopUpMenu {
 		);
 		// const [currentWeaponSlot] = (model.uiState.weaponPopUp.currentWeaponSlot = _baseWeaponSlots.filter((slot) => slot.id === id));
 		const [currentWeaponSlot] = _baseWeaponSlots.filter(
-			(slot) => slot.id === id
+			(slot) => slot.id === weaponSlotId
 		);
 		const generalFilter = (weaponArray, currentSlot) => {
 			const SIZE = {
