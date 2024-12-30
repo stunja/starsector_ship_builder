@@ -1,4 +1,5 @@
 import builderView from "../../allViews/builderView.js";
+// import ViewModel from "../../viewModel.js";
 
 import OrdinancePointsView from "../../components/Stats/OrdinancePointsView.js";
 import SpeedArmorHullView from "../../components/Stats/SpeedArmorHullView.js";
@@ -10,17 +11,18 @@ import WeaponFluxView from "../../components/Stats/WeaponFluxView.js";
 import ShieldOrPhaseView from "../../components/Stats/ShieldOrPhaseView.js";
 import StatsContainerView from "../../components/Stats/StatsContainerView.js";
 
-import * as model from "../../model.js";
+// import * as model from "../../model.js";
 
-class StatsContoller {
+export default class StatsContoller {
 	init() {
-		this.#containerRender();
-		this.#ordinancePoints();
-		this.#speedArmorHull();
-		this.capacitorsAndFluxCapacity();
-		this.ventsAndFluxDissipation();
-		this.#weaponFlux();
-		this.#shieldOrPhase();
+		console.log("test");
+		// this.#containerRender();
+		// this.#ordinancePoints();
+		// this.#speedArmorHull();
+		// this.capacitorsAndFluxCapacity();
+		// this.ventsAndFluxDissipation();
+		// this.#weaponFlux();
+		// this.#shieldOrPhase();
 	}
 	#containerRender() {
 		builderView.renderComponent(StatsContainerView.render(model.state));
@@ -61,4 +63,4 @@ class StatsContoller {
 		builderView.renderComponent(WeaponFluxView.render());
 	}
 }
-export default new StatsContoller();
+// export default StatsContoller;

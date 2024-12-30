@@ -4,14 +4,14 @@
 import builderView from "./allViews/builderView.js";
 
 // Controller
-import ShipBuilderLogic from "./controller/HangarController.js";
-import StatsController from "./controller/shipStats/StatsController.js";
-import HullModController from "./controller/HullModController.js";
-import SearchController from "./controller/SearchController.js";
-import FighterController from "./controller/FighterController.js";
+// import ShipBuilderLogic from "./controller/HangarController.js";
+// import StatsController from "./controller/shipStats/StatsController.js";
+// import HullModController from "./controller/HullModController.js";
+// import SearchController from "./controller/SearchController.js";
+// import FighterController from "./controller/FighterController.js";
 // Model
 // import * as model from "./model.js";
-import model from "./model.js";
+// import model from "./model.js";
 
 // Support
 
@@ -26,33 +26,64 @@ import ShipInfoController from "./controller/ShipInfoController.js";
 import HangarController from "./controller/HangarController.js";
 import AdditionalInfoController from "./controller/AdditionalInfoController.js";
 import BuilderButtonsController from "./controller/BuilderButtonsController.js";
-import BuilderController from "./controller/BuilderController.js";
+// import BuilderController from "./controller/BuilderController.js";
 
 const defaultRemSize = 10;
+// const initialize = async function () {
+// 	try {
+// 		// await model.modelInit(); //! I need to use it in the future, to control the load
+// 		// searchView.addSearchHandler(findCreateDisplayCurrentShip);
+// 		BuilderController.init();
+// 		SearchController.init();
+// 		// console.log(model.state);
+// 		// Renders All main containers
+// 		// StatsController.init();
+// 		// ShipInfoController.init();
+// 		// HullModController.init();
+// 		// FighterController.init();
+// 		// HangarController.init();
+// 		// AdditionalInfoController.init();
+// 		// BuilderButtonsController.init();
 
-const init = async function () {
-	try {
-		await model;
-		// await model.modelInit(); //! I need to use it in the future, to control the load
-		// searchView.addSearchHandler(findCreateDisplayCurrentShip);
-		BuilderController.init();
-		SearchController.init();
-		console.log(model.state);
-		// Renders All main containers
-		// StatsController.init();
-		// ShipInfoController.init();
-		// HullModController.init();
-		// FighterController.init();
-		// HangarController.init();
-		// AdditionalInfoController.init();
-		// BuilderButtonsController.init();
-
-		// console.log(model.state);
-		// model.Model;
-	} catch (err) {
-		console.log(err);
+// 		// console.log(model.state);
+// 		// model.Model;
+// 	} catch (err) {
+// 		console.log(err);
+// 	}
+// };
+export default class ViewModel {
+	constructor(model) {
+		this.model = model;
 	}
-};
+	get getState() {
+		return this.model.state;
+	}
+	// get ships() {
+	// 	return this.model.state.allShips;
+	// }
+	// init = function () {
+	// 	// await model.modelInit(); //! I need to use it in the future, to control the load
+	// 	// searchView.addSearchHandler(findCreateDisplayCurrentShip);
+	// 	// BuilderController.init();
+	// 	// SearchController.init();
+	// 	console.log(this.model.userState);
+	// 	// StatsController.init();
+	// 	// console.log(this.model.userState.currentShip);
+	// 	// console.log(this.model.userState.userShipBuild);
+
+	// 	// Renders All main containers
+	// 	// ShipInfoController.init();
+	// 	// HullModController.init();
+	// 	// FighterController.init();
+	// 	// HangarController.init();
+	// 	// AdditionalInfoController.init();
+	// 	// BuilderButtonsController.init();
+
+	// 	// console.log(model.state);
+	// 	// model.Model;
+	// };
+}
+// export default new ViewModel();
 ///////////////
 
 //! Dont remember this func
@@ -265,7 +296,7 @@ const init = async function () {
 // };
 
 // Start the program
-init();
+// init();
 // const builderLogic = {
 // 	controller() {
 // 		const baseWeaponSlots = model.state.currentShipBuild._baseWeaponSlots;
