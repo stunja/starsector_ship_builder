@@ -20,7 +20,7 @@ const classNames = {
 	fighterContainer: "fighter-container",
 	additionalInfoContainer: "additional-info-container",
 	builderButtonsContainer: "builder-buttons-container",
-	hangarContainer: "hangar-container",
+	shipAreaContainer: "ship-area-container",
 	statsContainer: "stats-container",
 	//
 
@@ -90,6 +90,7 @@ const classNames = {
 
 	// DOM classes
 	shipSprite: "ship-sprite",
+	currentShipSprite: "current-ship-sprite",
 	shipAndWeaponsHolder: "ship-weapons-slots__holder",
 	weaponSlotsHolder: "weapon-slots__holder",
 	weaponSlots: "weapon-slots",
@@ -174,6 +175,7 @@ const classNames = {
 	// Ship Capacitors
 	shipCapacitorsContainer: "ship-capacitors-container",
 	shipCapacitors__Edit: "ship-capacitors__edit",
+	shipCapacitors__Button: "ship-capacitors__button",
 	shipCapacitors__EditTitle: "ship-capacitors__edit__title",
 	shipCapacitors__EditMinus: "ship-capacitors__edit--minus",
 	shipCapacitors__EditPlus: "ship-capacitors__edit--plus",

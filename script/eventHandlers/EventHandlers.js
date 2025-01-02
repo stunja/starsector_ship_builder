@@ -42,55 +42,55 @@ class EventHandlers {
 		return [localParent, eventTarget, actionType, callback];
 	}
 	// Generic
-	addEventListenerReturnDataSet([
-		localParent,
-		eventTarget,
-		actionType,
-		callback,
-	]) {
-		const localParentQuery = document.querySelector(localParent);
+	// addEventListenerReturnDataSet([
+	// 	localParent,
+	// 	eventTarget,
+	// 	actionType,
+	// 	callback,
+	// ]) {
+	// 	const localParentQuery = document.querySelector(localParent);
 
-		const wrappedCallback = (e) => {
-			const btn = e.target.closest(eventTarget);
-			// Prevent bubbling
-			e.stopPropagation();
-			if (!btn) return;
-			callback(btn);
-		};
+	// 	const wrappedCallback = (e) => {
+	// 		const btn = e.target.closest(eventTarget);
+	// 		// Prevent bubbling
+	// 		e.stopPropagation();
+	// 		if (!btn) return;
+	// 		callback(btn);
+	// 	};
 
-		localParentQuery.addEventListener(actionType, wrappedCallback);
+	// 	localParentQuery.addEventListener(actionType, wrappedCallback);
 
-		// Store the listener details for later removal
-		this.eventListenerFolder.set(callback, {
-			localParentQuery,
-			actionType,
-			wrappedCallback,
-		});
-	}
+	// 	// Store the listener details for later removal
+	// 	this.eventListenerFolder.set(callback, {
+	// 		localParentQuery,
+	// 		actionType,
+	// 		wrappedCallback,
+	// 	});
+	// }
 
-	removeEventListener(callback) {
-		const listenerDetails = this.eventListenerFolder.get(callback);
-		if (listenerDetails) {
-			const { localParentQuery, actionType, wrappedCallback } = listenerDetails;
-			localParentQuery.removeEventListener(actionType, wrappedCallback);
-			this.eventListenerFolder.delete(callback);
-		}
-	}
+	// removeEventListener(callback) {
+	// 	const listenerDetails = this.eventListenerFolder.get(callback);
+	// 	if (listenerDetails) {
+	// 		const { localParentQuery, actionType, wrappedCallback } = listenerDetails;
+	// 		localParentQuery.removeEventListener(actionType, wrappedCallback);
+	// 		this.eventListenerFolder.delete(callback);
+	// 	}
+	// }
 
 	// Right View Handlers
 	// Handlers
-	capacitorsHandler(callback) {
-		const localParent = `.${classNames.shipCapacitors__Edit}`;
-		const eventTarget = `.${classNames.buttonCircle}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	ventsHandler(callback) {
-		const localParent = `.${classNames.shipVents__Edit}`;
-		const eventTarget = `.${classNames.buttonCircle}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
+	// capacitorsHandler(callback) {
+	// 	const localParent = `.${classNames.shipCapacitors__Edit}`;
+	// 	const eventTarget = `.${classNames.buttonCircle}`;
+	// 	const actionType = "click";
+	// 	return [localParent, eventTarget, actionType, callback];
+	// }
+	// ventsHandler(callback) {
+	// 	const localParent = `.${classNames.shipVents__Edit}`;
+	// 	const eventTarget = `.${classNames.buttonCircle}`;
+	// 	const actionType = "click";
+	// 	return [localParent, eventTarget, actionType, callback];
+	// }
 	openHullModMenuHandler(callback) {
 		const localParent = ".hullmods";
 		const eventTarget = ".hullmods__buttons button";

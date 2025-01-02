@@ -50,7 +50,7 @@
 		grid-row: 1 / 2;
 		grid-column: 2 / 3;
 	}
-	.hangar-container {
+	.ship-area-container {
 		grid-row: 2 / -1;
 		grid-column: 2 / 3;
 	}
@@ -87,7 +87,7 @@
 	gap: 1rem;
 }
 /* HANGAR CONTAINER */
-.hangar-container {
+.ship-area-container {
 	display: flex;
 	justify-content: center;
 	align-items: center;

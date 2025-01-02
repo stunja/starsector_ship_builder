@@ -1,4 +1,5 @@
 export const DATA = `src/starsector_data`;
+export const DATA_GRAPHICS = "src/starsector_data/graphics";
 export const DATA_HULLS = `src/starsector_data/hulls`;
 export const DATA_VARIANTS = `src/starsector_data/variants`;
 export const DATA_VARIANTS_FIGHTERS = `src/starsector_data/variants/fighters`;

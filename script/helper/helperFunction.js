@@ -25,7 +25,8 @@ export const convertStringsIntoNumbersCSVdata = function (dataArray) {
 
 			const value = obj[key];
 
-			const convertedValue = Number(value);
+			// if value is empty string, leave it as empty string, otherwise return a number
+			const convertedValue = value !== "" ? Number(value) : "";
 
 			convertedObj[key] = isNaN(convertedValue) ? value : convertedValue;
 		});

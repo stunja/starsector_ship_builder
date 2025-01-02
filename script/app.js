@@ -1,7 +1,5 @@
-import ViewModel from "./viewModel";
 import { Model } from "./model";
-import BuilderController from "./controller/BuilderController";
-import View from "./allViews/view";
+import BuilderController from "./components/BuilderController";
 
 export default class App {
 	constructor() {
@@ -10,10 +8,11 @@ export default class App {
 	async initialize() {
 		try {
 			const model = new Model();
-			const viewModel = new BuilderController(model);
-			// const view = new View(viewModel);
 
+			// make sure it is before viewModel
 			await model.loadData();
+
+			const viewModel = new BuilderController(model);
 		} catch (err) {
 			console.error("Error initialize the Ship Builder", err);
 			// I can add inner HTML with an error
