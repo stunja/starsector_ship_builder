@@ -1,9 +1,8 @@
 import DataSet from "../../helper/DataSet";
 import classNames from "../../helper/DomClassNames";
-import View from "../../allViews/view";
 //
-class WeaponArcView extends View {
-	render(currentWeaponSlot) {
+class WeaponArcView {
+	renderElement(currentWeaponSlot) {
 		if (!currentWeaponSlot) return "";
 
 		const markup = `

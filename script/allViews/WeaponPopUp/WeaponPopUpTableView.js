@@ -2,6 +2,7 @@ import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
 // View
 import View from "../view.js";
+import WeaponSpriteView from "../../allViews/Weapons/WeaponSpriteView.js";
 
 const CATEGORIES = {
 	icon: "",
@@ -15,22 +16,21 @@ class WeaponPopUpTableHeaderView extends View {
 	_localParent = `.${classNames.tableBody}`;
 
 	generateMarkup() {
-		const data = this._data;
-		// const markup = `${this.#tableBodyRender}`;
-		const markup = "<p>Test</p>";
+		const [userShipBuild, currentWeaponArray, weaponSlotObject] = this._data;
+		const markup = `${this.#tableBodyRender(
+			currentWeaponArray,
+			userShipBuild.installedWeapons,
+			weaponSlotObject
+		)}`;
 		return markup;
 	}
-	#tableBodyRender(
-		currentWeaponArray,
-		currentInstalledWeapons,
-		currentWeaponSlot
-	) {
+	#tableBodyRender(currentWeaponArray, installedWeapons, weaponSlotObject) {
 		const assignActiveClass = (crrWpn) => {
 			if (!crrWpn) return;
 
-			const isActiveClass = currentInstalledWeapons.find(
+			const isActiveClass = installedWeapons.find(
 				([slotId, wpnObjId]) =>
-					slotId === currentWeaponSlot.id && wpnObjId === crrWpn.id
+					slotId === weaponSlotObject.id && wpnObjId === crrWpn.id
 			);
 
 			return isActiveClass ? `${classNames.weaponPopUpActive}` : "";
@@ -41,14 +41,14 @@ class WeaponPopUpTableHeaderView extends View {
 				${DataSet.dataWeaponPopUpId}="${crrWpn.id}">
 
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${WeaponSpriteView.render(crrWpn)}
+					${WeaponSpriteView.renderElement([crrWpn, weaponSlotObject])}
 				</li>
 				<li class="${classNames.tableEntry} ${classNames.tableName}">${crrWpn.name}</li>
 				<li class="${classNames.tableEntry}">
 					${this.#weaponTypeStringConversion(crrWpn.type)}
 				</li>
 				<li class="${classNames.tableEntry}">${crrWpn.range}</li>
-				<li class="${classNames.tableEntry}">${crrWpn.OPs}</li>
+				<li class="${classNames.tableEntry}">${crrWpn.oPs}</li>
 			</ul>
 			`;
 

@@ -1,13 +1,14 @@
 import classNames from "../../helper/DomClassNames.js";
 import View from "../../allViews/view.js";
 
-class WeaponBackgroundSpriteView extends View {
+// Old implementation
+class WeaponBackgroundSpriteView {
 	// Difference between the two, is that Dual Sprite
 	// has two different sprites for example "circle inside rect".
 	static STANDARD_WEAPONS = ["ballistic", "energy", "missile"];
 	static DUAL_SPRITE_WEAPONS = ["composite", "hybrid", "synergy"];
 
-	render(weaponType, weaponSize) {
+	renderElement(weaponType, weaponSize) {
 		return `
 		<div class="${classNames.weaponBackgroundSpriteParent}">
 			${this.#generateFinalMarkup(weaponType, weaponSize)}

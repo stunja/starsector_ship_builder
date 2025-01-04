@@ -1,4 +1,5 @@
 import ViewModel from "../../ViewModel.js";
+import WeaponPopUpCreateCurrentWeaponArray from "./WeaponPopUpCreateCurrentWeaponArray.js";
 // Helper
 import classNames from "../../helper/DomClassNames.js";
 // Views
@@ -6,25 +7,9 @@ import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpCont
 import WeaponPopUpTableHeaderView from "../../allViews/WeaponPopUp/WeaponPopUpTableHeaderView.js";
 import WeaponPopUpTableView from "../../allViews/WeaponPopUp/WeaponPopUpTableView.js";
 
-const SIZE = {
-	LARGE: "LARGE",
-	MEDIUM: "MEDIUM",
-	SMALL: "SMALL",
-};
-const MOUNT_TYPE = {
-	BALLISTIC: "BALLISTIC",
-	ENERGY: "ENERGY",
-	MISSILE: "MISSILE",
-	HYBRID: "HYBRID",
-	COMPOSITE: "COMPOSITE",
-	SYNERGY: "SYNERGY",
-	UNIVERSAL: "UNIVERSAL",
-};
-
 export default class WeaponPopUp extends ViewModel {
 	constructor(model) {
 		super(model);
-
 		console.log(this.getDataState());
 	}
 	update = (btn) => {
@@ -36,128 +21,24 @@ export default class WeaponPopUp extends ViewModel {
 
 	#weaponPopUpRender(weaponSlotId) {
 		// Renders After User Clicks on Weapon Button (Weapon Slot)
-		// const currentWeaponArray = model.uiState.weaponPopUp.currentWeaponArray;
-		// const currentInstalledWeapons =
-		// 	model.state.currentShipBuild.currentInstalledWeapons;
-		// const currentWeaponSlot = model.uiState.currentWeaponSlot;
 
-		//? Strange way to render, but it works.
-		//? first draw "empty" container
-		//? then target it with other renders
-		//? I dont remember why I did it like this. (Probably due to reDraw Logic)
 		const state = this.getState();
 		const { allWeapons } = state.dataState;
 		const { userShipBuild } = state.userState;
-		// console.log(state);
-		// const userShipBuild = this.getUserShipBuild();
-		const { installedWeapons } = userShipBuild;
-		const currentWeaponSlotId = weaponSlotId;
-		// console.log(userShipBuild);
-		// console.log(installedWeapons);
-		// console.log(currentWeaponSlotId);
-		WeaponPopUpContainerView.render(this.getUserShipBuild);
-		WeaponPopUpTableHeaderView.render(this.getUserShipBuild);
-		WeaponPopUpTableView.render(this.getUserShipBuild);
 
-		this.#weaponOpenPopUpMenu(weaponSlotId, userShipBuild, allWeapons);
+		const weaponArrayWeaponSlot =
+			WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
+				weaponSlotId,
+				userShipBuild,
+				allWeapons
+			);
+
+		//? Strange way to render, but it works.
+		//? first draw "empty" container then target it with other renders
+		WeaponPopUpContainerView.render(userShipBuild);
+		WeaponPopUpTableHeaderView.render(userShipBuild);
+		WeaponPopUpTableView.render([userShipBuild, ...weaponArrayWeaponSlot]);
 	}
-
-	#weaponOpenPopUpMenu(weaponSlotId, userShipBuild, allWeaponsObjects) {
-		const _baseWeaponSlots = userShipBuild.weaponSlots;
-		const allWeapons = allWeaponsObjects;
-
-		// const weaponIsNotSystem = (wpn) => {
-		// 	if (!wpn?.hints) return true;
-
-		// 	const hasSystemTag = wpn.hints
-		// 		.split(",")
-		// 		.find((hint) => hint === "SYSTEM");
-
-		// 	return !hasSystemTag;
-		// };
-		// const filteredWeapons = allWeapons.filter(
-		// 	(weapon) => weapon.id && weapon.oPs > 0 && weaponIsNotSystem(weapon)
-		// );
-		// //
-		// console.log(filteredWeapons);
-		// const [weaponSlotObject] = _baseWeaponSlots.filter(
-		// 	(slot) => slot.id === weaponSlotId
-		// );
-		// console.log(weaponSlotObject);
-		return;
-
-		const generalFilter = (weaponArray, currentSlot) => {
-			const sizeFilter = {
-				[SIZE.LARGE]: (wpn) =>
-					wpn.additionalWeaponData.size === SIZE.LARGE ||
-					wpn.additionalWeaponData.size === SIZE.MEDIUM,
-				[SIZE.MEDIUM]: (wpn) =>
-					wpn.additionalWeaponData.size === SIZE.MEDIUM ||
-					(wpn.additionalWeaponData.size === SIZE.SMALL &&
-						wpn.type === wpn.additionalWeaponData.MOUNT_TYPEOverride),
-				[SIZE.SMALL]: (wpn) => wpn.additionalWeaponData.size === SIZE.SMALL,
-			};
-
-			const typeFilter = {
-				[MOUNT_TYPE.BALLISTIC]: (wpn) =>
-					wpn.additionalWeaponData.type === MOUNT_TYPE.BALLISTIC,
-				[MOUNT_TYPE.ENERGY]: (wpn) =>
-					wpn.additionalWeaponData.type === MOUNT_TYPE.ENERGY,
-				[MOUNT_TYPE.MISSILE]: (wpn) =>
-					wpn.additionalWeaponData.type === MOUNT_TYPE.MISSILE,
-				[MOUNT_TYPE.HYBRID]: (wpn) =>
-					wpn.additionalWeaponData.type === MOUNT_TYPE.BALLISTIC ||
-					wpn.additionalWeaponData.type === MOUNT_TYPE.ENERGY ||
-					wpn.additionalWeaponData.MOUNT_TYPEOverride === MOUNT_TYPE.HYBRID,
-				[MOUNT_TYPE.COMPOSITE]: (wpn) =>
-					wpn.additionalWeaponData.type === MOUNT_TYPE.BALLISTIC ||
-					wpn.additionalWeaponData.type === MOUNT_TYPE.MISSILE ||
-					wpn.additionalWeaponData.MOUNT_TYPEOverride === MOUNT_TYPE.COMPOSITE,
-				[MOUNT_TYPE.SYNERGY]: (wpn) =>
-					wpn.additionalWeaponData.type === MOUNT_TYPE.ENERGY ||
-					wpn.additionalWeaponData.type === MOUNT_TYPE.MISSILE ||
-					wpn.additionalWeaponData.MOUNT_TYPEOverride === MOUNT_TYPE.SYNERGY,
-				[MOUNT_TYPE.UNIVERSAL]: () => true,
-			};
-			const typeFilterArray = weaponArray.filter(
-				typeFilter[currentSlot.type] ||
-					(() => {
-						console.error("Invalid slot TYPE");
-						return false;
-					})
-			);
-			const sizeFilterArray = typeFilterArray.filter(
-				sizeFilter[currentSlot.size] ||
-					(() => {
-						console.error("Invalid slot SIZE");
-						return false;
-					})
-			);
-
-			return sizeFilterArray.sort(
-				(a, b) => Number.parseInt(b.OPs) - Number.parseInt(a.OPs)
-			);
-		};
-		//
-		const currentWeaponArray = generalFilter(
-			filteredWeapons,
-			currentWeaponSlot
-		);
-
-		const currentWeaponTypes = [
-			...new Set(currentWeaponArray.map((wpn) => wpn.type)),
-		];
-
-		console.log(currentWeaponTypes);
-		console.log(currentWeaponArray);
-		console.log(currentWeaponSlot);
-
-		//
-		// model.uiState.weaponPopUp.currentWeaponTypes = currentWeaponTypes;
-		// model.uiState.weaponPopUp.currentWeaponArray = currentWeaponArray;
-		// model.uiState.currentWeaponSlot = currentWeaponSlot;
-	}
-	// Not Working
 
 	#weaponSlotActiveClass(btn) {
 		const allWeaponSlots = document.querySelectorAll(
