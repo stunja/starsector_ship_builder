@@ -37,6 +37,7 @@ export default class ViewModel {
 	getState() {
 		return this.#model;
 	}
+	// User State
 	getUserState() {
 		return this.#model.userState;
 	}
@@ -51,6 +52,10 @@ export default class ViewModel {
 	}
 	getUsableHullMods() {
 		return this.#model.userState.usableHullMods;
+	}
+	// get Data State
+	getDataState() {
+		return this.#model.dataState;
 	}
 }
 ///////////////

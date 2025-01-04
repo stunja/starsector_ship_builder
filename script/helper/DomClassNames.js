@@ -220,8 +220,7 @@ const classNames = {
 	hullMods__Header: "hullmods__header",
 	hullMods__Container: "hullmods__container",
 	hullMods__Buttons: "hullmods__buttons",
-	hullMods__ButtonOpen: "hullmods__button--open",
-	hullMods__ButtonSmods: "hullmods__button--smods",
+	hullMods__Button: "hullmods__button--open",
 	// BuildIn HullMods
 	buildInHullmods: "build-in-hullmods",
 	buildInHullmods__HullMod: "build-in-hullmods__hullmod",
@@ -230,6 +229,9 @@ const classNames = {
 	addedHullmods: "added-hullmods",
 	addedHullMods__hullmod: "added-hullmods__hullmod",
 	addedHullMods__RemoveButton: "added-hullmod__remove-button",
+
+	// Builder Buttons Section
+	builderButton: "builder-button",
 };
 
 export default classNames;

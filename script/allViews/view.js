@@ -1,8 +1,10 @@
 // import classNames from "../helper/DomClassNames.js";
 //
-const handlerMap = new WeakMap();
 
 export default class View {
+	constructor() {
+		this._targetMap = new Map();
+	}
 	_data;
 	_localParentElement;
 	_localParent;
@@ -10,6 +12,47 @@ export default class View {
 	_updateText = (target, value) => {
 		document.querySelector(`.${target}`).textContent = `${value}`;
 	};
+
+	addClickHandler(target, callback) {
+		// Create the event listener function
+		const listener = function (e) {
+			const btn = e.target.closest(target);
+			if (!btn) return;
+			e.preventDefault();
+			callback(btn);
+		};
+
+		// If there's an existing listener for this target, remove it first
+		this.removeClickHandler(target);
+
+		// Store the new listener in the Map
+		this._targetMap.set(target, listener);
+
+		// Add the event listener
+		this._localParentElement.addEventListener("click", listener);
+
+		// Return the listener for potential external reference
+		return listener;
+	}
+
+	removeClickHandler(target) {
+		// Get the existing listener if any
+		const existingListener = this._targetMap.get(target);
+
+		if (existingListener) {
+			// Remove the event listener
+			this._localParentElement.removeEventListener("click", existingListener);
+			// Remove from Map
+			this._targetMap.delete(target);
+			return true;
+		}
+
+		return false;
+	}
+	// Utility method to check if a target has an active listener
+	hasListener(target) {
+		return this._targetMap.has(target);
+	}
 	_clearRender = () => (this._localParentElement.textContent = "");
 	render(data) {
 		if (!data) return this.#renderError("no data");
@@ -35,68 +78,6 @@ export default class View {
             <h5>${title}</h5>
             <p>${str}</p>
         </li>`;
-	}
-	// test
-
-	addEventHandler(
-		parentElement,
-		targetElement,
-		eventType,
-		handler,
-		options = false
-	) {
-		// Clean up any existing handler for this event type
-		this.removeEventHandler(parentElement, eventType);
-
-		// Create delegated event handler
-		const wrappedHandler = (event) => {
-			// Find closest matching parentElement from event target
-			const target = event.target.closest(targetElement);
-			event.stopPropagation();
-			// Only execute if target found and is descendant of container
-			if (target && parentElement.contains(target)) {
-				return handler.call(target, event);
-			}
-		};
-		//! Old code, I need to rework it
-		//	// 	const wrappedCallback = (e) => {
-		// 		const btn = e.target.closest(eventTarget);
-		// 		// Prevent bubbling
-		// 		e.stopPropagation();
-		// 		if (!btn) return;
-		// 		callback(btn);
-		// 	};
-
-		// Attach the event listener
-		parentElement.addEventListener(eventType, wrappedHandler, options);
-
-		// Store handler reference for later cleanup
-		if (!handlerMap.has(parentElement)) {
-			handlerMap.set(parentElement, new Map());
-		}
-		handlerMap.get(parentElement).set(eventType, { wrappedHandler, options });
-
-		return wrappedHandler;
-	}
-
-	removeEventHandler(parentElement, eventType) {
-		if (!handlerMap.has(parentElement)) return;
-
-		const parentElementHandlers = handlerMap.get(parentElement);
-		const existingHandler = parentElementHandlers.get(eventType);
-
-		if (existingHandler) {
-			// Remove the actual event listener
-			const { wrappedHandler, options } = existingHandler;
-			parentElement.removeEventListener(eventType, wrappedHandler, options);
-			// Clean up stored reference
-			parentElementHandlers.delete(eventType);
-
-			// Remove parentElement from WeakMap if no more handlers exist
-			if (parentElementHandlers.size === 0) {
-				handlerMap.delete(parentElement);
-			}
-		}
 	}
 }
 // weaponPopUpFormRemover(currentWeaponSlot) {

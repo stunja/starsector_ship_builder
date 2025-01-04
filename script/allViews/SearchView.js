@@ -1,10 +1,15 @@
 import classNames from "../helper/DomClassNames";
 import View from "./view";
+import DataSet from "../helper/DataSet";
 
 const STRINGS = {
 	LOGO: "Ship Builder",
 	SAVED: "Saved Builds",
 	SEARCH: "Search",
+};
+const EVENT_LISTENER_TARGET = {
+	SEARCH: "search",
+	SAVE: "save",
 };
 class SearchView extends View {
 	_localParent = `.${classNames.nav}`;
@@ -22,10 +27,16 @@ class SearchView extends View {
                     required
                 />
 
-                <button type="submit" class="${classNames.button} ${classNames.searchForm__Button}">${STRINGS.SEARCH}</button>
+                <button type="submit" class="${classNames.button} ${classNames.searchForm__Button}" 
+                    ${DataSet.dataNavButtonType}=${EVENT_LISTENER_TARGET.SEARCH}>
+                    ${STRINGS.SEARCH}
+                </button>
             </form>
 
-            <button class="${classNames.button}">${STRINGS.SAVED}</button>
+            <button class="${classNames.button} ${classNames.searchForm__Button}" 
+                    ${DataSet.dataNavButtonType}=${EVENT_LISTENER_TARGET.SAVE}>
+                    ${STRINGS.SAVED}
+                </button>
         `;
 
 		return markup;

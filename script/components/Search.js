@@ -1,6 +1,11 @@
 import SearchView from "../allViews/SearchView.js";
 import ViewModel from "../ViewModel.js";
 
+import classNames from "../helper/DomClassNames.js";
+
+const EVENT_LISTENER_TARGET = {
+	BUTTON: `.${classNames.searchForm__Button}`,
+};
 export default class Search extends ViewModel {
 	constructor(model) {
 		super(model);
@@ -11,6 +16,10 @@ export default class Search extends ViewModel {
 
 	#searchRender() {
 		SearchView.render(this.getState);
+		SearchView.addClickHandler(EVENT_LISTENER_TARGET.BUTTON, this.test);
+	}
+	test(btn) {
+		console.log(btn);
 	}
 }
 //! Finish later

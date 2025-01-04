@@ -2,7 +2,11 @@ import ViewModel from "../../ViewModel";
 import HullModView from "../../allViews/HullMods/HullModView";
 import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 import AddNewHullModView from "../../allViews/HullMods/AddNewHullModView";
+import classNames from "../../helper/DomClassNames";
 
+const EVENT_LISTENER_TARGET = {
+	HULLMODS: `.${classNames.hullMods__Button}`,
+};
 export default class HullModController extends ViewModel {
 	constructor(model) {
 		super(model);
@@ -16,12 +20,17 @@ export default class HullModController extends ViewModel {
 	}
 	#hullModBase() {
 		HullModView.render(this.getUserShipBuild());
+		HullModView.addClickHandler(EVENT_LISTENER_TARGET.HULLMODS, this.test);
 	}
 	#buildInHullMods() {
 		BuildInHullModsView.render([
 			this.getUserShipBuild(),
 			this.getUsableHullMods(),
 		]);
+	}
+	//! DEV
+	test(btn) {
+		console.log(btn);
 	}
 	//! Not implemented
 	#addNewHullMod() {

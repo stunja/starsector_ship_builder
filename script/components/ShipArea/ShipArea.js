@@ -17,7 +17,6 @@ export default class ShipArea extends ViewModel {
 		this.#containerRender();
 
 		this.#weaponSlots.update();
-		// WeaponOpenPopUpMenu.addEventListener();
 	}
 	#containerRender() {
 		ShipAreaView.render(this.getUserShipBuild());

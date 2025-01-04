@@ -19,6 +19,7 @@ export class Model {
 	dataState = {
 		allShips: [],
 		allWeapons: [],
+		allWeaponSystems: [],
 		allHullMods: [],
 		allFighters: [],
 	};
@@ -61,12 +62,19 @@ export class Model {
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
 				currentShip
 			);
+
 			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
 			const usableHullMods = createUsableHullMods(hullmods);
-			// console.log(userShipBuild);
+
+			const weaponOnly = this.#filterWeaponsOnly(weapons);
+			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
+			const filteredWeaponsWithAdditionalData =
+				await additionalWeaponData.fetchAndInjectData(weaponOnly);
+
 			this.updateState("dataState", {
 				allShips: ships,
-				allWeapons: weapons,
+				allWeapons: filteredWeaponsWithAdditionalData,
+				allWeaponSystems: weaponSystemsOnly,
 				allHullMods: hullmods,
 				allFighters: fighters,
 				allDescriptions: desc,
@@ -83,6 +91,20 @@ export class Model {
 			this.updateState("uiState", { isLoading: false });
 		}
 	}
+	#weaponIsNotSystem = (wpn) => {
+		if (!wpn?.hints) return true;
+
+		const hasSystemTag = wpn.hints.split(",").find((hint) => hint === "SYSTEM");
+
+		return !hasSystemTag;
+	};
+	#filterWeaponSystems = (weaponsArray) =>
+		weaponsArray.filter((weapon) => !this.#weaponIsNotSystem(weapon));
+
+	#filterWeaponsOnly = (weaponsArray) =>
+		weaponsArray.filter(
+			(weapon) => this.#weaponIsNotSystem(weapon) && weapon.id
+		);
 }
 const cvsFetcher = {
 	fetch: async function (url) {
@@ -159,8 +181,86 @@ const fetchCurrentShipAdditionalData = async function (currentShip) {
 		console.log("Failed to fetch additiona data for currentShip", err);
 	}
 };
+const additionalWeaponData = {
+	// There a much more props in the file, from sounds / colors / additional positions
+	KEYS_TO_INJECT: [
+		"size",
+		"specClass",
+		"turretSprite",
+		"type",
+		"turretGunSprite",
+		"turretOffsets",
+		"mountTypeOverride",
+	],
 
-// UserShipBuild is here
+	// This function is very particular regex. DONT CHANGE.
+	// I am trying to fix broken JSON-like file into a proper JSON.
+	// Trial and Error approach
+	cleanWeaponData(dirtyData) {
+		const cleaningSteps = [
+			// Remove comments
+			(data) => data.replace(/#.*$/gm, ""),
+			// Fix trailing commas
+			(data) => data.replace(/,(\s*[}\]])/g, "$1"),
+			// Quote unquoted keys
+			(data) => data.replace(/(?<!":\s)(\b[A-Za-z]+\b)(?=\s*[:,])/g, '"$1"'),
+			// Process arrays and quote non-numeric values
+			(data) =>
+				data.replace(
+					/\[(.+?)\]/g,
+					(_match, contents) =>
+						`[${contents
+							.split(",")
+							.map((item) => {
+								const trimmed = item.trim();
+								return isNaN(trimmed) ? `"${trimmed}"` : trimmed;
+							})
+							.join(",")}]`
+				),
+			// Final cleanup
+			(data) =>
+				data.replace(/""/g, '"').replace(/;/g, ",").replace(/:",/g, ':"",'),
+		];
+
+		return cleaningSteps.reduce((data, step) => step(data), dirtyData);
+	},
+
+	extractAdditionalWeaponData(weaponData) {
+		return this.KEYS_TO_INJECT.reduce(
+			(acc, key) => ({
+				...acc,
+				[key]: weaponData[key],
+			}),
+			{}
+		);
+	},
+
+	async processWeapon(weaponObj) {
+		try {
+			const dirtyData = await jsonFetcher.fetchData(
+				`/${URL.DATA_WEAPONS}/${weaponObj.id}.wpn`
+			);
+			const cleanData = this.cleanWeaponData(dirtyData);
+			const jsonData = JSON.parse(cleanData);
+			const additionalData = this.extractAdditionalWeaponData(jsonData);
+
+			return {
+				...weaponObj,
+				additionalData,
+			};
+		} catch (err) {
+			console.error(`Error processing weapon ${weaponObj.id}:`, err);
+			return weaponObj;
+		}
+	},
+
+	fetchAndInjectData: async function (weaponsArray) {
+		return Promise.all(
+			weaponsArray.map((weaponObj) => this.processWeapon(weaponObj))
+		);
+	},
+};
+
 const createUserShipBuild = {
 	SHIP_ENUMS: {
 		CAPACITORS_BASE: 0,
@@ -171,6 +271,7 @@ const createUserShipBuild = {
 		FLUX_DISSIPATION_PER_SINGLE_ACTIVE: 10,
 		ORDINANCE_POINTS: 0,
 	},
+	// Not ideal implementation, but I needed a reference for all default props
 	controller: function ({
 		maxFlux,
 		fluxDissipation,
@@ -378,7 +479,8 @@ const createUsableHullMods = function (data) {
 		.filter((hullmod) => hullmod.hidden !== "TRUE" && hullmod.id)
 		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 };
-//
+// NOT USED BELOW THE LINE
+//--------------------
 const injectWeaponDescriptions = async function () {
 	try {
 		state.allWeapons = state.allWeapons.map((weaponObject) => {
@@ -576,6 +678,72 @@ const hullModDataInjection = {
 };
 
 //////
+
+// const fetchAndInjectAdditionalWeaponProperties = async function (allWeapons) {
+// 	const cleanWeaponData = (dirtyData) => {
+// 		return dirtyData
+// 			.replace(/#.*$/gm, "")
+// 			.replace(/,(\s*[}\]])/g, "$1")
+// 			.replace(/(?<!":\s)(\b[A-Za-z]+\b)(?=\s*[:,])/g, '"$1"')
+// 			.replace(/\[(.*?)\]/g, (match, p1) => {
+// 				return `[${p1
+// 					.split(",")
+// 					.map((item) => {
+// 						const trimmedItem = item.trim();
+// 						return isNaN(trimmedItem) ? `"${trimmedItem}"` : trimmedItem;
+// 					})
+// 					.join(",")}]`;
+// 			})
+// 			.replaceAll(`""`, `"`)
+// 			.replaceAll(";", ",")
+// 			.replaceAll(`:",`, `:"",`);
+// 	};
+
+// 	const fetchWeaponData = async (weaponId) => {
+// 		const res = await fetch(`/${URL.DATA_WEAPONS}/${weaponId}.wpn`);
+// 		if (!res.ok) {
+// 			throw new Error(`HTTP error! status: ${res.status}`);
+// 		}
+// 		return res.text();
+// 	};
+
+// 	const extractAdditionalWeaponData = (weaponDataFinal) => {
+// 		const keysToInject = [
+// 			"size",
+// 			"specClass",
+// 			"turretSprite",
+// 			"type",
+// 			"turretGunSprite",
+// 			"turretOffsets",
+// 			"mountTypeOverride",
+// 		];
+// 		return keysToInject.reduce((acc, key) => {
+// 			acc[key] = weaponDataFinal[key];
+// 			return acc;
+// 		}, {});
+// 	};
+
+// 	const processWeapon = async (weaponObj) => {
+// 		try {
+// 			const dirtyData = await fetchWeaponData(weaponObj.id);
+// 			const cleanData = await cleanWeaponData(dirtyData);
+// 			const weaponDataFinal = JSON.parse(cleanData);
+// 			const additionalWeaponData = extractAdditionalWeaponData(weaponDataFinal);
+// 			return { ...weaponObj, additionalWeaponData };
+// 		} catch (err) {
+// 			console.error(`Error processing weapon ${weaponObj.id}: ${err}`); //! TURN ON
+// 			//! I turned it off due to it being annoying
+// 			return weaponObj; // Return original object if processing fails
+// 		}
+// 	};
+
+// 	const updatedArray = await Promise.all(allWeapons.map(processWeapon));
+// 	console.log(updatedArray);
+// 	// state.allWeapons = updatedArray;
+// 	// model.updateState = model.updateStateProperty("allWeapons", {
+// 	// 	...updatedArray,
+// 	// });
+// };
 const fetchAllFighters = async function () {
 	try {
 		// wing data

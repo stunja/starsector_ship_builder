@@ -29,13 +29,13 @@ class HullModView extends View {
 	                </ul>
 	                <ul class="${classNames.flexFlexEndGap} ${classNames.hullMods__Buttons}">
 	                  <li>
-	                    <button class="${classNames.button} ${classNames.hullMods__ButtonOpen}" 
+	                    <button class="${classNames.button} ${classNames.hullMods__Button}" 
                         ${DataSet.dataHullModButtonType}="${BUTTON__TYPE.OPEN}">
                             ${TITLES.BUTTON__OPEN}
                         </button>
 	                  </li>
 	                  <li>
-	                    <button class="${classNames.button} ${classNames.hullMods__ButtonSmods}" 
+	                    <button class="${classNames.button} ${classNames.hullMods__Button}" 
                         ${DataSet.dataHullModButtonType}="${BUTTON__TYPE.SMODS}">
                             ${TITLES.BUTTON__SMODS}
                         </button>

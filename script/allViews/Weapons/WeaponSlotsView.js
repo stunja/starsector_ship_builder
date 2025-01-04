@@ -15,16 +15,7 @@ class WeaponSlotsView extends View {
 
 		return markup;
 	}
-	weaponSlotsEventListener(callback) {
-		// const parent = `.${classNames.weaponSlots}`;
-		const target = `.${classNames.weaponSlot}`;
-		// const parentTarget = document.querySelector(parent);
 
-		this.addEventHandler(this._localParentElement, target, "click", (event) =>
-			callback(event.target)
-		);
-	}
-	//
 	#weaponSlotMarkUp(currentWeaponSlot) {
 		if (currentWeaponSlot.mount.toLowerCase() === "hidden") return;
 

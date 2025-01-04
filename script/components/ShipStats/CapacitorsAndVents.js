@@ -2,6 +2,7 @@ import ViewModel from "../../ViewModel";
 
 import CapacitorsView from "../../allViews/Stats/CapacitorsView";
 import VentsView from "../../allViews/Stats/VentsView";
+import classNames from "../../helper/DomClassNames";
 
 const CONTROLS = {
 	BUTTON_ACTIONS: {
@@ -12,6 +13,10 @@ const CONTROLS = {
 		CAPACITORS: "capacitors",
 		VENTS: "vents",
 	},
+};
+const EVENT_LISTENER_TARGET = {
+	CAPACITOR: `.${classNames.shipCapacitors__Button}`,
+	VENTS: `.${classNames.shipVents__Button}`,
 };
 const SHIP_SYSTEMS = {
 	// Dont confuse CAPACITY and CAPACITOR
@@ -47,11 +52,17 @@ export default class CapacitorsAndVents extends ViewModel {
 	}
 	capacitorUpdate() {
 		CapacitorsView.render(this.getUserShipBuild());
-		CapacitorsView.capacitorEventListeners(this.handleCapacitorChange);
+		CapacitorsView.addClickHandler(
+			EVENT_LISTENER_TARGET.CAPACITOR,
+			this.handleCapacitorChange
+		);
 	}
 	ventsUpdate() {
 		VentsView.render(this.getUserShipBuild());
-		VentsView.ventsEventListeners(this.handleVentChange);
+		VentsView.addClickHandler(
+			EVENT_LISTENER_TARGET.VENTS,
+			this.handleVentChange
+		);
 	}
 
 	// Not ideal, but it prevents conflict with eventHandlers

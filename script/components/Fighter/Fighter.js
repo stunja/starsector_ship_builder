@@ -1,6 +1,10 @@
 import ViewModel from "../../ViewModel";
 import FightersView from "../../allViews/Fighters/FightersView";
+import classNames from "../../helper/DomClassNames";
 
+const EVENT_LISTENER_TARGET = {
+	FIGHTER_SLOT: `.${classNames.fighterSlot}`,
+};
 export default class Fighters extends ViewModel {
 	constructor(model) {
 		super(model);
@@ -10,5 +14,9 @@ export default class Fighters extends ViewModel {
 	}
 	#containerRender() {
 		FightersView.render(this.getUserShipBuild());
+		FightersView.addClickHandler(EVENT_LISTENER_TARGET.FIGHTER_SLOT, this.test);
+	}
+	test(btn) {
+		console.log(btn);
 	}
 }

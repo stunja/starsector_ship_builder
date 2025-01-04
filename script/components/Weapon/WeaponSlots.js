@@ -3,15 +3,20 @@ import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
 import WeaponSlotsView from "../../allViews/Weapons/WeaponSlotsView.js";
 import ViewModel from "../../ViewModel.js";
+import WeaponPopUp from "./WeaponPopUp.js";
 
 const TARGET_REM = 10; // rem for shipSpriteSize / WeaponSlotsPosition / shipGAP
 
 export default class WeaponSlots extends ViewModel {
+	#weaponPopUp;
 	constructor(model) {
 		super(model);
+
+		this.#weaponPopUp = new WeaponPopUp(model);
 	}
 	update() {
 		this.#weaponSlotsRender();
+		this.#addWeaponPopUpListener();
 
 		this.#weaponSlotPositionUpdate();
 		this.#weaponArcsUpdate();
@@ -19,12 +24,10 @@ export default class WeaponSlots extends ViewModel {
 
 	#weaponSlotsRender() {
 		WeaponSlotsView.render(this.getUserShipBuild());
-		WeaponSlotsView.weaponSlotsEventListener(this.test);
 	}
-	test(btn) {
-		console.log(btn);
-		const slotId = btn.dataset.slotId;
-		console.log(slotId);
+	#addWeaponPopUpListener() {
+		const target = `.${classNames.weaponSlot}`;
+		WeaponSlotsView.addClickHandler(target, this.#weaponPopUp.update);
 	}
 	// Old code, It would be nice to rework it
 	#weaponSlotPositionUpdate() {

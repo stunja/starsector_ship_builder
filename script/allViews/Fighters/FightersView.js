@@ -20,8 +20,7 @@ class FightersView extends View {
 				(fighterSlot) =>
 					`
                         <div class="${classNames.fighterSlotContainer}">
-                            <figure class="${classNames.smallImageBox} 
-                                ${classNames.fighterSlot}" 
+                            <figure class="${classNames.smallImageBox} ${classNames.fighterSlot}" 
                                 ${DataSet.dataFighterId}="${fighterSlot.id}"
                             >
                             </figure>

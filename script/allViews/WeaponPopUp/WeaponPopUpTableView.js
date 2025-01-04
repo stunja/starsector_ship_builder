@@ -1,52 +1,30 @@
 import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
 // View
-import WeaponSpriteView from "../Weapons/WeaponSpriteView.js";
 import View from "../view.js";
 
-class WeaponPopUpView extends View {
-	_localParent = `.${classNames.weaponPopUp}`;
+const CATEGORIES = {
+	icon: "",
+	name: "Name",
+	type: "Type",
+	range: "Range",
+	cost: "Cost",
+};
+
+class WeaponPopUpTableHeaderView extends View {
+	_localParent = `.${classNames.tableBody}`;
 
 	generateMarkup() {
-		const markup = `
-				<div class="${classNames.tableContainer}">
-					<ul class="${classNames.tableEntries} ${classNames.tableHeader}"></ul>
-					<div class="${classNames.tableBody}"></div>
-				</div>
-				<div class="${classNames.hoverContainer}"></div>
-				`;
+		const data = this._data;
+		// const markup = `${this.#tableBodyRender}`;
+		const markup = "<p>Test</p>";
 		return markup;
 	}
-
-	tableHeaderRender() {
-		const localParent = `.${classNames.tableHeader}`;
-
-		const CATEGORIES = {
-			icon: "",
-			name: "Name",
-			type: "Type",
-			range: "Range",
-			cost: "Cost",
-		};
-
-		const markup = Object.entries(CATEGORIES)
-			.map(([key, value]) => {
-				return `<li class="${classNames.unselectable} ${classNames.tableHeaderEntry}" ${DataSet.dataCategory}="${key}">
-							${value}
-						</li>`;
-			})
-			.join("");
-
-		return [markup, localParent];
-	}
-	//prettierignore
-	tableBodyRender(
+	#tableBodyRender(
 		currentWeaponArray,
 		currentInstalledWeapons,
 		currentWeaponSlot
 	) {
-		const localParent = `.${classNames.tableBody}`;
-
 		const assignActiveClass = (crrWpn) => {
 			if (!crrWpn) return;
 
@@ -74,23 +52,12 @@ class WeaponPopUpView extends View {
 			</ul>
 			`;
 
-		const markup = currentWeaponArray
-			.map((crrWpn) => entryMarkup(crrWpn))
-			.join("");
-
-		return [markup, localParent];
+		return currentWeaponArray.map((crrWpn) => entryMarkup(crrWpn)).join("");
 	}
-	closePopUp() {
-		const locaParent = `.${classNames.tableContainer}`;
-		const markup = "";
-
-		return [markup, locaParent];
-	}
-
 	#weaponTypeStringConversion = (damageType) =>
 		damageType
 			.split("_")
 			.map((word) => word[0] + word.slice(1).toLowerCase())
 			.join(" ");
 }
-export default new WeaponPopUpView();
+export default new WeaponPopUpTableHeaderView();
