@@ -2,42 +2,76 @@ import ViewModel from "../../ViewModel.js";
 import WeaponPopUpCreateCurrentWeaponArray from "./WeaponPopUpCreateCurrentWeaponArray.js";
 // Helper
 import classNames from "../../helper/DomClassNames.js";
+import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
 // Views
 import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpContainerView.js";
 import WeaponPopUpTableHeaderView from "../../allViews/WeaponPopUp/WeaponPopUpTableHeaderView.js";
 import WeaponPopUpTableView from "../../allViews/WeaponPopUp/WeaponPopUpTableView.js";
+import WeaponSlots from "./WeaponSlots.js";
 
 export default class WeaponPopUp extends ViewModel {
+	#weaponSlot;
 	constructor(model) {
 		super(model);
-		console.log(this.getDataState());
 	}
 	update = (btn) => {
 		if (!btn) return;
 		const { weaponSlotId } = btn.dataset;
-		this.#weaponPopUpRender(weaponSlotId);
+
+		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
+			this.getUserShipBuild().weaponSlots,
+			weaponSlotId
+		);
+
+		this.#weaponPopUpRender(this.#weaponSlot);
+		this.#addWeaponPopUpEntryListener();
+		this.#addWeaponPopUpTableHeaderListener();
 	};
 	//
-
-	#weaponPopUpRender(weaponSlotId) {
+	#openWeaponPop() {
+		console.log("openWeaponPop");
+	}
+	#addWeaponClosePopUp() {
+		// Update WeaponSlots // Render // Listener // Arcs / Background
+		new WeaponSlots(this.getState()).update();
+		// Remove WeaponPopUpContainer
+		WeaponPopUpContainerView._clearRender();
+	}
+	//
+	#addWeaponPopUpEntryListener() {
+		const target = `.${classNames.tableEntries}`;
+		WeaponPopUpTableView.addClickHandler(
+			target,
+			this.#addCurrentWeaponToInstalledWeapons
+		);
+	}
+	#addWeaponPopUpTableHeaderListener() {
+		const target = `.${classNames.tableHeaderEntry}`;
+		WeaponPopUpTableHeaderView.addClickHandler(target, this.headerTest);
+	}
+	//! rework
+	headerTest(btn) {
+		const { category } = btn.dataset;
+		console.log(category);
+	}
+	#weaponPopUpRender(weaponSlot) {
 		// Renders After User Clicks on Weapon Button (Weapon Slot)
 
 		const state = this.getState();
 		const { allWeapons } = state.dataState;
 		const { userShipBuild } = state.userState;
 
-		const weaponArrayWeaponSlot =
-			WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
-				weaponSlotId,
-				userShipBuild,
-				allWeapons
-			);
+		const weaponArray = WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
+			weaponSlot,
+			userShipBuild,
+			allWeapons
+		);
 
 		//? Strange way to render, but it works.
 		//? first draw "empty" container then target it with other renders
 		WeaponPopUpContainerView.render(userShipBuild);
 		WeaponPopUpTableHeaderView.render(userShipBuild);
-		WeaponPopUpTableView.render([userShipBuild, ...weaponArrayWeaponSlot]);
+		WeaponPopUpTableView.render([userShipBuild, weaponArray, weaponSlot]);
 	}
 
 	#weaponSlotActiveClass(btn) {
@@ -52,33 +86,6 @@ export default class WeaponPopUp extends ViewModel {
 				btn.classList.remove(`weapons-slot--inactive`);
 			}
 		});
-	}
-	#assignHandlers() {
-		// Enables Table Head Sorting
-		EventHandlers.removeEventListener(this.#weaponPopUpTableSorter);
-		EventHandlers.addEventListenerReturnDataSet(
-			WeaponPopUpHandlers.headerHandler(this.#weaponPopUpTableSorter)
-		);
-
-		// Close if click outside "target container"
-		WeaponPopUpHandlers.closeIfClickOutsideTargetContainer(
-			classNames.tableContainer
-		);
-
-		// Add Weapon
-		EventHandlers.removeEventListener(this.#addCurrentWeaponToInstalledWeapons);
-		EventHandlers.addEventListenerReturnDataSet(
-			WeaponPopUpHandlers.tableHandler(this.#addCurrentWeaponToInstalledWeapons)
-		);
-
-		// Table Hover Effect Handler
-		// EventHandlers.removeEventListener(builderLogic.showAdditionalInformationOnHover);
-		// EventHandlers.addEventListenerReturnDataSet(WeaponPopUpHandlers.weaponPopUpHoverEffect(builderLogic.showAdditionalInformationOnHover));
-		//? Very different Logic (runs once)
-		// EventHandlers.hidePopUpIfClickOutsideHandler(classNames.weaponPopUp, classNames.weaponPopUpTableWrapper, builderLogic.clearWeaponPopUp);
-		// Hide PopUp via Button Handler
-		// builderCenterView.removeEventListener(builderLogic.weaponPopUpHide);
-		// builderCenterView.addEventListenerReturnDataSet(WeaponPopUpHandlers.weaponPopUpHideButtonHandler(builderLogic.weaponPopUpHide));
 	}
 
 	#weaponPopUpTableSorter(btn) {
@@ -140,56 +147,43 @@ export default class WeaponPopUp extends ViewModel {
 			)
 		);
 	}
-
-	// #addCurrentWeaponToInstalledWeapons(btn) {
-	// 	// Click once to add, click two times to remove
-	// 	const { weaponPopUpId } = btn.dataset;
-	// 	const { currentShipBuild } = model.state;
-
-	// 	const currentWeaponSlot = model.uiState.currentWeaponSlot;
-
-	// 	currentShipBuild.currentInstalledWeapons =
-	// 		currentShipBuild.currentInstalledWeapons.map(
-	// 			([slotId, currentWeapon]) => {
-	// 				return slotId === currentWeaponSlot.id &&
-	// 					currentWeapon === weaponPopUpId
-	// 					? [slotId, ""]
-	// 					: slotId === currentWeaponSlot.id
-	// 					? [slotId, weaponPopUpId]
-	// 					: [slotId, currentWeapon];
-	// 			}
-	// 		);
-
-	// 	HangarController.updateWeaponSprites();
-	// }
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
-		const { currentInstalledWeapons } = model.state.currentShipBuild;
-		const currentWeaponSlot = model.uiState.currentWeaponSlot;
-		let keepPopUpOpen = false;
-		const updatedInstalledWeapons = currentInstalledWeapons.map(
+		const userShipBuild = this.getUserShipBuild();
+		const installedWeapons = userShipBuild.installedWeapons;
+		let isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
+		//
+		const updatedInstalledWeapons = installedWeapons.map(
 			([slotId, currentWeapon]) => {
 				// If weapon already exists in slot, remove it
 				if (currentWeapon === weaponPopUpId) {
-					keepPopUpOpen = !keepPopUpOpen;
+					isWeaponPopUpOpen = !isWeaponPopUpOpen;
 					return [slotId, ""];
 				}
-
 				// if weapon dont match, keep the original
-				if (slotId !== currentWeaponSlot.id) {
+				if (slotId !== this.#weaponSlot.id) {
 					return [slotId, currentWeapon];
 				}
-
 				// Otherwise, add the new weapon
 				return [slotId, weaponPopUpId];
 			}
 		);
 
-		model.state.currentShipBuild.currentInstalledWeapons =
-			updatedInstalledWeapons;
+		this.setUpdateUserShipBuild({
+			...userShipBuild,
+			installedWeapons: updatedInstalledWeapons,
+		});
 
-		keepPopUpOpen !== false ? this.openPopUp() : this.closePopUp();
-		HangarController.updateWeaponSprites();
+		isWeaponPopUpOpen !== false
+			? this.#openWeaponPop()
+			: this.#addWeaponClosePopUp();
+
+		//! Not working right now
+		// this.setState("uiState", {
+		// 	weaponPopUp: isWeaponPopUpOpen,
+		// });
+
+		// HangarController.updateWeaponSprites();
 	};
 
 	showAdditionalInformationOnHover(btn) {

@@ -51,3 +51,6 @@ export const convertStringsIntoNumbersCSVdata = function (dataArray) {
 //! I need to remove this
 export const calculateHullModCost = (hullMod) =>
 	Number(hullMod[state.currentShipBuild.hullModCost]);
+
+export const weaponSlotIdIntoWeaponSlotObject = (allWeaponSlots, wpnSlotId) =>
+	allWeaponSlots.find((slot) => slot.id === wpnSlotId);

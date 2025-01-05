@@ -4,44 +4,37 @@ import DataSet from "../../helper/DataSet.js";
 import View from "../view.js";
 import WeaponSpriteView from "../../allViews/Weapons/WeaponSpriteView.js";
 
-const CATEGORIES = {
-	icon: "",
-	name: "Name",
-	type: "Type",
-	range: "Range",
-	cost: "Cost",
-};
-
-class WeaponPopUpTableHeaderView extends View {
+class WeaponPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
 
 	generateMarkup() {
-		const [userShipBuild, currentWeaponArray, weaponSlotObject] = this._data;
+		const [userShipBuild, currentWeaponArray, weaponSlot] = this._data;
 		const markup = `${this.#tableBodyRender(
 			currentWeaponArray,
 			userShipBuild.installedWeapons,
-			weaponSlotObject
+			weaponSlot
 		)}`;
 		return markup;
 	}
-	#tableBodyRender(currentWeaponArray, installedWeapons, weaponSlotObject) {
+	#tableBodyRender(currentWeaponArray, installedWeapons, weaponSlot) {
 		const assignActiveClass = (crrWpn) => {
 			if (!crrWpn) return;
 
 			const isActiveClass = installedWeapons.find(
 				([slotId, wpnObjId]) =>
-					slotId === weaponSlotObject.id && wpnObjId === crrWpn.id
+					slotId === weaponSlot.id && wpnObjId === crrWpn.id
 			);
 
-			return isActiveClass ? `${classNames.weaponPopUpActive}` : "";
+			// empty space so they are not joined classes
+			return isActiveClass ? ` ${classNames.weaponPopUpActive}` : "";
 		};
 
 		const entryMarkup = (crrWpn) => `
-			<ul class="${classNames.tableEntries} ${assignActiveClass(crrWpn)}"  
+			<ul class="${classNames.tableEntries}${assignActiveClass(crrWpn)}"  
 				${DataSet.dataWeaponPopUpId}="${crrWpn.id}">
 
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${WeaponSpriteView.renderElement([crrWpn, weaponSlotObject])}
+					${WeaponSpriteView.renderElement([crrWpn, weaponSlot])}
 				</li>
 				<li class="${classNames.tableEntry} ${classNames.tableName}">${crrWpn.name}</li>
 				<li class="${classNames.tableEntry}">
@@ -60,4 +53,4 @@ class WeaponPopUpTableHeaderView extends View {
 			.map((word) => word[0] + word.slice(1).toLowerCase())
 			.join(" ");
 }
-export default new WeaponPopUpTableHeaderView();
+export default new WeaponPopUpTableView();

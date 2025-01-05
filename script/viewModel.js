@@ -57,6 +57,10 @@ export default class ViewModel {
 	getDataState() {
 		return this.#model.dataState;
 	}
+	// get UI State
+	getUiState() {
+		return this.#model.uiState;
+	}
 }
 ///////////////
 

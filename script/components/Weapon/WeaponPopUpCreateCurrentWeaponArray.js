@@ -1,3 +1,4 @@
+import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
 const SIZE = {
 	LARGE: "LARGE",
 	MEDIUM: "MEDIUM",
@@ -15,17 +16,10 @@ const MOUNT_TYPE = {
 
 class WeaponPopUpCreateCurrentWeaponArray {
 	// Main function
-	weaponFilterArray(weaponSlotId, userShipBuild, allWeaponsObjects) {
-		const currentWeaponSlot = userShipBuild.weaponSlots.find(
-			(slot) => slot.id === weaponSlotId
-		);
+	weaponFilterArray(weaponSlot, userShipBuild, allWeaponsObjects) {
+		const filteredWeapons = this.#filterWeapons(allWeaponsObjects, weaponSlot);
 
-		const filteredWeapons = this.#filterWeapons(
-			allWeaponsObjects,
-			currentWeaponSlot
-		);
-
-		return [filteredWeapons, currentWeaponSlot];
+		return filteredWeapons;
 	}
 	// There is 3 sizes and 7 types of weapons.
 	// There are special rules what is allowed where.
@@ -92,7 +86,7 @@ class WeaponPopUpCreateCurrentWeaponArray {
 		);
 	};
 	// Sort by Cost, so initial state is nicely grouped like in-game by ordinance cost
-	#sortByOPs = (a, b) => Number.parseInt(b.OPs) - Number.parseInt(a.OPs);
+	#sortByOPs = (a, b) => Number.parseInt(b.oPs) - Number.parseInt(a.oPs);
 
 	// Filter first by Type than by Size => Sort and return
 	#filterWeapons = (weapons, slot) => {

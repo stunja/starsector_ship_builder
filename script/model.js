@@ -30,6 +30,9 @@ export class Model {
 	};
 	uiState = {
 		isLoading: false,
+		weaponPopUp: {
+			isWeaponPopUpOpen: false,
+		},
 	};
 	updateState(stateName, newState) {
 		if (this[stateName]) {
@@ -381,9 +384,6 @@ const createUserShipBuild = {
 			shipBurn: maxBurn,
 			fuelPerLY: fuelLy,
 
-			// Weapon Slots
-			// weaponSlots: this.weaponSlotIdStringEdit(additionalData.weaponSlots),
-
 			// Installed Weapons
 			installedWeapons: this.injectCurrentShipSlotsIntoWeapons(
 				additionalData.weaponSlots
@@ -423,7 +423,7 @@ const createUserShipBuild = {
 			},
 			hullMods: { builtInMods },
 			hullSize,
-			weaponSlots,
+			weaponSlots: this.weaponSlotIdStringEdit(weaponSlots),
 		};
 	},
 	// Add data maxVentbased on HULLSIZE

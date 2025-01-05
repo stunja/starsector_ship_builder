@@ -1,7 +1,10 @@
 // Generic
 import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
+import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
+// View
 import WeaponSlotsView from "../../allViews/Weapons/WeaponSlotsView.js";
+// View Model
 import ViewModel from "../../ViewModel.js";
 import WeaponPopUp from "./WeaponPopUp.js";
 
@@ -16,14 +19,25 @@ export default class WeaponSlots extends ViewModel {
 	}
 	update() {
 		this.#weaponSlotsRender();
+		console.log("weaponSlotsRender");
+
 		this.#addWeaponPopUpListener();
+		console.log("addWeaponPopUpListener");
 
 		this.#weaponSlotPositionUpdate();
+		console.log("weaponSlotPositionUpdate");
+
 		this.#weaponArcsUpdate();
+		console.log("weaponArcsUpdate");
+		// Rotate
+		this.#renderWeaponSpritesFromInstalledWeapons();
 	}
 
 	#weaponSlotsRender() {
-		WeaponSlotsView.render(this.getUserShipBuild());
+		WeaponSlotsView.render([
+			this.getUserShipBuild(),
+			this.getDataState().allWeapons,
+		]);
 	}
 	#addWeaponPopUpListener() {
 		const target = `.${classNames.weaponSlot}`;
@@ -46,11 +60,14 @@ export default class WeaponSlots extends ViewModel {
 
 		allWeaponSlotsElements.forEach((weaponElement) => {
 			const { weaponSlotId } = weaponElement.dataset;
-			const [currentWeaponSlotData] = weaponSlots.filter(
-				(slot) => slot.id === weaponSlotId
+
+			const currentWeaponSlot = weaponSlotIdIntoWeaponSlotObject(
+				weaponSlots,
+				weaponSlotId
 			);
 
-			const currentWeaponSlotLocationData = currentWeaponSlotData.locations;
+			const currentWeaponSlotLocationData = currentWeaponSlot.locations;
+
 			const posX = currentWeaponSlotLocationData[1];
 			const posY = currentWeaponSlotLocationData[0];
 
@@ -85,23 +102,27 @@ export default class WeaponSlots extends ViewModel {
 			secondaryArc.style.setProperty("--arc-mask-color", `${arc}deg`);
 			secondaryArc.style.setProperty("--arc-mask-transparent", `${arc}deg`);
 		});
+		console.log("check if arc working");
 	}
-	//! Not working right now.
-	renderWeaponSpritesFromInstalledWeapons() {
-		const { currentInstalledWeapons, currentWeaponSlots } =
-			model.state.currentShipBuild;
-		const { allWeapons } = model.state;
+	#renderWeaponSpritesFromInstalledWeapons() {
+		const { installedWeapons, weaponSlots } = this.getUserShipBuild();
+		const { allWeapons } = this.getDataState();
 
+		// in progress
 		const findWeaponObject = (currentWeaponId) =>
 			allWeapons.filter((weapon) => weapon.id === currentWeaponId);
 
 		const findCurrentWeaponSlot = (wpnSlotId) =>
-			currentWeaponSlots.filter((wpnSlot) => wpnSlot.id === wpnSlotId);
+			weaponSlots.filter((wpnSlot) => wpnSlot.id === wpnSlotId);
 
-		currentInstalledWeapons.forEach((installedWeapon) => {
+		return;
+
+		installedWeapons.forEach((installedWeapon) => {
 			const [slotId, weaponId] = installedWeapon;
 			if (weaponId === "" || !weaponId) return;
 
+			console.log(object);
+			return;
 			const [currentWeaponObject] = findWeaponObject(weaponId);
 			const [currentWeaponSlot] = findCurrentWeaponSlot(slotId);
 
@@ -115,6 +136,7 @@ export default class WeaponSlots extends ViewModel {
 			this.#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot);
 		});
 	}
+	//! Not working right now.
 	#weaponSpriteRotate(currentWeaponSlot) {
 		const { id: weaponSlotId, angle } = currentWeaponSlot;
 		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
@@ -124,6 +146,7 @@ export default class WeaponSlots extends ViewModel {
 		);
 
 		targetElement.style.setProperty("--weapon-rotate", `${-angle}deg`);
+		console.log("weaponSpriteRotate");
 	}
 	#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot) {
 		const { id: weaponSlotId } = currentWeaponSlot;

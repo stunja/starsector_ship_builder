@@ -26,6 +26,8 @@ class WeaponSpriteView {
 	};
 
 	#weaponSpriteMarkup = (wpnObject) => {
+		if (!wpnObject) return "";
+
 		const turretSprite = wpnObject.additionalData.turretSprite;
 		const turretGunSprite = wpnObject.additionalData.turretGunSprite;
 
