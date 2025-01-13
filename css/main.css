@@ -3,7 +3,9 @@
 @import "_typography.css";
 @import "_icons.css";
 @import "_fonts.css";
+/* Hover */
 @import "_weapon-pop-up.css";
+@import "weapon-pop-up-hover.css";
 
 @import "_build-maker.css";
 @import "./build-maker.css";

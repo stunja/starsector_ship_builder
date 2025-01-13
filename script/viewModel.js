@@ -34,6 +34,10 @@ export default class ViewModel {
 	setUpdateUserShipBuild(data) {
 		this.#model.updateUserShipBuild(data);
 	}
+	//
+	setUpdateWeaponPopUpState(data) {
+		this.#model.updateWeaponPopUpState(data);
+	}
 	getState() {
 		return this.#model;
 	}
@@ -60,6 +64,15 @@ export default class ViewModel {
 	// get UI State
 	getUiState() {
 		return this.#model.uiState;
+	}
+
+	// General Functions
+	isWeaponPopUpStateOpen(isOpen = false) {
+		const weaponPopUp = this.getUiState().weaponPopUp;
+		this.setUpdateWeaponPopUpState({
+			...weaponPopUp,
+			isWeaponPopUpOpen: isOpen,
+		});
 	}
 }
 ///////////////
@@ -101,144 +114,6 @@ export default class ViewModel {
 // 		resetData.propertiesToReset.push(e);
 // 	});
 // }
-
-// const weaponObjectData = (weaponObject) => {
-// 	const information = {
-// 		id: weaponObject.id,
-// 		name: weaponObject.name,
-// 		primaryRole: weaponObject.primaryRoleStr,
-// 		op: weaponObject.OPs,
-// 		turretSprite: weaponObject.additionalWeaponData.turretSprite,
-// 		turretGunSprite: weaponObject.additionalWeaponData.turretGunSprite,
-// 		description: weaponObject.description,
-// 	};
-// 	const stats = {
-// 		ammo: {
-// 			perSecond: weaponObject.ammo_sec ?? 1,
-// 			capacity: weaponObject.ammo,
-// 			burstSize: weaponObject.burst_size ?? 1,
-// 		},
-// 		damage: {
-// 			perShot: weaponObject.damage_shot ?? 1,
-// 			perSecond: weaponObject.damage_second,
-// 		},
-// 		flux: {
-// 			perSecond: weaponObject.energy_second,
-// 			perShot: weaponObject.energy_shot,
-// 		},
-// 		timing: {
-// 			chargeUp: weaponObject.chargeup,
-// 			chargeDown: weaponObject.chargedown,
-// 			burstDelay: weaponObject.burst_delay ?? 0,
-// 		},
-// 		handling: {
-// 			turnRate: weaponObject.turn_rate,
-// 			accuracy: weaponObject.spread_shot,
-// 		},
-// 		projectile: {
-// 			projectileOrBeam: weaponObject.additionalWeaponData.specClass, // projectile / beam
-// 			type: weaponObject.type,
-// 		},
-// 		mount: {
-// 			type: weaponObject.additionalWeaponData.type.toLowerCase(),
-// 			size: weaponObject.additionalWeaponData.size.toLowerCase(),
-// 		},
-// 		range: weaponObject.range,
-// 	};
-
-// 	const roundFloat = (num) => {
-// 		return Math.round(num * 100) / 100;
-// 	};
-
-// 	const refireDelay =
-// 		stats.timing.chargeDown +
-// 		stats.timing.chargeUp +
-// 		stats.timing.burstDelay * (stats.ammo.burstSize - 1);
-// 	const burstSizeString =
-// 		stats.timing.burstSize && stats.timing.burstSize > 1
-// 			? `x${stats.ammo.burstSize}`
-// 			: "";
-// 	const weaponDescription = information.description.split(".");
-
-// 	const isWeaponBeam = stats.projectile.projectileOrBeam === "beam";
-// 	const isWeaponProjectile = stats.projectile.projectileOrBeam === "projectile";
-// 	//
-// 	const damagePerSecond = Math.round(
-// 		(stats.damage.perShot * stats.ammo.burstSize) / refireDelay
-// 	);
-// 	const fluxPerSecond = isWeaponProjectile
-// 		? Math.round(stats.flux.perShot / refireDelay)
-// 		: stats.flux.perSecond;
-// 	const fluxPerDamage = isWeaponProjectile
-// 		? roundFloat(stats.flux.perShot / stats.damage.perShot)
-// 		: 1;
-
-// 	// Strings
-// 	const damageString = `${stats.damage.perShot}${burstSizeString}`;
-// 	const refireDelayString = roundFloat(refireDelay);
-// 	const shortWeaponDescription = weaponDescription[0];
-
-// 	return {
-// 		stats,
-// 		information,
-// 		additionalStats: {
-// 			isWeaponBeam,
-// 			isWeaponProjectile,
-// 			damagePerSecond,
-// 			refireDelay,
-// 			fluxPerSecond,
-// 			fluxPerDamage,
-// 		},
-// 		string: {
-// 			burstSizeString,
-// 			weaponDescription,
-// 			damageString,
-// 			refireDelayString,
-// 			shortWeaponDescription,
-// 		},
-
-// 		turnRateRating: () => {
-// 			const { turnRate } = stats.handling;
-// 			return turnRate > 40
-// 				? `Excellent  (${turnRate})`
-// 				: turnRate > 25
-// 				? `Very Fast  (${turnRate})`
-// 				: turnRate >= 20
-// 				? `Fast (${turnRate})`
-// 				: turnRate >= 15
-// 				? `Slow (${turnRate})`
-// 				: turnRate < 15
-// 				? `Very Slow (${turnRate})`
-// 				: "Error";
-// 		},
-// 		accuracyRating: () => {
-// 			const { accuracy } = stats.handling;
-// 			return accuracy < 0.25 || !accuracy
-// 				? `Perfect  (${accuracy ? accuracy : `< 0.25`})`
-// 				: accuracy <= 1
-// 				? `Good (${accuracy})`
-// 				: accuracy <= 2
-// 				? `Poor (${accuracy})`
-// 				: accuracy <= 3
-// 				? `Very Poor (${accuracy})`
-// 				: accuracy <= 10
-// 				? `Terrible (${accuracy})`
-// 				: "Error";
-// 		},
-// 		damageTypeEffect: () => {
-// 			const { type } = stats.projectile;
-// 			return type === "KINETIC"
-// 				? "200% vs Shields <br> 50% vs Armor"
-// 				: type === "ENERGY"
-// 				? "100% vs Shields <br> 100% vs Armor"
-// 				: type === "HIGH_EXPLOSIVE"
-// 				? "50% vs Shields <br> 200% vs Armor"
-// 				: type === "FRAGMENTATION"
-// 				? "25% vs Shields <br> 25% vs Armor"
-// 				: "Error with Damage Type Effect";
-// 		},
-// 	};
-// };
 
 // const findCreateDisplayCurrentShip = async function () {
 // 	// Grab the value

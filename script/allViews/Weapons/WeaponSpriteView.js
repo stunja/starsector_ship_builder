@@ -3,7 +3,7 @@ import WeaponBackgroundSpriteView from "./WeaponBackgroundSpriteView.js";
 
 // Generic
 import classNames from "../../helper/DomClassNames.js";
-import * as URL from "../../helper/url.js";
+import URL from "../../helper/url.js";
 import altTextLib from "../../helper/altTextLib.js";
 
 // Old implementation
@@ -33,8 +33,9 @@ class WeaponSpriteView {
 
 		return `
 				<div class="${classNames.weaponSprite}">
-					<img src="/${URL.DATA}/${turretSprite}" 
-						alt="${altTextLib.weaponBaseSprite} class="${classNames.weaponSpriteBase}"
+					<img src="/${URL.DATA}/${turretSprite}" alt="${
+			altTextLib.weaponBaseSprite
+		}" class="${classNames.weaponSpriteBase}"
 					/>
 					${this.#gunSpriteMarkUp(turretGunSprite)}
 				</div>

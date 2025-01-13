@@ -7,9 +7,7 @@ class WeaponArcView {
 
 		const markup = `
 		<div class="${classNames.weaponArc}" 
-			${DataSet.dataId}"${currentWeaponSlot.id}" 
-			${DataSet.dataArc}="${currentWeaponSlot.arc}" 
-			${DataSet.dataAngle}="${currentWeaponSlot.angle}">
+			${DataSet.dataId}="${currentWeaponSlot.id}" ${DataSet.dataArc}="${currentWeaponSlot.arc}" ${DataSet.dataAngle}="${currentWeaponSlot.angle}">
 			<div class="${classNames.weaponArcSprite}"></div>
 		</div>`;
 

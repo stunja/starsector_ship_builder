@@ -20,7 +20,6 @@ class WeaponSlotsView extends View {
 
 		return markup;
 	}
-	//!
 
 	#weaponSlotMatchesInstalledWeapon = (currentWeaponSlot, installedWeapons) =>
 		installedWeapons.find(([slot, _wpn]) => slot === currentWeaponSlot.id);
@@ -56,8 +55,9 @@ class WeaponSlotsView extends View {
 		const markup = `
 				<button class="${classNames.weaponSlot} ${
 			classNames.weaponSize
-		}--${weaponSize} ${classNames.weaponType}--${weaponType}" 
-					${DataSet.dataWeaponSlotId}="${weaponSlot.id}">
+		}--${weaponSize} ${classNames.weaponType}--${weaponType}" ${
+			DataSet.dataWeaponSlotId
+		}="${weaponSlot.id}">
 					${WeaponSpriteView.renderElement([weaponObject, weaponSlot])}
 				</button>`;
 		return markup;

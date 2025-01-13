@@ -5,11 +5,37 @@
 	transform: translate(-50%, -50%);
 
 	z-index: 100;
+
+	display: flex;
+	flex-direction: row-reverse;
+
+	gap: 34rem;
+
+	height: 65vh;
+	align-items: flex-start;
+
+	.weapon-sprite-parent {
+		.weapon-sprite--gun {
+			z-index: 200;
+		}
+		.weapon-sprite--base {
+			z-index: 201;
+		}
+		.weapon-sprite--gun,
+		.weapon-sprite--base {
+			position: absolute;
+			top: 55%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			transition: all 0.5s;
+		}
+	}
 }
 .table-container {
 	background-color: black;
 
-	height: 60rem;
+	/* height: 60rem; */
+	height: 100%;
 	overflow-y: scroll;
 
 	.table-entries {
@@ -73,9 +99,9 @@
 	.table-entries.weapon--active:hover {
 		background-color: rgba(0, 180, 36, 0.5);
 	}
-}
 
-.weapon-pop-up img {
-	height: 4rem;
-	width: 4rem;
+	img {
+		height: 4rem;
+		width: 4rem;
+	}
 }

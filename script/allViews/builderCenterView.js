@@ -1,6 +1,6 @@
 import View from "./view.js";
-import { capitalizeFirstLetter } from "../helper/helperFunction.js";
-import * as URL from "../helper/url.js";
+// import { capitalizeFirstLetter } from "../helper/helperFunction.js";
+import URL from "../helper/url.js";
 
 import classNames from "../helper/DomClassNames.js";
 //

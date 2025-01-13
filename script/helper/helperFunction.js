@@ -34,23 +34,14 @@ export const convertStringsIntoNumbersCSVdata = function (dataArray) {
 	});
 };
 
-// const applyGeneralRenamingRulesForKeys = function (key) {
-// 	// Replace all non alphabetical characters with underscore __
-// 	let newKey = key.replace(/[^a-zA-Z0-9]/g, "_");
-// 	// remove underscore from the end of the stringas
-// 	if (newKey.endsWith("_")) {
-// 		newKey.slice(0, -1);
-// 	}
-// 	return newKey;
-// };
-
-// export const capitalizeFirstLetter = (string) => {
-// 	return string.charAt(0).toUpperCase() + string.slice(1);
-// };
-
 //! I need to remove this
 export const calculateHullModCost = (hullMod) =>
 	Number(hullMod[state.currentShipBuild.hullModCost]);
 
-export const weaponSlotIdIntoWeaponSlotObject = (allWeaponSlots, wpnSlotId) =>
-	allWeaponSlots.find((slot) => slot.id === wpnSlotId);
+export const weaponSlotIdIntoWeaponSlotObject = (allWeapons, weaponSlotId) =>
+	allWeapons.find((slot) => slot.id === weaponSlotId);
+
+export const findCurrentWeaponSlotFromWeaponSlotId = (
+	weaponSlots,
+	weaponSlotId
+) => weaponSlots.find((slot) => slot.id === weaponSlotId);

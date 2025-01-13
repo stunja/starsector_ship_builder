@@ -3,7 +3,8 @@ import {
 	renameKeysFromCSVdata,
 	convertStringsIntoNumbersCSVdata,
 } from "./helper/helperFunction.js";
-import * as URL from "./helper/url.js";
+// import * as URL from "./helper/url.js";
+import URL from "./helper/url.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
@@ -32,6 +33,8 @@ export class Model {
 		isLoading: false,
 		weaponPopUp: {
 			isWeaponPopUpOpen: false,
+			currentCategory: null,
+			isAscending: true,
 		},
 	};
 	updateState(stateName, newState) {
@@ -47,6 +50,11 @@ export class Model {
 	updateUserShipBuild(newUserShipBuild) {
 		this.updateState("userState", {
 			userShipBuild: newUserShipBuild,
+		});
+	}
+	updateWeaponPopUpState(newState) {
+		this.updateState("uiState", {
+			weaponPopUp: newState,
 		});
 	}
 
@@ -72,7 +80,7 @@ export class Model {
 			const weaponOnly = this.#filterWeaponsOnly(weapons);
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
 			const filteredWeaponsWithAdditionalData =
-				await additionalWeaponData.fetchAndInjectData(weaponOnly);
+				await additionalWeaponData.fetchAndInjectData(weaponOnly, desc);
 
 			this.updateState("dataState", {
 				allShips: ships,
@@ -238,28 +246,68 @@ const additionalWeaponData = {
 		);
 	},
 
-	async processWeapon(weaponObj) {
+	async processWeapon(weaponObject, allDescriptions) {
 		try {
 			const dirtyData = await jsonFetcher.fetchData(
-				`/${URL.DATA_WEAPONS}/${weaponObj.id}.wpn`
+				`/${URL.DATA_WEAPONS}/${weaponObject.id}.wpn`
 			);
 			const cleanData = this.cleanWeaponData(dirtyData);
 			const jsonData = JSON.parse(cleanData);
-			const additionalData = this.extractAdditionalWeaponData(jsonData);
+			const createAdditionalDataObject =
+				this.extractAdditionalWeaponData(jsonData);
+			const injectAdditionalDescriptions = await this.injectWeaponDescriptions(
+				weaponObject,
+				createAdditionalDataObject,
+				allDescriptions
+			);
 
 			return {
-				...weaponObj,
-				additionalData,
+				...weaponObject,
+				additionalData: injectAdditionalDescriptions,
 			};
 		} catch (err) {
 			console.error(`Error processing weapon ${weaponObj.id}:`, err);
 			return weaponObj;
 		}
 	},
+	async injectWeaponDescriptions(
+		weaponObject,
+		additionalData,
+		allDescriptions
+	) {
+		try {
+			const descriptionObject = allDescriptions.find(
+				(desc) => desc.id === weaponObject.id
+			);
 
-	fetchAndInjectData: async function (weaponsArray) {
+			// if (!descriptionObject) return additionalData;
+			if (!descriptionObject) throw new Error("missing description");
+
+			const unitedString = () => {
+				return (
+					descriptionObject.text1 +
+					descriptionObject.text2 +
+					descriptionObject.text3 +
+					descriptionObject.text4
+				)
+					.replaceAll("\r", "")
+					.replaceAll("\n", "");
+			};
+
+			return {
+				...additionalData,
+				description: unitedString(),
+			};
+		} catch (err) {
+			// console.warn("injectWeaponDescriptions", err);
+			return additionalData;
+		}
+	},
+	fetchAndInjectData: async function (allWeapons, allDescriptions) {
 		return Promise.all(
-			weaponsArray.map((weaponObj) => this.processWeapon(weaponObj))
+			allWeapons.map((weaponObject) =>
+				this.processWeapon(weaponObject, allDescriptions)
+			)
 		);
 	},
 };
@@ -481,19 +529,6 @@ const createUsableHullMods = function (data) {
 };
 // NOT USED BELOW THE LINE
 //--------------------
-const injectWeaponDescriptions = async function () {
-	try {
-		state.allWeapons = state.allWeapons.map((weaponObject) => {
-			const currentWeaponDescriptionObject = state.globalDescriptions
-				.filter((descriptionObject) => descriptionObject.id === weaponObject.id)
-				.map((descriptionObject) => descriptionObject.text1);
-			[weaponObject.description] = currentWeaponDescriptionObject;
-			return weaponObject;
-		});
-	} catch (err) {
-		console.warn("injectWeaponDescriptions");
-	}
-};
 
 const overwriteWeaponTypeWithForcedOverwrite = async function () {
 	try {

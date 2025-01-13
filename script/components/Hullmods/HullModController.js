@@ -7,6 +7,9 @@ import classNames from "../../helper/DomClassNames";
 const EVENT_LISTENER_TARGET = {
 	HULLMODS: `.${classNames.hullMods__Button}`,
 };
+const EVENT_LISTENER_TYPE = {
+	CLICK: `click`,
+};
 export default class HullModController extends ViewModel {
 	constructor(model) {
 		super(model);
@@ -20,7 +23,11 @@ export default class HullModController extends ViewModel {
 	}
 	#hullModBase() {
 		HullModView.render(this.getUserShipBuild());
-		HullModView.addClickHandler(EVENT_LISTENER_TARGET.HULLMODS, this.test);
+		HullModView.addClickHandler(
+			EVENT_LISTENER_TARGET.HULLMODS,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.test
+		);
 	}
 	#buildInHullMods() {
 		BuildInHullModsView.render([

@@ -1,7 +1,10 @@
 // Generic
 import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
+import {
+	weaponSlotIdIntoWeaponSlotObject,
+	findCurrentWeaponSlotFromWeaponSlotId,
+} from "../../helper/helperFunction.js";
 // View
 import WeaponSlotsView from "../../allViews/Weapons/WeaponSlotsView.js";
 // View Model
@@ -18,18 +21,16 @@ export default class WeaponSlots extends ViewModel {
 		this.#weaponPopUp = new WeaponPopUp(model);
 	}
 	update() {
+		// Render
 		this.#weaponSlotsRender();
-		console.log("weaponSlotsRender");
-
+		// Add Listener
 		this.#addWeaponPopUpListener();
-		console.log("addWeaponPopUpListener");
-
+		// Repostion WeaponSlots
 		this.#weaponSlotPositionUpdate();
-		console.log("weaponSlotPositionUpdate");
-
+		// Add Arcs
 		this.#weaponArcsUpdate();
-		console.log("weaponArcsUpdate");
-		// Rotate
+		// Render Installed Weapons
+		// Rotate them + convert into Rems
 		this.#renderWeaponSpritesFromInstalledWeapons();
 	}
 
@@ -41,7 +42,7 @@ export default class WeaponSlots extends ViewModel {
 	}
 	#addWeaponPopUpListener() {
 		const target = `.${classNames.weaponSlot}`;
-		WeaponSlotsView.addClickHandler(target, this.#weaponPopUp.update);
+		WeaponSlotsView.addClickHandler(target, "click", this.#weaponPopUp.update);
 	}
 	// Old code, It would be nice to rework it
 	#weaponSlotPositionUpdate() {
@@ -102,41 +103,23 @@ export default class WeaponSlots extends ViewModel {
 			secondaryArc.style.setProperty("--arc-mask-color", `${arc}deg`);
 			secondaryArc.style.setProperty("--arc-mask-transparent", `${arc}deg`);
 		});
-		console.log("check if arc working");
 	}
 	#renderWeaponSpritesFromInstalledWeapons() {
 		const { installedWeapons, weaponSlots } = this.getUserShipBuild();
-		const { allWeapons } = this.getDataState();
-
-		// in progress
-		const findWeaponObject = (currentWeaponId) =>
-			allWeapons.filter((weapon) => weapon.id === currentWeaponId);
-
-		const findCurrentWeaponSlot = (wpnSlotId) =>
-			weaponSlots.filter((wpnSlot) => wpnSlot.id === wpnSlotId);
-
-		return;
 
 		installedWeapons.forEach((installedWeapon) => {
 			const [slotId, weaponId] = installedWeapon;
 			if (weaponId === "" || !weaponId) return;
 
-			console.log(object);
-			return;
-			const [currentWeaponObject] = findWeaponObject(weaponId);
-			const [currentWeaponSlot] = findCurrentWeaponSlot(slotId);
-
-			builderView.renderComponent(
-				WeaponSlotsView.addWeaponSpriteViewToWeaponSlot(
-					currentWeaponSlot,
-					currentWeaponObject
-				)
+			const currentWeaponSlot = findCurrentWeaponSlotFromWeaponSlotId(
+				weaponSlots,
+				slotId
 			);
+
 			this.#weaponSpriteRotate(currentWeaponSlot);
 			this.#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot);
 		});
 	}
-	//! Not working right now.
 	#weaponSpriteRotate(currentWeaponSlot) {
 		const { id: weaponSlotId, angle } = currentWeaponSlot;
 		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
@@ -146,7 +129,6 @@ export default class WeaponSlots extends ViewModel {
 		);
 
 		targetElement.style.setProperty("--weapon-rotate", `${-angle}deg`);
-		console.log("weaponSpriteRotate");
 	}
 	#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot) {
 		const { id: weaponSlotId } = currentWeaponSlot;

@@ -1,5 +1,5 @@
 import classNames from "../../helper/DomClassNames";
-import * as URL from "../../helper/url";
+import URL from "../../helper/url";
 import View from "../view";
 
 class ShipAreaView extends View {

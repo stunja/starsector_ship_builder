@@ -136,6 +136,7 @@ const classNames = {
 	weaponPopUp: "weapon-pop-up",
 	// Hover Container
 	hoverContainer: "hover-container",
+	weaponPrimaryData: "weapon-primary-data",
 	// Table Container
 	tableContainer: "table-container",
 	tableBody: "table-body",

@@ -132,6 +132,7 @@
 		transform: scale(1.2) translate(-42%, -48%);
 		transition: all 0.45s;
 	}
+
 	/* .weapon-sprite--gun,
 	.weapon-sprite--base {
 		position: absolute;

@@ -16,6 +16,7 @@ export default class BuilderButtons extends ViewModel {
 		BuilderButtonsView.render(this.getUserShipBuild());
 		BuilderButtonsView.addClickHandler(
 			EVENT_LISTENER_TARGET.BUILDER_BUTTON,
+			"click",
 			this.test
 		);
 	}

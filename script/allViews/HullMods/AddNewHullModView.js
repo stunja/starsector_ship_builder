@@ -1,6 +1,7 @@
 import DataSet from "../../helper/DataSet.js";
 import classNames from "../../helper/DomClassNames";
-import * as URL from "../../helper/url";
+import URL from "../../helper/url";
+
 import { calculateHullModCost } from "../../helper/helperFunction.js";
 
 const BUTTON__TYPE = {

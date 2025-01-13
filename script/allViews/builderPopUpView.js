@@ -1,5 +1,5 @@
 import View from "../allViews/view.js";
-import * as URL from "../helper/url.js";
+import URL from "../helper/url.js";
 
 class BuilderPopUpView extends View {
 	#data;

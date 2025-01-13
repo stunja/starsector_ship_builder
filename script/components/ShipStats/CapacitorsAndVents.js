@@ -18,6 +18,9 @@ const EVENT_LISTENER_TARGET = {
 	CAPACITOR: `.${classNames.shipCapacitors__Button}`,
 	VENTS: `.${classNames.shipVents__Button}`,
 };
+const EVENT_LISTENER_TYPE = {
+	CLICK: `click`,
+};
 const SHIP_SYSTEMS = {
 	// Dont confuse CAPACITY and CAPACITOR
 	CAPACITORS: {
@@ -54,6 +57,7 @@ export default class CapacitorsAndVents extends ViewModel {
 		CapacitorsView.render(this.getUserShipBuild());
 		CapacitorsView.addClickHandler(
 			EVENT_LISTENER_TARGET.CAPACITOR,
+			EVENT_LISTENER_TYPE.CLICK,
 			this.handleCapacitorChange
 		);
 	}
@@ -61,6 +65,7 @@ export default class CapacitorsAndVents extends ViewModel {
 		VentsView.render(this.getUserShipBuild());
 		VentsView.addClickHandler(
 			EVENT_LISTENER_TARGET.VENTS,
+			EVENT_LISTENER_TYPE.CLICK,
 			this.handleVentChange
 		);
 	}

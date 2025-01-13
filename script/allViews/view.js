@@ -13,46 +13,6 @@ export default class View {
 		document.querySelector(`.${target}`).textContent = `${value}`;
 	};
 
-	addClickHandler(target, callback) {
-		// Create the event listener function
-		const listener = function (e) {
-			const btn = e.target.closest(target);
-			if (!btn) return;
-			e.preventDefault();
-			callback(btn);
-		};
-
-		// If there's an existing listener for this target, remove it first
-		this.removeClickHandler(target);
-
-		// Store the new listener in the Map
-		this._targetMap.set(target, listener);
-
-		// Add the event listener
-		this._localParentElement.addEventListener("click", listener);
-
-		// Return the listener for potential external reference
-		return listener;
-	}
-
-	removeClickHandler(target) {
-		// Get the existing listener if any
-		const existingListener = this._targetMap.get(target);
-
-		if (existingListener) {
-			// Remove the event listener
-			this._localParentElement.removeEventListener("click", existingListener);
-			// Remove from Map
-			this._targetMap.delete(target);
-			return true;
-		}
-
-		return false;
-	}
-	// Utility method to check if a target has an active listener
-	hasListener(target) {
-		return this._targetMap.has(target);
-	}
 	_clearRender = () => (this._localParentElement.textContent = "");
 	render(data) {
 		if (!data) return this.#renderError("no data");
@@ -79,12 +39,102 @@ export default class View {
             <p>${str}</p>
         </li>`;
 	}
-}
-// weaponPopUpFormRemover(currentWeaponSlot) {
-// 	const weaponTypeCheck =
-// 		currentWeaponSlot.type === "LAUNCH_BAY" ? "fighter" : "weapon";
 
-// 	const targetClass =
-// 		weaponTypeCheck === "weapon"
-// 			? classNames.weaponPopUp
-// 			: classNames.fighterPopUp;
+	// Event Listener
+	// addClickHandler(target, callback) {
+	// 	// Create the event listener function
+	// 	const listener = function (e) {
+	// 		const btn = e.target.closest(target);
+	// 		if (!btn) return;
+	// 		e.preventDefault();
+	// 		callback(btn);
+	// 	};
+
+	// 	// If there's an existing listener for this target, remove it first
+	// 	this.removeClickHandler(target);
+
+	// 	// Store the new listener in the Map
+	// 	this._targetMap.set(target, listener);
+
+	// 	// Add the event listener
+	// 	this._localParentElement.addEventListener("click", listener);
+
+	// 	// Return the listener for potential external reference
+	// 	return listener;
+	// }
+
+	// removeClickHandler(target) {
+	// 	// Get the existing listener if any
+	// 	const existingListener = this._targetMap.get(target);
+
+	// 	if (existingListener) {
+	// 		// Remove the event listener
+	// 		this._localParentElement.removeEventListener("click", existingListener);
+	// 		// Remove from Map
+	// 		this._targetMap.delete(target);
+	// 		return true;
+	// 	}
+
+	// 	return false;
+	// }
+	addClickHandler(target, type, callback) {
+		// Create the event listener function
+		const listener = function (e) {
+			const btn = e.target.closest(target);
+			if (!btn) return;
+			e.preventDefault();
+			callback(btn);
+		};
+
+		// If there's an existing listener for this target, remove it first
+		this.removeClickHandler(target, type);
+
+		// Store the new listener in the Map
+		this._targetMap.set(target, listener);
+
+		// Add the event listener
+		this._localParentElement.addEventListener(type, listener);
+
+		// Return the listener for potential external reference
+		return listener;
+	}
+
+	removeClickHandler(target, type) {
+		// Get the existing listener if any
+		const existingListener = this._targetMap.get(target);
+
+		if (existingListener) {
+			// Remove the event listener
+			this._localParentElement.removeEventListener(type, existingListener);
+			// Remove from Map
+			this._targetMap.delete(target);
+			return true;
+		}
+
+		return false;
+	}
+	// Utility method to check if a target has an active listener
+	hasListener(target) {
+		return this._targetMap.has(target);
+	}
+	// Event Listener for Closing Container if User click outside of it { Once }
+	closePopUpContainerIfUserClickOutside(targetClass, callback) {
+		const targetContainer = document.querySelector(targetClass);
+
+		const handleOutsideClick = (event) => {
+			const userClickedOutsideOfContainer = !targetContainer.contains(
+				event.target
+			);
+
+			if (userClickedOutsideOfContainer) {
+				callback();
+			}
+		};
+
+		// Conflict between Weapon EL and close form EL.
+		// Defer the event listener to next tick to avoid immediate triggering
+		requestAnimationFrame(() => {
+			document.addEventListener("click", handleOutsideClick, { once: true });
+		});
+	}
+}

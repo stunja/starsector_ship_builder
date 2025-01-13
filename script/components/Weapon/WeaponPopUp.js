@@ -8,149 +8,133 @@ import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpCont
 import WeaponPopUpTableHeaderView from "../../allViews/WeaponPopUp/WeaponPopUpTableHeaderView.js";
 import WeaponPopUpTableView from "../../allViews/WeaponPopUp/WeaponPopUpTableView.js";
 import WeaponSlots from "./WeaponSlots.js";
+import WeaponHoverContainerView from "../../allViews/WeaponPopUp/WeaponHoverContainerView.js";
 
+const EVENT_LISTENER_TARGET = {
+	TABLE_ENTRIES: `.${classNames.tableEntries}`,
+	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
+};
+const EVENT_LISTENER_TYPE = {
+	CLICK: "click",
+	HOVER: "mouseover",
+};
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
+	#currentWeaponArray;
+
+	#state;
+	#allWeapons;
+	#userShipBuild;
+
+	// Hover
+	#currentlyHoveredWeapon;
 	constructor(model) {
 		super(model);
+
+		this.#state = this.getState();
+		this.#allWeapons = this.#state.dataState.allWeapons;
+		this.#userShipBuild = this.#state.userState.userShipBuild;
 	}
 	update = (btn) => {
 		if (!btn) return;
-		const { weaponSlotId } = btn.dataset;
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
 			this.getUserShipBuild().weaponSlots,
-			weaponSlotId
+			btn.dataset.weaponSlotId
 		);
 
-		this.#weaponPopUpRender(this.#weaponSlot);
-		this.#addWeaponPopUpEntryListener();
-		this.#addWeaponPopUpTableHeaderListener();
+		this.#createCurrentWeaponArray();
+		this.#renderWeaponPopUpAndAddEventListeners();
 	};
 	//
-	#openWeaponPop() {
-		console.log("openWeaponPop");
+	#renderWeaponPopUpAndAddEventListeners() {
+		// Render Weapon PopUps
+		this.#weaponPopUpRender();
+
+		// Listeners
+		this.#addWeaponPopUpEntryListener();
+		this.#addWeaponPopUpTableHeaderListener();
+
+		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
+			`.${classNames.tableContainer}`,
+			this.#userClickedOutsideOfContainer
+		);
 	}
-	#addWeaponClosePopUp() {
+	#removeActiveWeaponAndReRenderWeaponPopUp() {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
-		new WeaponSlots(this.getState()).update();
+		new WeaponSlots(this.#state).update();
+
+		// Remove WeaponPopUpContainer
+		WeaponPopUpContainerView._clearRender();
+
+		// Render Again
+		this.#renderWeaponPopUpAndAddEventListeners();
+	}
+	#addWeaponAndCloseWeaponPopUp() {
+		// Update WeaponSlots // Render // Listener // Arcs / Background
+		new WeaponSlots(this.#state).update();
+
+		// Set WeaponPopUp to Close
+		this.isWeaponPopUpStateOpen(false);
+
 		// Remove WeaponPopUpContainer
 		WeaponPopUpContainerView._clearRender();
 	}
-	//
+	// WeaponPopUp Event Listeners
+	#addWeaponPopUpTableHeaderListener() {
+		WeaponPopUpTableHeaderView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#weaponPopUpTableSorter
+		);
+	}
 	#addWeaponPopUpEntryListener() {
-		const target = `.${classNames.tableEntries}`;
 		WeaponPopUpTableView.addClickHandler(
-			target,
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.CLICK,
 			this.#addCurrentWeaponToInstalledWeapons
 		);
-	}
-	#addWeaponPopUpTableHeaderListener() {
-		const target = `.${classNames.tableHeaderEntry}`;
-		WeaponPopUpTableHeaderView.addClickHandler(target, this.headerTest);
-	}
-	//! rework
-	headerTest(btn) {
-		const { category } = btn.dataset;
-		console.log(category);
-	}
-	#weaponPopUpRender(weaponSlot) {
-		// Renders After User Clicks on Weapon Button (Weapon Slot)
-
-		const state = this.getState();
-		const { allWeapons } = state.dataState;
-		const { userShipBuild } = state.userState;
-
-		const weaponArray = WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
-			weaponSlot,
-			userShipBuild,
-			allWeapons
+		WeaponPopUpTableView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.HOVER,
+			this.#showAdditionalInformationOnHover
 		);
+	}
 
+	#userClickedOutsideOfContainer = () => {
+		// Change UI State
+		this.isWeaponPopUpStateOpen(false);
+
+		// Remove WeaponPopUpContainer
+		WeaponPopUpContainerView._clearRender();
+	};
+	//
+	#createCurrentWeaponArray() {
+		this.#currentWeaponArray =
+			WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
+				this.#weaponSlot,
+				this.#userShipBuild,
+				this.#allWeapons
+			);
+	}
+	// Renders After User Clicks on Weapon Button (Weapon Slot)
+	#weaponPopUpRender() {
 		//? Strange way to render, but it works.
 		//? first draw "empty" container then target it with other renders
-		WeaponPopUpContainerView.render(userShipBuild);
-		WeaponPopUpTableHeaderView.render(userShipBuild);
-		WeaponPopUpTableView.render([userShipBuild, weaponArray, weaponSlot]);
+		WeaponPopUpContainerView.render(this.#userShipBuild);
+		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
+		WeaponPopUpTableView.render([
+			this.#userShipBuild,
+			this.#currentWeaponArray,
+			this.#weaponSlot,
+		]);
+
+		this.isWeaponPopUpStateOpen(true);
 	}
-
-	#weaponSlotActiveClass(btn) {
-		const allWeaponSlots = document.querySelectorAll(
-			`.${classNames.weaponSlot}`
-		);
-		allWeaponSlots.forEach((weaponSlot) => {
-			weaponSlot.classList.remove(`weapon-slot--active`);
-			weaponSlot.classList.add(`weapons-slot--inactive`);
-			if (btn) {
-				btn.classList.add(`weapon-slot--active`);
-				btn.classList.remove(`weapons-slot--inactive`);
-			}
-		});
-	}
-
-	#weaponPopUpTableSorter(btn) {
-		const {
-			previousSortState,
-			isAscending,
-			currentArrayState: originalArrayState,
-		} = model.uiState.weaponPopUp;
-
-		const currentInstalledWeapons =
-			model.state.currentShipBuild.currentInstalledWeapons;
-
-		const currentWeaponSlot = model.uiState.currentWeaponSlot;
-
-		const category = btn.dataset.category;
-		// Mapping of sort categories to their corresponding object keys and sort types
-		const SORT_CONFIGS = {
-			name: { key: "name", type: "text" },
-			type: { key: "type", type: "text" },
-			range: { key: "range", type: "number" },
-			cost: { key: "OPs", type: "number" },
-		};
-
-		// Determine the new sort direction
-		const newIsAscending = previousSortState !== category ? true : !isAscending;
-
-		// Perform sorting if the category is valid
-		const sortConfig = SORT_CONFIGS[category];
-		if (!sortConfig) return;
-
-		const currentArrayState = originalArrayState.toSorted((a, b) => {
-			const valueA = a[sortConfig.key];
-			const valueB = b[sortConfig.key];
-
-			if (sortConfig.type === "text") {
-				return newIsAscending
-					? valueA.localeCompare(valueB)
-					: valueB.localeCompare(valueA);
-			}
-
-			if (sortConfig.type === "number") {
-				return newIsAscending ? valueB - valueA : valueA - valueB;
-			}
-		});
-		// Update model state
-		model.uiState.weaponPopUp = {
-			...model.uiState.weaponPopUp,
-			isAscending: newIsAscending,
-			previousSortState: category,
-			currentArrayState,
-		};
-
-		// ReRender The body
-		WeaponPopUpView.renderComponent(
-			WeaponPopUpView.tableBodyRender(
-				currentArrayState,
-				currentInstalledWeapons,
-				[currentWeaponSlot]
-			)
-		);
-	}
+	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
-		const installedWeapons = userShipBuild.installedWeapons;
+		const installedWeapons = this.#userShipBuild.installedWeapons;
 		let isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
 		//
 		const updatedInstalledWeapons = installedWeapons.map(
@@ -170,84 +154,214 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		this.setUpdateUserShipBuild({
-			...userShipBuild,
+			...this.#userShipBuild,
 			installedWeapons: updatedInstalledWeapons,
 		});
 
-		isWeaponPopUpOpen !== false
-			? this.#openWeaponPop()
-			: this.#addWeaponClosePopUp();
-
-		//! Not working right now
-		// this.setState("uiState", {
-		// 	weaponPopUp: isWeaponPopUpOpen,
-		// });
-
-		// HangarController.updateWeaponSprites();
+		isWeaponPopUpOpen === true
+			? this.#addWeaponAndCloseWeaponPopUp()
+			: this.#removeActiveWeaponAndReRenderWeaponPopUp();
 	};
+	// Sorter
+	#weaponPopUpTableSorter = (btn) => {
+		const { weaponPopUp } = this.getUiState();
+		let { currentCategory, isAscending } = this.getUiState().weaponPopUp;
 
-	showAdditionalInformationOnHover(btn) {
-		const { id } = btn.dataset;
-		const { weaponPopUp, currentWeaponHover } = model.uiState;
+		const { category } = btn.dataset;
 
-		if (currentWeaponHover === id) return;
+		// Toggle direction if clicking same category, otherwise default to ascending
+		isAscending = currentCategory === category ? !isAscending : true;
+		currentCategory = category;
 
-		const currentHoveredWeapon = weaponPopUp.currentArrayState.find(
-			(weaponObj) => weaponObj.id === id
+		const sortConfigs = {
+			name: (a, b) =>
+				isAscending
+					? a.name.localeCompare(b.name)
+					: b.name.localeCompare(a.name),
+
+			type: (a, b) =>
+				isAscending
+					? a.type.localeCompare(b.type)
+					: b.type.localeCompare(a.type),
+
+			range: (a, b) => (isAscending ? a.range - b.range : b.range - a.range),
+
+			cost: (a, b) => (isAscending ? a.oPs - b.oPs : b.oPs - a.oPs),
+		};
+
+		this.setUpdateWeaponPopUpState({
+			...weaponPopUp,
+			currentCategory,
+			isAscending,
+		});
+
+		//
+		if (sortConfigs[category]) {
+			this.#currentWeaponArray = this.#currentWeaponArray.toSorted(
+				sortConfigs[category]
+			);
+			// Method to update your table DOM
+			this.#renderWeaponPopUpAndAddEventListeners();
+		}
+	};
+	// Hover
+	#showAdditionalInformationOnHover = (btn) => {
+		const { weaponPopUpId } = btn.dataset;
+		if (this.#currentlyHoveredWeapon === weaponPopUpId) return; // guard from mouseover event
+		this.#currentlyHoveredWeapon = weaponPopUpId;
+
+		const hoveredWeaponObject = weaponSlotIdIntoWeaponSlotObject(
+			this.#allWeapons,
+			weaponPopUpId
 		);
-		const weaponObject = weaponObjectData(currentHoveredWeapon);
+		// Render Hover Container
+		// strange implementation, I need wpnOb+wpnSlot for icon render
+		WeaponHoverContainerView.render([
+			this.#weaponObjectData(hoveredWeaponObject),
+			hoveredWeaponObject,
+			this.#weaponSlot,
+		]);
+	};
+	// simplified view of all data to weaponHoverrender
+	// Old code, needs a reWrite
+	#weaponObjectData = (weaponObject) => {
+		const information = {
+			id: weaponObject.id,
+			name: weaponObject.name,
+			primaryRole: weaponObject.primaryRoleStr,
+			op: weaponObject.oPs,
+			turretSprite: weaponObject.additionalData?.turretSprite,
+			turretGunSprite: weaponObject.additionalData?.turretGunSprite,
+			description: weaponObject.additionalData.description,
+		};
+		console.log(weaponObject);
+		const stats = {
+			ammo: {
+				perSecond: weaponObject.ammo_sec ?? 1,
+				capacity: weaponObject.ammo,
+				burstSize: weaponObject.burstSize ?? 1,
+			},
+			damage: {
+				perShot: weaponObject.damageShot ?? 1,
+				perSecond: weaponObject.damageSecond,
+			},
+			flux: {
+				perSecond: weaponObject.energySecond,
+				perShot: weaponObject.energyShot,
+			},
+			timing: {
+				chargeUp: weaponObject.chargeup,
+				chargeDown: weaponObject.chargedown,
+				burstDelay: weaponObject.burst_delay ?? 0,
+			},
+			handling: {
+				turnRate: weaponObject.turnRate,
+				accuracy: weaponObject.spreadShot,
+			},
+			projectile: {
+				projectileOrBeam: weaponObject.additionalData.specClass, // projectile / beam
+				type: weaponObject.type,
+			},
+			mount: {
+				type: weaponObject.additionalData.type.toLowerCase(),
+				size: weaponObject.additionalData.size.toLowerCase(),
+			},
+			range: weaponObject.range,
+		};
 
-		builderCenterView.renderComponent(
-			builderCenterView.weaponPopUpHoverAdditionalInformationRender(
-				weaponObject,
-				currentHoveredWeapon
-			)
+		const roundFloat = (num) => {
+			return Math.round(num * 100) / 100;
+		};
+
+		const refireDelay =
+			stats.timing.chargeDown +
+			stats.timing.chargeUp +
+			stats.timing.burstDelay * (stats.ammo.burstSize - 1);
+
+		const burstSizeString =
+			stats.timing.burstSize && stats.timing.burstSize > 1
+				? `x${stats.ammo.burstSize}`
+				: "";
+		const weaponDescription = information.description.split(".");
+
+		const isWeaponBeam = stats.projectile.projectileOrBeam === "beam";
+		const isWeaponProjectile =
+			stats.projectile.projectileOrBeam === "projectile";
+		//
+		const damagePerSecond = Math.round(
+			(stats.damage.perShot * stats.ammo.burstSize) / refireDelay
 		);
+		const fluxPerSecond = isWeaponProjectile
+			? Math.round(stats.flux.perShot / refireDelay)
+			: stats.flux.perSecond;
+		const fluxPerDamage = isWeaponProjectile
+			? roundFloat(stats.flux.perShot / stats.damage.perShot)
+			: 1;
 
-		model.uiState.currentWeaponHover = id;
-	}
+		// Strings
+		const damageString = `${stats.damage.perShot}${burstSizeString}`;
+		const refireDelayString = roundFloat(refireDelay);
+		const shortWeaponDescription = weaponDescription[0];
+
+		return {
+			stats,
+			information,
+			additionalStats: {
+				isWeaponBeam,
+				isWeaponProjectile,
+				damagePerSecond,
+				refireDelay,
+				fluxPerSecond,
+				fluxPerDamage,
+			},
+			string: {
+				burstSizeString,
+				weaponDescription,
+				damageString,
+				refireDelayString,
+				shortWeaponDescription,
+			},
+
+			turnRateRating: () => {
+				const { turnRate } = stats.handling;
+				return turnRate > 40
+					? `Excellent  (${turnRate})`
+					: turnRate > 25
+					? `Very Fast  (${turnRate})`
+					: turnRate >= 20
+					? `Fast (${turnRate})`
+					: turnRate >= 15
+					? `Slow (${turnRate})`
+					: turnRate < 15
+					? `Very Slow (${turnRate})`
+					: "Error";
+			},
+			accuracyRating: () => {
+				const { accuracy } = stats.handling;
+				return accuracy < 0.25 || !accuracy
+					? `Perfect  (${accuracy ? accuracy : `< 0.25`})`
+					: accuracy <= 1
+					? `Good (${accuracy})`
+					: accuracy <= 2
+					? `Poor (${accuracy})`
+					: accuracy <= 3
+					? `Very Poor (${accuracy})`
+					: accuracy <= 10
+					? `Terrible (${accuracy})`
+					: "Error";
+			},
+			damageTypeEffect: () => {
+				const { type } = stats.projectile;
+				return type === "KINETIC"
+					? ["200% vs Shields", "50% vs Armor"]
+					: type === "ENERGY"
+					? ["100% vs Shields", "100% vs Armor"]
+					: type === "HIGH_EXPLOSIVE"
+					? ["50% vs Shields", "200% vs Armor"]
+					: type === "FRAGMENTATION"
+					? ["25% vs Shields", "25% vs Armor"]
+					: "Error with Damage Type Effect";
+			},
+		};
+	};
 }
-////
-/////
-// removeCurrentWeaponFromPopUpToTheShip(btn) {
-// 	// if (!btn) return;
-// 	const weaponButtonId = btn.dataset.id;
-// 	const currentInstalledWeapons =
-// 		model.state.currentShipBuild.currentInstalledWeapons;
-// 	const weaponArray = model.uiState.weaponPopUp.currentWeaponArray;
-// 	const fighterArray = model.uiState.fighterPopUp.currentFighterArray;
-// 	const currentWeaponSlot = model.uiState.currentWeaponSlot;
-
-// 	const newInstalledWeapons = currentInstalledWeapons.map(
-// 		([slotId, currentWeapon]) =>
-// 			slotId === currentWeaponSlot.id ? [slotId, ""] : [slotId, currentWeapon]
-// 	);
-
-// 	console.log(model.uiState.fighterPopUp);
-// 	const isBtnFighter =
-// 		fighterArray &&
-// 		fighterArray.find((fighter) => fighter.id === weaponButtonId);
-// 	// Assign weaponArray to pass into Render.
-// 	const weaponArrayToPass = isBtnFighter ? fighterArray : weaponArray;
-
-// 	builderLogic.removeCurrentWeaponAndFighterSlot("weapon");
-// 	builderCenterView.renderComponent(
-// 		builderCenterView.weaponPopUpTableContentRender(
-// 			weaponArrayToPass,
-// 			newInstalledWeapons,
-// 			currentWeaponSlot.id
-// 		)
-// 	);
-
-// 	//! bad implementation, but it works
-// 	EventHandlers.removeEventListener(
-// 		builderLogic.addCurrentWeaponFromPopUpToTheShip
-// 	);
-// 	EventHandlers.addEventListenerReturnDataSet(
-// 		builderCenterView.weaponPopUpTableHandler(
-// 			builderLogic.addCurrentWeaponFromPopUpToTheShip
-// 		)
-// 	);
-
-// 	model.state.currentShipBuild.currentInstalledWeapons = newInstalledWeapons;
-// }

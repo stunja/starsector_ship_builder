@@ -3,7 +3,7 @@ import classNames from "../../helper/DomClassNames.js";
 import FighterSpritesView from "./FighterSpritesView.js";
 
 import { capitalizeFirstLetter } from "../../helper/helperFunction.js";
-import * as URL from "../../helper/url.js";
+import URL from "../../helper/url.js";
 
 class FighterPopUpTableView extends View {
 	#fighterStringConversion(fighterId) {

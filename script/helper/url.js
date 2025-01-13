@@ -1,20 +1,23 @@
-export const DATA = `src/starsector_data`;
-export const DATA_GRAPHICS = "src/starsector_data/graphics";
-export const DATA_HULLS = `src/starsector_data/hulls`;
-export const DATA_VARIANTS = `src/starsector_data/variants`;
-export const DATA_VARIANTS_FIGHTERS = `src/starsector_data/variants/fighters`;
-export const DATA_VARIANTS_REMNANT = `src/starsector_data/variants/remnant`;
-export const DATA_VARIANTS_DRONES = `src/starsector_data/variants/drones`;
+const URL = {
+	DATA: `src/starsector_data`,
+	DATA_GRAPHICS: "src/starsector_data/graphics",
+	DATA_HULLS: `src/starsector_data/hulls`,
+	DATA_VARIANTS: `src/starsector_data/variants`,
+	DATA_VARIANTS_FIGHTERS: `src/starsector_data/variants/fighters`,
+	DATA_VARIANTS_REMNANT: `src/starsector_data/variants/remnant`,
+	DATA_VARIANTS_DRONES: `src/starsector_data/variants/drones`,
 
-//
-export const DATA_WEAPONS = `src/starsector_data/weapons`;
-export const DATA_HULLMODS = `src/starsector_data/hullmods`;
-export const DATA_STRINGS = `src/starsector_data/strings`;
+	//
+	DATA_WEAPONS: `src/starsector_data/weapons`,
+	DATA_HULLMODS: `src/starsector_data/hullmods`,
+	DATA_STRINGS: `src/starsector_data/strings`,
 
-export const SHIPDATA_CVS = `ship_data.csv`;
-export const WEAPONDATA_CVS = `weapon_data.csv`;
-export const HULLMODS_CVS = `hull_mods.csv`;
-export const DESCRIPTION_CVS = "descriptions.csv";
-export const FIGHTER_CVS = "wing_data.csv";
+	SHIPDATA_CVS: `ship_data.csv`,
+	WEAPONDATA_CVS: `weapon_data.csv`,
+	HULLMODS_CVS: `hull_mods.csv`,
+	DESCRIPTION_CVS: "descriptions.csv",
+	FIGHTER_CVS: "wing_data.csv",
 
-export const UI_ICONS = "src/starsector_data/graphics/ui/icons/";
+	UI_ICONS: "src/starsector_data/graphics/ui/icons/",
+};
+export default URL;

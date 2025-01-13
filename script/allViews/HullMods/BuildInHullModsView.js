@@ -1,5 +1,5 @@
 import classNames from "../../helper/DomClassNames";
-import * as URL from "../../helper/url.js";
+import URL from "../../helper/url.js";
 import View from "../view.js";
 
 class BuildInHullModsView extends View {
