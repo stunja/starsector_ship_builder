@@ -1,5 +1,8 @@
 import ViewModel from "../../ViewModel";
+import FighterPopUp from "./FighterPopUp.js/FighterPopUp";
+// Views
 import FightersView from "../../allViews/Fighters/FightersView";
+// Helper
 import classNames from "../../helper/DomClassNames";
 
 const EVENT_LISTENER_TARGET = {
@@ -10,21 +13,26 @@ const EVENT_LISTENER_TYPE = {
 };
 
 export default class FighterSlots extends ViewModel {
+	#fighterPopUp;
 	constructor(model) {
 		super(model);
+
+		this.#fighterPopUp = new FighterPopUp(model);
 	}
 	update() {
-		this.#containerRender();
+		// Render
+		this.#fighterSlotsRender();
+		// Listeners
+		this.#fighterSlotsOpenPopUpEventListener();
 	}
-	#containerRender() {
+	#fighterSlotsRender() {
 		FightersView.render(this.getUserShipBuild());
+	}
+	#fighterSlotsOpenPopUpEventListener() {
 		FightersView.addClickHandler(
 			EVENT_LISTENER_TARGET.FIGHTER_SLOT,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.test
+			this.#fighterPopUp.update
 		);
-	}
-	test(btn) {
-		console.log(btn);
 	}
 }

@@ -1,5 +1,31 @@
-class FighterPopUp {}
-export default new FighterPopUp();
+import ViewModel from "../../../ViewModel";
+// View
+import FighterPopUpContainerView from "../../../allViews/Fighters/FighterPopUpContainerView";
+// Helper
+
+export default class FighterPopUp extends ViewModel {
+	#state;
+	constructor(model) {
+		super(model);
+
+		this.#state = this.getState();
+		// this.#allWeapons = this.#state.dataState.allWeapons;
+		// this.#userShipBuild = this.#state.userState.userShipBuild;
+	}
+
+	// code fromPopUp
+	update = (btn) => {
+		if (!btn) return;
+		console.log(btn);
+
+		this.#renderFighterPopUp();
+	};
+	#renderFighterPopUp() {
+		FighterPopUpContainerView.render(this.#state);
+		// WeaponPopUpTableHeaderView.render();
+		// WeaponPopUpTableView.render();
+	}
+}
 //! Should be united into ONE
 // fighterPopUpTableSorter(btn) {
 // 	const category = btn.dataset.category;
