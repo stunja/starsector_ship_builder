@@ -6,20 +6,19 @@ import View from "../view.js";
 const CATEGORIES = {
 	icon: "",
 	name: "Name",
-	type: "Type",
+	role: "Role",
+	wing: "Wing",
 	range: "Range",
 	cost: "Cost",
 };
 
-class WeaponPopUpTableHeaderView extends View {
+class FighterPopUpTableHeaderView extends View {
 	_localParent = `.${classNames.tableHeader}`;
 
 	generateMarkup() {
 		const markup = Object.entries(CATEGORIES)
 			.map(([key, value]) => {
-				return `<li class="${classNames.unselectable} ${classNames.tableHeaderEntry}" 
-						${DataSet.dataCategory}="${key}"
-						>
+				return `<li class="${classNames.unselectable} ${classNames.tableHeaderEntry}" ${DataSet.dataCategory}="${key}">
 							${value}
 						</li>`;
 			})
@@ -27,4 +26,4 @@ class WeaponPopUpTableHeaderView extends View {
 		return markup;
 	}
 }
-export default new WeaponPopUpTableHeaderView();
+export default new FighterPopUpTableHeaderView();

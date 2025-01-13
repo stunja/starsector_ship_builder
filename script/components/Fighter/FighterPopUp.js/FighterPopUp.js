@@ -1,6 +1,7 @@
 import ViewModel from "../../../ViewModel";
 // View
 import FighterPopUpContainerView from "../../../allViews/Fighters/FighterPopUpContainerView";
+import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUpTableHeaderView";
 // Helper
 
 export default class FighterPopUp extends ViewModel {
@@ -22,7 +23,7 @@ export default class FighterPopUp extends ViewModel {
 	};
 	#renderFighterPopUp() {
 		FighterPopUpContainerView.render(this.#state);
-		// WeaponPopUpTableHeaderView.render();
+		FighterPopUpTableHeaderView.render(this.#state);
 		// WeaponPopUpTableView.render();
 	}
 }
