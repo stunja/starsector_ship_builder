@@ -1,8 +1,9 @@
-import View from "../view.js";
+import View from "../../allViews/view.js";
 import classNames from "../../helper/DomClassNames.js";
+
 //
 //! Much cleaner implementation. I will use this component as a guide for full structure rework
-class FighterPopUpTableHover extends View {
+class FighterPopUpTableHoverView extends View {
 	// Helper method to create a single paragraph markup
 	#createParagraph(text, isStrong = false) {
 		return isStrong ? `<strong><p>${text}</p></strong>` : `<p>${text}</p>`;
@@ -172,4 +173,4 @@ class FighterPopUpTableHover extends View {
 		return [markup, localParent];
 	}
 }
-export default new FighterPopUpTableHover();
+export default new FighterPopUpTableHoverView();

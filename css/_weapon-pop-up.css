@@ -1,473 +1,107 @@
-/*******************************************************************/
-/*  WEAPON POP UP CLASS  */
-/*******************************************************************/
-
-.weapon-pop-up-parent {
+.weapon-pop-up {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-}
-.weapon-pop-up {
+
+	z-index: 100;
+
 	display: flex;
-	align-items: flex-start;
-	height: 100%;
+	flex-direction: row-reverse;
+
 	gap: 34rem;
-}
-/*****************************************************************/
-/*  Weapon and Fighter Class  */
-/*****************************************************************/
-.weapon-pop-up,
-.fighter-pop-up {
-	/*******************************************************************/
-	/*  HEADER  */
-	/*******************************************************************/
 
-	th:not(:nth-of-type(2)) {
-		text-align: center;
-	}
-
-	.weapon-pop-up__theader th:not(:nth-of-type(1)) {
-		cursor: pointer;
-	}
-	.weapon-pop-up__theader th:first-of-type {
-		/* padding: 0 4rem; */
-	}
-	.weapon-pop-up__theader .theader-element div {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 1.6rem;
-		padding: 1.6rem 2.4rem;
-
-		transition: all 0.4s;
-	}
-	.weapon-pop-up__theader .theader-element:hover div {
-		background-color: #333;
-	}
-
-	.weapon-desc {
-		line-height: 1.4;
-		font-weight: 500;
-	}
-	/*****************************************************************/
-	/*  Weapon Sprite Parent  */
-	/*****************************************************************/
+	height: 65vh;
+	align-items: flex-start;
 
 	.weapon-sprite-parent {
-		position: relative;
-
-		.weapon-background-sprite__size--small {
-			height: 2rem;
-			width: 2rem;
+		.weapon-sprite--gun {
+			z-index: 200;
 		}
-		.weapon-background-sprite__size--medium {
-			height: 2.5rem;
-			width: 2.5rem;
-		}
-		.weapon-background-sprite__size--large {
-			height: 3rem;
-			width: 3rem;
-		}
-
-		.weapon-sprite {
-			/* padding-bottom: 4rem; */
-			transform: rotate(-45deg);
-		}
-		.weapon-background-sprite__type--hybrid .weapon-background-sprite:nth-of-type(1) {
-			width: 2rem;
-			height: 2rem;
-		}
-	}
-}
-/*****************************************************************/
-/*  Hover Additional Information  */
-/*****************************************************************/
-.hover-additional-information {
-	width: 40rem;
-	position: relative;
-	z-index: 101;
-	overflow-y: auto;
-
-	margin-left: -2rem;
-
-	ul {
-		display: flex;
-		flex-direction: column;
-		gap: 1.6rem;
-		padding: 2rem;
-		/* width: 40rem; */
-		/* overflow-y: scroll; */
-		transition: all 0.3s;
-		background-color: black;
-	}
-	li {
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
-	}
-	p {
-		font-size: 1.2rem;
-	}
-	.weapon-divider {
-		background-color: var(--dark-text-color);
-		padding: 1.2rem 0;
-		text-align: center;
-	}
-	.weapon-primary-data,
-	.weapon-anciliary-data {
-		grid-template-columns: 1fr 3fr;
-		position: relative;
-		gap: 1.6rem;
-	}
-	.weapon-primary-data_content {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-	.weapon-mount-type {
-		text-align: right;
-	}
-
-	.weapon-damage-type p:last-child {
-		margin: 1rem 0;
-	}
-
-	.weapon__icon {
-		img {
-			min-height: 5rem;
-		}
-		.weapon-sprite-parent {
-			width: 10rem;
-			height: 10rem;
-			.weapon-background-sprite__size--small {
-				height: 4rem;
-				width: 4rem;
-			}
-			.weapon-background-sprite__size--medium {
-				height: 5rem;
-				width: 5rem;
-			}
-			.weapon-background-sprite__size--large {
-				height: 6rem;
-				width: 6rem;
-			}
-
-			.weapon-background-sprite__type--hybrid .weapon-background-sprite:nth-of-type(1) {
-				width: 3rem;
-				height: 3rem;
-			}
-		}
-		.weapon-sprite {
-			position: relative;
-			top: 50%;
-			left: 50%;
-
-			transform: translate(-50%, -50%) rotate(45deg);
+		.weapon-sprite--base {
+			z-index: 201;
 		}
 		.weapon-sprite--gun,
 		.weapon-sprite--base {
 			position: absolute;
-			top: 50%;
+			top: 55%;
 			left: 50%;
-
 			transform: translate(-50%, -50%);
+			transition: all 0.5s;
 		}
 	}
-	/* weapon-content-group */
-	.weapon-content-group {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		margin: 1rem 0;
-	}
-	.weapon-content-group .fighter-flex-column {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		text-align: right;
-	}
 }
+.table-container {
+	background-color: black;
 
-/* weapon tier background */
-.weapon-tier-parent .weapon-tier {
-	content: "";
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	border-width: 0.16rem;
-	border-style: solid;
-}
+	/* height: 60rem; */
+	height: 100%;
+	overflow-y: scroll;
 
-.weapon-pop-up__table {
-	/* height: 70vh; */
-
-	.weapon-pop-up__table-wrapper {
-		height: 60rem;
-		overflow-y: scroll;
-	}
-	.weapon-pop-up__table-body {
-		width: 60rem;
-		background-color: black;
-		border-collapse: collapse;
-
-		.weapon-pop-up__theader p {
-			font-size: 1.2rem;
-		}
-		.weapon,
-		.fighter {
-			cursor: pointer;
-			transition: all 0.3s;
-			border: 1px solid #111;
-			font-size: 1.2rem;
-
-			&:hover {
-				background-color: #222;
-			}
-			.weapon__content,
-			.fighter__content {
-				display: flex;
-				gap: 1.2rem;
-			}
-
-			.weapon__name,
-			.fighter__name {
-				font-weight: 600;
-				line-height: 1.4;
-			}
-
-			.weapon__type,
-			.fighter__type {
-				border-radius: 5px;
-				font-size: 1rem;
-				letter-spacing: 0.5px;
-			}
-
-			.weapon__cost,
-			.fighter__cost {
-				font-weight: 700;
-				font-size: 1.4rem;
-				/* TODO Replace with proper color */
-				color: var(--white-text-color);
-			}
-
-			/* ! I need to change the class itself */
-			&.weapon--active,
-			&.fighter--active {
-				font-size: 1.2rem;
-				background-color: rgba(0, 126, 25, 0.5);
-
-				.fighter__icon {
-					padding: 0rem;
-				}
-				.weapon__icon {
-					padding: 3.6rem 0.6rem;
-				}
-			}
-
-			/*******************************************************************/
-			/*  WEAPON SPRITE  */
-			/*******************************************************************/
-			.fighter__icon {
-				padding: 1.4rem 0.6rem;
-			}
-			.weapon__icon,
-			.fighter__icon {
-				/*! overwrites table paddings */
-				padding: 2.8rem 0.6rem;
-				width: 6rem;
-				img {
-					max-height: 4rem;
-				}
-
-				.weapon-sprite--gun,
-				.weapon-sprite--base {
-					position: absolute;
-					top: 55%;
-					left: 50%;
-
-					transform: translate(-50%, -50%);
-				}
-			}
-		}
-	}
-
-	td {
-		border: 2px solid rgba(0, 0, 0, 0.5);
-	}
-	td:nth-of-type(2) {
-		padding: 0 2.4rem;
-	}
-	td:not(:nth-of-type(2)) {
-		text-align: center;
-	}
-}
-/*******************************************************************/
-/*  FIGHTER POP UP CLASS  */
-/*******************************************************************/
-
-.fighter-pop-up {
-	position: absolute;
-	top: 50%;
-	left: 20rem;
-	transform: translate(0, -50%);
-	z-index: 1000;
-
-	gap: 4rem;
-
-	.fighter-container {
-		width: 5rem;
-		height: 5rem;
-	}
-
-	.fighter-pop-up__container {
-		display: flex;
-		flex-direction: row-reverse;
+	.table-entries {
+		display: grid;
 		align-items: center;
-		gap: 4rem;
-	}
-	.hover-additional-information {
-		/* align-self: flex-end; */
-		align-self: flex-start;
-	}
+		grid-template-columns: 8rem 1fr 16rem 10rem 10rem;
+		/* padding: 2.4rem 0; */
+		margin: 0;
 
-	.weapon-pop-up__table {
-		.weapon-pop-up__table-body {
-			width: 45rem;
+		border: 0.1rem solid rgba(255, 255, 255, 0.1);
+
+		.table-header-entry:first-of-type {
+			height: 6rem;
 		}
-	}
-}
-.fighter-container {
-	.fighter__sprite {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
 
-		width: 1.5rem;
-		height: 1.5rem;
-	}
+		.table-header-entry,
+		.table-entry {
+			font-size: 1.4rem;
+			text-align: center;
+			border-right: 1px solid rgba(255, 255, 255, 0.05);
+			height: 100%;
+			/* display: flex; */
+			align-content: center;
+			/* padding: 2.4rem 2.4rem; */
+		}
 
-	/* Fighters = 1 */
-	.fighter__sprites-max--1 {
-		width: 2.5rem;
-		height: 2.5rem;
-	}
+		.table-entry {
+			padding: 0rem 2.4rem;
+		}
+		.table__icon {
+			height: 8rem;
+			padding: 0;
+		}
+		.table__name {
+			text-align: left;
+		}
 
-	/* Fighters = 2 */
-	.fighter__sprites-max--2 {
-		width: 2rem;
-		height: 2rem;
+		/* &:not(:first-child):hover,
+		.table-header-entry:not(:first-child):hover {
+			background-color: rgba(255, 255, 255, 0.05);
+			cursor: pointer;
+		} */
 	}
-	.fighter__sprites-max--2.fighter__sprite--1 {
-		top: 30%;
-		left: 30%;
-	}
-	.fighter__sprites-max--2.fighter__sprite--2 {
-		top: 70%;
-		left: 70%;
-	}
-
-	/* Fighters = 3 */
-	.fighter__sprites-max--3 {
-		width: 2rem;
-		height: 2rem;
-	}
-	.fighter__sprites-max--3.fighter__sprite--1 {
-		top: 30%;
-		left: 50%;
-	}
-	.fighter__sprites-max--3.fighter__sprite--2 {
-		top: 70%;
-		left: 70%;
-	}
-	.fighter__sprites-max--3.fighter__sprite--3 {
-		top: 70%;
-		left: 30%;
+	.table-body .table-entries:hover,
+	.table-entries .table-header-entry:not(:first-child):hover {
+		background-color: rgba(255, 255, 255, 0.05);
+		cursor: pointer;
 	}
 
-	/* Fighters = 4 */
-	.fighter__sprites-max--4 {
-		width: 1.8rem;
-		height: 1.8rem;
-	}
-	.fighter__sprites-max--4.fighter__sprite--1 {
-		top: 30%;
-		left: 70%;
-	}
-	.fighter__sprites-max--4.fighter__sprite--2 {
-		top: 70%;
-		left: 70%;
-	}
-	.fighter__sprites-max--4.fighter__sprite--3 {
-		top: 70%;
-		left: 30%;
-	}
-	.fighter__sprites-max--4.fighter__sprite--4 {
-		top: 30%;
-		left: 30%;
-	}
-
-	/* Fighters = 5 */
-	.fighter__sprites-max--5.fighter__sprite--2 {
-		top: 25%;
-		left: 25%;
-	}
-	.fighter__sprites-max--5.fighter__sprite--3 {
-		top: 75%;
-		left: 75%;
-	}
-	.fighter__sprites-max--5.fighter__sprite--4 {
-		top: 25%;
-		left: 75%;
-	}
-	.fighter__sprites-max--5.fighter__sprite--5 {
-		top: 75%;
-		left: 25%;
-	}
-	/* Fighters = 6 */
-	.fighter__sprites-max--6.fighter__sprite--1 {
-		top: 30%;
-		left: 25%;
-	}
-	.fighter__sprites-max--6.fighter__sprite--2 {
-		top: 30%;
-		left: 50%;
-	}
-
-	.fighter__sprites-max--6.fighter__sprite--3 {
-		top: 30%;
-		left: 75%;
-	}
-	.fighter__sprites-max--6.fighter__sprite--4 {
-		top: 70%;
-		left: 25%;
-	}
-	.fighter__sprites-max--6.fighter__sprite--5 {
-		top: 70%;
-		left: 50%;
-	}
-	.fighter__sprites-max--6.fighter__sprite--6 {
-		top: 70%;
-		left: 75%;
-	}
-}
-/*! Not a popup, move it to different file */
-.fighter-slot-container {
-	position: relative;
-	.weapon-sprite-parent {
-	}
-
-	.fighter-sprite-cost {
-		color: var(--secondary-color);
-		text-align: right;
-		padding: 0.4rem 0.4rem 0 0;
+	.table-entries.weapon--active {
 		font-size: 1.2rem;
-		font-weight: 500;
-		opacity: 0.95;
+		background-color: rgba(0, 126, 25, 0.5);
+
+		/* .fighter__icon {
+			padding: 0rem;
+		}
+		.weapon__icon {
+			padding: 3.6rem 0.6rem;
+		} */
 	}
-}
-.fighter-pop-up .fighter-sprite-cost {
-	display: none;
+	.table-entries.weapon--active:hover {
+		background-color: rgba(0, 180, 36, 0.5);
+	}
+
+	img {
+		height: 4rem;
+		width: 4rem;
+	}
 }

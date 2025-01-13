@@ -3,5 +3,14 @@
 @import "_typography.css";
 @import "_icons.css";
 @import "_fonts.css";
+/* Hover */
 @import "_weapon-pop-up.css";
+@import "weapon-pop-up-hover.css";
+
 @import "_build-maker.css";
+@import "./build-maker.css";
+@import "./navigation.css";
+
+@import "./Weapons/_weaponSprite.css";
+@import "./Weapons/_weaponBackgroundSprite.css";
+@import "./Weapons/_weaponSlot.css";

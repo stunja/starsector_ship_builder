@@ -1,6 +1,6 @@
 import View from "./view.js";
-import { capitalizeFirstLetter } from "../helperFunction.js";
-import * as URL from "../url.js";
+// import { capitalizeFirstLetter } from "../helper/helperFunction.js";
+import URL from "../helper/url.js";
 
 import classNames from "../helper/DomClassNames.js";
 //
@@ -228,21 +228,9 @@ class BuilderCenterView extends View {
 		this.#data = data;
 		if (!this.#parentElement)
 			this.#parentElement = document.querySelector(`.${this.#parentClass}`);
-		// 		const markup = `
-		// 		<div class="${this.weaponPopUpParentClass} ${
-		// 	classNames.dNone
-		// }"></div>
-		// 		<ul class="${this.#shipAndWeaponsHolderClass}">
-		// 			  <li class="${this.#weaponSlotsHolderClass}">
-		// 				<ul class="${this.#weaponSlotsClass}"></ul>
-		// 			  </li>
-		// 			  <img src="/${URL.DATA}/${
-		// 	this.#data.currentShip.spriteName
-		// }" alt="ship" class="${this.#shipSpriteClass}" />
-		// 		</ul>
-		// 		  `;
+
 		const markup = `
-				<div class="${classNames.weaponPopUpParent}"></div>
+				<div class="${classNames.weaponPopUp}"></div>
                 <ul class="${classNames.shipAndWeaponsHolder}">
                   	<li class="${classNames.weaponSlotsHolder}">
                     	<ul class="${classNames.weaponSlots}"></ul>
@@ -264,153 +252,137 @@ class BuilderCenterView extends View {
 			.join("");
 		return [markup, localParent];
 	}
-	weaponPopUpRender() {
-		const localParent = `.${classNames.weaponPopUpParent}`;
-		document
-			.querySelector(`.${classNames.weaponPopUpParent}`)
-			.classList.remove(`${classNames.dNone}`);
+	// weaponPopUpRender() {
+	// 	const localParent = `.${classNames.weaponPopUpParent}`;
+	// 	document.querySelector(`.${classNames.weaponPopUpParent}`).classList.remove(`${classNames.dNone}`);
 
-		const markup = `
-			<div class="${classNames.weaponPopUp}">
-				<div class="${classNames.hoverAdditionalInformation}"></div>
-				<div class="${classNames.weaponPopUpTable}">
-					<ul class="${classNames.weaponPopUpFilter}"></ul>
-					<div class="${classNames.weaponPopUpTableWrapper}">
-						<table class="${classNames.weaponPopUpTableBody}">
-						<thead></thead>
-						<tbody></tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-    `;
-		return [markup, localParent];
-	}
-	weaponPopUpTableHeader() {
-		const localParent = `.${classNames.weaponPopUpTable} thead`;
+	// 	const markup = `
+	// 		<div class="${classNames.weaponPopUp}">
+	// 			<div class="${classNames.hoverAdditionalInformation}"></div>
+	// 			<div class="${classNames.weaponPopUpTable}">
+	// 				<ul class="${classNames.weaponPopUpFilter}"></ul>
+	// 				<div class="${classNames.weaponPopUpTableWrapper}">
+	// 					<table class="${classNames.weaponPopUpTableBody}">
+	// 					<thead></thead>
+	// 					<tbody></tbody>
+	// 					</table>
+	// 				</div>
+	// 			</div>
+	// 		</div>
+	// `;
+	// 	return [markup, localParent];
+	// }
+	// weaponPopUpTableHeader() {
+	// 	const localParent = `.${classNames.weaponPopUpTable} thead`;
 
-		const markup = `
-					<tr class="${classNames.weaponPopUpTableHeader}">
-						<th></th>
-						<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="name">
-							<div>
-								<p>Name</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
-							</div>
-						</th>
-						<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="type">
-							<div>
-								<p>Type</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
-							</div>
-						</th>
-						<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="range">
-							<div>
-								<p>Range</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
-							</div>
-						</th>
-						<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="cost">
-							<div>
-								<p>Cost</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
-							</div>
-						</th>
-					</tr>
-				`;
+	// 	const markup = `
+	// 				<tr class="${classNames.weaponPopUpTableHeader}">
+	// 					<th></th>
+	// 					<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="name">
+	// 						<div>
+	// 							<p>Name</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
+	// 						</div>
+	// 					</th>
+	// 					<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="type">
+	// 						<div>
+	// 							<p>Type</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
+	// 						</div>
+	// 					</th>
+	// 					<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="range">
+	// 						<div>
+	// 							<p>Range</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
+	// 						</div>
+	// 					</th>
+	// 					<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="cost">
+	// 						<div>
+	// 							<p>Cost</p><ion-icon name="chevron-down-outline" class="icon-generic"></ion-icon>
+	// 						</div>
+	// 					</th>
+	// 				</tr>
+	// 			`;
 
-		return [markup, localParent];
-	}
-	weaponPopUpTableContentRender(
-		weaponArray,
-		currentInstalledWeapons,
-		currentWeaponSlot
-	) {
-		const localParent = `.${classNames.weaponPopUpTable} tbody`;
-		const weaponTypeStringConversion = (damageType) => {
-			const convertedString = damageType
-				.split("_")
-				.map((word) => word[0] + word.slice(1).toLowerCase())
-				.join(" ")
-				.toUpperCase();
+	// 	return [markup, localParent];
+	// }
+	// weaponPopUpTableContentRender(weaponArray, currentInstalledWeapons, currentWeaponSlot) {
+	// 	const localParent = `.${classNames.weaponPopUpTable} tbody`;
+	// 	const weaponTypeStringConversion = (damageType) => {
+	// 		const convertedString = damageType
+	// 			.split("_")
+	// 			.map((word) => word[0] + word.slice(1).toLowerCase())
+	// 			.join(" ")
+	// 			.toUpperCase();
 
-			const specialCases = {
-				"HIGH EXPLOSIVE": "EXPLOSIVE",
-				"FRAGMENTATION": "FRAGMEN", // prettier-ignore
-			};
+	// 		const specialCases = {
+	// 			"HIGH EXPLOSIVE": "EXPLOSIVE",
+	// 			"FRAGMENTATION": "FRAGMEN", // prettier-ignore
+	// 		};
 
-			return specialCases[convertedString] || convertedString;
-		};
-		const findCurrentInstalledWeapon = (currentWeaponSlot, weaponId) =>
-			currentInstalledWeapons.find(
-				([slotId, wpnId]) =>
-					slotId === currentWeaponSlot.id && wpnId === weaponId
-			);
-		//
-		const processWeaponArray = () => {
-			let activeWeaponClassObject;
+	// 		return specialCases[convertedString] || convertedString;
+	// 	};
+	// 	const findCurrentInstalledWeapon = (currentWeaponSlot, weaponId) =>
+	// 		currentInstalledWeapons.find(([slotId, wpnId]) => slotId === currentWeaponSlot.id && wpnId === weaponId);
+	// 	//
+	// 	const processWeaponArray = () => {
+	// 		let activeWeaponClassObject;
 
-			const modifiedWeaponsArray = weaponArray.filter((wpnObj) => {
-				const currentInstalledWeaponKeyPair = findCurrentInstalledWeapon(
-					currentWeaponSlot,
-					wpnObj.id
-				);
+	// 		const modifiedWeaponsArray = weaponArray.filter((wpnObj) => {
+	// 			const currentInstalledWeaponKeyPair = findCurrentInstalledWeapon(currentWeaponSlot, wpnObj.id);
 
-				if (currentInstalledWeaponKeyPair) {
-					activeWeaponClassObject = wpnObj;
-					return false;
-				}
+	// 			if (currentInstalledWeaponKeyPair) {
+	// 				activeWeaponClassObject = wpnObj;
+	// 				return false;
+	// 			}
 
-				return true;
-			});
+	// 			return true;
+	// 		});
 
-			if (activeWeaponClassObject) {
-				modifiedWeaponsArray.unshift(activeWeaponClassObject);
-			}
+	// 		if (activeWeaponClassObject) {
+	// 			modifiedWeaponsArray.unshift(activeWeaponClassObject);
+	// 		}
 
-			return modifiedWeaponsArray;
-		};
-		//
-		const checkIfCorrectWeapon = (wpnObj) => {
-			const [correctWeaponValue] = currentInstalledWeapons.filter((wpn) => {
-				if (wpn[0] === currentWeaponSlot.id && wpn[1] === wpnObj.id) {
-					return true;
-				}
-			});
-			if (correctWeaponValue) {
-				return true;
-			}
-		};
-		//
-		const activeClass = (wpnObj) => {
-			if (checkIfCorrectWeapon(wpnObj)) {
-				return ` ${classNames.weaponPopUpActive}`;
-			}
-			return "";
-		};
-		//
-		const markup = processWeaponArray()
-			.map((weaponObj) => {
-				if (Number.parseInt(weaponObj.OPs) === 0 || !weaponObj.OPs) return "";
+	// 		return modifiedWeaponsArray;
+	// 	};
+	// 	//
+	// 	const checkIfCorrectWeapon = (wpnObj) => {
+	// 		const [correctWeaponValue] = currentInstalledWeapons.filter((wpn) => {
+	// 			if (wpn[0] === currentWeaponSlot.id && wpn[1] === wpnObj.id) {
+	// 				return true;
+	// 			}
+	// 		});
+	// 		if (correctWeaponValue) {
+	// 			return true;
+	// 		}
+	// 	};
+	// 	//
+	// 	const activeClass = (wpnObj) => {
+	// 		if (checkIfCorrectWeapon(wpnObj)) {
+	// 			return ` ${classNames.weaponPopUpActive}`;
+	// 		}
+	// 		return "";
+	// 	};
+	// 	//
+	// 	const markup = processWeaponArray()
+	// 		.map((weaponObj) => {
+	// 			if (Number.parseInt(weaponObj.OPs) === 0 || !weaponObj.OPs) return "";
 
-				const weaponType = weaponObj.additionalWeaponData.type.toLowerCase();
-				const weaponSize = weaponObj.additionalWeaponData.size.toLowerCase();
-				const markup = `
-						<tr class="${classNames.weapon} ${classNames.weaponSize}--${weaponSize} ${
-					classNames.weaponType
-				}--${weaponType}${activeClass(weaponObj)}" data-id="${weaponObj.id}">
-							<td class="${classNames.weaponIcon}">${this.#weaponIconMarkup(weaponObj)}</td>
-							<td class="${classNames.weaponName}">${weaponObj.name}</td>
-							<td class="${classNames.weaponType} ${
-					classNames.weaponType
-				}--${weaponObj.type.toLowerCase()}">${weaponTypeStringConversion(
-					weaponObj.type
-				)}</td>
-							<td class="${classNames.weaponRange}">${weaponObj.range}</td>
-							<td class="${classNames.weaponCost}">${weaponObj.OPs}</td>
-						</tr>`;
-				return markup;
-			})
-			.join("");
+	// 			const weaponType = weaponObj.additionalWeaponData.type.toLowerCase();
+	// 			const weaponSize = weaponObj.additionalWeaponData.size.toLowerCase();
+	// 			const markup = `
+	// 					<tr class="${classNames.weapon} ${classNames.weaponSize}--${weaponSize} ${classNames.weaponType}--${weaponType}${activeClass(weaponObj)}" data-id="${
+	// 				weaponObj.id
+	// 			}">
+	// 						<td class="${classNames.weaponIcon}">${this.#weaponIconMarkup(weaponObj)}</td>
+	// 						<td class="${classNames.weaponName}">${weaponObj.name}</td>
+	// 						<td class="${classNames.weaponType} ${classNames.weaponType}--${weaponObj.type.toLowerCase()}">${weaponTypeStringConversion(weaponObj.type)}</td>
+	// 						<td class="${classNames.weaponRange}">${weaponObj.range}</td>
+	// 						<td class="${classNames.weaponCost}">${weaponObj.OPs}</td>
+	// 					</tr>`;
+	// 			return markup;
+	// 		})
+	// 		.join("");
 
-		return [markup, localParent];
-	}
+	// 	return [markup, localParent];
+	// }
 
 	weaponPopUpHoverAdditionalInformationRender(
 		weaponObjectEditedData,
@@ -562,217 +534,6 @@ class BuilderCenterView extends View {
 
 		return [markup, localParent];
 	}
-	// Handlers
-	weaponPopUpHeaderHandler(callback) {
-		const localParent = `.${classNames.weaponPopUpTableHeader}`;
-		const eventTarget = `.${classNames.tableHeader}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	weaponPopUpTableHandler(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.weapon}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	weaponPopUpRemoveCurrentWeapon(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.weaponPopUpActive}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	weaponPopUpHoverEffect(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.weapon}`;
-		const actionType = "mouseover";
-		return [localParent, eventTarget, actionType, callback];
-	}
-	weaponButtonHandler(callback) {
-		const localParent = `.${classNames.weaponSlots}`;
-		const eventTarget = `.${classNames.weaponSlot}`;
-		const actionType = "click";
-		return [localParent, eventTarget, actionType, callback];
-	}
-
-	//! I need to add button to hide handler
-	// weaponPopUpHideButtonHandler(callback) {
-	// 	const localParent = `.${this.#weaponPopUpFilterClass}`;
-	// 	const eventTarget = `.${this.#weaponPopUpFilterHideButtonClass}`;
-	// 	const actionType = "click";
-	// 	return [localParent, eventTarget, actionType, callback];
-	// }
-
-	///
 }
 
 export default new BuilderCenterView();
-// weaponPopUpCloseOnHover() {
-// 	this.weaponPopUpFormRemover();
-// }
-// weaponPopUpHoverAdditionalInformationRender(weaponObjectEditedData, weaponObject) {
-// 	const localParent = `.${this.#hoverAdditionalInformationClass}`;
-// 	document.querySelector(localParent).classList.remove(classNames.dNone);
-
-// 	const { stats, information, additionalStats, string, damageTypeEffect, accuracyRating, turnRateRating } = weaponObjectEditedData;
-
-// 	const ammoElementMarkUp = () => {
-// 		const markup = `
-// 			<li class="weapon-ammo-size">
-// 				<p>Ammo Size:</p>
-// 				<p class="${this.#textBoldGeneric}">${stats.ammo.capacity}</p>
-// 			</li>
-// 			<li class="weapon-ammo-per-sec">
-// 				<p>Ammo Per Sec:</p>
-// 				<p class="${this.#textBoldGeneric}">${stats.ammo.perSecond}</p>
-// 			</li>`;
-
-// 		if (stats.ammo.capacity) return markup;
-// 		return "";
-// 	};
-
-// 	const weaponBurstSize = () => {
-// 		if (stats.ammo.burstSize < 2 || !stats.ammo.burstSize) return "";
-// 		const markup = `
-// 			<li class="weapon-burst-size">
-// 				<p>Burst Size:</p>
-// 				<p class="${this.#textBoldGeneric}">${stats.ammo.burstSize}</p>
-// 			</li>`;
-// 		return markup;
-// 	};
-
-// 	const weaponProjectileTypeMarkUp = () => {
-// 		const weaponDamageMarkup = `
-// 			<li class="weapon-damage">
-// 				<p>Damage:</p>
-// 				<p class="${this.#textBoldGeneric}">${string.damageString}</p>
-// 			</li>
-// 		`;
-// 		const weaponDamageSecMarkup = `
-// 			<li class="weapon-damage-sec">
-// 				<p>Damage / sec:</p>
-// 				<p class="${this.#textBoldGeneric}">${additionalStats.damagePerSecond}</p>
-// 			</li>
-// 		`;
-// 		const markup = `
-// 			${!additionalStats.isWeaponBeam ? weaponDamageMarkup : ""}
-// 			${weaponDamageSecMarkup}
-// 		`;
-// 		return markup;
-// 	};
-// 	//
-// 	const fluxMarkUp = () => {
-// 		const fluxPerShotMarkup = stats.flux.perShot
-// 			? `
-// 					<li class="weapon-flux-shot">
-// 						<p>Flux / shot:</p>
-// 						<p class="${this.#textBoldGeneric}">${stats.flux.perShot}</p>
-// 					</li>`
-// 			: "";
-// 		const fluxPerSecondMarkup = additionalStats.fluxPerSecond
-// 			? `
-// 					<li class="weapon-flux-sec">
-// 						<p>Flux / sec:</p>
-// 						<p class="${this.#textBoldGeneric}">${additionalStats.fluxPerSecond}</p>
-// 					</li>`
-// 			: "";
-// 		const fluxPerDamageMarkup = additionalStats.fluxPerDamage
-// 			? `
-// 					<li class="weapon-flux-damage">
-// 						<p>Flux / damage:</p>
-// 						<p class="${this.#textBoldGeneric}">${additionalStats.fluxPerDamage}</p>
-// 					</li>`
-// 			: "";
-// 		const markup = `
-// 			${fluxPerSecondMarkup}
-// 			${fluxPerShotMarkup}
-// 			${fluxPerDamageMarkup}`;
-// 		return markup;
-// 	};
-// 	const weaponTypeString = stats.projectile.type
-// 		.split("_")
-// 		.map((str) => capitalizeFirstLetter(str.toLowerCase()))
-// 		.join(" ");
-
-// 	const primaryDataMarkUp = `
-// 	<div class="d-grid weapon-primary-data">
-//       <div class="weapon-primary-data__icon">
-//         <li class="${this.#weaponElementIconClass} ${this.#weaponSizeClass}--${stats.mount.size} ${this.#weaponTypeClass}--${stats.mount.type}" data-id="${
-// 		information.id
-// 	}">${this.#weaponIconMarkup(weaponObject)}</li>
-//       </div>
-// 		<div class="weapon-primary-data_content">
-// 			<li class="weapon-role">
-// 				<p>Primary Role:</p>
-// 				<p class="${this.#textBoldGeneric}">${information.primaryRole}</p>
-// 			</li>
-// 			<li class="${this.#weaponMountTypeClass}">
-// 				<p>Mount Type:</p>
-// 				<div class="${this.#weaponMountTypeContentClass}">
-// 					<p class="${this.#textBoldGeneric}">${capitalizeFirstLetter(stats.mount.type)}</p>
-// 					<p class="${this.#textBoldGeneric}">${capitalizeFirstLetter(stats.mount.size)}</p>
-// 				</div>
-// 			</li>
-// 			<li class="weapon-cost">
-// 				<p>Ordinance Point:</p>
-// 				<p class="${this.#textBoldGeneric}">${information.op}</p>
-// 			</li>
-// 			<div class="weapon-range-damage-group">
-// 				<li class="weapon-range">
-// 					<p>Range:</p>
-// 					<p class="${this.#textBoldGeneric}">${stats.range}</p>
-// 				</li>
-// 				${weaponProjectileTypeMarkUp()}
-// 			</div>
-// 			${fluxMarkUp()}
-// 		</div>
-//       </div>
-// `;
-// 	const anciliaryDataMarkUp = `
-// 		<div class="d-grid weapon-anciliary-data">
-// 			<div class="weapon-anciliary-data__icon-parent">
-// 				<li class="weapon-anciliary-data__icon">${this.#weaponTypeSprite(weaponObject)}</li>
-// 			</div>
-// 			<div class="weapon-primary-data_content">
-// 				<li class="${classNames.weaponDamageType}">
-// 					<p>Damage Type:</p>
-// 					<div class="${classNames.weaponDamageType}--content">
-// 						<p class="${this.#textBoldGeneric}">${weaponTypeString}</p>
-// 						<p class="${this.#textBoldGeneric}">${damageTypeEffect()}</p>
-// 					</div>
-// 				</li>
-// 				<li class="weapon-accuracy">
-// 					<p>Accuracy:</p>
-// 					<p class="${this.#textBoldGeneric}">${accuracyRating()}</p>
-// 				</li>
-// 				<li class="weapon-turn-rate">
-// 					<p>Turn rate:</p>
-// 					<p class="${this.#textBoldGeneric}">${turnRateRating()}</p>
-// 				</li>
-// 				${weaponBurstSize()}
-// 				${ammoElementMarkUp()}
-// 				<li class="weapon-refire-delay">
-// 					<p>Refire delay:</p>
-// 					<p class="${this.#textBoldGeneric}">${string.refireDelayString}</p>
-// 				</li>
-// 			</div>
-// 		</div>`;
-
-// 	//! Wrong implementation of ShortString. I need to rework it
-// 	// 15/12/2024
-// 	const introDataMarkUp = `
-// 			<li class="weapon-name">
-// 				<p>Weapon Name</p>
-// 				<p>${information.name}</p>
-// 			</li>
-// 			<li class="weapon-description"><p>${string.shortWeaponDescription}.</p></li>`;
-// 	const markup = `
-// 		<ul>
-// 			${introDataMarkUp}
-// 			<li class="weapon-divider"><p>Primary Data</p></li>
-// 			${primaryDataMarkUp}
-// 			<li class="weapon-divider"><p>Anciliary Data</p></li>
-// 			${anciliaryDataMarkUp}
-// 		</ul>
-// 	`;
-// 	return [markup, localParent];
-// }

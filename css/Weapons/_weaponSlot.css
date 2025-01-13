@@ -1,0 +1,149 @@
+/* Weapon Slots */
+.weapon-slots {
+	position: relative;
+	z-index: 2;
+
+	.weapon-sprite-parent {
+		.weapon-sprite {
+			transform: rotate(var(--weapon-rotate, 0deg));
+		}
+		.weapon-sprite--gun {
+			z-index: 200;
+		}
+		.weapon-sprite--base {
+			z-index: 201;
+		}
+		.weapon-sprite--gun,
+		.weapon-sprite--base {
+			position: absolute;
+			top: 55%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			transition: all 0.5s;
+		}
+	}
+
+	.weapon-slot {
+		position: absolute;
+		z-index: 3;
+		content: "";
+		border: none;
+
+		transform: translate(-50%, -50%);
+	}
+	.weapon-arc {
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform: translate(-50%, -50%) rotate(var(--weapon-angle, 0deg));
+
+		z-index: -100;
+		pointer-events: none;
+		border-radius: 50%;
+		transition: all 0.2s;
+		opacity: 0;
+
+		&::before,
+		&::after {
+			background: linear-gradient(
+				to bottom,
+				transparent 15%,
+				rgba(255, 255, 255, 0.75) 35%,
+				transparent 45%
+			);
+
+			position: absolute;
+			top: 0%;
+			left: 50%;
+
+			height: 40rem;
+			width: 0.2rem;
+			content: "";
+		}
+
+		&::before {
+			transform: translate(-50%, -50%) rotate(var(--before-rotate, 0deg));
+		}
+		&::after {
+			transform: translate(-50%, -50%) rotate(var(--after-rotate, 0deg));
+		}
+		.weapon-arc__sprite {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) rotate(var(--arc-angle));
+
+			&::after {
+				mask-image: conic-gradient(
+					from var(--before-rotate),
+					black var(--arc-mask-color),
+					transparent var(--arc-mask-transparent)
+				);
+
+				position: absolute;
+				top: 0;
+				left: 50%;
+				transform: translate(-50%, -50%);
+
+				content: "";
+				height: 20rem;
+				width: 20rem;
+				border-radius: 50%;
+
+				border: 0.24rem solid;
+				border-color: rgba(255, 255, 255, 0.5);
+			}
+		}
+	}
+}
+
+/* hover size */
+.weapon-slot:hover {
+	background-color: transparent;
+	z-index: 100;
+
+	.weapon-background-sprite {
+		border-width: 0.3rem;
+	}
+	.weapon-background-sprite__size--small {
+		height: 3rem;
+		width: 3rem;
+	}
+	.weapon-background-sprite__size--medium {
+		height: 4.5rem;
+		width: 4.5rem;
+	}
+	.weapon-background-sprite__size--large {
+		height: 6rem;
+		width: 6rem;
+	}
+	/* opacity hover */
+	.weapon-background-sprite__opacity--full {
+		opacity: 1;
+	}
+	.weapon-background-sprite__opacity--medium {
+		opacity: 0.75;
+	}
+	.weapon-background-sprite__opacity--light {
+		opacity: 0.5;
+	}
+	.weapon-sprite--gun,
+	.weapon-sprite--base {
+		transform: scale(1.2) translate(-42%, -48%);
+		transition: all 0.45s;
+	}
+
+	/* .weapon-sprite--gun,
+	.weapon-sprite--base {
+		position: absolute;
+		top: 55%;
+		left: 50%;
+
+		transform: translate(-50%, -50%), scale(1.2);
+		transition: all 0.2;
+	} */
+
+	.weapon-arc {
+		opacity: 1;
+	}
+}

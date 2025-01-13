@@ -20,5 +20,8 @@
 	"bugs": {
 		"url": "https://github.com/stunja/starsector_ship_builder/issues"
 	},
-	"homepage": "https://github.com/stunja/starsector_ship_builder#readme"
+	"homepage": "https://github.com/stunja/starsector_ship_builder#readme",
+	"dependencies": {
+		"papaparse": "^5.4.1"
+	}
 }
