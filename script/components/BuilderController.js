@@ -7,7 +7,7 @@ import ShipStats from "./ShipStats/ShipStats.js";
 import ShipInfo from "./ShipInfo.js";
 import HullModController from "./Hullmods/HullModController.js";
 import AdditionalInfo from "./AdditionalInfo.js";
-import Fighters from "./Fighter/Fighter.js";
+import FighterSlots from "./Fighter/FighterSlots.js";
 import ShipArea from "./ShipArea/ShipArea.js";
 import BuilderButtons from "./BuilderButtons.js";
 
@@ -29,7 +29,7 @@ export default class BuilderController extends ViewModel {
 		this.#shipInfo = new ShipInfo(model);
 		this.#hullModController = new HullModController(model);
 		this.#additionalInfo = new AdditionalInfo(model);
-		this.#fighters = new Fighters(model);
+		this.#fighters = new FighterSlots(model);
 		this.#shipArea = new ShipArea(model);
 		this.#builderButtons = new BuilderButtons(model);
 

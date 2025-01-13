@@ -8,7 +8,8 @@ const EVENT_LISTENER_TARGET = {
 const EVENT_LISTENER_TYPE = {
 	CLICK: `click`,
 };
-export default class Fighters extends ViewModel {
+
+export default class FighterSlots extends ViewModel {
 	constructor(model) {
 		super(model);
 	}

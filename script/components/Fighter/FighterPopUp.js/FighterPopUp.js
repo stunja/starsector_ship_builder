@@ -77,40 +77,6 @@ export default new FighterPopUp();
 //     );
 // }
 
-// //
-// fighterPopUpHandlers() {
-// 	// Table Head Handler
-// 	EventHandlers.removeEventListener(builderLogic.fighterPopUpTableSorter);
-// 	EventHandlers.addEventListenerReturnDataSet(
-// 		FighterPopUpHandlers.fighterPopUpHeaderHandler(
-// 			builderLogic.fighterPopUpTableSorter
-// 		)
-// 	);
-
-// 	EventHandlers.removeEventListener(
-// 		builderLogic.addCurrentWeapon
-// 	);
-// 	EventHandlers.addEventListenerReturnDataSet(
-// 		FighterPopUpHandlers.fighterPopUpTableHandler(
-// 			builderLogic.addCurrentWeapon
-// 		)
-// 	);
-// 	// Table Hover Effect Handler
-// 	EventHandlers.removeEventListener(
-// 		builderLogic.showAdditionalInformationOnHoverForFighter
-// 	);
-// 	EventHandlers.addEventListenerReturnDataSet(
-// 		FighterPopUpHandlers.fighterPopUpHoverEffect(
-// 			builderLogic.showAdditionalInformationOnHoverForFighter
-// 		)
-// 	);
-// 	//
-// 	EventHandlers.hidePopUpIfClickOutsideHandler(
-// 		classNames.fighterPopUpContainer,
-// 		classNames.weaponPopUpTableWrapper,
-// 		builderLogic.clearFighterPopUp
-// 	);
-// },
 //  fighterPopUpRender() {
 // 	const currentFighterArray = model.uiState.fighterPopUp.currentFighterArray;
 // 	const currentInstalledWeapons =

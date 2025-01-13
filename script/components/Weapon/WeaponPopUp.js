@@ -234,7 +234,6 @@ export default class WeaponPopUp extends ViewModel {
 			turretGunSprite: weaponObject.additionalData?.turretGunSprite,
 			description: weaponObject.additionalData.description,
 		};
-		console.log(weaponObject);
 		const stats = {
 			ammo: {
 				perSecond: weaponObject.ammo_sec ?? 1,
