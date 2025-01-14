@@ -1,78 +1,79 @@
-import View from "../../allViews/view.js";
+// View
+import View from "../view.js";
+// Helper
 import classNames from "../../helper/DomClassNames.js";
-import FighterSpritesView from "./FighterSpritesView.js";
-
-import { capitalizeFirstLetter } from "../../helper/helperFunction.js";
-import URL from "../../helper/url.js";
+import DataSet from "../../helper/DataSet.js";
 
 class FighterPopUpTableView extends View {
-	#fighterStringConversion(fighterId) {
-		return fighterId
-			.replaceAll("_wing", "")
-			.split("_")
-			.map((arr) => capitalizeFirstLetter(arr))
-			.join(" ");
-	}
-	#findCurrentInstalledWeapon(
-		currentWeaponSlot,
-		weaponId,
-		currentInstalledWeapons
-	) {
-		return currentInstalledWeapons.find(
-			([slotId, wpnId]) => slotId === currentWeaponSlot.id && wpnId === weaponId
-		);
-	}
+	_localParent = `.${classNames.tableBody}`;
 
-	#checkIfCorrectWeapon(wpnObj, currentInstalledWeapons, currentWeaponSlot) {
-		const [correctWeaponValue] = currentInstalledWeapons.filter((wpn) => {
-			if (wpn[0] === currentWeaponSlot.id && wpn[1] === wpnObj.id) {
-				return true;
-			}
-		});
-		if (correctWeaponValue) {
-			return true;
-		}
+	generateMarkup() {
+		// const [userShipBuild, currentWeaponArray, weaponSlot] = this._data;
+		// const markup = `${this.#tableBodyRender(
+		// 	currentWeaponArray,
+		// 	userShipBuild.installedWeapons,
+		// 	weaponSlot
+		// )}`;
+		console.log("test");
+		const markup = "";
+		return markup;
 	}
+	#tableBodyRender(currentWeaponArray, installedWeapons, weaponSlot) {
+		const assignActiveClass = (crrWpn) => {
+			if (!crrWpn) return;
 
-	#activeClass(wpnObj, currentInstalledWeapons, currentWeaponSlot) {
-		if (
-			this.#checkIfCorrectWeapon(
-				wpnObj,
-				currentInstalledWeapons,
-				currentWeaponSlot
-			)
-		) {
-			return ` ${classNames.weaponPopUpActive}`;
-		}
-		return "";
-	}
-	// I dont like this.
-	#processWeaponArray(weaponArray, currentInstalledWeapons, currentWeaponSlot) {
-		let activeWeaponClassObject;
-
-		const modifiedWeaponsArray = weaponArray.filter((wpnObj) => {
-			const currentInstalledWeaponKeyPair = this.#findCurrentInstalledWeapon(
-				currentWeaponSlot,
-				wpnObj.id,
-				currentInstalledWeapons
+			const isActiveClass = installedWeapons.find(
+				([slotId, wpnObjId]) =>
+					slotId === weaponSlot.id && wpnObjId === crrWpn.id
 			);
 
-			if (currentInstalledWeaponKeyPair) {
-				activeWeaponClassObject = wpnObj;
-				return false;
-			}
-			return true;
-		});
+			// empty space so they are not joined classes
+			return isActiveClass ? ` ${classNames.weaponPopUpActive}` : "";
+		};
 
-		if (activeWeaponClassObject) {
-			modifiedWeaponsArray.unshift(activeWeaponClassObject);
-		}
+		// 				const markup = `
+		//                     <tr class="${classNames.fighter}${this.#activeClass(fighterObj, currentInstalledWeapons, currentWeaponSlot)}" data-id="${fighterObj.id}">
+		//                             <td class="${classNames.fighterSprites}">
+		//                                 ${FighterSpritesView.render(fighterObj)}
+		//                             </td>
+		// 							<td class="${classNames.fighterName}">
+		//                                 ${this.#fighterStringConversion(fighterObj.id)}
+		//                             </td>
+		// 							<td class="${classNames.fighterType}">${fighterObj.role}</td>
+		// 							<td class="${classNames.fighterRange}">${fighterObj.range}</td>
+		// 							<td class="${classNames.fighterCost}">${fighterObj.op_cost}</td>
+		// 						</tr>`;
+		// 				return markup;
+		// 			})
 
-		return modifiedWeaponsArray;
+		//! ${WeaponSpriteView.renderElement([crrFighter, weaponSlot])}
+		const entryMarkup = (crrFighter) => `
+			<ul class="${classNames.tableEntries}${assignActiveClass(crrFighter)}"  
+				${DataSet.dataWeaponPopUpId}="${crrFighter.id}">
+
+				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
+					ICON
+				</li>
+				<li class="${classNames.tableEntry} ${classNames.tableName}">${
+			crrFighter.name
+		}</li>
+				<li class="${classNames.tableEntry}">
+					${crrFighter.role}
+				</li>
+				<li class="${classNames.tableEntry}">${crrFighter.range}</li>
+				<li class="${classNames.tableEntry}">${crrFighter.oPs}</li>
+			</ul>
+			`;
+
+		return currentWeaponArray.map((crrWpn) => entryMarkup(crrWpn)).join("");
 	}
-
-	//? Render
-	// There is MAX of 6 fighters. I need to check number of fighters
+	// #fighterStringConversion(fighterId) {
+	// 	return fighterId
+	// 		.replaceAll("_wing", "")
+	// 		.split("_")
+	// 		.map((arr) => capitalizeFirstLetter(arr))
+	// 		.join(" ");
+	// }
 	fighterSpritesRender(currentFighterObject) {
 		const currentWeaponSprite =
 			currentFighterObject.additionalFighterData.spriteName;
@@ -98,95 +99,5 @@ class FighterPopUpTableView extends View {
 					</div>`;
 		return markup;
 	}
-
-	render() {
-		const localParent = `.${classNames.fighterPopUp}`;
-		//! Delete ? Maybe
-		// document
-		// 	.querySelector(`.${classNames.weaponPopUpParent}`)
-		// 	.classList.remove(`${classNames.dNone}`);
-
-		const markup = `
-			<div class="${classNames.fighterPopUpContainer}">
-				<div class="${classNames.hoverAdditionalInformation}"></div>
-				<div class="${classNames.weaponPopUpTable}">
-					<ul class="${classNames.weaponPopUpFilter}"></ul>
-					<div class="${classNames.weaponPopUpTableWrapper}">
-						<table class="${classNames.weaponPopUpTableBody}">
-							<thead></thead>
-							<tbody></tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-    `;
-		return [markup, localParent];
-	}
-	tableHeaderRender() {
-		const localParent = `.${classNames.weaponPopUpTable} thead`;
-		const dataCategory = [
-			{
-				label: "Name",
-				category: "name",
-			},
-			{
-				label: "Role",
-				category: "role",
-			},
-			{
-				label: "Range",
-				category: "range",
-			},
-			{
-				label: "Cost",
-				category: "cost",
-			},
-		];
-		const headerCategoryMarkUp = dataCategory
-			.map(
-				({ label, category }) => `
-						<th class="${classNames.weaponPopUpTableHeader} ${classNames.tableHeader} ${classNames.unselectable}" data-category="${category}">
-							<div>
-								<p>${label}</p>
-							</div>
-						</th>`
-			)
-			.join("");
-
-		const markup = `
-					<tr class="${classNames.weaponPopUpTableHeader}">
-						<th></th>
-						${headerCategoryMarkUp}
-					</tr>
-				`;
-
-		return [markup, localParent];
-	}
-	tableContentRender(weaponArray, currentInstalledWeapons, currentWeaponSlot) {
-		const localParent = `.${classNames.weaponPopUpTable} tbody`;
-
-		// prettier-ignore
-		const markup = this.#processWeaponArray(weaponArray, currentInstalledWeapons, currentWeaponSlot)
-			.map((fighterObj) => {
-				//
-				const markup = `
-                    <tr class="${classNames.fighter}${this.#activeClass(fighterObj, currentInstalledWeapons, currentWeaponSlot)}" data-id="${fighterObj.id}">
-                            <td class="${classNames.fighterSprites}">
-                                ${FighterSpritesView.render(fighterObj)}
-                            </td>
-							<td class="${classNames.fighterName}">
-                                ${this.#fighterStringConversion(fighterObj.id)}
-                            </td>
-							<td class="${classNames.fighterType}">${fighterObj.role}</td>
-							<td class="${classNames.fighterRange}">${fighterObj.range}</td>
-							<td class="${classNames.fighterCost}">${fighterObj.op_cost}</td>
-						</tr>`;
-				return markup;
-			})
-			.join("");
-
-		return [markup, localParent];
-	}
 }
-// DONT FORGET TO CALL IT
 export default new FighterPopUpTableView();

@@ -20,6 +20,7 @@ const EVENT_LISTENER_TYPE = {
 };
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
+	// CurrentWeaponArray based on Slots / Weapon Mount
 	#currentWeaponArray;
 
 	#state;
@@ -234,7 +235,6 @@ export default class WeaponPopUp extends ViewModel {
 			turretGunSprite: weaponObject.additionalData?.turretGunSprite,
 			description: weaponObject.additionalData.description,
 		};
-		console.log(weaponObject);
 		const stats = {
 			ammo: {
 				perSecond: weaponObject.ammo_sec ?? 1,

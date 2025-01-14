@@ -1,5 +1,55 @@
-class FighterPopUp {}
-export default new FighterPopUp();
+import ViewModel from "../../../ViewModel";
+// View
+import FighterPopUpContainerView from "../../../allViews/Fighters/FighterPopUpContainerView";
+import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUpTableHeaderView";
+import FighterPopUpTableView from "../../../allViews/Fighters/FighterPopUpTableView";
+// Helper
+import { weaponSlotIdIntoWeaponSlotObject } from "../../../helper/helperFunction";
+
+export default class FighterPopUp extends ViewModel {
+	#state;
+	#userShipBuild;
+	#weaponSlot;
+	// Fighter Object which can be shown to user
+	#fighterObjectsArray;
+	constructor(model) {
+		super(model);
+
+		this.#state = this.getState();
+		// this.#allWeapons = this.#state.dataState.allWeapons;
+		this.#userShipBuild = this.#state.userState.userShipBuild;
+	}
+
+	update = (btn) => {
+		if (!btn) return;
+
+		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
+			this.#userShipBuild.weaponSlots,
+			btn.dataset.fighterId
+		);
+
+		this.#renderFighterPopUp();
+	};
+	#renderFighterPopUp() {
+		FighterPopUpContainerView.render(this.#state);
+		FighterPopUpTableHeaderView.render(this.#state);
+
+		console.log(this.#state.dataState.allFighters);
+		console.log(this.#fighterObjectsArray);
+
+		// FighterPopUpTableView.render([
+		// 	this.#userShipBuild.installedWeapons,
+		// 	this.#fighterObjectsArray,
+		// 	this.#weaponSlot,
+		// ]);
+		// WeaponPopUpTableView.render([
+		// 			this.#userShipBuild,
+		// 			this.#currentWeaponArray,
+		// 			this.#weaponSlot,
+		// 		]);
+		// WeaponPopUpTableView.render();
+	}
+}
 //! Should be united into ONE
 // fighterPopUpTableSorter(btn) {
 // 	const category = btn.dataset.category;
@@ -77,40 +127,6 @@ export default new FighterPopUp();
 //     );
 // }
 
-// //
-// fighterPopUpHandlers() {
-// 	// Table Head Handler
-// 	EventHandlers.removeEventListener(builderLogic.fighterPopUpTableSorter);
-// 	EventHandlers.addEventListenerReturnDataSet(
-// 		FighterPopUpHandlers.fighterPopUpHeaderHandler(
-// 			builderLogic.fighterPopUpTableSorter
-// 		)
-// 	);
-
-// 	EventHandlers.removeEventListener(
-// 		builderLogic.addCurrentWeapon
-// 	);
-// 	EventHandlers.addEventListenerReturnDataSet(
-// 		FighterPopUpHandlers.fighterPopUpTableHandler(
-// 			builderLogic.addCurrentWeapon
-// 		)
-// 	);
-// 	// Table Hover Effect Handler
-// 	EventHandlers.removeEventListener(
-// 		builderLogic.showAdditionalInformationOnHoverForFighter
-// 	);
-// 	EventHandlers.addEventListenerReturnDataSet(
-// 		FighterPopUpHandlers.fighterPopUpHoverEffect(
-// 			builderLogic.showAdditionalInformationOnHoverForFighter
-// 		)
-// 	);
-// 	//
-// 	EventHandlers.hidePopUpIfClickOutsideHandler(
-// 		classNames.fighterPopUpContainer,
-// 		classNames.weaponPopUpTableWrapper,
-// 		builderLogic.clearFighterPopUp
-// 	);
-// },
 //  fighterPopUpRender() {
 // 	const currentFighterArray = model.uiState.fighterPopUp.currentFighterArray;
 // 	const currentInstalledWeapons =
