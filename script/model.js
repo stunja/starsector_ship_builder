@@ -2,8 +2,8 @@
 import {
 	renameKeysFromCSVdata,
 	convertStringsIntoNumbersCSVdata,
+	extractDataFromObject,
 } from "./helper/helperFunction.js";
-// import * as URL from "./helper/url.js";
 import URL from "./helper/url.js";
 import Papa from "papaparse";
 
@@ -75,12 +75,16 @@ export class Model {
 			);
 
 			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
+			// HullMods
 			const usableHullMods = createUsableHullMods(hullmods);
-
+			// Weapons
 			const weaponOnly = this.#filterWeaponsOnly(weapons);
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
 			const filteredWeaponsWithAdditionalData =
 				await additionalWeaponData.fetchAndInjectData(weaponOnly, desc);
+			// Fighters
+			const updatedFighters = await updateFighters.fetchAndInjectData(fighters);
+			console.log(updatedFighters);
 
 			this.updateState("dataState", {
 				allShips: ships,
@@ -235,17 +239,6 @@ const additionalWeaponData = {
 
 		return cleaningSteps.reduce((data, step) => step(data), dirtyData);
 	},
-
-	extractAdditionalWeaponData(weaponData) {
-		return this.KEYS_TO_INJECT.reduce(
-			(acc, key) => ({
-				...acc,
-				[key]: weaponData[key],
-			}),
-			{}
-		);
-	},
-
 	async processWeapon(weaponObject, allDescriptions) {
 		try {
 			const dirtyData = await jsonFetcher.fetchData(
@@ -253,8 +246,11 @@ const additionalWeaponData = {
 			);
 			const cleanData = this.cleanWeaponData(dirtyData);
 			const jsonData = JSON.parse(cleanData);
-			const createAdditionalDataObject =
-				this.extractAdditionalWeaponData(jsonData);
+			const createAdditionalDataObject = extractDataFromObject(
+				this.KEYS_TO_INJECT,
+				jsonData
+			);
+
 			const injectAdditionalDescriptions = await this.injectWeaponDescriptions(
 				weaponObject,
 				createAdditionalDataObject,
@@ -266,8 +262,8 @@ const additionalWeaponData = {
 				additionalData: injectAdditionalDescriptions,
 			};
 		} catch (err) {
-			console.error(`Error processing weapon ${weaponObj.id}:`, err);
-			return weaponObj;
+			console.error(`Error processing weapon ${weaponObject.id}:`, err);
+			return weaponObject;
 		}
 	},
 	async injectWeaponDescriptions(
@@ -520,6 +516,289 @@ const createUserShipBuild = {
 			: "military";
 	},
 };
+const updateFighters = {
+	// error with json parse, these fighters are not important anyway (ALPHA REDACTED)
+	// maybe I will fix later
+	IGNORE_FIGHTER_ID: {
+		aspect_shock_wing: "aspect_shock_wing",
+		aspect_shieldbreaker_wing: "aspect_shieldbreaker_wing",
+		aspect_attack_wing: "aspect_attack_wing",
+		aspect_missile_wing: "aspect_missile_wing",
+	},
+	// There a much more props in the file,
+	KEYS_TO_INJECT: [
+		"height",
+		"spriteName",
+		"width",
+		"hullSize",
+		"style",
+		"weaponSlots",
+	],
+
+	updatedId: (fighterObject) => fighterObject.id.replaceAll("_wing", ""),
+
+	convertIdToDifferentIdSpecialRule: (fighterId) => {
+		// for some reason different id from others, I have to overwrite manually
+		if (fighterId === "borer") {
+			return (fighterId = "drone_borer");
+		}
+		if (fighterId === "terminator") {
+			return (fighterId = "drone_terminator");
+		}
+		return fighterId;
+	},
+	async processWeapon(fighterObject, allDescriptions) {
+		try {
+			// simple filter to remove IGNORE_FIGHTER_ID
+			if (this.IGNORE_FIGHTER_ID[fighterObject.id]) return fighterObject;
+
+			const convertedFighterId = this.convertIdToDifferentIdSpecialRule(
+				this.updatedId(fighterObject)
+			);
+
+			const fetchData = await jsonFetcher.fetchData(
+				`/${URL.DATA_HULLS}/${convertedFighterId}.ship`
+			);
+
+			const jsonData = JSON.parse(fetchData);
+
+			const createAdditionalDataObject = extractDataFromObject(
+				this.KEYS_TO_INJECT,
+				jsonData
+			);
+
+			// const injectAdditionalDescriptions = await this.injectWeaponDescriptions(
+			// 	weaponObject,
+			// 	createAdditionalDataObject,
+			// 	allDescriptions
+			// );
+
+			return {
+				...fighterObject,
+				additionalData: createAdditionalDataObject,
+			};
+		} catch (err) {
+			console.error(`Error processing weapon ${fighterObject.id}:`, err);
+			return fighterObject;
+		}
+	},
+
+	cleanedArray: (data) => {
+		const keysToRemove = [
+			"_1",
+			"_2",
+			"_3",
+			"_4",
+			"_5",
+			"_6",
+			"_7",
+			"_8",
+			"_9",
+			"_10",
+			"_11",
+		];
+		const removeEmptyObjects = data.filter((obj) => obj.id);
+
+		const removeBrokenKeysArray = removeEmptyObjects.map((obj) =>
+			Object.fromEntries(
+				Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
+			)
+		);
+		return removeBrokenKeysArray;
+	},
+
+	fetchAndInjectData: async function (allFighters, allDescriptions) {
+		return Promise.all(
+			this.cleanedArray(allFighters).map((weaponObject) =>
+				this.processWeapon(weaponObject, allDescriptions)
+			)
+		);
+	},
+};
+const updateFighters1 = {
+	fetchAndInjectInitialFighterData: async function () {
+		try {
+			const updatedId = (fighterObject) =>
+				fighterObject.id.replaceAll("_wing", "");
+			const convertIdToDifferentIdSpecialRule = (fighterId) => {
+				// for some reason different id for two fighters
+				if (fighterId === "borer") {
+					return (fighterId = "drone_borer");
+				}
+				if (fighterId === "terminator") {
+					return (fighterId = "drone_terminator");
+				}
+				return fighterId;
+			};
+
+			const fetchFighterData = async (fighterIdOnly) => {
+				const res = await fetch(
+					`/${URL.DATA_HULLS}/${convertIdToDifferentIdSpecialRule(
+						fighterIdOnly
+					)}.ship`
+				);
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`);
+				}
+				return res.text();
+			};
+
+			const extractAdditionalFighterData = (fighterDataFinal) => {
+				const keysToInject = ["height", "spriteName", "width"];
+				return keysToInject.reduce((acc, key) => {
+					acc[key] = fighterDataFinal[key];
+					return acc;
+				}, {});
+			};
+
+			const processWeapon = async (fighterObject) => {
+				try {
+					const cleanData = await fetchFighterData(updatedId(fighterObject));
+					const weaponDataFinal = JSON.parse(cleanData);
+					const additionalFighterData =
+						extractAdditionalFighterData(weaponDataFinal);
+					return { ...fighterObject, additionalFighterData };
+				} catch (err) {
+					console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
+					return fighterObject; // Return original object if processing fails
+				}
+			};
+			state.allFighters = await Promise.all(
+				state.allFighters.map(processWeapon)
+			);
+		} catch (err) {
+			console.log(err);
+		}
+	},
+
+	fetchAndInjectAdditionalFighterDataFromShipData: async function () {
+		const { allFighters, allShips } = state;
+
+		// Additional properties take from AllShips CVS
+		const KEYS_TO_EXTRACT = [
+			"shield_type",
+			"tech_manufacturer",
+			"shield_arc",
+			"armor_rating",
+			"hitpoints",
+			"name",
+			"max_crew",
+			"system_id",
+			"max_speed",
+		];
+
+		const normalizeFighterId = (fighterId) => {
+			const normalized = fighterId
+				.replaceAll("_wing", "")
+				.split("_")
+				.join(" ")
+				.toLowerCase();
+
+			const specialIdMappings = {
+				borer: "drone_borer",
+				terminator: "drone_terminator",
+				"mining drone": "mining_drone",
+			};
+
+			return specialIdMappings[normalized] || normalized;
+		};
+		const extractDescription = (id) => {
+			return state.globalDescriptions.find(
+				(description) => description.id === id
+			);
+		};
+
+		state.allFighters = allFighters.map((fighterObject) => {
+			// different Id in different databases for some reason
+			// some with dagger_wing, some dagger.
+			const fighterId = normalizeFighterId(fighterObject.id);
+
+			// Strip values from One array and assign to DataShipHull subObject
+			const currentFighter = allShips.find(
+				(shipObject) => shipObject.id === fighterId
+			);
+			const additionalFighterDataShipHull = currentFighter
+				? Object.fromEntries(
+						KEYS_TO_EXTRACT.map((key) => [key, currentFighter[key]])
+				  )
+				: {};
+
+			// There are more parameters like text2 / test3 etc. Text1 Is main text.
+			const description = extractDescription(fighterId).text1;
+			return {
+				...fighterObject,
+				additionalFighterDataShipHull,
+				description,
+			};
+		});
+	},
+	fetchAndInjectFighterVariantData: async function () {
+		//? WHY THE DATA IS IN VARIANTS/FIGHTERS I HAVE NOT IDEA
+		//? WHY ARE SOME IN DIFFERENT FOLDERS
+		//? WHY FLASH IS IN REMNANT
+		//? HOPLON IS KOPESH (OLD NAME)
+
+		try {
+			const cleanToJson = (fileContent) => {
+				fileContent = fileContent.replace(/#.*$/gm, ""); // Remove inline comments
+				fileContent = fileContent.replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas
+				fileContent = fileContent.replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":'); // Add quotes around keys
+
+				return fileContent;
+			};
+			const variantTargeting = (fighterObject) => {
+				// hoplon_Escort => kopesh_Bomber // Why I dont know
+				return fighterObject.variant !== "hoplon_Escort"
+					? fighterObject.variant
+					: "khopesh_Bomber";
+			};
+
+			const fetchVariantData = async (variantId) => {
+				const SPECIAL_RULES = {
+					drone_borer: URL.DATA_VARIANTS_DRONES,
+					drone_terminator: URL.DATA_VARIANTS_DRONES,
+					flash_Bomber: URL.DATA_VARIANTS_REMNANT,
+					spark_Interceptor: URL.DATA_VARIANTS_REMNANT,
+					lux_Fighter: URL.DATA_VARIANTS_REMNANT,
+				};
+
+				const regularURL = (urlCheck) => {
+					if (urlCheck === undefined) {
+						return `/${URL.DATA_VARIANTS_FIGHTERS}/${variantId}.variant`;
+					}
+					return `/${urlCheck}/${variantId}.variant`;
+				};
+
+				//
+				const res = await fetch(regularURL(SPECIAL_RULES[variantId]));
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`);
+				}
+				return res.text();
+			};
+
+			const processWeapon = async (fighterObject) => {
+				try {
+					const fetchedData = await fetchVariantData(
+						variantTargeting(fighterObject)
+					);
+					const cleanedData = cleanToJson(fetchedData);
+					const additionalFighterDataFromVariant = JSON.parse(cleanedData);
+					// console.log(additionalFighterDataFromVariant);
+					return { ...fighterObject, additionalFighterDataFromVariant };
+				} catch (err) {
+					console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
+					return fighterObject; // Return original object if processing fails
+				}
+			};
+			state.allFighters = await Promise.all(
+				state.allFighters.map(processWeapon)
+			);
+		} catch (err) {
+			console.log(`${err} in fetchAndInjectFighterVariantData`);
+		}
+	},
+};
 // create new object with VISIBLE and DEFINED hulls. // D-mods are hidden!
 const createUsableHullMods = function (data) {
 	// Alphabetic Sorting
@@ -710,308 +989,4 @@ const hullModDataInjection = {
 			"Neural Integrator": `An augmented version of Neural Interface that works with automated ships by enabling direct control of all of the ship's systems via the link, instead of having the controlling consciousness aspect simply direct the bridge crew. Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply. Also increases the deployment cost and supply use by %s`,
 		},
 	],
-};
-
-//////
-
-// const fetchAndInjectAdditionalWeaponProperties = async function (allWeapons) {
-// 	const cleanWeaponData = (dirtyData) => {
-// 		return dirtyData
-// 			.replace(/#.*$/gm, "")
-// 			.replace(/,(\s*[}\]])/g, "$1")
-// 			.replace(/(?<!":\s)(\b[A-Za-z]+\b)(?=\s*[:,])/g, '"$1"')
-// 			.replace(/\[(.*?)\]/g, (match, p1) => {
-// 				return `[${p1
-// 					.split(",")
-// 					.map((item) => {
-// 						const trimmedItem = item.trim();
-// 						return isNaN(trimmedItem) ? `"${trimmedItem}"` : trimmedItem;
-// 					})
-// 					.join(",")}]`;
-// 			})
-// 			.replaceAll(`""`, `"`)
-// 			.replaceAll(";", ",")
-// 			.replaceAll(`:",`, `:"",`);
-// 	};
-
-// 	const fetchWeaponData = async (weaponId) => {
-// 		const res = await fetch(`/${URL.DATA_WEAPONS}/${weaponId}.wpn`);
-// 		if (!res.ok) {
-// 			throw new Error(`HTTP error! status: ${res.status}`);
-// 		}
-// 		return res.text();
-// 	};
-
-// 	const extractAdditionalWeaponData = (weaponDataFinal) => {
-// 		const keysToInject = [
-// 			"size",
-// 			"specClass",
-// 			"turretSprite",
-// 			"type",
-// 			"turretGunSprite",
-// 			"turretOffsets",
-// 			"mountTypeOverride",
-// 		];
-// 		return keysToInject.reduce((acc, key) => {
-// 			acc[key] = weaponDataFinal[key];
-// 			return acc;
-// 		}, {});
-// 	};
-
-// 	const processWeapon = async (weaponObj) => {
-// 		try {
-// 			const dirtyData = await fetchWeaponData(weaponObj.id);
-// 			const cleanData = await cleanWeaponData(dirtyData);
-// 			const weaponDataFinal = JSON.parse(cleanData);
-// 			const additionalWeaponData = extractAdditionalWeaponData(weaponDataFinal);
-// 			return { ...weaponObj, additionalWeaponData };
-// 		} catch (err) {
-// 			console.error(`Error processing weapon ${weaponObj.id}: ${err}`); //! TURN ON
-// 			//! I turned it off due to it being annoying
-// 			return weaponObj; // Return original object if processing fails
-// 		}
-// 	};
-
-// 	const updatedArray = await Promise.all(allWeapons.map(processWeapon));
-// 	console.log(updatedArray);
-// 	// state.allWeapons = updatedArray;
-// 	// model.updateState = model.updateStateProperty("allWeapons", {
-// 	// 	...updatedArray,
-// 	// });
-// };
-const fetchAllFighters = async function () {
-	try {
-		// wing data
-		const res = await fetch(`/${URL.DATA_HULLS}/${URL.FIGHTER_CVS}`);
-		if (!res.ok) {
-			throw new Error(`HTTP error! status: ${res.status}`);
-		}
-		const csvData = await res.text();
-		const hideFightersWithThisTag = "leader_no_swarm"; // to target OMEGA fighters
-
-		const rows = csvData.split("\n");
-		const headers = rows[0].split(",");
-		const fighterArray = rows.slice(1).map((row) => {
-			//shipData
-			const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-			let obj = headers.reduce((object, header, index) => {
-				object[header] = values[index];
-				return object;
-			}, {});
-			// keys conversion
-			obj = renameKeysFromCSVdata(obj);
-			return obj;
-		});
-		const newFighterArray = fighterArray
-			.map((fighters) =>
-				Object.fromEntries(
-					Object.entries(fighters).map(([key, value]) => {
-						if (!key || !value) return [];
-						const newValue = value.trimStart().replace(/[""]/g, "");
-						return [key, newValue];
-					})
-				)
-			)
-			.filter((fighters) => fighters.id !== "" && fighters.id !== undefined);
-
-		const finalArray = newFighterArray
-			.map((fighter) => ({
-				...fighter,
-				tags: fighter.tags
-					.replaceAll(" ", "")
-					.split(",")
-					.filter((tag) => tag !== ""),
-			}))
-			.filter(
-				(currentFighter) =>
-					!currentFighter.tags.includes(hideFightersWithThisTag)
-			);
-
-		state.allFighters = finalArray;
-		//! error
-		console.log(...finalArray);
-
-		// model.updateStateProperty("allFighters", "[finalArray]");
-	} catch (error) {
-		console.error("Error:", error);
-		throw error; // Re-throw the error after logging it
-	}
-};
-const fetchAndInjectInitialFighterData = async function () {
-	try {
-		const updatedId = (fighterObject) =>
-			fighterObject.id.replaceAll("_wing", "");
-		const convertIdToDifferentIdSpecialRule = (fighterId) => {
-			// for some reason different id for two fighters
-			if (fighterId === "borer") {
-				return (fighterId = "drone_borer");
-			}
-			if (fighterId === "terminator") {
-				return (fighterId = "drone_terminator");
-			}
-			return fighterId;
-		};
-
-		const fetchFighterData = async (fighterIdOnly) => {
-			const res = await fetch(
-				`/${URL.DATA_HULLS}/${convertIdToDifferentIdSpecialRule(
-					fighterIdOnly
-				)}.ship`
-			);
-			if (!res.ok) {
-				throw new Error(`HTTP error! status: ${res.status}`);
-			}
-			return res.text();
-		};
-
-		const extractAdditionalFighterData = (fighterDataFinal) => {
-			const keysToInject = ["height", "spriteName", "width"];
-			return keysToInject.reduce((acc, key) => {
-				acc[key] = fighterDataFinal[key];
-				return acc;
-			}, {});
-		};
-
-		const processWeapon = async (fighterObject) => {
-			try {
-				const cleanData = await fetchFighterData(updatedId(fighterObject));
-				const weaponDataFinal = JSON.parse(cleanData);
-				const additionalFighterData =
-					extractAdditionalFighterData(weaponDataFinal);
-				return { ...fighterObject, additionalFighterData };
-			} catch (err) {
-				console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
-				return fighterObject; // Return original object if processing fails
-			}
-		};
-		state.allFighters = await Promise.all(state.allFighters.map(processWeapon));
-	} catch (err) {
-		console.log(err);
-	}
-};
-
-const fetchAndInjectAdditionalFighterDataFromShipData = async function () {
-	const { allFighters, allShips } = state;
-
-	// Additional properties take from AllShips CVS
-	const KEYS_TO_EXTRACT = [
-		"shield_type",
-		"tech_manufacturer",
-		"shield_arc",
-		"armor_rating",
-		"hitpoints",
-		"name",
-		"max_crew",
-		"system_id",
-		"max_speed",
-	];
-
-	const normalizeFighterId = (fighterId) => {
-		const normalized = fighterId
-			.replaceAll("_wing", "")
-			.split("_")
-			.join(" ")
-			.toLowerCase();
-
-		const specialIdMappings = {
-			borer: "drone_borer",
-			terminator: "drone_terminator",
-			"mining drone": "mining_drone",
-		};
-
-		return specialIdMappings[normalized] || normalized;
-	};
-	const extractDescription = (id) => {
-		return state.globalDescriptions.find(
-			(description) => description.id === id
-		);
-	};
-
-	state.allFighters = allFighters.map((fighterObject) => {
-		// different Id in different databases for some reason
-		// some with dagger_wing, some dagger.
-		const fighterId = normalizeFighterId(fighterObject.id);
-
-		// Strip values from One array and assign to DataShipHull subObject
-		const currentFighter = allShips.find(
-			(shipObject) => shipObject.id === fighterId
-		);
-		const additionalFighterDataShipHull = currentFighter
-			? Object.fromEntries(
-					KEYS_TO_EXTRACT.map((key) => [key, currentFighter[key]])
-			  )
-			: {};
-
-		// There are more parameters like text2 / test3 etc. Text1 Is main text.
-		const description = extractDescription(fighterId).text1;
-		return {
-			...fighterObject,
-			additionalFighterDataShipHull,
-			description,
-		};
-	});
-};
-const fetchAndInjectFighterVariantData = async function () {
-	//? WHY THE DATA IS IN VARIANTS/FIGHTERS I HAVE NOT IDEA
-	//? WHY ARE SOME IN DIFFERENT FOLDERS
-	//? WHY FLASH IS IN REMNANT
-	//? HOPLON IS KOPESH (OLD NAME)
-
-	try {
-		const cleanToJson = (fileContent) => {
-			fileContent = fileContent.replace(/#.*$/gm, ""); // Remove inline comments
-			fileContent = fileContent.replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas
-			fileContent = fileContent.replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":'); // Add quotes around keys
-
-			return fileContent;
-		};
-		const variantTargeting = (fighterObject) => {
-			// hoplon_Escort => kopesh_Bomber // Why I dont know
-			return fighterObject.variant !== "hoplon_Escort"
-				? fighterObject.variant
-				: "khopesh_Bomber";
-		};
-
-		const fetchVariantData = async (variantId) => {
-			const SPECIAL_RULES = {
-				drone_borer: URL.DATA_VARIANTS_DRONES,
-				drone_terminator: URL.DATA_VARIANTS_DRONES,
-				flash_Bomber: URL.DATA_VARIANTS_REMNANT,
-				spark_Interceptor: URL.DATA_VARIANTS_REMNANT,
-				lux_Fighter: URL.DATA_VARIANTS_REMNANT,
-			};
-
-			const regularURL = (urlCheck) => {
-				if (urlCheck === undefined) {
-					return `/${URL.DATA_VARIANTS_FIGHTERS}/${variantId}.variant`;
-				}
-				return `/${urlCheck}/${variantId}.variant`;
-			};
-
-			//
-			const res = await fetch(regularURL(SPECIAL_RULES[variantId]));
-			if (!res.ok) {
-				throw new Error(`HTTP error! status: ${res.status}`);
-			}
-			return res.text();
-		};
-
-		const processWeapon = async (fighterObject) => {
-			try {
-				const fetchedData = await fetchVariantData(
-					variantTargeting(fighterObject)
-				);
-				const cleanedData = cleanToJson(fetchedData);
-				const additionalFighterDataFromVariant = JSON.parse(cleanedData);
-				// console.log(additionalFighterDataFromVariant);
-				return { ...fighterObject, additionalFighterDataFromVariant };
-			} catch (err) {
-				console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
-				return fighterObject; // Return original object if processing fails
-			}
-		};
-		state.allFighters = await Promise.all(state.allFighters.map(processWeapon));
-	} catch (err) {
-		console.log(`${err} in fetchAndInjectFighterVariantData`);
-	}
 };

@@ -20,6 +20,7 @@ const EVENT_LISTENER_TYPE = {
 };
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
+	// CurrentWeaponArray based on Slots / Weapon Mount
 	#currentWeaponArray;
 
 	#state;

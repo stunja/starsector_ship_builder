@@ -1,5 +1,3 @@
-// import { state } from "../model";
-
 export const renameKeysFromCSVdata = function (obj) {
 	const renameObj = {};
 
@@ -45,3 +43,12 @@ export const findCurrentWeaponSlotFromWeaponSlotId = (
 	weaponSlots,
 	weaponSlotId
 ) => weaponSlots.find((slot) => slot.id === weaponSlotId);
+
+export const extractDataFromObject = (propertiesToExtract, data) =>
+	propertiesToExtract.reduce(
+		(acc, key) => ({
+			...acc,
+			[key]: data[key],
+		}),
+		{}
+	);
