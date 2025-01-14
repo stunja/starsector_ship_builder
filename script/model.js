@@ -83,8 +83,12 @@ export class Model {
 			const filteredWeaponsWithAdditionalData =
 				await additionalWeaponData.fetchAndInjectData(weaponOnly, desc);
 			// Fighters
-			const updatedFighters = await updateFighters.fetchAndInjectData(fighters);
-			console.log(updatedFighters);
+			const updatedFighters = await updateFighters.fetchAndInjectData(
+				fighters,
+				desc,
+				ships
+			);
+			// console.log(updatedFighters);
 
 			this.updateState("dataState", {
 				allShips: ships,
@@ -534,20 +538,21 @@ const updateFighters = {
 		"style",
 		"weaponSlots",
 	],
-
-	updatedId: (fighterObject) => fighterObject.id.replaceAll("_wing", ""),
-
-	convertIdToDifferentIdSpecialRule: (fighterId) => {
-		// for some reason different id from others, I have to overwrite manually
-		if (fighterId === "borer") {
-			return (fighterId = "drone_borer");
-		}
-		if (fighterId === "terminator") {
-			return (fighterId = "drone_terminator");
-		}
-		return fighterId;
-	},
-	async processWeapon(fighterObject, allDescriptions) {
+	// I need a different name
+	// Additional properties take from AllShips CVS
+	//! extract from allShips
+	KEYS_TO_EXTRACT: [
+		"shieldType",
+		"techManufacturer",
+		"shieldArc",
+		"armorRating",
+		"hitpoints",
+		"name",
+		"maxCrew",
+		"systemId",
+		"maxSpeed",
+	],
+	async processWeapon(fighterObject, allDescriptions, allShips) {
 		try {
 			// simple filter to remove IGNORE_FIGHTER_ID
 			if (this.IGNORE_FIGHTER_ID[fighterObject.id]) return fighterObject;
@@ -567,22 +572,47 @@ const updateFighters = {
 				jsonData
 			);
 
-			// const injectAdditionalDescriptions = await this.injectWeaponDescriptions(
-			// 	weaponObject,
-			// 	createAdditionalDataObject,
-			// 	allDescriptions
-			// );
-
+			// Add Descriptions to Addtional Data
+			const arrayWithDescriptions = await this.injectFighterDescriptions(
+				fighterObject,
+				createAdditionalDataObject,
+				allDescriptions
+			);
+			// Add data from AllShips to Additional Data
+			const arrayWithFighterHullData = this.injectFighterHullData(
+				convertedFighterId,
+				arrayWithDescriptions,
+				allShips
+			);
+			console.log(arrayWithFighterHullData);
 			return {
 				...fighterObject,
-				additionalData: createAdditionalDataObject,
+				additionalData: arrayWithDescriptions,
 			};
 		} catch (err) {
 			console.error(`Error processing weapon ${fighterObject.id}:`, err);
 			return fighterObject;
 		}
 	},
-
+	fetchAndInjectData: async function (allFighters, allDescriptions, allShips) {
+		return Promise.all(
+			this.cleanedArray(allFighters).map((weaponObject) =>
+				this.processWeapon(weaponObject, allDescriptions, allShips)
+			)
+		);
+	},
+	// Helper functions
+	updatedId: (fighterObject) => fighterObject.id.replaceAll("_wing", ""),
+	convertIdToDifferentIdSpecialRule: (fighterId) => {
+		// for some reason different id from others, I have to overwrite manually
+		if (fighterId === "borer") {
+			return (fighterId = "drone_borer");
+		}
+		if (fighterId === "terminator") {
+			return (fighterId = "drone_terminator");
+		}
+		return fighterId;
+	},
 	cleanedArray: (data) => {
 		const keysToRemove = [
 			"_1",
@@ -606,132 +636,48 @@ const updateFighters = {
 		);
 		return removeBrokenKeysArray;
 	},
+	injectFighterDescriptions(fighterObject, additionalData, allDescriptions) {
+		try {
+			const convertedFighterId = this.convertIdToDifferentIdSpecialRule(
+				this.updatedId(fighterObject)
+			);
 
-	fetchAndInjectData: async function (allFighters, allDescriptions) {
-		return Promise.all(
-			this.cleanedArray(allFighters).map((weaponObject) =>
-				this.processWeapon(weaponObject, allDescriptions)
-			)
+			const descriptionObject = allDescriptions.find(
+				(desc) => desc.id === convertedFighterId
+			);
+
+			if (!descriptionObject) throw new Error("missing description");
+
+			const unitedString = () => {
+				return (
+					descriptionObject.text1 +
+					descriptionObject.text2 +
+					descriptionObject.text3 +
+					descriptionObject.text4
+				)
+					.replaceAll("\r", "")
+					.replaceAll("\n", "");
+			};
+
+			return {
+				...additionalData,
+				description: unitedString(),
+			};
+		} catch (err) {
+			console.warn("injectFighterDescriptions", err);
+			return additionalData;
+		}
+	},
+	injectFighterHullData(fighterId, data, allShips) {
+		const findCorrectHull = allShips.find((ship) => ship.id === fighterId);
+		const extractedData = extractDataFromObject(
+			this.KEYS_TO_EXTRACT,
+			findCorrectHull
 		);
+		return { ...data, ...extractedData };
 	},
 };
 const updateFighters1 = {
-	fetchAndInjectInitialFighterData: async function () {
-		try {
-			const updatedId = (fighterObject) =>
-				fighterObject.id.replaceAll("_wing", "");
-			const convertIdToDifferentIdSpecialRule = (fighterId) => {
-				// for some reason different id for two fighters
-				if (fighterId === "borer") {
-					return (fighterId = "drone_borer");
-				}
-				if (fighterId === "terminator") {
-					return (fighterId = "drone_terminator");
-				}
-				return fighterId;
-			};
-
-			const fetchFighterData = async (fighterIdOnly) => {
-				const res = await fetch(
-					`/${URL.DATA_HULLS}/${convertIdToDifferentIdSpecialRule(
-						fighterIdOnly
-					)}.ship`
-				);
-				if (!res.ok) {
-					throw new Error(`HTTP error! status: ${res.status}`);
-				}
-				return res.text();
-			};
-
-			const extractAdditionalFighterData = (fighterDataFinal) => {
-				const keysToInject = ["height", "spriteName", "width"];
-				return keysToInject.reduce((acc, key) => {
-					acc[key] = fighterDataFinal[key];
-					return acc;
-				}, {});
-			};
-
-			const processWeapon = async (fighterObject) => {
-				try {
-					const cleanData = await fetchFighterData(updatedId(fighterObject));
-					const weaponDataFinal = JSON.parse(cleanData);
-					const additionalFighterData =
-						extractAdditionalFighterData(weaponDataFinal);
-					return { ...fighterObject, additionalFighterData };
-				} catch (err) {
-					console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
-					return fighterObject; // Return original object if processing fails
-				}
-			};
-			state.allFighters = await Promise.all(
-				state.allFighters.map(processWeapon)
-			);
-		} catch (err) {
-			console.log(err);
-		}
-	},
-
-	fetchAndInjectAdditionalFighterDataFromShipData: async function () {
-		const { allFighters, allShips } = state;
-
-		// Additional properties take from AllShips CVS
-		const KEYS_TO_EXTRACT = [
-			"shield_type",
-			"tech_manufacturer",
-			"shield_arc",
-			"armor_rating",
-			"hitpoints",
-			"name",
-			"max_crew",
-			"system_id",
-			"max_speed",
-		];
-
-		const normalizeFighterId = (fighterId) => {
-			const normalized = fighterId
-				.replaceAll("_wing", "")
-				.split("_")
-				.join(" ")
-				.toLowerCase();
-
-			const specialIdMappings = {
-				borer: "drone_borer",
-				terminator: "drone_terminator",
-				"mining drone": "mining_drone",
-			};
-
-			return specialIdMappings[normalized] || normalized;
-		};
-		const extractDescription = (id) => {
-			return state.globalDescriptions.find(
-				(description) => description.id === id
-			);
-		};
-
-		state.allFighters = allFighters.map((fighterObject) => {
-			// different Id in different databases for some reason
-			// some with dagger_wing, some dagger.
-			const fighterId = normalizeFighterId(fighterObject.id);
-
-			// Strip values from One array and assign to DataShipHull subObject
-			const currentFighter = allShips.find(
-				(shipObject) => shipObject.id === fighterId
-			);
-			const additionalFighterDataShipHull = currentFighter
-				? Object.fromEntries(
-						KEYS_TO_EXTRACT.map((key) => [key, currentFighter[key]])
-				  )
-				: {};
-
-			// There are more parameters like text2 / test3 etc. Text1 Is main text.
-			const description = extractDescription(fighterId).text1;
-			return {
-				...fighterObject,
-				additionalFighterDataShipHull,
-				description,
-			};
-		});
-	},
 	fetchAndInjectFighterVariantData: async function () {
 		//? WHY THE DATA IS IN VARIANTS/FIGHTERS I HAVE NOT IDEA
 		//? WHY ARE SOME IN DIFFERENT FOLDERS
