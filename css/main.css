@@ -3,10 +3,13 @@
 @import "_typography.css";
 @import "_icons.css";
 @import "_fonts.css";
-/* Hover */
+/* Weapon / Fighter Pop Up */
 @import "_weapon-pop-up.css";
+@import "fighter-pop-up.css";
+
 @import "weapon-pop-up-hover.css";
 
+/* Main Container */
 @import "_build-maker.css";
 @import "./build-maker.css";
 @import "./navigation.css";

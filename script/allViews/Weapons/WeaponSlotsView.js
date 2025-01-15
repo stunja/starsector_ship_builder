@@ -65,16 +65,3 @@ class WeaponSlotsView extends View {
 }
 
 export default new WeaponSlotsView();
-/////
-// const markup = `
-// 				<button class="${classNames.weaponSlot} ${
-// 			classNames.weaponSize
-// 		}--${weaponSize} ${classNames.weaponType}--${weaponType}"
-// 					${DataSet.dataWeaponSlotId}="${currentWeaponSlot.id}">
-// 					${installedWeaponsNotEmpty}
-// 					<div class="${classNames.weaponSpriteParent}">
-// 						${this.#weaponTypeBackgroundMarkup(currentWeaponSlot)}
-// 					</div>
-//         			${this.#weaponArcRenderMarkup(currentWeaponSlot)}
-// 				</button>`;
-// 		return markup;

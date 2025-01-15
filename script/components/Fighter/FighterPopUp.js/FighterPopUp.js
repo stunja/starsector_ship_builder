@@ -11,12 +11,12 @@ export default class FighterPopUp extends ViewModel {
 	#userShipBuild;
 	#weaponSlot;
 	// Fighter Object which can be shown to user
-	#fighterObjectsArray;
+	#allFighters;
 	constructor(model) {
 		super(model);
 
 		this.#state = this.getState();
-		// this.#allWeapons = this.#state.dataState.allWeapons;
+		this.#allFighters = this.#state.dataState.allFighters;
 		this.#userShipBuild = this.#state.userState.userShipBuild;
 	}
 
@@ -34,19 +34,12 @@ export default class FighterPopUp extends ViewModel {
 		FighterPopUpContainerView.render(this.#state);
 		FighterPopUpTableHeaderView.render(this.#state);
 
-		console.log(this.#state.dataState.allFighters);
-		console.log(this.#fighterObjectsArray);
+		FighterPopUpTableView.render([
+			this.#userShipBuild.installedWeapons,
+			this.#allFighters,
+			this.#weaponSlot,
+		]);
 
-		// FighterPopUpTableView.render([
-		// 	this.#userShipBuild.installedWeapons,
-		// 	this.#fighterObjectsArray,
-		// 	this.#weaponSlot,
-		// ]);
-		// WeaponPopUpTableView.render([
-		// 			this.#userShipBuild,
-		// 			this.#currentWeaponArray,
-		// 			this.#weaponSlot,
-		// 		]);
 		// WeaponPopUpTableView.render();
 	}
 }

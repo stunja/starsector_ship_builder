@@ -53,38 +53,5 @@ class FightersView extends View {
 	        </ul>
 	`;
 	}
-	// fighterBayActiveWeaponSlot(buttonId) {
-	// 	const parentElement = this.#parentElementMiddle.querySelector(
-	// 		`.${classNames.fighterSlots}`
-	// 	);
-	// 	if (!parentElement) return;
-
-	// 	this.fighterBayButtonRemoveAllActiveClasses();
-
-	// 	const targetElement = parentElement.querySelector(
-	// 		`[${DataSet.dataFighterId}="${buttonId}"]`
-	// 	);
-	// 	if (targetElement) {
-	// 		targetElement.classList.add(classNames.fighterSlotActive);
-	// 	}
-	// }
-	// fighterBayButtonRemoveAllActiveClasses() {
-	// 	const parentElement = this.#parentElementMiddle.querySelector(
-	// 		`.${classNames.fighterSlots}`
-	// 	);
-
-	// 	// Remove active class from all slots first
-	// 	parentElement
-	// 		.querySelectorAll(`.${classNames.fighterSlot}`)
-	// 		.forEach((slot) => slot.classList.remove(classNames.fighterSlotActive));
-	// }
-	// //!
-	// figherBayAddFighterRender(currentWeapon, currentWeaponSlot) {
-	// 	const slotId = currentWeaponSlot.id;
-	// 	const localParent = `.${classNames.fighterSlots} [${DataSet.dataFighterId}="${slotId}"]`;
-
-	// 	const markup = `${FighterSpritesView.render(currentWeapon)}`;
-	// 	return [markup, localParent];
-	// }
 }
 export default new FightersView();
