@@ -1,5 +1,6 @@
 import ViewModel from "../../ViewModel.js";
 import WeaponPopUpCreateCurrentWeaponArray from "./WeaponPopUpCreateCurrentWeaponArray.js";
+import TablePopUpSorter from "../TablePopUpSorter.js";
 // Helper
 import classNames from "../../helper/DomClassNames.js";
 import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
@@ -18,6 +19,7 @@ const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
 	HOVER: "mouseover",
 };
+const TABLE_POPUP_TYPE = "weaponPopUpTable";
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
 	// CurrentWeaponArray based on Slots / Weapon Mount
@@ -58,7 +60,7 @@ export default class WeaponPopUp extends ViewModel {
 
 		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
 			`.${classNames.tableContainer}`,
-			this.#userClickedOutsideOfContainer
+			WeaponPopUpContainerView._clearRender
 		);
 	}
 	#removeActiveWeaponAndReRenderWeaponPopUp() {
@@ -75,9 +77,6 @@ export default class WeaponPopUp extends ViewModel {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new WeaponSlots(this.#state).update();
 
-		// Set WeaponPopUp to Close
-		this.isWeaponPopUpStateOpen(false);
-
 		// Remove WeaponPopUpContainer
 		WeaponPopUpContainerView._clearRender();
 	}
@@ -86,7 +85,7 @@ export default class WeaponPopUp extends ViewModel {
 		WeaponPopUpTableHeaderView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.#weaponPopUpTableSorter
+			this.#weaponTableSorter
 		);
 	}
 	#addWeaponPopUpEntryListener() {
@@ -102,19 +101,21 @@ export default class WeaponPopUp extends ViewModel {
 		);
 	}
 
-	#userClickedOutsideOfContainer = () => {
-		// Change UI State
-		this.isWeaponPopUpStateOpen(false);
-
-		// Remove WeaponPopUpContainer
-		WeaponPopUpContainerView._clearRender();
+	#weaponTableSorter = (btn) => {
+		// Sort the Table
+		this.#currentWeaponArray = TablePopUpSorter.update([
+			btn,
+			TABLE_POPUP_TYPE,
+			this.#currentWeaponArray,
+		]);
+		// Render Changes
+		this.#renderWeaponPopUpAndAddEventListeners();
 	};
 	//
 	#createCurrentWeaponArray() {
 		this.#currentWeaponArray =
 			WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
 				this.#weaponSlot,
-				this.#userShipBuild,
 				this.#allWeapons
 			);
 	}
@@ -129,8 +130,6 @@ export default class WeaponPopUp extends ViewModel {
 			this.#currentWeaponArray,
 			this.#weaponSlot,
 		]);
-
-		this.isWeaponPopUpStateOpen(true);
 	}
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
@@ -163,48 +162,7 @@ export default class WeaponPopUp extends ViewModel {
 			? this.#addWeaponAndCloseWeaponPopUp()
 			: this.#removeActiveWeaponAndReRenderWeaponPopUp();
 	};
-	// Sorter
-	#weaponPopUpTableSorter = (btn) => {
-		const { weaponPopUp } = this.getUiState();
-		let { currentCategory, isAscending } = this.getUiState().weaponPopUp;
 
-		const { category } = btn.dataset;
-
-		// Toggle direction if clicking same category, otherwise default to ascending
-		isAscending = currentCategory === category ? !isAscending : true;
-		currentCategory = category;
-
-		const sortConfigs = {
-			name: (a, b) =>
-				isAscending
-					? a.name.localeCompare(b.name)
-					: b.name.localeCompare(a.name),
-
-			type: (a, b) =>
-				isAscending
-					? a.type.localeCompare(b.type)
-					: b.type.localeCompare(a.type),
-
-			range: (a, b) => (isAscending ? a.range - b.range : b.range - a.range),
-
-			cost: (a, b) => (isAscending ? a.oPs - b.oPs : b.oPs - a.oPs),
-		};
-
-		this.setUpdateWeaponPopUpState({
-			...weaponPopUp,
-			currentCategory,
-			isAscending,
-		});
-
-		//
-		if (sortConfigs[category]) {
-			this.#currentWeaponArray = this.#currentWeaponArray.toSorted(
-				sortConfigs[category]
-			);
-			// Method to update your table DOM
-			this.#renderWeaponPopUpAndAddEventListeners();
-		}
-	};
 	// Hover
 	#showAdditionalInformationOnHover = (btn) => {
 		const { weaponPopUpId } = btn.dataset;

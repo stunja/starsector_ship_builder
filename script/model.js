@@ -88,14 +88,13 @@ export class Model {
 				desc,
 				ships
 			);
-			// console.log(updatedFighters);
 
 			this.updateState("dataState", {
 				allShips: ships,
 				allWeapons: filteredWeaponsWithAdditionalData,
 				allWeaponSystems: weaponSystemsOnly,
 				allHullMods: hullmods,
-				allFighters: fighters,
+				allFighters: updatedFighters,
 				allDescriptions: desc,
 			});
 			this.updateUserShipBuild(userShipBuild);
@@ -521,14 +520,6 @@ const createUserShipBuild = {
 	},
 };
 const updateFighters = {
-	// error with json parse, these fighters are not important anyway (ALPHA REDACTED)
-	// maybe I will fix later
-	IGNORE_FIGHTER_ID: {
-		aspect_shock_wing: "aspect_shock_wing",
-		aspect_shieldbreaker_wing: "aspect_shieldbreaker_wing",
-		aspect_attack_wing: "aspect_attack_wing",
-		aspect_missile_wing: "aspect_missile_wing",
-	},
 	// There a much more props in the file,
 	KEYS_TO_INJECT: [
 		"height",
@@ -538,10 +529,11 @@ const updateFighters = {
 		"style",
 		"weaponSlots",
 	],
+
 	// I need a different name
 	// Additional properties take from AllShips CVS
 	//! extract from allShips
-	KEYS_TO_EXTRACT: [
+	KEYS_TO_EXTRACT_FROM_ALLSHIPS: [
 		"shieldType",
 		"techManufacturer",
 		"shieldArc",
@@ -554,9 +546,6 @@ const updateFighters = {
 	],
 	async processWeapon(fighterObject, allDescriptions, allShips) {
 		try {
-			// simple filter to remove IGNORE_FIGHTER_ID
-			if (this.IGNORE_FIGHTER_ID[fighterObject.id]) return fighterObject;
-
 			const convertedFighterId = this.convertIdToDifferentIdSpecialRule(
 				this.updatedId(fighterObject)
 			);
@@ -573,7 +562,7 @@ const updateFighters = {
 			);
 
 			// Add Descriptions to Addtional Data
-			const arrayWithDescriptions = await this.injectFighterDescriptions(
+			const arrayWithDescriptions = this.injectFighterDescriptions(
 				fighterObject,
 				createAdditionalDataObject,
 				allDescriptions
@@ -584,10 +573,14 @@ const updateFighters = {
 				arrayWithDescriptions,
 				allShips
 			);
-			console.log(arrayWithFighterHullData);
+			const finalArray = await this.injectVariantData(
+				fighterObject,
+				arrayWithFighterHullData
+			);
+
 			return {
 				...fighterObject,
-				additionalData: arrayWithDescriptions,
+				additionalData: finalArray,
 			};
 		} catch (err) {
 			console.error(`Error processing weapon ${fighterObject.id}:`, err);
@@ -602,9 +595,12 @@ const updateFighters = {
 		);
 	},
 	// Helper functions
+	// id mismatch between shipData and Fighter Data
+	// Fighters are not identical to allWeapons
 	updatedId: (fighterObject) => fighterObject.id.replaceAll("_wing", ""),
+
+	// for some reason different id from others, I have to overwrite manually
 	convertIdToDifferentIdSpecialRule: (fighterId) => {
-		// for some reason different id from others, I have to overwrite manually
 		if (fighterId === "borer") {
 			return (fighterId = "drone_borer");
 		}
@@ -614,27 +610,42 @@ const updateFighters = {
 		return fighterId;
 	},
 	cleanedArray: (data) => {
-		const keysToRemove = [
-			"_1",
-			"_2",
-			"_3",
-			"_4",
-			"_5",
-			"_6",
-			"_7",
-			"_8",
-			"_9",
-			"_10",
-			"_11",
-		];
-		const removeEmptyObjects = data.filter((obj) => obj.id);
+		// fighters are not important anyway (ALPHA REDACTED)
+		const IGNORE_FIGHTER_ID = {
+			aspect_shock_wing: "aspect_shock_wing",
+			aspect_shieldbreaker_wing: "aspect_shieldbreaker_wing",
+			aspect_attack_wing: "aspect_attack_wing",
+			aspect_missile_wing: "aspect_missile_wing",
+		};
+		try {
+			const keysToRemove = [
+				"_1",
+				"_2",
+				"_3",
+				"_4",
+				"_5",
+				"_6",
+				"_7",
+				"_8",
+				"_9",
+				"_10",
+				"_11",
+			];
+			const removeEmptyObjects = data.filter((obj) => obj.id);
 
-		const removeBrokenKeysArray = removeEmptyObjects.map((obj) =>
-			Object.fromEntries(
-				Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
-			)
-		);
-		return removeBrokenKeysArray;
+			const removeIgnoredFighterObjects = removeEmptyObjects.filter((obj) => {
+				if (!IGNORE_FIGHTER_ID[obj.id]) return obj;
+			});
+
+			const removeBrokenKeysArray = removeIgnoredFighterObjects.map((obj) =>
+				Object.fromEntries(
+					Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
+				)
+			);
+			return removeBrokenKeysArray;
+		} catch (err) {
+			console.log("Error with Cleaning of Fighter Data", err);
+		}
 	},
 	injectFighterDescriptions(fighterObject, additionalData, allDescriptions) {
 		try {
@@ -671,77 +682,56 @@ const updateFighters = {
 	injectFighterHullData(fighterId, data, allShips) {
 		const findCorrectHull = allShips.find((ship) => ship.id === fighterId);
 		const extractedData = extractDataFromObject(
-			this.KEYS_TO_EXTRACT,
+			this.KEYS_TO_EXTRACT_FROM_ALLSHIPS,
 			findCorrectHull
 		);
 		return { ...data, ...extractedData };
 	},
-};
-const updateFighters1 = {
-	fetchAndInjectFighterVariantData: async function () {
+	async injectVariantData(fighterObject, data) {
 		//? WHY THE DATA IS IN VARIANTS/FIGHTERS I HAVE NOT IDEA
 		//? WHY ARE SOME IN DIFFERENT FOLDERS
 		//? WHY FLASH IS IN REMNANT
 		//? HOPLON IS KOPESH (OLD NAME)
+		const SPECIAL_RULES = {
+			drone_borer: URL.DATA_VARIANTS_DRONES,
+			drone_terminator: URL.DATA_VARIANTS_DRONES,
+			flash_Bomber: URL.DATA_VARIANTS_REMNANT,
+			spark_Interceptor: URL.DATA_VARIANTS_REMNANT,
+			lux_Fighter: URL.DATA_VARIANTS_REMNANT,
+		};
+		const cleanToJson = (fileContent) => {
+			fileContent = fileContent.replace(/#.*$/gm, ""); // Remove inline comments
+			fileContent = fileContent.replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas
+			fileContent = fileContent.replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":'); // Add quotes around keys
 
+			return fileContent;
+		};
+		const variantTargeting = (fighterObject) => {
+			// hoplon_Escort => kopesh_Bomber // Why I dont know it doesn`t match
+			return fighterObject.variant === "hoplon_Escort"
+				? "khopesh_Bomber"
+				: fighterObject.variant;
+		};
+		const convertedURL = (urlCheck, fighterVariant) => {
+			if (urlCheck === undefined) {
+				return `/${URL.DATA_VARIANTS_FIGHTERS}/${fighterVariant}.variant`;
+			}
+			return `/${urlCheck}/${fighterVariant}.variant`;
+		};
 		try {
-			const cleanToJson = (fileContent) => {
-				fileContent = fileContent.replace(/#.*$/gm, ""); // Remove inline comments
-				fileContent = fileContent.replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas
-				fileContent = fileContent.replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":'); // Add quotes around keys
-
-				return fileContent;
-			};
-			const variantTargeting = (fighterObject) => {
-				// hoplon_Escort => kopesh_Bomber // Why I dont know
-				return fighterObject.variant !== "hoplon_Escort"
-					? fighterObject.variant
-					: "khopesh_Bomber";
-			};
-
-			const fetchVariantData = async (variantId) => {
-				const SPECIAL_RULES = {
-					drone_borer: URL.DATA_VARIANTS_DRONES,
-					drone_terminator: URL.DATA_VARIANTS_DRONES,
-					flash_Bomber: URL.DATA_VARIANTS_REMNANT,
-					spark_Interceptor: URL.DATA_VARIANTS_REMNANT,
-					lux_Fighter: URL.DATA_VARIANTS_REMNANT,
-				};
-
-				const regularURL = (urlCheck) => {
-					if (urlCheck === undefined) {
-						return `/${URL.DATA_VARIANTS_FIGHTERS}/${variantId}.variant`;
-					}
-					return `/${urlCheck}/${variantId}.variant`;
-				};
-
-				//
-				const res = await fetch(regularURL(SPECIAL_RULES[variantId]));
-				if (!res.ok) {
-					throw new Error(`HTTP error! status: ${res.status}`);
-				}
-				return res.text();
-			};
-
-			const processWeapon = async (fighterObject) => {
-				try {
-					const fetchedData = await fetchVariantData(
-						variantTargeting(fighterObject)
-					);
-					const cleanedData = cleanToJson(fetchedData);
-					const additionalFighterDataFromVariant = JSON.parse(cleanedData);
-					// console.log(additionalFighterDataFromVariant);
-					return { ...fighterObject, additionalFighterDataFromVariant };
-				} catch (err) {
-					console.error(`Error processing weapon ${fighterObject.id}: ${err}`);
-					return fighterObject; // Return original object if processing fails
-				}
-			};
-			state.allFighters = await Promise.all(
-				state.allFighters.map(processWeapon)
+			const variantId = variantTargeting(fighterObject);
+			const fetchedData = await jsonFetcher.fetchData(
+				convertedURL(SPECIAL_RULES[variantId], variantId)
 			);
+			const cleanedData = cleanToJson(fetchedData);
+			const variantData = JSON.parse(cleanedData);
+
+			return {
+				...data,
+				...variantData,
+			};
 		} catch (err) {
-			console.log(`${err} in fetchAndInjectFighterVariantData`);
+			console.log(`${err} in injectVariantData`);
 		}
 	},
 };

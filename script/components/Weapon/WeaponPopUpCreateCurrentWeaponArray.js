@@ -16,7 +16,7 @@ const MOUNT_TYPE = {
 
 class WeaponPopUpCreateCurrentWeaponArray {
 	// Main function
-	weaponFilterArray(weaponSlot, userShipBuild, allWeaponsObjects) {
+	weaponFilterArray(weaponSlot, allWeaponsObjects) {
 		const filteredWeapons = this.#filterWeapons(allWeaponsObjects, weaponSlot);
 
 		return filteredWeapons;

@@ -17,11 +17,12 @@ const classNames = {
 
 	gridContainer: "grid-container",
 	shipInfoContainer: "ship-info-container",
-	fighterContainer: "fighter-container",
 	additionalInfoContainer: "additional-info-container",
 	builderButtonsContainer: "builder-buttons-container",
 	shipAreaContainer: "ship-area-container",
 	statsContainer: "stats-container",
+	fighterContainer: "fighter-container",
+
 	//
 
 	// hoverAdditionalInformation: "hover-additional-information",
@@ -41,7 +42,7 @@ const classNames = {
 	fighterSlotContainer: `fighter-slot-container`, // Single Slot
 	// Fighter Classes
 	fighterFlexColumn: "fighter-flex-column",
-	fighterSpriteContainer: `fighter-container`,
+	fighterSpriteContainer: `fighter-sprite-container`,
 	fighterSpriteCost: `fighter-sprite-cost`,
 
 	fighter: "fighter",
