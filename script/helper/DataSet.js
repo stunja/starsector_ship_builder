@@ -8,9 +8,10 @@ const DataSet = {
 	dataButtonValue: "data-button-value",
 	dataButtonName: "data-button-name",
 	dataHullModButtonType: "data-hullmod-button-type",
-	dataWeaponPopUpId: "data-weapon-pop-up-id",
 	dataWeaponSlotId: "data-weapon-slot-id",
 	dataBuilderButtonType: "data-builder-button-type",
 	dataNavButtonType: "data-nav-button-type",
+	// Pop Up
+	dataWeaponPopUpId: "data-weapon-pop-up-id",
 };
 export default DataSet;

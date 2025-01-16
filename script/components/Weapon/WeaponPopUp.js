@@ -19,6 +19,7 @@ const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
 	HOVER: "mouseover",
 };
+const TABLE_POPUP_TYPE = "weaponPopUpTable";
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
 	// CurrentWeaponArray based on Slots / Weapon Mount
@@ -59,7 +60,7 @@ export default class WeaponPopUp extends ViewModel {
 
 		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
 			`.${classNames.tableContainer}`,
-			this.#userClickedOutsideOfContainer
+			WeaponPopUpContainerView._clearRender
 		);
 	}
 	#removeActiveWeaponAndReRenderWeaponPopUp() {
@@ -87,15 +88,6 @@ export default class WeaponPopUp extends ViewModel {
 			this.#weaponTableSorter
 		);
 	}
-	#weaponTableSorter = (btn) => {
-		// Sort the Table
-		this.#currentWeaponArray = TablePopUpSorter.update([
-			btn,
-			this.#currentWeaponArray,
-		]);
-		// Render Changes
-		this.#renderWeaponPopUpAndAddEventListeners();
-	};
 	#addWeaponPopUpEntryListener() {
 		WeaponPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
@@ -109,9 +101,15 @@ export default class WeaponPopUp extends ViewModel {
 		);
 	}
 
-	#userClickedOutsideOfContainer = () => {
-		// Remove WeaponPopUpContainer
-		WeaponPopUpContainerView._clearRender();
+	#weaponTableSorter = (btn) => {
+		// Sort the Table
+		this.#currentWeaponArray = TablePopUpSorter.update([
+			btn,
+			TABLE_POPUP_TYPE,
+			this.#currentWeaponArray,
+		]);
+		// Render Changes
+		this.#renderWeaponPopUpAndAddEventListeners();
 	};
 	//
 	#createCurrentWeaponArray() {

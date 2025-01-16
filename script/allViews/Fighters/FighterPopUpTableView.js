@@ -21,12 +21,7 @@ class FighterPopUpTableView extends View {
 	}
 	generateMarkup() {
 		this.#processData(this._data);
-
-		const markup = `${this.#tableBodyRender(
-			this.#currentFighterArray,
-			this.#installedWeapons,
-			this.#weaponSlot
-		)}`;
+		const markup = `${this.#tableBodyRender()}`;
 
 		return markup;
 	}
@@ -46,12 +41,12 @@ class FighterPopUpTableView extends View {
 		// empty space so they are not joined classes
 		return isActiveClass ? ` ${classNames.weaponPopUpActive}` : "";
 	};
-	#tableBodyRender(currentFighterArray, installedWeapons, weaponSlot) {
+	#tableBodyRender() {
 		const entryMarkup = (crrFighter) => `
 			<ul class="${classNames.tableEntries}${this.#assignActiveClass(
 			crrFighter,
-			installedWeapons,
-			weaponSlot
+			this.#installedWeapons,
+			this.#weaponSlot
 		)}"  
 				${DataSet.dataWeaponPopUpId}="${crrFighter.id}">
 
@@ -71,7 +66,9 @@ class FighterPopUpTableView extends View {
 				<li class="${classNames.tableEntry}">${crrFighter.opCost}</li>
 			</ul>
 			`;
-		return currentFighterArray.map((crrWpn) => entryMarkup(crrWpn)).join("");
+		return this.#currentFighterArray
+			.map((crrWpn) => entryMarkup(crrWpn))
+			.join("");
 	}
 }
 export default new FighterPopUpTableView();
