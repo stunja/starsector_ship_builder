@@ -5,6 +5,17 @@ import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUp
 import FighterPopUpTableView from "../../../allViews/Fighters/FighterPopUpTableView";
 // Helper
 import { weaponSlotIdIntoWeaponSlotObject } from "../../../helper/helperFunction";
+import classNames from "../../../helper/DomClassNames";
+
+const EVENT_LISTENER_TARGET = {
+	TABLE_ENTRIES: `.${classNames.tableEntries}`,
+	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
+};
+
+const EVENT_LISTENER_TYPE = {
+	CLICK: "click",
+	HOVER: "mouseover",
+};
 
 export default class FighterPopUp extends ViewModel {
 	#state;
@@ -29,82 +40,98 @@ export default class FighterPopUp extends ViewModel {
 		);
 
 		this.#renderFighterPopUp();
+		this.#addWeaponPopUpTableHeaderListener();
 	};
+	#sortFighterArray = (arr) => arr.toSorted((a, b) => b.opCost - a.opCost);
 	#renderFighterPopUp() {
 		FighterPopUpContainerView.render(this.#state);
 		FighterPopUpTableHeaderView.render(this.#state);
 
 		FighterPopUpTableView.render([
 			this.#userShipBuild.installedWeapons,
-			this.#allFighters,
+			this.#sortFighterArray(this.#allFighters),
 			this.#weaponSlot,
 		]);
-
-		// WeaponPopUpTableView.render();
 	}
+	// WeaponPopUp Event Listeners
+	#addWeaponPopUpTableHeaderListener() {
+		FighterPopUpTableHeaderView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#fighterPopUpTableSorter
+		);
+
+		// 	WeaponPopUpTableView.addClickHandler(
+		// 		EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+		// 		EVENT_LISTENER_TYPE.HOVER,
+		// 		this.#showAdditionalInformationOnHover
+		// 	);
+	}
+
+	#fighterPopUpTableSorter = (btn) => {
+		const category = btn.dataset.category;
+
+		// const {
+		// 	previousSortState,
+		// 	isAscending,
+		// 	currentFighterArray: originalArrayState,
+		// } = model.uiState.fighterPopUp;
+		const currentWeaponSlot = this.#weaponSlot;
+		const currentInstalledWeapons = this.#userShipBuild.currentInstalledWeapons;
+
+		// Mapping of sort categories to their corresponding object keys and sort types
+		const SORT_CONFIGS = {
+			name: { key: "id", type: "text" },
+			role: { key: "role", type: "text" },
+			wing: { key: "num", type: "number" },
+			range: { key: "range", type: "number" },
+			cost: { key: "op_cost", type: "number" },
+		};
+
+		// Determine the new sort direction
+		const newIsAscending = previousSortState !== category ? true : !isAscending;
+
+		// Perform sorting if the category is valid
+		const sortConfig = SORT_CONFIGS[category];
+		if (!sortConfig) {
+			console.warn(`Invalid sort category: ${category}`);
+			return;
+		}
+
+		const currentArrayState = originalArrayState.toSorted((a, b) => {
+			const valueA = a[sortConfig.key];
+			const valueB = b[sortConfig.key];
+
+			if (sortConfig.type === "text") {
+				return newIsAscending
+					? valueA.localeCompare(valueB)
+					: valueB.localeCompare(valueA);
+			}
+
+			if (sortConfig.type === "number") {
+				return newIsAscending ? valueB - valueA : valueA - valueB;
+			}
+		});
+
+		// this.#currentFighterPopUp;
+		return;
+		// Update model state
+		model.uiState.fighterPopUp = {
+			...model.uiState.fighterPopUp,
+			isAscending: newIsAscending,
+			previousSortState: category,
+			currentArrayState,
+		};
+		// Render updated component
+		FighterPopUpTableView.renderComponent(
+			FighterPopUpTableView.tableContentRender(
+				currentArrayState,
+				currentInstalledWeapons,
+				[currentWeaponSlot]
+			)
+		);
+	};
 }
-//! Should be united into ONE
-// fighterPopUpTableSorter(btn) {
-// 	const category = btn.dataset.category;
-// 	const {
-// 		previousSortState,
-// 		isAscending,
-// 		currentFighterArray: originalArrayState,
-// 	} = model.uiState.fighterPopUp;
-// 	const currentWeaponSlot = model.uiState.currentWeaponSlot;
-// 	const currentInstalledWeapons =
-// 		model.state.currentShipBuild.currentInstalledWeapons;
-
-// 	// Mapping of sort categories to their corresponding object keys and sort types
-// 	const SORT_CONFIGS = {
-// 		name: { key: "id", type: "text" },
-// 		role: { key: "role", type: "text" },
-// 		wing: { key: "num", type: "number" },
-// 		range: { key: "range", type: "number" },
-// 		cost: { key: "op_cost", type: "number" },
-// 	};
-
-// 	// Determine the new sort direction
-// 	const newIsAscending = previousSortState !== category ? true : !isAscending;
-
-// 	// Perform sorting if the category is valid
-// 	const sortConfig = SORT_CONFIGS[category];
-// 	if (!sortConfig) {
-// 		console.warn(`Invalid sort category: ${category}`);
-// 		return;
-// 	}
-
-// 	const currentArrayState = originalArrayState.toSorted((a, b) => {
-// 		const valueA = a[sortConfig.key];
-// 		const valueB = b[sortConfig.key];
-
-// 		if (sortConfig.type === "text") {
-// 			return newIsAscending
-// 				? valueA.localeCompare(valueB)
-// 				: valueB.localeCompare(valueA);
-// 		}
-
-// 		if (sortConfig.type === "number") {
-// 			return newIsAscending ? valueB - valueA : valueA - valueB;
-// 		}
-// 	});
-
-// 	// Update model state
-// 	model.uiState.fighterPopUp = {
-// 		...model.uiState.fighterPopUp,
-// 		isAscending: newIsAscending,
-// 		previousSortState: category,
-// 		currentArrayState,
-// 	};
-// 	// Render updated component
-// 	FighterPopUpTableView.renderComponent(
-// 		FighterPopUpTableView.tableContentRender(
-// 			currentArrayState,
-// 			currentInstalledWeapons,
-// 			[currentWeaponSlot]
-// 		)
-// 	);
-// },
 // //! should not be here
 // #fighterBayAddFightersToButton(wpnId, currentWeaponSlot) {
 //     const currentWeaponsArray = model.uiState.fighterPopUp.currentFighterArray;
