@@ -1,5 +1,6 @@
 import View from "../view.js";
 import classNames from "../../helper/DomClassNames.js";
+import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
 // View
 import URL from "../../helper/url.js";
 
@@ -39,6 +40,9 @@ class FighterPopUpHoverView extends View {
 	#allShips;
 	#allHullMods;
 	#allWeaponSystems;
+	#allWeapons;
+	#techManufacturer;
+	#name;
 
 	#processData() {
 		const [weaponObject, weaponSlotObject, dataState] = this._data;
@@ -47,6 +51,7 @@ class FighterPopUpHoverView extends View {
 		const {
 			description,
 			displayName,
+			name,
 			maxCrew,
 			hitpoints,
 			armorRating,
@@ -56,6 +61,7 @@ class FighterPopUpHoverView extends View {
 			maxSpeed,
 			weaponGroups,
 			hullMods,
+			techManufacturer,
 		} = weaponObject.additionalData;
 
 		// States
@@ -63,6 +69,7 @@ class FighterPopUpHoverView extends View {
 		this.#dataState = dataState;
 		this.#allShips = dataState.allShips;
 		this.#allWeaponSystems = dataState.allWeaponSystems;
+		this.#allWeapons = dataState.allWeapons;
 		this.#allHullMods = dataState.allHullMods;
 		// Weapon Object Data
 
@@ -71,11 +78,13 @@ class FighterPopUpHoverView extends View {
 		this.#range = range;
 		this.#num = num;
 		this.#refit = refit;
-
 		// Weapon Additional Data
 
 		this.#description = description;
+		// not the same
 		this.#displayName = displayName;
+		this.#name = name;
+
 		this.#maxCrew = maxCrew;
 		this.#roleDesc = roleDesc;
 		this.#hitpoints = hitpoints;
@@ -86,25 +95,9 @@ class FighterPopUpHoverView extends View {
 		this.#systemId = systemId;
 		this.#weaponGroups = weaponGroups;
 		this.#hullMods = hullMods;
+		this.#techManufacturer = techManufacturer;
 	}
-	/* 
 
-hullMods: Array [ "insulatedengine" ]
-hullSize: "FIGHTER"
-maxCrew: 2
-maxSpeed: 130
-name: "Warthog"
-quality: 0.5
-shieldArc: 0
-shieldType: "NONE"
-spriteName: "graphics/ships/fighters/warthog_lowtech.png"
-style: "LOW_TECH"
-systemId: "flarelauncher_fighter"
-techManufacturer: "Low Tech"
-variantId: "warthog_Fighter"
-weaponGroups: Array [ {…}, {…} ]
-weaponSlots: Array(3) [ {…}, {…}, {…} ]
-		*/
 	generateMarkup() {
 		this.#processData(this._data);
 		const markup = `	
@@ -118,20 +111,16 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 	}
 	#introDataMarkup() {
 		return `
-			<li class="weapon-name">
-				<p>Weapon Name</p>
-				<p>${this.#displayName}</p>
-			</li>
-			<li class="${classNames.weaponDescription}">
-				<p>${this.#descriptionShrink(this.#description)}</p>
-			</li>
+			${this.#contentMarkup("Weapon Name", this.#name + " - " + this.#displayName)}
+			${this.#contentMarkup("Design Type", this.#techManufacturer)}
+			${this.#contentMarkup("", this.#descriptionShrink(this.#description))}
 			`;
 	}
 
 	#primaryDataMarkup() {
 		// prettier-ignore
 		return `
-				<div class="d-grid ${classNames.weaponPrimaryData}">
+				<div class="${classNames.dFlex} ${classNames.weaponPrimaryData}">
 					<div class="${classNames.weaponContentGroup}">
 	                 ${this.#contentMarkup("Primary Role", this.#roleDesc)}
 	                 ${this.#contentMarkup("Ordnance Points", this.#opCost)}
@@ -152,11 +141,10 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 						}
 						${this.#contentMarkup("Top speed", this.#maxSpeed)}
 						${this.#contentMarkup("System",this.#fighterSystemMarkup(this.#systemId, this.#allWeaponSystems))}
-						${this.#contentMultyItems("HullMods",this.#createParagraph(this.#hullModsMarkUp(this.#hullMods, this.#allHullMods),true))}
+						${this.#contentMultyItems("HullMods",this.#hullModsMarkUp(this.#hullMods, this.#allHullMods))}
 					</div>
 					<div class="${classNames.weaponContentGroup}">
-						${this.#contentMultyItems("Armaments",
-						this.#fighterWeaponsMarkUp(this.#weaponGroups,this.#allShips))}
+						${this.#contentMultyItems("Armaments",this.#fighterWeaponsMarkUp(this.#weaponGroups,this.#allWeapons, this.#allWeaponSystems))}
 					</div>
 				</div>`;
 	}
@@ -201,26 +189,48 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 	}
 
 	#hullModsMarkUp(hullMods, allShipHulls) {
-		if (!hullMods || hullMods?.length < 1) return EMPTY_PROP_STRING;
+		if (!hullMods || hullMods?.length < 1)
+			return this.#createParagraph(EMPTY_PROP_STRING, true);
 
-		return hullMods.map((hullMod) => {
-			const extractedHullMod = allShipHulls.find((mod) => mod.id === hullMod);
-			return extractedHullMod?.name || EMPTY_PROP_STRING;
-		});
+		return hullMods
+			.map((hullMod) => {
+				const extractedHullMod = allShipHulls.find((mod) => mod.id === hullMod);
+				const finalString = extractedHullMod?.name || EMPTY_PROP_STRING;
+				return this.#createParagraph(finalString, true);
+			})
+			.join("");
 	}
-	#fighterWeaponsMarkUp(weaponGroups, allWeapons) {
-		// Find Object
-		// const fighterWeapons = weaponGroups.flatMap((obj) =>
-		// 	Object.values(obj.weapons)
-		// );
+	#fighterWeaponsMarkUp(weaponGroups, allWeapons, allWeaponSystems) {
 		const fighterWeapons = weaponGroups.flatMap((obj) =>
 			Object.values(obj.weapons)
 		);
-		// const test = allWeapons.find(wpn=>wpn.id === fighterWeapons)
-		const test = fighterWeapons.filter((wpnGrpProp) => {
-			return allWeapons.filter((wpn) => wpn.id === wpnGrpProp.id);
-		});
-		// console.log(test);
+		const checkDublicates = (arr) => {
+			return Object.entries(
+				arr.reduce((acc, val) => {
+					acc[val] = (acc[val] || 0) + 1;
+					return acc;
+				}, {})
+			);
+		};
+		return checkDublicates(fighterWeapons)
+			.map(([key, value]) => {
+				// find the object
+				const keyProperName = weaponSlotIdIntoWeaponSlotObject(allWeapons, key);
+				// My bad, on splitting weapon array into two arrays
+				// Check if exists in one array, if not check other array
+				const lookWeaponInWeaponSystem = keyProperName
+					? keyProperName.name
+					: allWeaponSystems.find((wpnSys) => wpnSys.id === key).name;
+				// If Number of dublicates is larger than one (1) use special string, otherwise, hide
+				const valueString = value > 1 ? `${value}x : ` : "";
+
+				// Join Strings
+				return this.#createParagraph(
+					`${valueString}${lookWeaponInWeaponSystem}`,
+					true
+				);
+			})
+			.join("");
 	}
 }
 export default new FighterPopUpHoverView();
