@@ -6,6 +6,12 @@ import URL from "../../helper/url.js";
 const ALT_TEXT = {
 	WEAPON_DAMAGE_TYPE: "weapon damage type",
 };
+const WEAPON_SYSTEMS = {
+	FLARE_LAUNCHER_OLD: "flarelauncher_fighter",
+	FLARE_LAUNCER_NEW: "flarelauncher2",
+};
+const EMPTY_PROP_STRING = "[x]";
+
 class FighterPopUpHoverView extends View {
 	_localParent = `.${classNames.hoverContainer}`;
 
@@ -32,6 +38,7 @@ class FighterPopUpHoverView extends View {
 	#dataState;
 	#allShips;
 	#allHullMods;
+	#allWeaponSystems;
 
 	#processData() {
 		const [weaponObject, weaponSlotObject, dataState] = this._data;
@@ -50,8 +57,12 @@ class FighterPopUpHoverView extends View {
 			weaponGroups,
 			hullMods,
 		} = weaponObject.additionalData;
+
+		// States
+
 		this.#dataState = dataState;
 		this.#allShips = dataState.allShips;
+		this.#allWeaponSystems = dataState.allWeaponSystems;
 		this.#allHullMods = dataState.allHullMods;
 		// Weapon Object Data
 
@@ -96,7 +107,6 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 		*/
 	generateMarkup() {
 		this.#processData(this._data);
-
 		const markup = `	
 			<ul>
 				${this.#introDataMarkup()}
@@ -141,8 +151,8 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 						: ""
 						}
 						${this.#contentMarkup("Top speed", this.#maxSpeed)}
-						${this.#contentMarkup("System",this.#fighterSystemMarkup(this.#systemId, this.#allShips))}
-						${this.#contentMultyItems("HullMods",this.#hullModsMarkUp(this.#hullMods, this.#allHullMods))}
+						${this.#contentMarkup("System",this.#fighterSystemMarkup(this.#systemId, this.#allWeaponSystems))}
+						${this.#contentMultyItems("HullMods",this.#createParagraph(this.#hullModsMarkUp(this.#hullMods, this.#allHullMods),true))}
 					</div>
 					<div class="${classNames.weaponContentGroup}">
 						${this.#contentMultyItems("Armaments",
@@ -175,30 +185,31 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 	}
 
 	// Find weapon or system name by ID
+	#fighterSystemMarkup(systemId, allWeaponSystems) {
+		if (!systemId || systemId === "") return EMPTY_PROP_STRING;
 
-	#fighterSystemMarkup(systemId, allWeapons) {
-		console.log(systemId);
-		console.log(allWeapons);
+		// Replace Old launcer with new, because old is not even a system for some reason.
+		const checkSystemId =
+			systemId === WEAPON_SYSTEMS.FLARE_LAUNCHER_OLD
+				? WEAPON_SYSTEMS.FLARE_LAUNCER_NEW
+				: systemId;
 
-		// const array = allWeapons.filter((obj) => obj.id === id);
-		// console.log(array);
-		// const [currentItem] = allWeapons.filter((obj) => obj.id === id);
-		// console.log(currentItem);
-		// return currentItem ? currentItem.name : "[x]";
+		const systemObject = allWeaponSystems.find(
+			(obj) => obj.id === checkSystemId
+		);
+		return systemObject?.name || EMPTY_PROP_STRING;
 	}
-	//! Doesnt work
-	#hullModsMarkUp(hullMods, allShipHulls) {
-		const missingHullModName = "[x]";
-		if (!hullMods) return `${this.#createParagraph(missingHullModName, true)}`;
 
-		//! what is going on here?
+	#hullModsMarkUp(hullMods, allShipHulls) {
+		if (!hullMods || hullMods.length < 1) return EMPTY_PROP_STRING;
+
 		const extractedName = hullMods.map((currentMod) => {
 			const [extractedHullModObject] = allShipHulls.filter(
 				(hullMod) => hullMod.id === currentMod
 			);
 			return extractedHullModObject.name;
 		});
-		return `${this.#createParagraph(extractedName, true)}`;
+		return extractedName;
 	}
 	#fighterWeaponsMarkUp(weaponGroups, allWeapons) {
 		// Find Object
@@ -212,7 +223,7 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 		const test = fighterWeapons.filter((wpnGrpProp) => {
 			return allWeapons.filter((wpn) => wpn.id === wpnGrpProp.id);
 		});
-		console.log(test);
+		// console.log(test);
 	}
 }
 export default new FighterPopUpHoverView();
