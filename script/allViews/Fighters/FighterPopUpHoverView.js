@@ -201,15 +201,12 @@ weaponSlots: Array(3) [ {…}, {…}, {…} ]
 	}
 
 	#hullModsMarkUp(hullMods, allShipHulls) {
-		if (!hullMods || hullMods.length < 1) return EMPTY_PROP_STRING;
+		if (!hullMods || hullMods?.length < 1) return EMPTY_PROP_STRING;
 
-		const extractedName = hullMods.map((currentMod) => {
-			const [extractedHullModObject] = allShipHulls.filter(
-				(hullMod) => hullMod.id === currentMod
-			);
-			return extractedHullModObject.name;
+		return hullMods.map((hullMod) => {
+			const extractedHullMod = allShipHulls.find((mod) => mod.id === hullMod);
+			return extractedHullMod?.name || EMPTY_PROP_STRING;
 		});
-		return extractedName;
 	}
 	#fighterWeaponsMarkUp(weaponGroups, allWeapons) {
 		// Find Object
