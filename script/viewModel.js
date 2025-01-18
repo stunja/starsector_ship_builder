@@ -38,6 +38,7 @@ export default class ViewModel {
 	setUpdateWeaponPopUpState(data) {
 		this.#model.updateWeaponPopUpState(data);
 	}
+	// All the functions are overkill
 	getState() {
 		return this.#model;
 	}
