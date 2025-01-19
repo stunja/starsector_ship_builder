@@ -8,7 +8,9 @@ class FighterSprite {
 	#spriteLocation;
 
 	#processData(crrFighter) {
+		// console.log(crrFighter);
 		this.#maxFighters = crrFighter.num;
+		// console.log(crrFighter.additionalData.spriteName);
 		this.#currentWeaponSprite = crrFighter.additionalData.spriteName;
 		this.#spriteLocation = `./${URL.DATA}/${this.#currentWeaponSprite}`;
 	}

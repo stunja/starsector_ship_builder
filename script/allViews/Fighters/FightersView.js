@@ -4,6 +4,7 @@ import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
 
 import View from "../view";
 import FighterSprite from "./FighterSprite";
+import { createWebSocketModuleRunnerTransport } from "vite/module-runner";
 
 const STRING = {
 	HEADER: "Fighter Bays",
@@ -18,9 +19,10 @@ class FightersView extends View {
 	#weaponSlots;
 	#userShipBuild;
 
-	#allWeapons;
-	#processData([userShipBuild, allWeapons]) {
-		this.#allWeapons = allWeapons;
+	#allFighters;
+
+	#processData([userShipBuild, allFighters]) {
+		this.#allFighters = allFighters;
 
 		this.#userShipBuild = userShipBuild;
 		this.#installedWeapons = userShipBuild.installedWeapons;
@@ -29,7 +31,6 @@ class FightersView extends View {
 	generateMarkup() {
 		this.#processData(this._data);
 
-		console.log("test");
 		const markup = `${this.#fighterContainerMarkup()}`;
 		return markup;
 	}
@@ -50,8 +51,6 @@ class FightersView extends View {
 	#fighterSlotsMarkup() {
 		const fighterSlots = this.#createFighterSlotsArray();
 		if (fighterSlots.length === 0) return STRING.EMPTY;
-		// ${FighterSprite.renderElement(crrFighter)}
-		// ${currentFighter ? FighterSprite.renderElement(currentFighter) : ""}
 		//prettier-ignore
 		return fighterSlots
 			.map(
@@ -59,10 +58,10 @@ class FightersView extends View {
 					const currentFighter = this.#findCurrentFighter(fighterSlot);
 				return	`
                         <div class="${classNames.fighterSlotContainer}">
-                            <figure class="${classNames.smallImageBox} ${classNames.fighterSlot}"
+                            <figure class="${classNames.fighterSlot}"
                                 ${DataSet.dataFighterId}="${fighterSlot.id}"
                             >
-								<p>${currentFighter}</p>
+								${currentFighter ? FighterSprite.renderElement(currentFighter) : ""}
                             </figure>
                         </div>
                     `
@@ -76,19 +75,36 @@ class FightersView extends View {
 			(fighterObject) => fighterObject.type === WEAPON_SLOT_FIGHTER
 		);
 
-	#findCurrentFighter = (fighterSlot) =>
-		this.#installedWeapons.find(([id, weapon]) => {
-			if (id === fighterSlot.id) {
-				// console.log("test");
-				console.log(weapon);
-				//! issue here, weapon gives id triden_wing
-				const wpnObj = weaponSlotIdIntoWeaponSlotObject(
-					this.#allWeapons,
-					weapon
-				);
-				console.log(wpnObj); // this is undefined
-				return wpnObj;
-			}
-		});
+	#findCurrentFighter = (weaponSlot) => {
+		if (!weaponSlot) {
+			throw new Error("Fighter slot is undefined or invalid");
+		}
+
+		const currentInstalledWeapon = this.#installedWeapons.find(
+			([slotId, _weaponId]) => slotId === weaponSlot.id
+		);
+
+		if (!currentInstalledWeapon) {
+			throw new Error(`No weapon found for fighter slot ID: ${weaponSlot.id}`);
+		}
+		const [_, currentWeaponId] = currentInstalledWeapon;
+
+		// If weaponId is empty just return empty string
+		// If weaponSlots are actually empty
+		if (currentWeaponId === STRING.EMPTY) return STRING.EMPTY;
+
+		const currentFighterObject = weaponSlotIdIntoWeaponSlotObject(
+			this.#allFighters,
+			currentWeaponId
+		);
+
+		if (!currentFighterObject) {
+			throw new Error(
+				`Failed to convert weapon ID ${currentWeaponId} to fighter object`
+			);
+		}
+
+		return currentFighterObject;
+	};
 }
 export default new FightersView();
