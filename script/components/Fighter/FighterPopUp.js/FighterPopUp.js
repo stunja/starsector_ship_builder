@@ -1,5 +1,6 @@
 import ViewModel from "../../../ViewModel";
 import TablePopUpSorter from "../../TablePopUpSorter";
+import FighterSlots from "../FighterSlots";
 // View
 import FighterPopUpContainerView from "../../../allViews/Fighters/FighterPopUpContainerView";
 import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUpTableHeaderView";
@@ -23,32 +24,41 @@ const TABLE_POPUP_TYPE = "fighterPopUpTable";
 
 export default class FighterPopUp extends ViewModel {
 	#state;
+
+	// ShipBuild
 	#userShipBuild;
+	#installedWeapons;
+	#weaponsSlots;
+
 	#getDataState;
 	#weaponSlot;
 	// Fighter Object which can be shown to user
 	#currentFighterArray;
 	#currentlyHoveredFighter;
-
+	#fighterPopUpOpen = false;
 	constructor(model) {
 		super(model);
-
+	}
+	#processData() {
 		this.#state = this.getState();
-		this.#getDataState = this.getDataState();
+		this.#getDataState = this.#state.dataState;
 
 		this.#currentFighterArray = this.#sortFighterArray(
 			this.#state.dataState.allFighters
 		);
 
-		this.#userShipBuild = this.#state.userState.userShipBuild;
+		this.#userShipBuild = this.getUserShipBuild();
+		this.#installedWeapons = this.#userShipBuild.installedWeapons;
+		this.#weaponsSlots = this.#userShipBuild.weaponSlots;
 	}
 	#sortFighterArray = (arr) => arr.toSorted((a, b) => b.opCost - a.opCost);
 
 	update = (btn) => {
 		if (!btn) return;
+		this.#processData();
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
-			this.#userShipBuild.weaponSlots,
+			this.#weaponsSlots,
 			btn.dataset.fighterId
 		);
 
@@ -61,7 +71,7 @@ export default class FighterPopUp extends ViewModel {
 		FighterPopUpTableHeaderView.render(this.#state);
 
 		FighterPopUpTableView.render([
-			this.#userShipBuild.installedWeapons,
+			this.#installedWeapons,
 			this.#currentFighterArray,
 			this.#weaponSlot,
 		]);
@@ -78,7 +88,7 @@ export default class FighterPopUp extends ViewModel {
 		FighterPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.#testClick
+			this.#addCurrentFighterToInstalledWeapons
 		);
 		FighterPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
@@ -86,8 +96,65 @@ export default class FighterPopUp extends ViewModel {
 			this.#showAdditionalInformationOnHover
 		);
 	}
-	#testClick(btn) {
-		console.log("Click", btn);
+	#addEventListeners() {
+		// Listeners
+		this.#tableHeaderEventListener();
+		this.#tableEventListener();
+
+		FighterPopUpContainerView.closePopUpContainerIfUserClickOutside(
+			`.${classNames.tableContainer}`,
+			FighterPopUpContainerView._clearRender
+		);
+	}
+	// User Clicks to Add Weapon to Installed Weapon Array
+	#addCurrentFighterToInstalledWeapons = (btn) => {
+		const { weaponPopUpId } = btn.dataset;
+		//
+		const updatedInstalledWeapons = this.#installedWeapons.map(
+			([slotId, currentWeapon]) => {
+				// If weapon already exists in slot, remove it
+				if (currentWeapon === weaponPopUpId) {
+					this.#fighterPopUpOpen = true;
+					return [slotId, ""];
+				}
+				// if weapon dont match, keep the original
+				if (slotId !== this.#weaponSlot.id) {
+					return [slotId, currentWeapon];
+				}
+				// Otherwise, add the new weapon
+				return [slotId, weaponPopUpId];
+			}
+		);
+
+		// update weapons
+		this.setUpdateUserShipBuild({
+			...this.#userShipBuild,
+			installedWeapons: updatedInstalledWeapons,
+		});
+		// assign new installedWeapons
+		this.#installedWeapons = this.getUserShipBuild().installedWeapons;
+
+		this.#fighterPopUpOpen === true
+			? this.#addWeaponAndCloseWeaponPopUp()
+			: this.#removeActiveWeaponAndReRenderWeaponPopUp();
+	};
+	#removeActiveWeaponAndReRenderWeaponPopUp() {
+		// Update WeaponSlots // Render // Listener // Arcs / Background
+		new FighterSlots(this.#state).update();
+
+		// Remove WeaponPopUpContainer
+		FighterPopUpContainerView._clearRender();
+
+		// Render Again
+		this.#renderFighterPopUp();
+		this.#addEventListeners();
+	}
+	#addWeaponAndCloseWeaponPopUp() {
+		// Update WeaponSlots // Render // Listener // Arcs / Background
+		new FighterSlots(this.#state).update();
+
+		// Remove WeaponPopUpContainer
+		FighterPopUpContainerView._clearRender();
 	}
 	// Hover
 	#showAdditionalInformationOnHover = (btn) => {
@@ -117,14 +184,4 @@ export default class FighterPopUp extends ViewModel {
 		this.#renderFighterPopUp();
 		this.#addEventListeners();
 	};
-	#addEventListeners() {
-		// Listeners
-		this.#tableHeaderEventListener();
-		this.#tableEventListener();
-
-		FighterPopUpContainerView.closePopUpContainerIfUserClickOutside(
-			`.${classNames.tableContainer}`,
-			FighterPopUpContainerView._clearRender
-		);
-	}
 }

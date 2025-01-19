@@ -111,7 +111,7 @@ export default class WeaponPopUp extends ViewModel {
 		// Render Changes
 		this.#renderWeaponPopUpAndAddEventListeners();
 	};
-	//
+	// Creates currentArray based on Weapon Slot Type and Size.
 	#createCurrentWeaponArray() {
 		this.#currentWeaponArray =
 			WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
