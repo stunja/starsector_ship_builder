@@ -150,7 +150,8 @@ const classNames = {
 
 	tableIcon: "table__icon",
 	tableName: "table__name",
-	// tableType: "table__type",
+	tableDesc: "table__desc",
+	tableType: "table__type",
 	// tableRange: "table__range",
 	// tableCost: "table__cost",
 

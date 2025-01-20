@@ -14,10 +14,8 @@ class HullModsPopUpView extends View {
 	}
 	#processData(data) {
 		this.#allHullMods = data;
-		console.log(this.#allHullMods);
 	}
 	#renderContainer() {
-		console.log("test");
 		const markup = `				
                 <div class="${classNames.tableContainer}">
 					<ul class="${classNames.tableEntries} ${classNames.tableHeader}"></ul>

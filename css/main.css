@@ -18,6 +18,9 @@
 @import "./Fighters/fighter-slots.css";
 /* Weapons */
 @import "./Weapons/_weaponSlot.css";
+/* HullMods */
+@import "./HullMods/hull-mods-pop-up.css";
 
+/* Sprite */
 @import "./Weapons/_weaponSprite.css";
 @import "./Weapons/_weaponBackgroundSprite.css";

@@ -6,9 +6,10 @@ import View from "../view.js";
 const CATEGORIES = {
 	icon: "",
 	name: "Name",
+	description: "Description",
 	type: "Type",
 	cost: "Cost",
-	installed: "installed",
+	installed: "Installed?",
 };
 
 class HullModsPopUpHeaderView extends View {

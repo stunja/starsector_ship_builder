@@ -4,7 +4,11 @@ import classNames from "../../helper/DomClassNames";
 import AddNewHullModView from "../../allViews/HullMods/AddNewHullModView";
 import HullModView from "../../allViews/HullMods/HullModView";
 import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
+// HullMods
 import HullModsPopUpView from "../../allViews/HullMods/HullModsPopUpView";
+import HullModsPopUpHeaderView from "../../allViews/HullMods/HullModsPopUpHeaderView";
+import HullModsPopUpTableView from "../../allViews/HullMods/HullModsPopUpTableView";
+//
 
 const EVENT_LISTENER_TARGET = {
 	HULLMODS: `.${classNames.hullMods__Button}`,
@@ -21,23 +25,22 @@ const CLASSES = {
 	HULLMODS_POP_UP: `.${classNames.hullModsPopUp}`,
 };
 export default class HullModController extends ViewModel {
-	#allHullMods;
 	#userState;
-	#usableHullMods;
+	#allHullMods;
 	#userShipBuild;
 	constructor(model) {
 		super(model);
 
 		this.#userState = this.getUserState();
-		this.#usableHullMods = this.#userState.usableHullMods;
+		this.#allHullMods = this.#userState.usableHullMods;
 		this.#userShipBuild = this.#userState.userShipBuild;
 	}
 	update() {
 		this.#hullModContainerRender();
 		this.#hullModContainerEventListener();
-
 		this.#renderHullMods();
 	}
+	#processData() {}
 	// Container
 	#hullModContainerRender() {
 		HullModView.render(this.getUserShipBuild());
@@ -49,12 +52,10 @@ export default class HullModController extends ViewModel {
 			this.#openHullModPopUp
 		);
 	}
-	//
+
 	#renderHullMods() {
-		BuildInHullModsView.render([
-			this.getUserShipBuild(),
-			this.getUsableHullMods(),
-		]);
+		//! problem is here
+		BuildInHullModsView.render([this.#userShipBuild, this.#allHullMods]);
 	}
 	#openHullModPopUp = (btn) => {
 		const { hullmodButtonType } = btn.dataset;
@@ -68,13 +69,15 @@ export default class HullModController extends ViewModel {
 	};
 	#closePopUpForm() {
 		// Close if clicked outside
-		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
-			`.${classNames.tableContainer}`,
-			HullModsPopUpView._clearRender
-		);
+		// HullModsPopUpView.closePopUpContainerIfUserClickOutside(
+		// 	`.${classNames.tableContainer}`,
+		// 	HullModsPopUpView._clearRender
+		// );
 	}
 	#renderHullModsPopUp() {
-		HullModsPopUpView.render(this.#usableHullMods);
+		HullModsPopUpView.render(this.#allHullMods);
+		HullModsPopUpHeaderView.render(this.#userShipBuild);
+		HullModsPopUpTableView.render(this.#allHullMods);
 		// console.log("open");
 	}
 }

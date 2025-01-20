@@ -1,0 +1,59 @@
+/* Hull Mod Menu */
+
+.hullmods-pop-up {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+
+	/* width: 100vw; */
+}
+.hullmods-pop-up {
+	.table-container {
+		width: 70vw;
+	}
+	.table-header {
+		/* grid-template-columns: 8rem 10rem 1fr 10rem 10rem 10rem; */
+	}
+	.table-header,
+	.table-body .table-entries {
+		grid-template-columns: 8rem 12rem 1fr 14rem 6rem 8rem;
+	}
+	.table-body .table-entries {
+		/* grid-template-columns: 8rem 10rem 1fr 10rem 10rem 10rem; */
+
+		/* padding: 2.4rem 0; */
+		/* margin: 0; */
+		/* border: 0.1rem solid rgba(255, 255, 255, 0.1); */
+
+		.table-entry {
+			padding: 0;
+			margin: 0;
+			/* padding: 2.4rem 0; */
+		}
+		.table__icon {
+			height: 100%;
+		}
+		.table__name {
+		}
+		.table__type {
+		}
+		.table__desc {
+			/* padding: 1rem; */
+			text-align: left;
+		}
+		p {
+			font-size: 1.4rem;
+		}
+		.table-entry p {
+			padding: 2.4rem;
+		}
+		/* .table__desc p {
+			padding: 2.4rem;
+		} */
+	}
+
+	/* .table-header-entry:first-of-type {
+		height: auto;
+	} */
+}
