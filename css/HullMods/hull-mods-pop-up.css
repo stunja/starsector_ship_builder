@@ -6,51 +6,46 @@
 	left: 0;
 	z-index: 100;
 
-	/* width: 100vw; */
+	height: 100%;
 }
 .hullmods-pop-up {
 	.table-container {
-		width: 70vw;
-	}
-	.table-header {
-		/* grid-template-columns: 8rem 10rem 1fr 10rem 10rem 10rem; */
+		width: 75vw;
+		height: 100%;
 	}
 	.table-header,
 	.table-body .table-entries {
-		grid-template-columns: 8rem 12rem 1fr 14rem 6rem 8rem;
+		grid-template-columns: 8rem 12rem 1fr 12rem 6rem 8rem;
 	}
 	.table-body .table-entries {
-		/* grid-template-columns: 8rem 10rem 1fr 10rem 10rem 10rem; */
-
-		/* padding: 2.4rem 0; */
-		/* margin: 0; */
-		/* border: 0.1rem solid rgba(255, 255, 255, 0.1); */
-
 		.table-entry {
 			padding: 0;
 			margin: 0;
-			/* padding: 2.4rem 0; */
 		}
 		.table__icon {
 			height: 100%;
 		}
 		.table__name {
 		}
-		.table__type {
-		}
+
 		.table__desc {
-			/* padding: 1rem; */
 			text-align: left;
 		}
 		p {
-			font-size: 1.4rem;
+			font-size: 1.2rem;
 		}
-		.table-entry p {
-			padding: 2.4rem;
-		}
-		/* .table__desc p {
+		/* .table-entry p,
+		.table-entry div {
 			padding: 2.4rem;
 		} */
+		.table-entry:not(.table__type) p {
+			padding: 2.4rem;
+		}
+		.table__type div {
+			display: flex;
+			flex-direction: column;
+			gap: 0.6rem;
+		}
 	}
 
 	/* .table-header-entry:first-of-type {
