@@ -8,6 +8,8 @@ class HullModsPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
 
 	#allHullMods;
+	#userShipBuild;
+	#hullSize;
 	generateMarkup() {
 		this.#processData(this._data);
 		const markup = `${this.#tableBodyRender()}`;
@@ -15,32 +17,38 @@ class HullModsPopUpTableView extends View {
 	}
 
 	#processData() {
-		this.#allHullMods = this._data;
+		const [allHullMods, userShipBuild] = this._data;
+		this.#allHullMods = allHullMods;
+		this.#userShipBuild = userShipBuild;
+
+		this.#hullSize = this.#userShipBuild.hullSize;
 	}
 
-	#tableBodyRender() {
-		// cost_capital: 24;
-		// cost_cruiser: 18;
-		// cost_dest: 15;
-		// cost_frigate: 12;
-		// name: "#Point Defense Integration";
+	#tagsArray = (crrHullMod) =>
+		crrHullMod.uiTags
+			.split(",")
+			.map((str) => `<p>${str}</p>`)
+			.join("");
 
-		const opCostBasedOnShipSize = 0;
-		const tagsArray = (crrHullMod) => {
-			// console.log(crrHullMod);
-			const arr = crrHullMod.uiTags.split(",");
-			const stringReturn = arr.map((str) => `<p>${str}</p>`).join("");
-			return stringReturn;
-		};
-		// const isWeaponInstalled = "[x]";
-		const hullModIcon = (crrHullMod) => `
+	#opCostPerHullSize = {
+		CAPITAL_SHIP: "cost_capital",
+		CRUISER: "cost_cruiser",
+		DESTROYER: "cost_dest",
+		FRIGATE: "cost_frigate",
+	};
+	#hullModIcon = (crrHullMod) => `
 			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
-		const entryMarkup = (crrHullMod) => `
+	#tableBodyRender() {
+		const entryMarkup = (crrHullMod) => {
+			const normalizedHullSize = this.#opCostPerHullSize[this.#hullSize];
+			const opCost = crrHullMod[normalizedHullSize];
+			return `
 			<ul class="${classNames.tableEntries}" 
-			${DataSet.dataHullModId}="${crrHullMod.id}">
+				${DataSet.dataHullModId}="${crrHullMod.id}"
+			>
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${hullModIcon(crrHullMod)}
+					${this.#hullModIcon(crrHullMod)}
 				</li>
 				<li class="${classNames.tableEntry} ${classNames.tableName}">
 					<p>${crrHullMod.name}</p>
@@ -49,29 +57,15 @@ class HullModsPopUpTableView extends View {
 					<p>${crrHullMod.desc}</p>
 				</li>
 				<li class="${classNames.tableEntry} ${classNames.tableType}">
-					<div>${tagsArray(crrHullMod)}</div>
+					<div>${this.#tagsArray(crrHullMod)}</div>
 				</li>
-				<li class="${classNames.tableEntry}"><p>${opCostBasedOnShipSize}</p></li>
+				<li class="${classNames.tableEntry}">
+					<p>${opCost}</p>
+				</li>
 			</ul>
 		`;
+		};
 		return this.#allHullMods.map((hullMod) => entryMarkup(hullMod)).join("");
-
-		// const entryMarkup = (crrWpn) => `
-		// 	<ul class="${classNames.tableEntries}"
-		// 		${DataSet.dataWeaponPopUpId}="${crrWpn.id}">
-
-		// 		<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-		// 		</li>
-		// 		<li class="${classNames.tableEntry} ${classNames.tableName}">${crrWpn.name}</li>
-		// 		<li class="${classNames.tableEntry}">
-		// 			${crrWpn.type}
-		// 		</li>
-		// 		<li class="${classNames.tableEntry}">${crrWpn.range}</li>
-		// 		<li class="${classNames.tableEntry}">${crrWpn.oPs}</li>
-		// 	</ul>
-		// 	`;
-
-		// return currentWeaponArray.map((crrWpn) => entryMarkup(crrWpn)).join("");
 	}
 }
 export default new HullModsPopUpTableView();

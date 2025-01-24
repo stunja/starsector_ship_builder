@@ -55,7 +55,7 @@ export default class HullModController extends ViewModel {
 	#openHullModPopUp = (btn) => {
 		const { hullmodButtonType } = btn.dataset;
 		if (hullmodButtonType === HULLMOD_BUTTON_TYPE.OPEN) {
-			new HullModsPopUp(this.#allHullMods).update();
+			new HullModsPopUp([this.#userShipBuild, this.#allHullMods]).update();
 		}
 		if (hullmodButtonType === HULLMOD_BUTTON_TYPE.SMODS) {
 			console.log("smods");

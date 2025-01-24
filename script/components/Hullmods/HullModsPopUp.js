@@ -20,28 +20,40 @@ const CLASSES = {
 };
 export default class HullModsPopUp extends ViewModel {
 	#allHullMods;
+	#usableHullMods;
+	#userShipBuild;
 	constructor(data) {
 		super(data);
 
-		this.#allHullMods = data;
+		const [userShipBuild, allHullMods] = data;
+		this.#allHullMods = allHullMods;
+		this.#userShipBuild = userShipBuild;
 	}
 	update() {
+		this.#filterHullMods();
+
 		this.#renderHullModsPopUp();
 
 		this.#eventListeners();
 	}
 	#renderHullModsPopUp() {
-		HullModsPopUpView.render(this.#allHullMods);
-		HullModsPopUpHeaderView.render(this.#allHullMods);
-		HullModsPopUpTableView.render(this.#allHullMods);
+		HullModsPopUpView.render(this.#usableHullMods);
+		HullModsPopUpHeaderView.render(this.#usableHullMods);
+		HullModsPopUpTableView.render([this.#usableHullMods, this.#userShipBuild]);
 	}
 	#eventListeners() {
 		this.#addWeaponPopUpTableHeaderListener();
 		this.#addWeaponPopUpEntryListener();
+
 		// Close if clicked outside
 		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
 			CLASSES.TABLE_CONTAINER,
 			HullModsPopUpView._clearRender
+		);
+	}
+	#filterHullMods() {
+		this.#usableHullMods = this.#allHullMods.filter(
+			(hullMod) => hullMod.hidden !== "TRUE"
 		);
 	}
 	// WeaponPopUp Event Listeners

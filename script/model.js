@@ -76,7 +76,7 @@ export class Model {
 
 			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
 			// HullMods
-			const usableHullMods = createUsableHullMods(hullmods);
+			const allHullMods = hullMods.createUsableHullMods(hullmods);
 			// Weapons
 			const weaponOnly = this.#filterWeaponsOnly(weapons);
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
@@ -101,7 +101,7 @@ export class Model {
 			this.updateState("userState", {
 				_currentShip: updatedCurrentShip,
 				_baseShipBuild: userShipBuild,
-				usableHullMods: usableHullMods,
+				usableHullMods: allHullMods,
 			});
 		} catch (err) {
 			console.log(`Failed to Load Resources ${err}`);
@@ -735,13 +735,46 @@ const updateFighters = {
 		}
 	},
 };
+
 // create new object with VISIBLE and DEFINED hulls. // D-mods are hidden!
-const createUsableHullMods = function (data) {
-	// Alphabetic Sorting
-	return data
-		.filter((hullmod) => hullmod.hidden !== "TRUE" && hullmod.id)
-		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+const hullMods = {
+	createUsableHullMods(data) {
+		// Alphabetic Sorting
+		const filteredData = data
+			.filter((hullmod) => hullmod.id)
+			.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+		return this.updateMissingDescriptions(filteredData);
+	},
+	updateMissingDescriptions(data) {
+		return data.map((obj) => {
+			const newString = this.textInjectionData[obj.id];
+			if (!newString) return obj;
+			return { ...obj, desc: newString };
+		});
+	},
+	textInjectionData: {
+		ballistic_rangefinder:
+			"If the largest Ballistic slot on the ship is large: increases the base range of small weapons in Ballistic slots by %s, and of medium weapons by %s, up to a maximum of %s range. Otherwise: increases the base range of small weapons in Ballistic slots by %s, up to %s maximum. Does not affect point-defense weapons or Ballistic weapons placed in Composite, Hybrid or Universal slots. Hybrid weapons in Ballistic slots receive double the bonus. Non-PD Hybrid weapons in ballistic slots, including large ones, will receive %s bonus range, subject to the maximum, in cases where other weapons of the same size would receive no bonus.",
+
+		converted_hangar:
+			"Converts the ship's standard shuttle hangar to house a fighter bay. The improvised flight deck, its crew, and the related machinery function at a pace below that of a dedicated carrier. Increases fighter refit time by %sx, and the fighter replacement rate both decays and recovers %sx more slowly. In addition, bombers returning to rearm (or fighters returning to repair) take %s% of their base time to relaunch, where it normally takes under a second. Increases the minimum crew by %s to account for pilots and fighter crews. Increases the ship's deployment points and supply cost to recover from deployment by %s for every %s ordnance points spent on fighters, or by at least %s point. This comes with a proportional increase in combat readiness lost per deployment.",
+
+		missile_autoloader:
+			"A combat-rated autoloader that provides a limited number of reloads to missile weapons installed in small missile mounts. Does not affect weapons that do not use ammo or already regenerate it, or weapons that are mounted in any other kind of weapon slot. The number of missiles reloaded is not affected by skills or hullmods that increase missile weapon ammo capacity. A partial reload is possible when running out of capacity. After a reload, the weapon requires an extra 5 seconds, in addition to its normal cooldown, before it can fire again.",
+
+		high_scatter_amp:
+			"Beam weapons deal %s more damage and deal hard flux to shields. Reduces the portion of the range of beam weapons that is above %s units by %s. The base range is affected. Interactions with other modifiers: The base range is reduced, thus percentage and multiplicative modifiers - such as from Integrated Targeting Unit, skills, or similar sources - apply to the reduced base value.",
+
+		hiressensors:
+			"Increases sensor strength by %s/%s/%s/%s points for frigates / destroyers / cruisers and capitals, respectively. Minimum CR of %s required to function.",
+
+		neural_interface: `Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply.`,
+
+		neural_integrator: `An augmented version of Neural Interface that works with automated ships by enabling direct control of all of the ship's systems via the link, instead of having the controlling consciousness aspect simply direct the bridge crew. Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply. Also increases the deployment cost and supply use by %s`,
+	},
 };
+
 // NOT USED BELOW THE LINE
 //--------------------
 
