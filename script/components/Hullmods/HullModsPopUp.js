@@ -19,17 +19,25 @@ const CLASSES = {
 	TABLE_CONTAINER: `.${classNames.tableContainer}`,
 };
 export default class HullModsPopUp extends ViewModel {
+	#userShipBuild;
+
 	#allHullMods;
 	#usableHullMods;
-	#userShipBuild;
-	constructor(data) {
-		super(data);
+	#userState;
+	constructor(model) {
+		super(model);
 
-		const [userShipBuild, allHullMods] = data;
-		this.#allHullMods = allHullMods;
-		this.#userShipBuild = userShipBuild;
+		this.#update();
 	}
-	update() {
+	#processData() {
+		this.#userShipBuild = this.getUserShipBuild();
+		this.#userState = this.getUserState();
+
+		this.#allHullMods = this.#userState.usableHullMods;
+	}
+	#update() {
+		this.#processData();
+
 		this.#filterHullMods();
 
 		this.#renderHullModsPopUp();
@@ -68,7 +76,7 @@ export default class HullModsPopUp extends ViewModel {
 		HullModsPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.#test
+			this.#toggleHullMod
 		);
 		// HullModsPopUpTableView.addClickHandler(
 		// 	EVENT_LISTENER_TARGET.TABLE_ENTRIES,
@@ -88,7 +96,33 @@ export default class HullModsPopUp extends ViewModel {
 		// this.#renderWeaponPopUpAndAddEventListeners();
 	};
 
-	#test(btn) {
-		console.log(btn);
-	}
+	#toggleHullMod = (buttonElement) => {
+		if (!buttonElement?.dataset?.hullmodId) {
+			console.error("No hullmodId provided");
+			return;
+		}
+
+		const { hullmodId } = buttonElement.dataset;
+		const { hullMods } = this.getUserShipBuild();
+		const { installedHullMods } = hullMods;
+
+		const isHullModInstalled = installedHullMods.includes(hullmodId);
+
+		// if hullMod is installed create new array, without it
+		const updatedInstalledHullMods = isHullModInstalled
+			? installedHullMods.filter((mod) => mod !== hullmodId)
+			: [...installedHullMods, hullmodId];
+
+		const updatedHullMods = {
+			...hullMods,
+			installedHullMods: updatedInstalledHullMods,
+		};
+
+		this.setUpdateUserShipBuild({
+			...this.#userShipBuild,
+			hullMods: updatedHullMods,
+		});
+
+		this.#update();
+	};
 }

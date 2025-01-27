@@ -468,7 +468,7 @@ const createUserShipBuild = {
 				width,
 				spriteName,
 			},
-			hullMods: { builtInMods },
+			hullMods: { builtInMods, installedHullMods: [] },
 			hullSize,
 			weaponSlots: this.weaponSlotIdStringEdit(weaponSlots),
 		};

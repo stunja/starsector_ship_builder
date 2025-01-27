@@ -15,6 +15,7 @@ class HullModsPopUpHeaderView extends View {
 	_localParent = `.${classNames.tableHeader}`;
 
 	generateMarkup() {
+		this.#filterHeader();
 		const markup = Object.entries(CATEGORIES)
 			.map(([key, value]) => {
 				return `<li class="${classNames.unselectable} ${classNames.tableHeaderEntry}" 
@@ -25,6 +26,9 @@ class HullModsPopUpHeaderView extends View {
 			})
 			.join("");
 		return markup;
+	}
+	#filterHeader() {
+		console.log("filterHeader");
 	}
 }
 export default new HullModsPopUpHeaderView();
