@@ -17,6 +17,11 @@ const EVENT_LISTENER_TYPE = {
 };
 const CLASSES = {
 	TABLE_CONTAINER: `.${classNames.tableContainer}`,
+	WEAPON_POP_UP_ACTIVE: "weaponPopUpActive",
+};
+const STRING = {
+	EMPTY: "",
+	SPACE: " ",
 };
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
@@ -24,6 +29,8 @@ export default class HullModsPopUp extends ViewModel {
 	#allHullMods;
 	#usableHullMods;
 	#userState;
+	#shipHullMods;
+
 	constructor(model) {
 		super(model);
 
@@ -34,6 +41,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#userState = this.getUserState();
 
 		this.#allHullMods = this.#userState.usableHullMods;
+		this.#shipHullMods = this.#userShipBuild.hullMods;
 	}
 	#update() {
 		this.#processData();
@@ -43,6 +51,8 @@ export default class HullModsPopUp extends ViewModel {
 		this.#renderHullModsPopUp();
 
 		this.#eventListeners();
+
+		this.#assignActiveClasses();
 	}
 	#renderHullModsPopUp() {
 		HullModsPopUpView.render(this.#usableHullMods);
@@ -123,6 +133,32 @@ export default class HullModsPopUp extends ViewModel {
 			hullMods: updatedHullMods,
 		});
 
-		this.#update();
+		// For some reason EventListeners can replaced.
+		// So I reimplement them back.
+		this.#eventListeners();
+		this.#assignActiveClasses();
 	};
+	#assignActiveClasses() {
+		this.#processData();
+
+		const hullMods = this.#shipHullMods;
+		const installedHullMods = hullMods.installedHullMods;
+		if (!installedHullMods) return;
+
+		const allTableEntries = document.querySelectorAll(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES
+		);
+
+		// remove active class from all elements
+		allTableEntries.forEach((entry) =>
+			entry.classList.remove(classNames.weaponPopUpActive)
+		);
+		// add active class to elements equal to installedHullMods
+		allTableEntries.forEach((element) => {
+			const { hullmodId } = element.dataset;
+			if (hullmodId && installedHullMods.includes(hullmodId)) {
+				element.classList.add(classNames.weaponPopUpActive);
+			}
+		});
+	}
 }

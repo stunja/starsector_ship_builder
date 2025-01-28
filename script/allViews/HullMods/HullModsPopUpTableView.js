@@ -4,23 +4,12 @@ import URL from "../../helper/url.js";
 // View
 import View from "../view.js";
 
-const CLASSES = {
-	WEAPON_POP_UP_ACTIVE: "weaponPopUpActive",
-};
-
-const STRING = {
-	HEADER: "Fighter Bays",
-	EMPTY: "",
-	SPACE: " ",
-};
-
 class HullModsPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
 
 	#allHullMods;
 	#userShipBuild;
 	#hullSize;
-	#hullMods;
 	generateMarkup() {
 		this.#processData(this._data);
 
@@ -34,7 +23,6 @@ class HullModsPopUpTableView extends View {
 		this.#userShipBuild = userShipBuild;
 
 		this.#hullSize = this.#userShipBuild.hullSize;
-		this.#hullMods = this.#userShipBuild.hullMods;
 	}
 
 	#tagsArray = (crrHullMod) =>
@@ -52,31 +40,11 @@ class HullModsPopUpTableView extends View {
 	#hullModIcon = (crrHullMod) => `
 			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
-	#assignActiveClass = (currentHullMod) => {
-		const installedHullMods = this.#hullMods.installedHullMods;
-
-		if (
-			!currentHullMod ||
-			!Array.isArray(installedHullMods) ||
-			installedHullMods.length === 0
-		) {
-			return STRING.EMPTY;
-		}
-
-		const isActive = installedHullMods.includes(currentHullMod.id);
-
-		return isActive
-			? STRING.SPACE + classNames.weaponPopUpActive
-			: STRING.EMPTY;
-	};
-
 	#tableBodyRender() {
 		const normalizedHullSize = this.#opCostPerHullSize[this.#hullSize];
 		const entryMarkup = (crrHullMod) => {
 			return `
-			<ul class="${classNames.tableEntries} ${
-				classNames.tableEntries
-			}${this.#assignActiveClass(crrHullMod)}" 
+			<ul class="${classNames.tableEntries}" 
 				${DataSet.dataHullModId}="${crrHullMod.id}"
 			>
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
