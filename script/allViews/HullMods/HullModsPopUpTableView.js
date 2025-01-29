@@ -4,6 +4,13 @@ import URL from "../../helper/url.js";
 // View
 import View from "../view.js";
 
+const opCostPerHullSize = {
+	CAPITAL_SHIP: "cost_capital",
+	CRUISER: "cost_cruiser",
+	DESTROYER: "cost_dest",
+	FRIGATE: "cost_frigate",
+};
+
 class HullModsPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
 
@@ -31,17 +38,11 @@ class HullModsPopUpTableView extends View {
 			.map((str) => `<p>${str}</p>`)
 			.join("");
 
-	#opCostPerHullSize = {
-		CAPITAL_SHIP: "cost_capital",
-		CRUISER: "cost_cruiser",
-		DESTROYER: "cost_dest",
-		FRIGATE: "cost_frigate",
-	};
 	#hullModIcon = (crrHullMod) => `
 			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
 	#tableBodyRender() {
-		const normalizedHullSize = this.#opCostPerHullSize[this.#hullSize];
+		const normalizedHullSize = opCostPerHullSize[this.#hullSize];
 		const entryMarkup = (crrHullMod) => {
 			return `
 			<ul class="${classNames.tableEntries}" 

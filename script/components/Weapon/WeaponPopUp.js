@@ -19,7 +19,14 @@ const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
 	HOVER: "mouseover",
 };
+
+const SKIP_SORT_CATEGORY = {
+	icon: "icon",
+	description: "description",
+};
+
 const TABLE_POPUP_TYPE = "weaponPopUpTable";
+
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
 	// CurrentWeaponArray based on Slots / Weapon Mount
@@ -102,6 +109,8 @@ export default class WeaponPopUp extends ViewModel {
 	}
 
 	#weaponTableSorter = (btn) => {
+		const { category } = btn.dataset;
+		if (SKIP_SORT_CATEGORY[category]) return;
 		// Sort the Table
 		this.#currentWeaponArray = TablePopUpSorter.update([
 			btn,

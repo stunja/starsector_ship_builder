@@ -1,7 +1,14 @@
+const opCostPerHullSize = {
+	CAPITAL_SHIP: "cost_capital",
+	CRUISER: "cost_cruiser",
+	DESTROYER: "cost_dest",
+	FRIGATE: "cost_frigate",
+};
+
 class TablePopUpSorter {
 	#isAscending;
 	#currentCategory;
-	// #currentArray;
+	#hullSize;
 
 	#SORT_TYPE = {
 		text: (textA, textB) =>
@@ -27,18 +34,30 @@ class TablePopUpSorter {
 		wing: (a, b) => this.#SORT_TYPE.number(a.num, b.num),
 		cost: (a, b) => this.#SORT_TYPE.number(a.opCost, b.opCost),
 	};
-	update([btn, tableType, currentArray]) {
+
+	#SORT_HULLMOD_TABLE = {
+		name: (a, b) => this.#SORT_TYPE.text(b.name, a.name),
+		type: (a, b) => this.#SORT_TYPE.text(a.uiTags, b.uiTags),
+		cost: (a, b) =>
+			this.#SORT_TYPE.number(a[this.#hullSize], b[this.#hullSize]),
+	};
+
+	update([btn, tableType, currentArray, userShipBuild]) {
 		// Input validation
 		if (!btn?.dataset?.category) {
 			throw new Error("Button must have a category in its dataset");
 		}
+		this.#hullSize = opCostPerHullSize[userShipBuild?.hullSize];
 
 		const { category } = btn.dataset;
+
 		// Use different data between Tables
 		const sortTableType =
 			tableType === "weaponPopUpTable"
 				? this.#SORT_WEAPON_TABLE
-				: this.#SORT_FIGHTER_TABLE;
+				: tableType === "fighterPopUpTable"
+				? this.#SORT_FIGHTER_TABLE
+				: this.#SORT_HULLMOD_TABLE;
 
 		// Toggle direction if clicking same category, otherwise default to ascending
 		this.#isAscending =

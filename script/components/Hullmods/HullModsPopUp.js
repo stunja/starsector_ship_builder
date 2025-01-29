@@ -6,6 +6,7 @@ import HullModsPopUpHeaderView from "../../allViews/HullMods/HullModsPopUpHeader
 import HullModsPopUpTableView from "../../allViews/HullMods/HullModsPopUpTableView";
 // Helper Function
 import classNames from "../../helper/DomClassNames";
+import TablePopUpSorter from "../TablePopUpSorter";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
@@ -17,37 +18,41 @@ const EVENT_LISTENER_TYPE = {
 };
 const CLASSES = {
 	TABLE_CONTAINER: `.${classNames.tableContainer}`,
-	WEAPON_POP_UP_ACTIVE: "weaponPopUpActive",
+	WEAPON_POP_UP_ACTIVE: classNames.weaponPopUpActive,
 };
 const STRING = {
 	EMPTY: "",
 	SPACE: " ",
+	TRUE: "TRUE",
+};
+const SKIP_SORT_CATEGORY = {
+	icon: "icon",
+	description: "description",
 };
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
 
-	#allHullMods;
 	#usableHullMods;
+	#filteredHullMods;
 	#userState;
 	#shipHullMods;
 
+	#hullSize;
 	constructor(model) {
 		super(model);
 
+		this.#processData();
+		this.#filterHullMods();
 		this.#update();
 	}
 	#processData() {
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#userState = this.getUserState();
 
-		this.#allHullMods = this.#userState.usableHullMods;
+		this.#usableHullMods = this.#userState.usableHullMods;
 		this.#shipHullMods = this.#userShipBuild.hullMods;
 	}
 	#update() {
-		this.#processData();
-
-		this.#filterHullMods();
-
 		this.#renderHullModsPopUp();
 
 		this.#eventListeners();
@@ -55,9 +60,12 @@ export default class HullModsPopUp extends ViewModel {
 		this.#assignActiveClasses();
 	}
 	#renderHullModsPopUp() {
-		HullModsPopUpView.render(this.#usableHullMods);
-		HullModsPopUpHeaderView.render(this.#usableHullMods);
-		HullModsPopUpTableView.render([this.#usableHullMods, this.#userShipBuild]);
+		HullModsPopUpView.render(this.#filteredHullMods);
+		HullModsPopUpHeaderView.render(this.#filteredHullMods);
+		HullModsPopUpTableView.render([
+			this.#filteredHullMods,
+			this.#userShipBuild,
+		]);
 	}
 	#eventListeners() {
 		this.#addWeaponPopUpTableHeaderListener();
@@ -70,8 +78,8 @@ export default class HullModsPopUp extends ViewModel {
 		);
 	}
 	#filterHullMods() {
-		this.#usableHullMods = this.#allHullMods.filter(
-			(hullMod) => hullMod.hidden !== "TRUE"
+		this.#filteredHullMods = this.#usableHullMods.filter(
+			(hullMod) => hullMod.hidden !== STRING.TRUE
 		);
 	}
 	// WeaponPopUp Event Listeners
@@ -94,16 +102,20 @@ export default class HullModsPopUp extends ViewModel {
 		// 	this.#showAdditionalInformationOnHover
 		// );
 	}
+	// TablePopUpSorter
 	#popUpSorter = (btn) => {
+		const { category } = btn.dataset;
+		if (SKIP_SORT_CATEGORY[category]) return;
+
+		this.#filteredHullMods = TablePopUpSorter.update([
+			btn,
+			"hullModPopUpTable",
+			this.#filteredHullMods,
+			this.#userShipBuild,
+		]);
 		console.log(btn);
-		// Sort the Table
-		// this.#currentWeaponArray = TablePopUpSorter.update([
-		// 	btn,
-		// 	TABLE_POPUP_TYPE,
-		// 	this.#currentWeaponArray,
-		// ]);
-		// Render Changes
-		// this.#renderWeaponPopUpAndAddEventListeners();
+		console.log(this.#filteredHullMods);
+		this.#update();
 	};
 
 	#toggleHullMod = (buttonElement) => {
@@ -151,13 +163,13 @@ export default class HullModsPopUp extends ViewModel {
 
 		// remove active class from all elements
 		allTableEntries.forEach((entry) =>
-			entry.classList.remove(classNames.weaponPopUpActive)
+			entry.classList.remove(CLASSES.WEAPON_POP_UP_ACTIVE)
 		);
 		// add active class to elements equal to installedHullMods
 		allTableEntries.forEach((element) => {
 			const { hullmodId } = element.dataset;
 			if (hullmodId && installedHullMods.includes(hullmodId)) {
-				element.classList.add(classNames.weaponPopUpActive);
+				element.classList.add(CLASSES.WEAPON_POP_UP_ACTIVE);
 			}
 		});
 	}

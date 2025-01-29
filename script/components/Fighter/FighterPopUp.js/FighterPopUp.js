@@ -22,6 +22,11 @@ const EVENT_LISTENER_TYPE = {
 
 const TABLE_POPUP_TYPE = "fighterPopUpTable";
 
+const SKIP_SORT_CATEGORY = {
+	icon: "icon",
+	description: "description",
+};
+
 export default class FighterPopUp extends ViewModel {
 	#state;
 
@@ -55,6 +60,7 @@ export default class FighterPopUp extends ViewModel {
 
 	update = (btn) => {
 		if (!btn) return;
+
 		this.#processData();
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
@@ -174,6 +180,8 @@ export default class FighterPopUp extends ViewModel {
 		]);
 	};
 	#fighterPopUpTableSorter = (btn) => {
+		const { category } = btn.dataset;
+		if (SKIP_SORT_CATEGORY[category]) return;
 		// Sort the Table
 		this.#currentFighterArray = TablePopUpSorter.update([
 			btn,
