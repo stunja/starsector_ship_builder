@@ -143,6 +143,7 @@ const classNames = {
 	tableBody: "table-body",
 
 	// tableContainerBody: "table-container__body",
+	tableFilter: "table-filter",
 	tableHeader: "table-header",
 	tableHeaderEntry: "table-header-entry",
 	tableEntries: "table-entries",
@@ -154,6 +155,10 @@ const classNames = {
 	tableType: "table__type",
 	// tableRange: "table__range",
 	// tableCost: "table__cost",
+	// HullMod Filter
+	filterHeader: "filter-header",
+	filterButtons: "filter-buttons",
+	filterButton: "filter-button",
 
 	//! Cancer
 	//! I need to simplify all of this
@@ -235,6 +240,8 @@ const classNames = {
 
 	// Builder Buttons Section
 	builderButton: "builder-button",
+	// HullMod Filter
+	hullModsFilterActive: "hullMods__filter--active",
 };
 
 export default classNames;

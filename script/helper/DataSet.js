@@ -14,5 +14,7 @@ const DataSet = {
 	dataWeaponPopUpId: "data-weapon-pop-up-id",
 	// HullMods
 	dataHullModId: "data-hullmod-id",
+	//
+	dataFilter: "data-filter",
 };
 export default DataSet;

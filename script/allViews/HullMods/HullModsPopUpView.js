@@ -18,6 +18,7 @@ class HullModsPopUpView extends View {
 	#renderContainer() {
 		const markup = `				
                 <div class="${classNames.tableContainer}">
+					<ul class="${classNames.tableFilter}"></ul>
 					<ul class="${classNames.tableEntries} ${classNames.tableHeader}"></ul>
 					<div class="${classNames.tableBody}"></div>
 				</div>

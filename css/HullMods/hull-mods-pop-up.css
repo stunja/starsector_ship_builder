@@ -12,6 +12,7 @@
 	.table-container {
 		width: 75vw;
 		padding-right: 0.8rem;
+		position: relative;
 	}
 	.table-header,
 	.table-body .table-entries {
@@ -49,4 +50,49 @@
 	/* .table-header-entry:first-of-type {
 		height: auto;
 	} */
+	/* TABLE FILTER */
+	.table-filter {
+		padding: 2.4rem;
+
+		.filter-header {
+			padding: 2.4rem;
+
+			border-right: 1px solid white;
+			p {
+				font-weight: 600;
+				font-size: 2.4rem;
+			}
+		}
+
+		.filter-buttons {
+			display: grid;
+			grid-template-columns: repeat(6, 1fr);
+			grid-template-rows: (2, 1fr);
+			grid-auto-flow: rows;
+			gap: 1rem;
+
+			li {
+				text-align: center;
+				height: 3.2rem;
+				/* padding: 1.2rem 0; */
+				.button {
+					width: 100%;
+					height: 100%;
+					padding: 0;
+				}
+			}
+		}
+
+		li:first-of-type {
+			grid-column: 1;
+			grid-row: 1 / -3;
+
+			height: auto;
+		}
+		.hullMods__filter--active {
+			.button {
+				background-color: red;
+			}
+		}
+	}
 }

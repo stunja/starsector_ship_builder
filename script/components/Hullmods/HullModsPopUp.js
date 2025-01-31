@@ -7,10 +7,12 @@ import HullModsPopUpTableView from "../../allViews/HullMods/HullModsPopUpTableVi
 // Helper Function
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
+import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
 	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
+	FILTER_BUTTON: `.${classNames.filterButton}`,
 };
 const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
@@ -29,20 +31,26 @@ const SKIP_SORT_CATEGORY = {
 	icon: "icon",
 	description: "description",
 };
+const MISSING_CATEGORY = "All";
+
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
 
 	#usableHullMods;
-	#filteredHullMods;
+	#allHullMods;
 	#userState;
 	#shipHullMods;
 
 	#hullSize;
+	#currentFilter = MISSING_CATEGORY;
+	#filterCategories;
+
 	constructor(model) {
 		super(model);
 
 		this.#processData();
-		this.#filterHullMods();
+		this.#createHullModsArray();
+		this.#createFilterCategories();
 		this.#update();
 	}
 	#processData() {
@@ -60,16 +68,21 @@ export default class HullModsPopUp extends ViewModel {
 		this.#assignActiveClasses();
 	}
 	#renderHullModsPopUp() {
-		HullModsPopUpView.render(this.#filteredHullMods);
-		HullModsPopUpHeaderView.render(this.#filteredHullMods);
-		HullModsPopUpTableView.render([
-			this.#filteredHullMods,
-			this.#userShipBuild,
+		// Container
+		HullModsPopUpView.render(this.#allHullMods);
+		// Header
+		HullModsPopUpFilterView.render([
+			this.#filterCategories,
+			this.#currentFilter,
 		]);
+		HullModsPopUpHeaderView.render(this.#allHullMods);
+		// Table
+		HullModsPopUpTableView.render([this.#allHullMods, this.#userShipBuild]);
 	}
 	#eventListeners() {
 		this.#addWeaponPopUpTableHeaderListener();
 		this.#addWeaponPopUpEntryListener();
+		this.#addFilterListener();
 
 		// Close if clicked outside
 		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
@@ -77,12 +90,21 @@ export default class HullModsPopUp extends ViewModel {
 			HullModsPopUpView._clearRender
 		);
 	}
-	#filterHullMods() {
-		this.#filteredHullMods = this.#usableHullMods.filter(
+	#createHullModsArray() {
+		this.#allHullMods = this.#usableHullMods.filter(
 			(hullMod) => hullMod.hidden !== STRING.TRUE
 		);
 	}
+
 	// WeaponPopUp Event Listeners
+	#addFilterListener() {
+		HullModsPopUpFilterView.addClickHandler(
+			EVENT_LISTENER_TARGET.FILTER_BUTTON,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#filterTable
+		);
+	}
+
 	#addWeaponPopUpTableHeaderListener() {
 		HullModsPopUpHeaderView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
@@ -107,14 +129,14 @@ export default class HullModsPopUp extends ViewModel {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return;
 
-		this.#filteredHullMods = TablePopUpSorter.update([
+		this.#allHullMods = TablePopUpSorter.update([
 			btn,
 			"hullModPopUpTable",
-			this.#filteredHullMods,
+			this.#allHullMods,
 			this.#userShipBuild,
 		]);
 		console.log(btn);
-		console.log(this.#filteredHullMods);
+		console.log(this.#allHullMods);
 		this.#update();
 	};
 
@@ -173,4 +195,32 @@ export default class HullModsPopUp extends ViewModel {
 			}
 		});
 	}
+
+	#createFilterCategories() {
+		const newArray = this.#allHullMods.flatMap((hullMod) =>
+			hullMod.uiTags.split(",").map((str) => str.trim())
+		);
+		newArray.unshift(MISSING_CATEGORY);
+		const arrayWithoutDublicates = [...new Set(newArray)];
+
+		// Sort so array always alphabetical it is always the same
+		this.#filterCategories = arrayWithoutDublicates.toSorted((a, b) =>
+			a.localeCompare(b)
+		);
+	}
+
+	#filterTable = (btn) => {
+		const { filter: filterUiTag } = btn.dataset;
+
+		this.#createHullModsArray();
+
+		if (filterUiTag !== MISSING_CATEGORY) {
+			this.#allHullMods = this.#allHullMods.filter((hullMod) => {
+				const test = hullMod.uiTags.split(",").map((str) => str.trim());
+				return test.includes(filterUiTag);
+			});
+		}
+
+		this.#update();
+	};
 }
