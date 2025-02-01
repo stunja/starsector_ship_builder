@@ -8,6 +8,7 @@ import HullModsPopUpTableView from "../../allViews/HullMods/HullModsPopUpTableVi
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
+import { GENERIC_STRING } from "../../helper/MagicStrings";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
@@ -22,11 +23,7 @@ const CLASSES = {
 	TABLE_CONTAINER: `.${classNames.tableContainer}`,
 	WEAPON_POP_UP_ACTIVE: classNames.weaponPopUpActive,
 };
-const STRING = {
-	EMPTY: "",
-	SPACE: " ",
-	TRUE: "TRUE",
-};
+
 const SKIP_SORT_CATEGORY = {
 	icon: "icon",
 	description: "description",
@@ -92,7 +89,7 @@ export default class HullModsPopUp extends ViewModel {
 	}
 	#createHullModsArray() {
 		this.#allHullMods = this.#usableHullMods.filter(
-			(hullMod) => hullMod.hidden !== STRING.TRUE
+			(hullMod) => hullMod.hidden !== GENERIC_STRING.TRUE
 		);
 	}
 
@@ -169,7 +166,11 @@ export default class HullModsPopUp extends ViewModel {
 		// So I reimplement them back.
 		this.#eventListeners();
 		this.#assignActiveClasses();
+
+		console.log(this.getUserShipBuild().hullMods);
 	};
+
+	// Turn HullMod Entry to Active => different Color
 	#assignActiveClasses() {
 		this.#processData();
 
@@ -194,6 +195,7 @@ export default class HullModsPopUp extends ViewModel {
 		});
 	}
 
+	// Filter Categories (Buttons to which user can select Filter Options)
 	#createFilterCategories() {
 		const newArray = this.#allHullMods.flatMap((hullMod) =>
 			hullMod.uiTags.split(",").map((str) => str.trim())

@@ -1,35 +1,28 @@
 import classNames from "../../helper/DomClassNames";
 import URL from "../../helper/url.js";
+// View
 import View from "../view.js";
 
 class BuildInHullModsView extends View {
 	_localParent = `.${classNames.buildInHullmods}`;
 
+	#buildInHullMods;
+
 	generateMarkup() {
-		const data = this._data;
+		this.#processData(this._data);
 
-		const markup = `${this.#buildInMarkUp(data)}`;
-
+		const markup = this.#buildInMarkUp();
 		return markup;
 	}
-	#findHullModObject = (hullModsArray, targetHullModId) =>
-		hullModsArray.find((hullmod) => hullmod.id === targetHullModId);
+	#processData(data) {
+		this.#buildInHullMods = data;
+	}
 
-	#filterHullMods = (buildInHullMods, hullModsArray) => {
-		return buildInHullMods
-			.map((buildInHullMod) =>
-				this.#findHullModObject(hullModsArray, buildInHullMod)
-			)
-			.filter((item) => item !== undefined);
-	};
-	#buildInMarkUp([userShipBuild, usableHullMods]) {
-		const buildInHullMods = userShipBuild.hullMods.builtInMods;
-		if (!buildInHullMods) return "";
+	#buildInMarkUp() {
+		if (this.#buildInHullMods.length < 1)
+			return "" || console.warn("Too Few hullMods to Render");
 
-		const newArray = this.#filterHullMods(buildInHullMods, usableHullMods);
-		if (newArray.length < 1) return console.warn("Too Few hullMods to Render");
-
-		const markup = newArray
+		const markup = this.#buildInHullMods
 			.map(
 				(currentHullMod) =>
 					`<li class="${classNames.flexFlexEndGap} ${classNames.buildInHullmods__HullMod}">

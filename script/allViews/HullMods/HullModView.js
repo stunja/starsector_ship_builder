@@ -25,7 +25,7 @@ class HullModView extends View {
 	                <h3 class="${classNames.hullMods__Header}">${TITLES.HEADER}</h3>
 	                <ul class="${classNames.hullMods__Container}">
 	                  <div class="${classNames.buildInHullmods}"></div>
-	                  <div class="${classNames.addedHullmods}"></div>
+	                  <div class="${classNames.installedHullMods}"></div>
 	                </ul>
 	                <ul class="${classNames.flexFlexEndGap} ${classNames.hullMods__Buttons}">
 	                  <li>
