@@ -135,8 +135,6 @@ export default class HullModsPopUp extends ViewModel {
 			this.#allHullMods,
 			this.#userShipBuild,
 		]);
-		console.log(btn);
-		console.log(this.#allHullMods);
 		this.#update();
 	};
 
@@ -210,17 +208,24 @@ export default class HullModsPopUp extends ViewModel {
 	}
 
 	#filterTable = (btn) => {
+		if (!btn?.dataset) {
+			throw new Error("Invalid button element provided");
+		}
 		const { filter: filterUiTag } = btn.dataset;
-
+		// Creates newHullModArray, which is equal to ALL hullmods
 		this.#createHullModsArray();
 
+		// If not ALL do the filter, otherwise SKIP
 		if (filterUiTag !== MISSING_CATEGORY) {
 			this.#allHullMods = this.#allHullMods.filter((hullMod) => {
-				const test = hullMod.uiTags.split(",").map((str) => str.trim());
-				return test.includes(filterUiTag);
+				if (!hullMod?.uiTags) return false;
+
+				const uiTagArray = hullMod.uiTags.split(",").map((str) => str.trim());
+				return uiTagArray.includes(filterUiTag);
 			});
 		}
-
+		// Assign btn.DataSet to currentFilter => to pass then into render Filter
+		this.#currentFilter = filterUiTag;
 		this.#update();
 	};
 }

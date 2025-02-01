@@ -22,11 +22,10 @@ class HullModsPopUpFilterView extends View {
 		this.#currentFilter = currentFilter;
 	}
 
-	#activeClass = (category) => {
-		return category === this.#currentFilter
+	#activeClass = (category) =>
+		category === this.#currentFilter
 			? `class="${classNames.hullModsFilterActive}"`
 			: "";
-	};
 
 	#allButtonsMarkup = () =>
 		this.#filterCategories
