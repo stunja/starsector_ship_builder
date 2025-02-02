@@ -16,27 +16,34 @@ class HullModView extends View {
 
 	generateMarkup() {
 		const markup = `${this.#hullModMarkUp()}`;
-
 		return markup;
 	}
 
 	#hullModMarkUp() {
+		const dataSetButtonType = (type) =>
+			`${DataSet.dataHullModButtonType}="${type}"`;
+
+		// prettier-ignore
 		return `
-	                <h3 class="${classNames.hullMods__Header}">${TITLES.HEADER}</h3>
-	                <ul class="${classNames.hullMods__Container}">
+	                <h3 class="${classNames.hullMods__header}">${TITLES.HEADER}</h3>
+	                <ul class="${classNames.hullMods__container}">
 	                  <div class="${classNames.buildInHullmods}"></div>
 	                  <div class="${classNames.installedHullMods}"></div>
 	                </ul>
-	                <ul class="${classNames.flexFlexEndGap} ${classNames.hullMods__Buttons}">
+	                <ul class="${classNames.flexFlexEndGap} ${classNames.hullMods__buttons}">
 	                  <li>
-	                    <button class="${classNames.button} ${classNames.hullMods__Button}" 
-                        ${DataSet.dataHullModButtonType}="${BUTTON__TYPE.OPEN}">
+	                    <button class="${classNames.button} ${classNames.hullMods__button}"
+                        	${dataSetButtonType(BUTTON__TYPE.OPEN)}
+						>
                             ${TITLES.BUTTON__OPEN}
                         </button>
 	                  </li>
 	                  <li>
-	                    <button class="${classNames.button} ${classNames.hullMods__Button}" 
-                        ${DataSet.dataHullModButtonType}="${BUTTON__TYPE.SMODS}">
+	                    <button class="${classNames.button} ${
+			classNames.hullMods__button
+		}" 
+                        ${DataSet.dataHullModButtonType}="${BUTTON__TYPE.SMODS}"
+						>
                             ${TITLES.BUTTON__SMODS}
                         </button>
 	                  </li>

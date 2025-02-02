@@ -8,20 +8,21 @@ import HullModsPopUpTableView from "../../allViews/HullMods/HullModsPopUpTableVi
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
-import { GENERIC_STRING } from "../../helper/MagicStrings";
+import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
+import HullModController from "./HullModController";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
 	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
 	FILTER_BUTTON: `.${classNames.filterButton}`,
 };
-const EVENT_LISTENER_TYPE = {
-	CLICK: "click",
-	HOVER: "mouseover",
-};
 const CLASSES = {
 	TABLE_CONTAINER: `.${classNames.tableContainer}`,
 	WEAPON_POP_UP_ACTIVE: classNames.weaponPopUpActive,
+};
+
+const POPUP_TABLE_TYPE = {
+	HULLMOD: "hullModPopUpTable",
 };
 
 const SKIP_SORT_CATEGORY = {
@@ -128,7 +129,7 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#allHullMods = TablePopUpSorter.update([
 			btn,
-			"hullModPopUpTable",
+			POPUP_TABLE_TYPE.HULLMOD,
 			this.#allHullMods,
 			this.#userShipBuild,
 		]);
@@ -167,7 +168,8 @@ export default class HullModsPopUp extends ViewModel {
 		this.#eventListeners();
 		this.#assignActiveClasses();
 
-		console.log(this.getUserShipBuild().hullMods);
+		// Add HullMod to InstalledHullMods
+		new HullModController(this.getState()).update();
 	};
 
 	// Turn HullMod Entry to Active => different Color

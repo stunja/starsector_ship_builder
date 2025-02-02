@@ -3,3 +3,7 @@ export const GENERIC_STRING = {
 	SPACE: " ",
 	TRUE: "TRUE",
 };
+export const EVENT_LISTENER_TYPE = {
+	CLICK: "click",
+	HOVER: "mouseover",
+};

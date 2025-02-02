@@ -5,16 +5,14 @@ import InstalledHullMods from "../../allViews/HullMods/InstalledHullMods";
 import HullModView from "../../allViews/HullMods/HullModView";
 import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 // HullMods
-
 import HullModsPopUp from "./HullModsPopUp";
-//
+// Helper
+import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 
 const EVENT_LISTENER_TARGET = {
-	HULLMODS: `.${classNames.hullMods__Button}`,
+	HULLMODS: `.${classNames.hullMods__button}`,
 };
-const EVENT_LISTENER_TYPE = {
-	CLICK: `click`,
-};
+
 const HULLMOD_BUTTON_TYPE = {
 	OPEN: "open",
 	SMODS: "smods",
@@ -24,7 +22,9 @@ export default class HullModController extends ViewModel {
 	#userState;
 	#allHullMods;
 	#userShipBuild;
+
 	#buildInHullMods;
+
 	constructor(model) {
 		super(model);
 
@@ -32,7 +32,7 @@ export default class HullModController extends ViewModel {
 		this.#allHullMods = this.#userState.usableHullMods;
 		this.#userShipBuild = this.#userState.userShipBuild;
 
-		this.#buildInHullMods = this.#findBuildInHullMods();
+		this.#buildInHullMods = this.#createBuildInHullModsArray();
 	}
 	update() {
 		this.#hullModContainerRender();
@@ -45,28 +45,19 @@ export default class HullModController extends ViewModel {
 	}
 	#renderHullMods() {
 		BuildInHullModsView.render(this.#buildInHullMods);
-		InstalledHullMods.render(this.getUserShipBuild());
+		InstalledHullMods.render(this.#createInstalledHullModsArray());
 	}
-	// #findBuildInHullMods() {
-	// 	const allHullMods = this.#allHullMods;
-	// 	const { builtInMods } = this.#userShipBuild.hullMods;
+	#createInstalledHullModsArray() {
+		const allHullMods = this.#allHullMods;
+		const { installedHullMods } = this.getUserShipBuild().hullMods;
 
-	// 	const findHullModObject = (hullModsArray, targetHullModId) =>
-	// 		hullModsArray.find((hullmod) => hullmod.id === targetHullModId);
-
-	// 	const filterHullMods = (buildInHullMods, hullModsArray) => {
-	// 		return buildInHullMods
-	// 			.map((buildInHullMod) =>
-	// 				findHullModObject(hullModsArray, buildInHullMod)
-	// 			)
-	// 			.filter((item) => item !== undefined);
-	// 	};
-
-	// 	const newArray = filterHullMods(builtInMods, allHullMods);
-
-	// 	return newArray;
-	// }
-	#findBuildInHullMods() {
+		return installedHullMods
+			.map((installedHullMod) =>
+				allHullMods.find((hullmod) => hullmod.id === installedHullMod)
+			)
+			.filter(Boolean);
+	}
+	#createBuildInHullModsArray() {
 		try {
 			const allHullMods = this.#allHullMods;
 			const { builtInMods } = this.#userShipBuild.hullMods;

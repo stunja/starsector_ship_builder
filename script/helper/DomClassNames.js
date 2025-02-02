@@ -225,13 +225,13 @@ const classNames = {
 	// HullMods
 	hullModsPopUp: "hullmods-pop-up",
 	hullMods: "hullmods",
-	hullMods__Header: "hullmods__header",
-	hullMods__Container: "hullmods__container",
-	hullMods__Buttons: "hullmods__buttons",
-	hullMods__Button: "hullmods__button--open",
+	hullMods__header: "hullmods__header",
+	hullMods__container: "hullmods__container",
+	hullMods__buttons: "hullmods__buttons",
+	hullMods__button: "hullmods__button--open",
 	// BuildIn HullMods
 	buildInHullmods: "build-in-hullmods",
-	buildInHullmods__HullMod: "build-in-hullmods__hullmod",
+	hullMod: "hullmod",
 
 	// Added Hull Mods
 	installedHullMods: "installed-hullmods",

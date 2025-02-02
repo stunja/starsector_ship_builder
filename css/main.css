@@ -20,6 +20,7 @@
 @import "./Weapons/_weaponSlot.css";
 /* HullMods */
 @import "./HullMods/hull-mods-pop-up.css";
+@import "./HullMods/hullmods.css";
 
 /* Sprite */
 @import "./Weapons/_weaponSprite.css";

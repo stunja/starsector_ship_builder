@@ -41,22 +41,6 @@ font-size
 /* GENERIC REUSABLE */
 /***************************************/
 
-.hullmod__add-hull-button--warn {
-	color: var(--white-text-color);
-	background-color: var(--accent-color);
-}
-.hullmod__add-hull-button--warn:hover {
-	color: var(--white-text-color);
-	background-color: var(--accent-darker-color);
-}
-
-.button-circle:hover {
-	background-color: var(--secondary-color);
-}
-.hullmods__buttons__open-hullmod-menu--warn {
-	background-color: var(--accent-color);
-}
-
 /* ordinance grahp */
 .ordinance-graph {
 	text-align: right;
@@ -87,31 +71,6 @@ font-size
 .box__middle-right__ship-capacitors,
 .box__middle-right__ship-vents {
 	display: flex;
-}
-/* Hull mods */
-.hullmods {
-	text-align: right;
-
-	.hullmods__header {
-		margin-bottom: 1.5rem;
-	}
-	.hullmods__container {
-		/* margin-bottom: 2rem; */
-		display: flex;
-		/* padding: 2rem 0 2rem 0; */
-		width: max-content;
-		flex-direction: column;
-		margin-left: auto;
-		gap: 2rem;
-	}
-	.hullmods__container__build-in-hullmods {
-		background-color: rgba(0, 0, 0, 0.1);
-		border: 1px solid rgba(0, 0, 0, 0.5);
-	}
-	.build-in-hullmods__hullmod {
-		/* border-bottom: 1px solid rgba(0, 0, 0, 0.5); */
-		padding: 0.75rem 0.75rem 0.75rem 1.5rem;
-	}
 }
 
 /* Pilot and Fighter Bay */

@@ -33,6 +33,7 @@ button:hover {
 	color: var(--dark-color);
 	background-color: var(--secondary-color);
 }
+
 .button-circle {
 	display: flex;
 	justify-content: center;
@@ -44,6 +45,9 @@ button:hover {
 	width: 3rem;
 	background-color: var(--main-color);
 	border: none;
+}
+.button-circle:hover {
+	background-color: var(--secondary-color);
 }
 .d-flex {
 	display: flex;
