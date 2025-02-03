@@ -3,13 +3,8 @@ import DataSet from "../../helper/DataSet.js";
 import URL from "../../helper/url.js";
 // View
 import View from "../view.js";
-
-const opCostPerHullSize = {
-	CAPITAL_SHIP: "cost_capital",
-	CRUISER: "cost_cruiser",
-	DESTROYER: "cost_dest",
-	FRIGATE: "cost_frigate",
-};
+import { normalizedHullSize } from "../../components/Hullmods/HullModHelper.js";
+// Helper
 
 class HullModsPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
@@ -42,7 +37,6 @@ class HullModsPopUpTableView extends View {
 			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
 	#tableBodyRender() {
-		const normalizedHullSize = opCostPerHullSize[this.#hullSize];
 		const entryMarkup = (crrHullMod) => {
 			return `
 			<ul class="${classNames.tableEntries}" 
@@ -61,10 +55,9 @@ class HullModsPopUpTableView extends View {
 					<div>${this.#tagsArray(crrHullMod)}</div>
 				</li>
 				<li class="${classNames.tableEntry}">
-					<p>${crrHullMod[normalizedHullSize]}</p>
+					<p>${normalizedHullSize(crrHullMod, this.#hullSize)}</p>
 				</li>
-			</ul>
-		`;
+			</ul>`;
 		};
 		return this.#allHullMods.map((hullMod) => entryMarkup(hullMod)).join("");
 	}

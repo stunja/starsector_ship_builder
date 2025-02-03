@@ -10,6 +10,7 @@ import TablePopUpSorter from "../TablePopUpSorter";
 import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import HullModController from "./HullModController";
+import { removeInstalledHullMod } from "./HullModHelper";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
@@ -81,12 +82,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#addWeaponPopUpTableHeaderListener();
 		this.#addWeaponPopUpEntryListener();
 		this.#addFilterListener();
-
-		// Close if clicked outside
-		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
-			CLASSES.TABLE_CONTAINER,
-			HullModsPopUpView._clearRender
-		);
+		this.#closePopUp();
 	}
 	#createHullModsArray() {
 		this.#allHullMods = this.#usableHullMods.filter(
@@ -102,7 +98,6 @@ export default class HullModsPopUp extends ViewModel {
 			this.#filterTable
 		);
 	}
-
 	#addWeaponPopUpTableHeaderListener() {
 		HullModsPopUpHeaderView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
@@ -122,6 +117,13 @@ export default class HullModsPopUp extends ViewModel {
 		// 	this.#showAdditionalInformationOnHover
 		// );
 	}
+	#closePopUp() {
+		// Close if clicked outside
+		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
+			CLASSES.TABLE_CONTAINER,
+			HullModsPopUpView._clearRender
+		);
+	}
 	// TablePopUpSorter
 	#popUpSorter = (btn) => {
 		const { category } = btn.dataset;
@@ -136,39 +138,29 @@ export default class HullModsPopUp extends ViewModel {
 		this.#update();
 	};
 
-	#toggleHullMod = (buttonElement) => {
-		if (!buttonElement?.dataset?.hullmodId) {
+	// Add // Remove HullMod
+	#toggleHullMod = (btn) => {
+		if (!btn?.dataset?.hullmodId) {
 			console.error("No hullmodId provided");
 			return;
 		}
 
-		const { hullmodId } = buttonElement.dataset;
+		const { hullmodId } = btn.dataset;
 		const { hullMods } = this.getUserShipBuild();
-		const { installedHullMods } = hullMods;
 
-		const isHullModInstalled = installedHullMods.includes(hullmodId);
-
-		// if hullMod is installed create new array, without it
-		const updatedInstalledHullMods = isHullModInstalled
-			? installedHullMods.filter((mod) => mod !== hullmodId)
-			: [...installedHullMods, hullmodId];
-
-		const updatedHullMods = {
-			...hullMods,
-			installedHullMods: updatedInstalledHullMods,
-		};
+		const updatedHullMods = removeInstalledHullMod(hullmodId, hullMods);
 
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,
 			hullMods: updatedHullMods,
 		});
 
-		// For some reason EventListeners can replaced.
+		// For some reason EventListeners can be replaced.
 		// So I reimplement them back.
 		this.#eventListeners();
 		this.#assignActiveClasses();
 
-		// Add HullMod to InstalledHullMods
+		// Update Controller, to display installedHullMods
 		new HullModController(this.getState()).update();
 	};
 

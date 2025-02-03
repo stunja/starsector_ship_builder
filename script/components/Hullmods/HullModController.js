@@ -1,16 +1,18 @@
 import ViewModel from "../../ViewModel";
 import classNames from "../../helper/DomClassNames";
 // View
-import InstalledHullMods from "../../allViews/HullMods/InstalledHullMods";
+import InstalledHullMods from "../../allViews/HullMods/InstalledHullModsView";
 import HullModView from "../../allViews/HullMods/HullModView";
 import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 // HullMods
 import HullModsPopUp from "./HullModsPopUp";
 // Helper
 import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
+import { removeInstalledHullMod } from "./HullModHelper";
 
 const EVENT_LISTENER_TARGET = {
 	HULLMODS: `.${classNames.hullMods__button}`,
+	REMOVE_HULLMOD: `.${classNames.removeInstalledHullModButton}`,
 };
 
 const HULLMOD_BUTTON_TYPE = {
@@ -36,17 +38,20 @@ export default class HullModController extends ViewModel {
 	}
 	update() {
 		this.#hullModContainerRender();
+		this.#renderHullModContainer();
+
 		this.#hullModContainerEventListener();
-		this.#renderHullMods();
 	}
-	// Container
+	// Render
 	#hullModContainerRender() {
 		HullModView.render(this.#userShipBuild);
 	}
-	#renderHullMods() {
+	#renderHullModContainer() {
 		BuildInHullModsView.render(this.#buildInHullMods);
 		InstalledHullMods.render(this.#createInstalledHullModsArray());
 	}
+	// Logic
+	// Use hullModId to fetch HullModObject and create and array
 	#createInstalledHullModsArray() {
 		const allHullMods = this.#allHullMods;
 		const { installedHullMods } = this.getUserShipBuild().hullMods;
@@ -57,6 +62,7 @@ export default class HullModController extends ViewModel {
 			)
 			.filter(Boolean);
 	}
+	// Use hullModId to fetch HullModObject and create and array
 	#createBuildInHullModsArray() {
 		try {
 			const allHullMods = this.#allHullMods;
@@ -85,12 +91,35 @@ export default class HullModController extends ViewModel {
 			console.log("smods");
 		}
 	};
+	#removeInstalledHullMod = (btn) => {
+		if (!btn?.dataset?.hullmodId) {
+			console.error("No hullmodId provided");
+			return;
+		}
+		const { hullmodId } = btn.dataset;
+		const { hullMods } = this.getUserShipBuild();
+
+		const updatedHullMods = removeInstalledHullMod(hullmodId, hullMods);
+
+		this.setUpdateUserShipBuild({
+			...this.#userShipBuild,
+			hullMods: updatedHullMods,
+		});
+
+		this.update();
+	};
 	// Event Listeners
 	#hullModContainerEventListener() {
 		HullModView.addClickHandler(
 			EVENT_LISTENER_TARGET.HULLMODS,
 			EVENT_LISTENER_TYPE.CLICK,
 			this.#openHullModPopUp
+		);
+
+		HullModView.addClickHandler(
+			EVENT_LISTENER_TARGET.REMOVE_HULLMOD,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#removeInstalledHullMod
 		);
 	}
 }
