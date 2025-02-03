@@ -1,12 +1,11 @@
-import DataSet from "../../helper/DataSet.js";
-
-import { calculateHullModCost } from "../../helper/helperFunction.js";
-
-import classNames from "../../helper/DomClassNames.js";
-import URL from "../../helper/url.js";
+// View
 import View from "../view.js";
 // Helper
+import DataSet from "../../helper/DataSet.js";
+import URL from "../../helper/url.js";
+import classNames from "../../helper/DomClassNames.js";
 import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import { normalizedHullSize } from "../../components/Hullmods/HullModHelper.js";
 
 const BUTTON_TYPE = {
 	MINUS: "-",
@@ -14,6 +13,7 @@ const BUTTON_TYPE = {
 class InstalledHullMods extends View {
 	_localParent = `.${classNames.installedHullMods}`;
 	#installedHullMods;
+	#hullSize;
 
 	generateMarkup() {
 		this.#processData(this._data);
@@ -21,8 +21,9 @@ class InstalledHullMods extends View {
 		const markup = this.#addInstalledHullMod();
 		return markup;
 	}
-	#processData(data) {
-		this.#installedHullMods = data;
+	#processData([installedHullMods, hullSize]) {
+		this.#installedHullMods = installedHullMods;
+		this.#hullSize = hullSize;
 	}
 
 	#addInstalledHullMod() {
@@ -34,17 +35,29 @@ class InstalledHullMods extends View {
 				(currentHullMod) =>
 					`<li class="${classNames.flexFlexEndGap} ${classNames.hullMod}">
 						<h5>${currentHullMod.name}</h5>
-						<button class="${classNames.button} ${classNames.buttonCircle} ${classNames.removeInstalledHullModButton}"
-							${DataSet.dataHullModId}="${currentHullMod.id}"
-						>
-							${BUTTON_TYPE.MINUS}
-						</button>
-						<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />
+						${this.#hullModCostMarkup(currentHullMod)}
+						${this.#buttonMarkup(currentHullMod)}
+						${this.#imageMarkup(currentHullMod)}
 					</li>`
 			)
 			.join("");
 
 		return markup;
 	}
+	// Markups
+	#hullModCostMarkup = (currentHullMod) => `
+				<p class="${classNames.hullModCost}">
+					[${normalizedHullSize(currentHullMod, this.#hullSize)}]
+				</p>`;
+
+	#buttonMarkup = (currentHullMod) =>
+		`<button class="${classNames.button} ${classNames.buttonCircle} ${classNames.removeInstalledHullModButton}"
+			${DataSet.dataHullModId}="${currentHullMod.id}"
+		>
+			${BUTTON_TYPE.MINUS}
+		</button>`;
+
+	#imageMarkup = (currentHullMod) =>
+		`<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
 }
 export default new InstalledHullMods();

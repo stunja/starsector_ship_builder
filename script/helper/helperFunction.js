@@ -32,18 +32,6 @@ export const convertStringsIntoNumbersCSVdata = function (dataArray) {
 	});
 };
 
-//! I need to remove this
-export const calculateHullModCost = (hullMod) =>
-	Number(hullMod[state.currentShipBuild.hullModCost]);
-
-export const weaponSlotIdIntoWeaponSlotObject = (allWeapons, weaponSlotId) =>
-	allWeapons.find((slot) => slot.id === weaponSlotId);
-
-export const findCurrentWeaponSlotFromWeaponSlotId = (
-	weaponSlots,
-	weaponSlotId
-) => weaponSlots.find((slot) => slot.id === weaponSlotId);
-
 export const extractDataFromObject = (propertiesToExtract, data) =>
 	propertiesToExtract.reduce(
 		(acc, key) => ({
@@ -52,3 +40,12 @@ export const extractDataFromObject = (propertiesToExtract, data) =>
 		}),
 		{}
 	);
+// Why do I even need these? too simple to even keep, just need to rework original
+export const weaponSlotIdIntoWeaponSlotObject = (allWeapons, weaponSlotId) =>
+	allWeapons.find((slot) => slot.id === weaponSlotId);
+
+// Why do I even need these? too simple to even keep, just need to rework original
+export const findCurrentWeaponSlotFromWeaponSlotId = (
+	weaponSlots,
+	weaponSlotId
+) => weaponSlots.find((slot) => slot.id === weaponSlotId);

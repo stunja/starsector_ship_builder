@@ -36,4 +36,8 @@
 			/* padding: 1.4rem 1.4rem 1.4rem 2.4rem; */
 		}
 	}
+	.hullMod__cost {
+		font-weight: 800;
+		font-size: 1.8rem;
+	}
 }

@@ -232,6 +232,7 @@ const classNames = {
 	// BuildIn HullMods
 	buildInHullmods: "build-in-hullmods",
 	hullMod: "hullmod",
+	hullModCost: "hullMod__cost",
 	removeInstalledHullModButton: "remove-installed-hullmod-button",
 
 	// Added Hull Mods

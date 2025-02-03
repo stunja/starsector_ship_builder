@@ -26,6 +26,7 @@ export default class HullModController extends ViewModel {
 	#userShipBuild;
 
 	#buildInHullMods;
+	#hullSize;
 
 	constructor(model) {
 		super(model);
@@ -33,6 +34,7 @@ export default class HullModController extends ViewModel {
 		this.#userState = this.getUserState();
 		this.#allHullMods = this.#userState.usableHullMods;
 		this.#userShipBuild = this.#userState.userShipBuild;
+		this.#hullSize = this.#userShipBuild.hullSize;
 
 		this.#buildInHullMods = this.#createBuildInHullModsArray();
 	}
@@ -48,7 +50,10 @@ export default class HullModController extends ViewModel {
 	}
 	#renderHullModContainer() {
 		BuildInHullModsView.render(this.#buildInHullMods);
-		InstalledHullMods.render(this.#createInstalledHullModsArray());
+		InstalledHullMods.render([
+			this.#createInstalledHullModsArray(),
+			this.#hullSize,
+		]);
 	}
 	// Logic
 	// Use hullModId to fetch HullModObject and create and array
