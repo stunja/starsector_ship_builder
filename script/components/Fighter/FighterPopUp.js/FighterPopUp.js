@@ -115,8 +115,10 @@ export default class FighterPopUp extends ViewModel {
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentFighterToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
+		const userShipBuild = this.getUserShipBuild();
+		const installedWeapons = userShipBuild.installedWeapons;
 		//
-		const updatedInstalledWeapons = this.#installedWeapons.map(
+		const updatedInstalledWeapons = installedWeapons.map(
 			([slotId, currentWeapon]) => {
 				// If weapon already exists in slot, remove it
 				if (currentWeapon === weaponPopUpId) {
@@ -134,11 +136,11 @@ export default class FighterPopUp extends ViewModel {
 
 		// update weapons
 		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
+			...userShipBuild,
 			installedWeapons: updatedInstalledWeapons,
 		});
 		// assign new installedWeapons
-		this.#installedWeapons = this.getUserShipBuild().installedWeapons;
+		this.#installedWeapons = installedWeapons;
 
 		this.#fighterPopUpOpen === true
 			? this.#addWeaponAndCloseWeaponPopUp()

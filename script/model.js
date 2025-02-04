@@ -5,6 +5,7 @@ import {
 	extractDataFromObject,
 } from "./helper/helperFunction.js";
 import URL from "./helper/url.js";
+import HULLMODS_DATA from "../src/starsector_data/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
@@ -77,6 +78,8 @@ export class Model {
 			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
 			// HullMods
 			const allHullMods = hullMods.createUsableHullMods(hullmods);
+			const hullModsWithEffectValues =
+				hullMods.injectHullModEffectValueData(allHullMods);
 			// Weapons
 			const weaponOnly = this.#filterWeaponsOnly(weapons);
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
@@ -101,7 +104,7 @@ export class Model {
 			this.updateState("userState", {
 				_currentShip: updatedCurrentShip,
 				_baseShipBuild: userShipBuild,
-				usableHullMods: allHullMods,
+				usableHullMods: hullModsWithEffectValues,
 			});
 		} catch (err) {
 			console.log(`Failed to Load Resources ${err}`);
@@ -772,6 +775,34 @@ const hullMods = {
 		neural_interface: `Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply.`,
 
 		neural_integrator: `An augmented version of Neural Interface that works with automated ships by enabling direct control of all of the ship's systems via the link, instead of having the controlling consciousness aspect simply direct the bridge crew. Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply. Also increases the deployment cost and supply use by %s`,
+	},
+	injectHullModEffectValueData: (data, hullModsData = HULLMODS_DATA) => {
+		if (!Array.isArray(data)) {
+			throw new Error("Input must be an array");
+		}
+
+		const newData = data.map(({ name, ...hullMod }) => {
+			const values = hullModsData[name];
+			if (!values) return { ...hullMod, name };
+
+			const [regularValues = {}, sModsValues = {}] = values;
+			const newDesc = hullMods.updateHullModDescriptionWithRelevantData(
+				hullMod,
+				regularValues
+			);
+
+			return {
+				...hullMod,
+				name,
+				desc: newDesc,
+				effectValues: { regularValues, sModsValues },
+			};
+		});
+
+		return newData;
+	},
+	updateHullModDescriptionWithRelevantData({ desc }, regularValues) {
+		return desc.replace(/%s/g, () => regularValues.shift());
 	},
 };
 

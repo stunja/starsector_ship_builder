@@ -30,13 +30,20 @@ const SKIP_SORT_CATEGORY = {
 	icon: "icon",
 	description: "description",
 };
+const HULLMODS_TO_HIDE = {
+	// these hullMods where remove from the game, for some reason.
+
+	pdintegration: "pdintegration", // #Point Defense Integration
+	assault_package: "assault_package", // Assault Package
+	missile_autoloader: "missile_autoloader", // Missile Autoloader
+};
 const MISSING_CATEGORY = "All";
 
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
 
 	#usableHullMods;
-	#allHullMods;
+	#hullModsArrayToDisplay;
 	#userState;
 	#shipHullMods;
 
@@ -67,16 +74,20 @@ export default class HullModsPopUp extends ViewModel {
 		this.#assignActiveClasses();
 	}
 	#renderHullModsPopUp() {
+		console.log(this.#hullModsArrayToDisplay);
 		// Container
-		HullModsPopUpView.render(this.#allHullMods);
+		HullModsPopUpView.render(this.#hullModsArrayToDisplay);
 		// Header
 		HullModsPopUpFilterView.render([
 			this.#filterCategories,
 			this.#currentFilter,
 		]);
-		HullModsPopUpHeaderView.render(this.#allHullMods);
+		HullModsPopUpHeaderView.render(this.#hullModsArrayToDisplay);
 		// Table
-		HullModsPopUpTableView.render([this.#allHullMods, this.#userShipBuild]);
+		HullModsPopUpTableView.render([
+			this.#hullModsArrayToDisplay,
+			this.#userShipBuild,
+		]);
 	}
 	#eventListeners() {
 		this.#addWeaponPopUpTableHeaderListener();
@@ -85,10 +96,15 @@ export default class HullModsPopUp extends ViewModel {
 		this.#closePopUp();
 	}
 	#createHullModsArray() {
-		this.#allHullMods = this.#usableHullMods.filter(
+		const removeHiddenHullMods = this.#usableHullMods.filter(
 			(hullMod) => hullMod.hidden !== GENERIC_STRING.TRUE
 		);
+
+		this.#hullModsArrayToDisplay =
+			this.#hideSpecificHullMods(removeHiddenHullMods);
 	}
+	#hideSpecificHullMods = (arr) =>
+		arr.filter((hullMod) => hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]);
 
 	// WeaponPopUp Event Listeners
 	#addFilterListener() {
@@ -129,10 +145,10 @@ export default class HullModsPopUp extends ViewModel {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return;
 
-		this.#allHullMods = TablePopUpSorter.update([
+		this.#hullModsArrayToDisplay = TablePopUpSorter.update([
 			btn,
 			POPUP_TABLE_TYPE.HULLMOD,
-			this.#allHullMods,
+			this.#hullModsArrayToDisplay,
 			this.#userShipBuild,
 		]);
 		this.#update();
@@ -154,7 +170,7 @@ export default class HullModsPopUp extends ViewModel {
 			...this.#userShipBuild,
 			hullMods: updatedHullMods,
 		});
-
+		console.log(hullmodId);
 		// For some reason EventListeners can be replaced.
 		// So I reimplement them back.
 		this.#eventListeners();
@@ -191,7 +207,7 @@ export default class HullModsPopUp extends ViewModel {
 
 	// Filter Categories (Buttons to which user can select Filter Options)
 	#createFilterCategories() {
-		const newArray = this.#allHullMods.flatMap((hullMod) =>
+		const newArray = this.#hullModsArrayToDisplay.flatMap((hullMod) =>
 			hullMod.uiTags.split(",").map((str) => str.trim())
 		);
 		newArray.unshift(MISSING_CATEGORY);
@@ -213,12 +229,14 @@ export default class HullModsPopUp extends ViewModel {
 
 		// If not ALL do the filter, otherwise SKIP
 		if (filterUiTag !== MISSING_CATEGORY) {
-			this.#allHullMods = this.#allHullMods.filter((hullMod) => {
-				if (!hullMod?.uiTags) return false;
+			this.#hullModsArrayToDisplay = this.#hullModsArrayToDisplay.filter(
+				(hullMod) => {
+					if (!hullMod?.uiTags) return false;
 
-				const uiTagArray = hullMod.uiTags.split(",").map((str) => str.trim());
-				return uiTagArray.includes(filterUiTag);
-			});
+					const uiTagArray = hullMod.uiTags.split(",").map((str) => str.trim());
+					return uiTagArray.includes(filterUiTag);
+				}
+			);
 		}
 		// Assign btn.DataSet to currentFilter => to pass then into render Filter
 		this.#currentFilter = filterUiTag;

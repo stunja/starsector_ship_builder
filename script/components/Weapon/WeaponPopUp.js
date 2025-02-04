@@ -143,7 +143,8 @@ export default class WeaponPopUp extends ViewModel {
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
-		const installedWeapons = this.#userShipBuild.installedWeapons;
+		const userShipBuild = this.getUserShipBuild();
+		const installedWeapons = userShipBuild.installedWeapons;
 		let isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
 		//
 		const updatedInstalledWeapons = installedWeapons.map(
@@ -163,7 +164,7 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
+			...userShipBuild,
 			installedWeapons: updatedInstalledWeapons,
 		});
 
