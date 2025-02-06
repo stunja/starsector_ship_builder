@@ -80,6 +80,7 @@ export class Model {
 			const allHullMods = hullMods.createUsableHullMods(hullmods);
 			const hullModsWithEffectValues =
 				hullMods.injectHullModEffectValueData(allHullMods);
+
 			// Weapons
 			const weaponOnly = this.#filterWeaponsOnly(weapons);
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
@@ -781,28 +782,18 @@ const hullMods = {
 			throw new Error("Input must be an array");
 		}
 
-		const newData = data.map(({ name, ...hullMod }) => {
+		return data.map(({ name, ...hullMod }) => {
 			const values = hullModsData[name];
 			if (!values) return { ...hullMod, name };
 
 			const [regularValues = {}, sModsValues = {}] = values;
-			const newDesc = hullMods.updateHullModDescriptionWithRelevantData(
-				hullMod,
-				regularValues
-			);
 
 			return {
 				...hullMod,
 				name,
-				desc: newDesc,
 				effectValues: { regularValues, sModsValues },
 			};
 		});
-
-		return newData;
-	},
-	updateHullModDescriptionWithRelevantData({ desc }, regularValues) {
-		return desc.replace(/%s/g, () => regularValues.shift());
 	},
 };
 

@@ -233,6 +233,7 @@ const classNames = {
 	buildInHullmods: "build-in-hullmods",
 	hullMod: "hullmod",
 	hullModCost: "hullMod__cost",
+	hullModDescValues: "hullMod__desc--value",
 	removeInstalledHullModButton: "remove-installed-hullmod-button",
 
 	// Added Hull Mods

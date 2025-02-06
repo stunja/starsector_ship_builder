@@ -64,6 +64,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#userState = this.getUserState();
 
 		this.#usableHullMods = this.#userState.usableHullMods;
+		// console.log(this.getUserState().usableHullMods);
 		this.#shipHullMods = this.#userShipBuild.hullMods;
 	}
 	#update() {
@@ -74,7 +75,6 @@ export default class HullModsPopUp extends ViewModel {
 		this.#assignActiveClasses();
 	}
 	#renderHullModsPopUp() {
-		console.log(this.#hullModsArrayToDisplay);
 		// Container
 		HullModsPopUpView.render(this.#hullModsArrayToDisplay);
 		// Header
@@ -170,7 +170,6 @@ export default class HullModsPopUp extends ViewModel {
 			...this.#userShipBuild,
 			hullMods: updatedHullMods,
 		});
-		console.log(hullmodId);
 		// For some reason EventListeners can be replaced.
 		// So I reimplement them back.
 		this.#eventListeners();

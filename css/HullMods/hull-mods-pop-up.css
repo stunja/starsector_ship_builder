@@ -46,7 +46,10 @@
 			gap: 0.6rem;
 		}
 	}
-
+	.hullMod__desc--value {
+		font-weight: 700;
+		color: var(--secondary-color);
+	}
 	/* .table-header-entry:first-of-type {
 		height: auto;
 	} */

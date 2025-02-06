@@ -15,12 +15,13 @@ class HullModsPopUpTableView extends View {
 	generateMarkup() {
 		this.#processData(this._data);
 
-		const markup = `${this.#tableBodyRender()}`;
+		const markup = this.#tableBodyRender();
 		return markup;
 	}
 
 	#processData() {
 		const [allHullMods, userShipBuild] = this._data;
+
 		this.#allHullMods = allHullMods;
 		this.#userShipBuild = userShipBuild;
 
@@ -36,6 +37,24 @@ class HullModsPopUpTableView extends View {
 	#hullModIcon = (crrHullMod) => `
 			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
+	#hullModDescription(currentHullMod) {
+		const regularValues = currentHullMod.effectValues.regularValues;
+		const description = currentHullMod.desc;
+		const currentNumber = regularValues.slice();
+
+		const changeDescription = () => {
+			return description.replace(
+				/%s/g,
+				() =>
+					`<span class="${
+						classNames.hullModDescValues
+					}">${currentNumber.shift()}</span>`
+			);
+		};
+		//prettier-ignore
+		return `<li class="${classNames.tableEntry} ${classNames.tableDesc}"><p>${changeDescription()}</p></li>`;
+	}
+
 	#tableBodyRender() {
 		const entryMarkup = (crrHullMod) => {
 			return `
@@ -48,9 +67,7 @@ class HullModsPopUpTableView extends View {
 				<li class="${classNames.tableEntry} ${classNames.tableName}">
 					<p>${crrHullMod.name}</p>
 				</li>
-				<li class="${classNames.tableEntry} ${classNames.tableDesc}">
-					<p>${crrHullMod.desc}</p>
-				</li>
+				${this.#hullModDescription(crrHullMod)}
 				<li class="${classNames.tableEntry} ${classNames.tableType}">
 					<div>${this.#tagsArray(crrHullMod)}</div>
 				</li>
