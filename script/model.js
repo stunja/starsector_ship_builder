@@ -5,13 +5,13 @@ import {
 	extractDataFromObject,
 } from "./helper/helperFunction.js";
 import URL from "./helper/url.js";
-import HULLMODS_DATA from "../src/starsector_data/HullModData.js";
+import HULLMODS_DATA from "./helper/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "astral";
+const shipNameDev = "odyssey";
 //
-//invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
+// invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead //
 // gryphon = cruiser
 // condor = destroyer

@@ -10,7 +10,7 @@ import TablePopUpSorter from "../TablePopUpSorter";
 import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import HullModController from "./HullModController";
-import { removeInstalledHullMod } from "./HullModHelper";
+import { removeInstalledHullMod, hullModLogic } from "./HullModHelper";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
@@ -42,7 +42,6 @@ const MISSING_CATEGORY = "All";
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
 
-	#usableHullMods;
 	#hullModsArrayToDisplay;
 	#userState;
 	#shipHullMods;
@@ -51,11 +50,18 @@ export default class HullModsPopUp extends ViewModel {
 	#currentFilter = MISSING_CATEGORY;
 	#filterCategories;
 
+	//ShipProps
+	#usableHullMods;
+	#builtInMods;
+	#shieldType;
+	#shipIsCivilian;
+
 	constructor(model) {
 		super(model);
 
 		this.#processData();
 		this.#createHullModsArray();
+		this.#redHullMods();
 		this.#createFilterCategories();
 		this.#update();
 	}
@@ -64,8 +70,11 @@ export default class HullModsPopUp extends ViewModel {
 		this.#userState = this.getUserState();
 
 		this.#usableHullMods = this.#userState.usableHullMods;
-		// console.log(this.getUserState().usableHullMods);
 		this.#shipHullMods = this.#userShipBuild.hullMods;
+
+		this.#builtInMods = this.#userShipBuild.hullMods.builtInMods;
+		this.#shieldType = this.#userShipBuild.shieldType;
+		this.#shipIsCivilian = this.#userShipBuild.shipIsCivilian;
 	}
 	#update() {
 		this.#renderHullModsPopUp();
@@ -153,7 +162,13 @@ export default class HullModsPopUp extends ViewModel {
 		]);
 		this.#update();
 	};
-
+	#giveNameOfCurrentHullMod(hullmodId) {
+		//hullmodId
+		const findTheHullModObject = this.#hullModsArrayToDisplay.find(
+			(hullMod) => hullMod.id === hullmodId
+		);
+		console.log(findTheHullModObject.name && findTheHullModObject.id);
+	}
 	// Add // Remove HullMod
 	#toggleHullMod = (btn) => {
 		if (!btn?.dataset?.hullmodId) {
@@ -163,13 +178,14 @@ export default class HullModsPopUp extends ViewModel {
 
 		const { hullmodId } = btn.dataset;
 		const { hullMods } = this.getUserShipBuild();
-
+		this.#giveNameOfCurrentHullMod(hullmodId);
 		const updatedHullMods = removeInstalledHullMod(hullmodId, hullMods);
 
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,
 			hullMods: updatedHullMods,
 		});
+
 		// For some reason EventListeners can be replaced.
 		// So I reimplement them back.
 		this.#eventListeners();
@@ -241,4 +257,38 @@ export default class HullModsPopUp extends ViewModel {
 		this.#currentFilter = filterUiTag;
 		this.#update();
 	};
+	// HullMods unavailable Logic
+	#redHullMods() {
+		// console.log(this.#hullModsArrayToDisplay);
+		console.log(this.#userShipBuild);
+		// check if hullMod already Build In
+		// const builtInMods = this.#userShipBuild.hullMods.builtInMods;
+		// const shieldType = this.#userShipBuild.shieldType;
+		// const allHullMods = this.#userState.usableHullMods;
+
+		const arrayWithoutBuildInHullMods = hullModLogic.filterBuildInHullMods(
+			this.#usableHullMods,
+			this.#builtInMods
+		);
+		// isCiv
+		// shipIsCivilian
+		console.log(this.#shipIsCivilian);
+
+		const shieldTypeFilter = hullModLogic.filterByShieldType(
+			this.#usableHullMods,
+			this.#shieldType
+		);
+		// check if ship has Hangars
+		// console.log(arrayWithoutBuildInHullMods);
+		const redArray = [...arrayWithoutBuildInHullMods, shieldTypeFilter];
+		const greenArray = this.#hullModsArrayToDisplay;
+
+		// console.log(greenArray);
+		// console.log(redArray);
+		const finalArray = hullModLogic.filterDuplicateHullMods(
+			greenArray,
+			redArray
+		);
+		console.log(finalArray);
+	}
 }
