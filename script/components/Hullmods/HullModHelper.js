@@ -102,7 +102,7 @@ export const hullModLogic = {
 		return [hullModObj, reasonToBlock];
 	},
 	filterDuplicateHullMods: (greenArray, redArray) => {
-		if (!Array.isArray(redArray) || redArray?.length < 1) return greenArray;
+		if (!Array.isArray(redArray) || redArray.length < 1) return greenArray;
 
 		return greenArray.filter((hullModObj) => {
 			const duplicate = redArray.find(

@@ -148,11 +148,14 @@ const classNames = {
 	tableHeaderEntry: "table-header-entry",
 	tableEntries: "table-entries",
 	tableEntry: "table-entry",
+	tableEntryAvailable: "table-entry--available",
+	tableEntryUnavailable: "table-entry--unavailable",
 
 	tableIcon: "table__icon",
 	tableName: "table__name",
 	tableDesc: "table__desc",
 	tableType: "table__type",
+	tableInstalledIcon: "table__installed-icon",
 	// tableRange: "table__range",
 	// tableCost: "table__cost",
 	// HullMod Filter

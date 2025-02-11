@@ -14,10 +14,13 @@
 		padding-right: 0.8rem;
 		position: relative;
 	}
+
 	.table-header,
 	.table-body .table-entries {
-		grid-template-columns: 8rem 12rem 1fr 12rem 6rem;
+		/* grid-template-columns: 8rem 12rem 1fr 12rem 6rem; */
+		grid-template-columns: 8rem 12rem 1fr 12rem 6rem 10rem;
 	}
+
 	.table-body .table-entries {
 		.table-entry {
 			padding: 0;
@@ -33,6 +36,10 @@
 		p {
 			font-size: 1.2rem;
 		}
+		.hullMod__desc--value {
+			font-weight: 700;
+			color: var(--secondary-color);
+		}
 		/* .table-entry p,
 		.table-entry div {
 			padding: 2.4rem;
@@ -46,10 +53,28 @@
 			gap: 0.6rem;
 		}
 	}
-	.hullMod__desc--value {
-		font-weight: 700;
-		color: var(--secondary-color);
+	/* Here */
+	.table__installed-icon {
+		display: none;
 	}
+	.weapon--active .table__installed-icon {
+		display: block;
+
+		i {
+		}
+	}
+	.table-body .table-entry--unavailable {
+		background-color: var(--warning-color);
+		border: 0.1rem solid rgba(0, 0, 0, 0.2);
+
+		.table-entry {
+			border-right: 0.1rem solid rgba(0, 0, 0, 0.2);
+		}
+	}
+	.table-body .table-entry--unavailable:hover {
+		background-color: var(--warning-hover-color);
+	}
+
 	/* .table-header-entry:first-of-type {
 		height: auto;
 	} */

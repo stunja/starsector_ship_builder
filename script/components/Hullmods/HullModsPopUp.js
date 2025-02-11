@@ -42,7 +42,7 @@ const MISSING_CATEGORY = "All";
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
 
-	#hullModsArrayToDisplay;
+	// #greenHullMods;
 	#userState;
 	#shipHullMods;
 
@@ -56,12 +56,15 @@ export default class HullModsPopUp extends ViewModel {
 	#shieldType;
 	#shipIsCivilian;
 
+	#greenHullMods = [];
+	#redHullMods = [];
+
 	constructor(model) {
 		super(model);
 
 		this.#processData();
 		this.#createHullModsArray();
-		this.#redHullMods();
+		this.#splitHullModArrayIntoGreenAndRed();
 		this.#createFilterCategories();
 		this.#update();
 	}
@@ -85,16 +88,17 @@ export default class HullModsPopUp extends ViewModel {
 	}
 	#renderHullModsPopUp() {
 		// Container
-		HullModsPopUpView.render(this.#hullModsArrayToDisplay);
+		HullModsPopUpView.render(this.#greenHullMods);
 		// Header
 		HullModsPopUpFilterView.render([
 			this.#filterCategories,
 			this.#currentFilter,
 		]);
-		HullModsPopUpHeaderView.render(this.#hullModsArrayToDisplay);
+		HullModsPopUpHeaderView.render(this.#greenHullMods);
 		// Table
 		HullModsPopUpTableView.render([
-			this.#hullModsArrayToDisplay,
+			this.#greenHullMods,
+			this.#redHullMods,
 			this.#userShipBuild,
 		]);
 	}
@@ -109,8 +113,9 @@ export default class HullModsPopUp extends ViewModel {
 			(hullMod) => hullMod.hidden !== GENERIC_STRING.TRUE
 		);
 
-		this.#hullModsArrayToDisplay =
-			this.#hideSpecificHullMods(removeHiddenHullMods);
+		// this.#greenHullMods =
+		// 	this.#hideSpecificHullMods(removeHiddenHullMods);
+		this.#greenHullMods = this.#hideSpecificHullMods(removeHiddenHullMods);
 	}
 	#hideSpecificHullMods = (arr) =>
 		arr.filter((hullMod) => hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]);
@@ -154,17 +159,17 @@ export default class HullModsPopUp extends ViewModel {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return;
 
-		this.#hullModsArrayToDisplay = TablePopUpSorter.update([
+		this.#greenHullMods = TablePopUpSorter.update([
 			btn,
 			POPUP_TABLE_TYPE.HULLMOD,
-			this.#hullModsArrayToDisplay,
+			this.#greenHullMods,
 			this.#userShipBuild,
 		]);
 		this.#update();
 	};
 	#giveNameOfCurrentHullMod(hullmodId) {
 		//hullmodId
-		const findTheHullModObject = this.#hullModsArrayToDisplay.find(
+		const findTheHullModObject = this.#greenHullMods.find(
 			(hullMod) => hullMod.id === hullmodId
 		);
 		console.log(findTheHullModObject.name && findTheHullModObject.id);
@@ -222,7 +227,7 @@ export default class HullModsPopUp extends ViewModel {
 
 	// Filter Categories (Buttons to which user can select Filter Options)
 	#createFilterCategories() {
-		const newArray = this.#hullModsArrayToDisplay.flatMap((hullMod) =>
+		const newArray = this.#greenHullMods.flatMap((hullMod) =>
 			hullMod.uiTags.split(",").map((str) => str.trim())
 		);
 		newArray.unshift(MISSING_CATEGORY);
@@ -244,22 +249,20 @@ export default class HullModsPopUp extends ViewModel {
 
 		// If not ALL do the filter, otherwise SKIP
 		if (filterUiTag !== MISSING_CATEGORY) {
-			this.#hullModsArrayToDisplay = this.#hullModsArrayToDisplay.filter(
-				(hullMod) => {
-					if (!hullMod?.uiTags) return false;
+			this.#greenHullMods = this.#greenHullMods.filter((hullMod) => {
+				if (!hullMod?.uiTags) return false;
 
-					const uiTagArray = hullMod.uiTags.split(",").map((str) => str.trim());
-					return uiTagArray.includes(filterUiTag);
-				}
-			);
+				const uiTagArray = hullMod.uiTags.split(",").map((str) => str.trim());
+				return uiTagArray.includes(filterUiTag);
+			});
 		}
 		// Assign btn.DataSet to currentFilter => to pass then into render Filter
 		this.#currentFilter = filterUiTag;
 		this.#update();
 	};
 	// HullMods unavailable Logic
-	#redHullMods() {
-		// console.log(this.#hullModsArrayToDisplay);
+	#splitHullModArrayIntoGreenAndRed() {
+		// console.log(this.#greenHullMods);
 		console.log(this.#userShipBuild);
 		// check if hullMod already Build In
 		// const builtInMods = this.#userShipBuild.hullMods.builtInMods;
@@ -280,15 +283,10 @@ export default class HullModsPopUp extends ViewModel {
 		);
 		// check if ship has Hangars
 		// console.log(arrayWithoutBuildInHullMods);
-		const redArray = [...arrayWithoutBuildInHullMods, shieldTypeFilter];
-		const greenArray = this.#hullModsArrayToDisplay;
-
-		// console.log(greenArray);
-		// console.log(redArray);
-		const finalArray = hullModLogic.filterDuplicateHullMods(
-			greenArray,
-			redArray
+		this.#redHullMods = [...arrayWithoutBuildInHullMods, shieldTypeFilter];
+		this.#greenHullMods = hullModLogic.filterDuplicateHullMods(
+			this.#greenHullMods,
+			this.#redHullMods
 		);
-		console.log(finalArray);
 	}
 }

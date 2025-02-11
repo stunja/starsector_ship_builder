@@ -9,6 +9,7 @@ const CATEGORIES = {
 	description: "Description",
 	type: "Type",
 	cost: "Cost",
+	installed: "Installed",
 };
 
 class HullModsPopUpHeaderView extends View {
