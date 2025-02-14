@@ -20,7 +20,7 @@ class HullModsPopUpTableView extends View {
 	#hullSize;
 	generateMarkup() {
 		this.#processData(this._data);
-
+		// ${this.#redArrayRender()}
 		const markup = `
 			${this.#greenArrayRender()}
 			${this.#redArrayRender()}
@@ -75,7 +75,9 @@ class HullModsPopUpTableView extends View {
 		</li>`;
 
 	#reasonMarkup = (string) => {
-		const stringMarkup = string ? `<p>${string}</p>` : `<i>&#10003</i>`;
+		const stringMarkup = string
+			? `<p>${string}</p>`
+			: `<i>${GENERIC_STRING.CHECKMARK}</i>`;
 
 		return `<li class="${classNames.tableEntry} ${classNames.tableInstalledIcon}">
 					${stringMarkup}

@@ -89,11 +89,6 @@ export const hullModLogic = {
 				HULLMODS.SHIELD.frontemitter,
 				reasonToBeUnavailable
 			);
-			// return hullModLogic.hullModToRejectAndGiveReason(
-			// 	hullModArray,
-			// 	HULLMODS.SHIELD.adaptiveshields,
-			// 	reason
-			// );
 		}
 	},
 	hullModToRejectAndGiveReason: (array, target, string) => {
@@ -105,9 +100,7 @@ export const hullModLogic = {
 		if (!Array.isArray(redArray) || redArray.length < 1) return greenArray;
 
 		return greenArray.filter((hullModObj) => {
-			const duplicate = redArray.find(
-				([redObj]) => hullModObj.id === redObj?.id
-			);
+			const duplicate = redArray.find((redObj) => hullModObj.id === redObj?.id);
 			if (!duplicate) return hullModObj;
 		});
 	},

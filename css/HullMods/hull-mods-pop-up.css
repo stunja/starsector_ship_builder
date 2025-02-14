@@ -54,13 +54,12 @@
 		}
 	}
 	/* Here */
-	.table__installed-icon {
+	.table__installed-icon i {
 		display: none;
 	}
 	.weapon--active .table__installed-icon {
-		display: block;
-
 		i {
+			display: block;
 		}
 	}
 	.table-body .table-entry--unavailable {
