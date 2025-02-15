@@ -20,7 +20,6 @@ class HullModsPopUpTableView extends View {
 	#hullSize;
 	generateMarkup() {
 		this.#processData(this._data);
-		// ${this.#redArrayRender()}
 		const markup = `
 			${this.#greenArrayRender()}
 			${this.#redArrayRender()}

@@ -124,6 +124,7 @@ export default class HullModsPopUp extends ViewModel {
 				// special hide rule
 				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
 		);
+
 		this.#createRedHullMods();
 	}
 
@@ -172,7 +173,7 @@ export default class HullModsPopUp extends ViewModel {
 	// TablePopUpSorter
 	#popUpSorter = (btn) => {
 		const { category } = btn.dataset;
-		if (SKIP_SORT_CATEGORY[category]) return;
+		if (SKIP_SORT_CATEGORY[category]) return this.#installedSpecialSorter();
 
 		this.#greenHullMods = TablePopUpSorter.update([
 			btn,
@@ -180,9 +181,25 @@ export default class HullModsPopUp extends ViewModel {
 			this.#greenHullMods,
 			this.#userShipBuild,
 		]);
+
 		this.#update();
 	};
 
+	#installedSpecialSorter() {
+		const installedHullMods = this.#shipHullMods.installedHullMods;
+
+		const putAtTheTop = this.#greenHullMods.filter((hullMod) =>
+			installedHullMods.includes(hullMod.id)
+		);
+
+		const newArray = this.#greenHullMods.filter(
+			(hullMod) => !installedHullMods.includes(hullMod.id)
+		);
+
+		this.#greenHullMods = [...putAtTheTop, ...newArray];
+
+		this.#update();
+	}
 	// Add // Remove HullMod
 	#toggleHullMod = (btn) => {
 		if (!btn?.dataset?.hullmodId) {
