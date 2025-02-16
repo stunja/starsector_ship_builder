@@ -39,7 +39,6 @@ const HULLMODS_TO_HIDE = {
 	missile_autoloader: "missile_autoloader", // Missile Autoloader
 };
 const MISSING_CATEGORY = "All";
-const DEFAULT_SORT_CATEGORY = "installedReset";
 
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
@@ -202,7 +201,10 @@ export default class HullModsPopUp extends ViewModel {
 		this.#sortByInstalledCategory = !this.#sortByInstalledCategory;
 
 		if (this.#sortByInstalledCategory) {
-			this.#regularSorter(DEFAULT_SORT_CATEGORY);
+			this.#greenHullMods = this.#greenHullMods.toSorted((hullModA, hullModB) =>
+				hullModA.name.localeCompare(hullModB.name)
+			);
+			this.#update();
 			return;
 		}
 
@@ -211,11 +213,12 @@ export default class HullModsPopUp extends ViewModel {
 		const putAtTheTop = this.#greenHullMods.filter((hullMod) =>
 			installedHullMods.includes(hullMod.id)
 		);
-		const newArray = this.#greenHullMods.filter(
+
+		const shorterArray = this.#greenHullMods.filter(
 			(hullMod) => !installedHullMods.includes(hullMod.id)
 		);
 
-		this.#greenHullMods = [...putAtTheTop, ...newArray];
+		this.#greenHullMods = [...putAtTheTop, ...shorterArray];
 		this.#update();
 	}
 	// Add // Remove HullMod
@@ -288,6 +291,8 @@ export default class HullModsPopUp extends ViewModel {
 			throw new Error("Invalid button element provided");
 		}
 		const { filter: filterUiTag } = btn.dataset;
+		this.#sortByInstalledCategory = true;
+
 		// Creates newHullModArray, which is equal to ALL hullmods
 		this.#createHullModsArray();
 		// If not ALL do the filter, otherwise SKIP
