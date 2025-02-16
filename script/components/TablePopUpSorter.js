@@ -37,19 +37,14 @@ class TablePopUpSorter {
 
 	#SORT_HULLMOD_TABLE = {
 		name: (a, b) => this.#SORT_TYPE.text(b.name, a.name),
+		installedReset: (a, b) => this.#SORT_TYPE.text(a.name, b.name),
 		type: (a, b) => this.#SORT_TYPE.text(a.uiTags, b.uiTags),
 		cost: (a, b) =>
 			this.#SORT_TYPE.number(a[this.#hullSize], b[this.#hullSize]),
 	};
 
-	update([btn, tableType, currentArray, userShipBuild]) {
-		// Input validation
-		if (!btn?.dataset?.category) {
-			throw new Error("Button must have a category in its dataset");
-		}
+	update([category, tableType, currentArray, userShipBuild]) {
 		this.#hullSize = opCostPerHullSize[userShipBuild?.hullSize];
-
-		const { category } = btn.dataset;
 
 		// Use different data between Tables
 		const sortTableType =

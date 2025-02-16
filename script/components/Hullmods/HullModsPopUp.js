@@ -39,6 +39,7 @@ const HULLMODS_TO_HIDE = {
 	missile_autoloader: "missile_autoloader", // Missile Autoloader
 };
 const MISSING_CATEGORY = "All";
+const DEFAULT_SORT_CATEGORY = "installedReset";
 
 export default class HullModsPopUp extends ViewModel {
 	#userShipBuild;
@@ -62,6 +63,9 @@ export default class HullModsPopUp extends ViewModel {
 
 	#allUnavailableHullMods;
 	#currentUnavailableHullMods;
+
+	// UI
+	#sortByInstalledCategory = true;
 
 	constructor(model) {
 		super(model);
@@ -175,29 +179,43 @@ export default class HullModsPopUp extends ViewModel {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return this.#installedSpecialSorter();
 
+		this.#regularSorter(category);
+	};
+
+	#regularSorter(category) {
 		this.#greenHullMods = TablePopUpSorter.update([
-			btn,
+			category,
 			POPUP_TABLE_TYPE.HULLMOD,
 			this.#greenHullMods,
 			this.#userShipBuild,
 		]);
 
+		this.#sortByInstalledCategory = true;
 		this.#update();
-	};
+	}
 
+	// Special sorter for installed
 	#installedSpecialSorter() {
+		// if installedHullMods empty ignore
+		if (this.#userShipBuild.hullMods.installedHullMods.length < 1) return;
+
+		this.#sortByInstalledCategory = !this.#sortByInstalledCategory;
+
+		if (this.#sortByInstalledCategory) {
+			this.#regularSorter(DEFAULT_SORT_CATEGORY);
+			return;
+		}
+
 		const installedHullMods = this.#shipHullMods.installedHullMods;
 
 		const putAtTheTop = this.#greenHullMods.filter((hullMod) =>
 			installedHullMods.includes(hullMod.id)
 		);
-
 		const newArray = this.#greenHullMods.filter(
 			(hullMod) => !installedHullMods.includes(hullMod.id)
 		);
 
 		this.#greenHullMods = [...putAtTheTop, ...newArray];
-
 		this.#update();
 	}
 	// Add // Remove HullMod
