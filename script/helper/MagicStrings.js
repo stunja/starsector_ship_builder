@@ -3,6 +3,8 @@ export const GENERIC_STRING = {
 	SPACE: " ",
 	TRUE: "TRUE",
 	CHECKMARK: "&#10003",
+	COMMA: ",",
+	HIDDEN: "hidden",
 };
 export const EVENT_LISTENER_TYPE = {
 	CLICK: "click",

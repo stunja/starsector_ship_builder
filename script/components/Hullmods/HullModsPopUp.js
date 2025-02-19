@@ -70,15 +70,22 @@ export default class HullModsPopUp extends ViewModel {
 		super(model);
 
 		this.#processData();
-		this.#createHullModsArray();
 		this.#createFilterCategories();
+		this.#createHullModsArray();
 		this.#update();
 	}
 	#processData() {
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#userState = this.getUserState();
 
-		this.#usableHullMods = this.#userState.usableHullMods;
+		this.#usableHullMods = this.#userState.usableHullMods.filter(
+			(hullMod) =>
+				// HIDDEN ARE TRUE => HIDE
+				hullMod.hidden !== GENERIC_STRING.TRUE &&
+				// special hide rule
+				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
+		);
+
 		this.#shipHullMods = this.#userShipBuild.hullMods;
 
 		this.#builtInMods = this.#userShipBuild.hullMods.builtInMods;
@@ -118,18 +125,22 @@ export default class HullModsPopUp extends ViewModel {
 	}
 
 	#createHullModsArray() {
-		this.#splitHullModArrayIntoGreenAndRed();
+		this.#createGreenHullMods();
 
-		this.#greenHullMods = this.#usableHullMods.filter(
-			(hullMod) =>
-				// HIDDEN ARE TRUE => HIDE
-				hullMod.hidden !== GENERIC_STRING.TRUE &&
-				// special hide rule
-				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
-		);
+		this.#splitHullModArrayIntoGreenAndRed();
 
 		this.#createRedHullMods();
 	}
+	#createGreenHullMods = () => {
+		// this.#greenHullMods = this.#usableHullMods.filter(
+		// 	(hullMod) =>
+		// 		// HIDDEN ARE TRUE => HIDE
+		// 		hullMod.hidden !== GENERIC_STRING.TRUE &&
+		// 		// special hide rule
+		// 		hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
+		// );
+		this.#greenHullMods = this.#usableHullMods;
+	};
 
 	#createRedHullMods = () => {
 		this.#redHullMods = this.#usableHullMods.filter((hullMod) =>
@@ -193,13 +204,14 @@ export default class HullModsPopUp extends ViewModel {
 		this.#update();
 	}
 
-	// Special sorter for installed
+	// Special sorter for installed category
 	#installedSpecialSorter() {
 		// if installedHullMods empty ignore
 		if (this.#userShipBuild.hullMods.installedHullMods.length < 1) return;
 
 		this.#sortByInstalledCategory = !this.#sortByInstalledCategory;
 
+		// one way sort of InstalledArray
 		if (this.#sortByInstalledCategory) {
 			this.#greenHullMods = this.#greenHullMods.toSorted((hullModA, hullModB) =>
 				hullModA.name.localeCompare(hullModB.name)
@@ -221,6 +233,14 @@ export default class HullModsPopUp extends ViewModel {
 		this.#greenHullMods = [...putAtTheTop, ...shorterArray];
 		this.#update();
 	}
+	//! Remove this
+	#test(id) {
+		const currentHullMod = this.#usableHullMods.find(
+			(hullMod) => hullMod.id === id
+		);
+		console.log(currentHullMod.id);
+		console.log(currentHullMod.name);
+	}
 	// Add // Remove HullMod
 	#toggleHullMod = (btn) => {
 		if (!btn?.dataset?.hullmodId) {
@@ -230,6 +250,8 @@ export default class HullModsPopUp extends ViewModel {
 
 		const { hullmodId } = btn.dataset;
 		const { hullMods } = this.getUserShipBuild();
+
+		this.#test(hullmodId);
 
 		const updatedHullMods = removeInstalledHullMod(hullmodId, hullMods);
 
@@ -274,16 +296,15 @@ export default class HullModsPopUp extends ViewModel {
 
 	// Filter Categories (Buttons to which user can select Filter Options)
 	#createFilterCategories() {
-		const newArray = this.#greenHullMods.flatMap((hullMod) =>
-			hullMod.uiTags.split(",").map((str) => str.trim())
+		const newArray = this.#usableHullMods.flatMap((hullMod) =>
+			hullMod.uiTags.split(GENERIC_STRING.COMMA).map((str) => str.trim())
 		);
 		newArray.unshift(MISSING_CATEGORY);
 		const arrayWithoutDublicates = [...new Set(newArray)];
-
 		// Sort so array always alphabetical it is always the same
-		this.#filterCategories = arrayWithoutDublicates.toSorted((a, b) =>
-			a.localeCompare(b)
-		);
+		this.#filterCategories = arrayWithoutDublicates
+			.filter((string) => string !== GENERIC_STRING.EMPTY)
+			.toSorted((a, b) => a.localeCompare(b));
 	}
 
 	#filterTable = (btn) => {
@@ -311,7 +332,9 @@ export default class HullModsPopUp extends ViewModel {
 			return arr.filter((hullMod) => {
 				if (!hullMod?.uiTags) return false;
 
-				const uiTagArray = hullMod.uiTags.split(",").map((str) => str.trim());
+				const uiTagArray = hullMod.uiTags
+					.split(GENERIC_STRING.COMMA)
+					.map((str) => str.trim());
 				return uiTagArray.includes(filterUiTag);
 			});
 		}
@@ -334,18 +357,19 @@ export default class HullModsPopUp extends ViewModel {
 		// check if ship has Hangars
 		this.#allUnavailableHullMods = [
 			...arrayWithoutBuildInHullMods,
-			shieldTypeFilter,
+			...shieldTypeFilter,
 		];
-
+		console.log(this.#allUnavailableHullMods);
 		this.#currentUnavailableHullMods = this.#allUnavailableHullMods;
 
-		// remove hullMods from GreenHullMods
+		// Order Matters First Create Red and then use it in green
+		// remove redHullMods from GreenHullMods
+		this.#createRedHullMods();
+
 		this.#greenHullMods = hullModLogic.filterDuplicateHullMods(
 			this.#greenHullMods,
 			this.#redHullMods
 		);
-
-		this.#createRedHullMods();
 	}
 
 	#currentUnavailableHullModsWithReason = () => {

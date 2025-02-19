@@ -39,13 +39,14 @@ class HullModsPopUpTableView extends View {
 
 	#tagsArray = (crrHullMod) =>
 		crrHullMod.uiTags
-			.split(",")
+			.split(GENERIC_STRING.COMMA)
 			.map((str) => `<p>${str}</p>`)
 			.join(GENERIC_STRING.EMPTY);
 
 	#hullModIcon = (crrHullMod) => `
 			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
+	//! issue is here
 	#hullModDescription(currentHullMod) {
 		const regularValues = currentHullMod.effectValues.regularValues;
 		const description = currentHullMod.desc;
