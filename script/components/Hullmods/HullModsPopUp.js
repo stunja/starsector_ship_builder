@@ -132,13 +132,6 @@ export default class HullModsPopUp extends ViewModel {
 		this.#createRedHullMods();
 	}
 	#createGreenHullMods = () => {
-		// this.#greenHullMods = this.#usableHullMods.filter(
-		// 	(hullMod) =>
-		// 		// HIDDEN ARE TRUE => HIDE
-		// 		hullMod.hidden !== GENERIC_STRING.TRUE &&
-		// 		// special hide rule
-		// 		hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
-		// );
 		this.#greenHullMods = this.#usableHullMods;
 	};
 
@@ -354,12 +347,22 @@ export default class HullModsPopUp extends ViewModel {
 			this.#usableHullMods,
 			this.#shieldType
 		);
+		const fighterBayFilter = hullModLogic.filterByFighterSlots(
+			this.#usableHullMods,
+			this.#userShipBuild
+		);
+		const specialFilter = hullModLogic.filterSpecialRules(
+			this.#usableHullMods,
+			this.#userShipBuild
+		);
 		// check if ship has Hangars
 		this.#allUnavailableHullMods = [
 			...arrayWithoutBuildInHullMods,
 			...shieldTypeFilter,
+			...fighterBayFilter,
+			...specialFilter,
 		];
-		console.log(this.#allUnavailableHullMods);
+
 		this.#currentUnavailableHullMods = this.#allUnavailableHullMods;
 
 		// Order Matters First Create Red and then use it in green
