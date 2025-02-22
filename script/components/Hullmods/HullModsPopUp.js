@@ -335,34 +335,10 @@ export default class HullModsPopUp extends ViewModel {
 	// HullMods unavailable Logic
 	#splitHullModArrayIntoGreenAndRed() {
 		// check if hullMod already Build In
-		const arrayWithoutBuildInHullMods = hullModLogic.filterBuildInHullMods(
-			this.#usableHullMods,
-			this.#builtInMods
-		);
-		// isCiv
-		// shipIsCivilian
-		// console.log(this.#shipIsCivilian);
-
-		const shieldTypeFilter = hullModLogic.filterByShieldType(
-			this.#usableHullMods,
-			this.#shieldType
-		);
-		const fighterBayFilter = hullModLogic.filterByFighterSlots(
+		this.#allUnavailableHullMods = hullModLogic.filterController(
 			this.#usableHullMods,
 			this.#userShipBuild
 		);
-		const specialFilter = hullModLogic.filterSpecialRules(
-			this.#usableHullMods,
-			this.#userShipBuild
-		);
-		// check if ship has Hangars
-		this.#allUnavailableHullMods = [
-			...arrayWithoutBuildInHullMods,
-			...shieldTypeFilter,
-			...fighterBayFilter,
-			...specialFilter,
-		];
-
 		this.#currentUnavailableHullMods = this.#allUnavailableHullMods;
 
 		// Order Matters First Create Red and then use it in green

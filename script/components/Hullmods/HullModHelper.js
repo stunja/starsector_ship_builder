@@ -42,6 +42,13 @@ const SHIELD_TYPE = {
 const HULL_SIZE = {
 	FRIGATE: "FRIGATE",
 };
+const SHIP_TYPE = {
+	CIVILIAN: "",
+	MILITARY: "military",
+};
+const SLOT_TYPE = {
+	BALLISTIC: "BALLISTIC",
+};
 const HULLMODS = {
 	WEAPONS: {
 		ballistic_rangefinder: "ballistic_rangefinder", // Ballistic Rangefinder (Needs Baliistic Weapon Slots)
@@ -78,6 +85,21 @@ const HULLMODS = {
 	},
 };
 export const hullModLogic = {
+	filterController(hullModArray, userShipBuild) {
+		const buildInMods = userShipBuild.hullMods.builtInMods;
+		const { shieldType, shipIsCivilian, weaponSlots, hullSize } = userShipBuild;
+		console.log(userShipBuild);
+
+		return [
+			...hullModLogic.filterBuildInHullMods(hullModArray, buildInMods),
+			...hullModLogic.filterByShieldType(hullModArray, shieldType),
+			...hullModLogic.filterSpecialRules(hullModArray),
+			...hullModLogic.filterByFighterSlots(hullModArray, userShipBuild),
+			...hullModLogic.filterByCivilianShipType(hullModArray, shipIsCivilian),
+			...hullModLogic.filterWeapon(hullModArray, hullSize, weaponSlots),
+		];
+	},
+
 	filterBuildInHullMods: (hullModArray, builtInMods) => {
 		const reason = "HullMod Already Built In";
 
@@ -86,88 +108,104 @@ export const hullModLogic = {
 		);
 		return hullModObject.map((hullMod) => [hullMod, reason]);
 	},
+
 	filterByShieldType: (hullModArray, shieldType) => {
-		const hidePhase = () => {
-			const reason = "Not a PHASE ship";
-			const array = [
-				HULLMODS.PHASE.adaptive_coils,
-				HULLMODS.PHASE.phase_anchor,
-			];
+		// const hidePhase = () => {
+		// 	const reason = "Not a PHASE ship";
+		// 	const array = [
+		// 		HULLMODS.PHASE.adaptive_coils,
+		// 		HULLMODS.PHASE.phase_anchor,
+		// 	];
 
-			return array.map((hullModId) =>
-				hullModLogic.hullModToRejectAndGiveReason(
-					hullModArray,
-					hullModId,
-					reason
-				)
-			);
-		};
-		const hideNoShield = () => {
-			const reason = "Has a Shield";
-			const array = [HULLMODS.SHIELD.frontshield];
+		// 	return array.map((hullModId) =>
+		// 		hullModLogic.hullModToRejectAndGiveReason(
+		// 			hullModArray,
+		// 			hullModId,
+		// 			reason
+		// 		)
+		// 	);
+		// };
+		// const hideNoShield = () => {
+		// 	const reason = "Has a Shield";
+		// 	const array = [HULLMODS.SHIELD.frontshield];
 
-			return array.map((hullModId) =>
-				hullModLogic.hullModToRejectAndGiveReason(
-					hullModArray,
-					hullModId,
-					reason
-				)
-			);
-		};
-		const hideFrontShield = () => {
-			const reason = "Already Has Front Shield";
-			const array = [HULLMODS.SHIELD.frontemitter];
+		// 	return array.map((hullModId) =>
+		// 		hullModLogic.hullModToRejectAndGiveReason(
+		// 			hullModArray,
+		// 			hullModId,
+		// 			reason
+		// 		)
+		// 	);
+		// };
+		// const hideFrontShield = () => {
+		// 	const reason = "Already Has Front Shield";
+		// 	const array = [HULLMODS.SHIELD.frontemitter];
 
-			return array.map((hullModId) =>
-				hullModLogic.hullModToRejectAndGiveReason(
-					hullModArray,
-					hullModId,
-					reason
-				)
-			);
-		};
-		const hideAllShields = () => {
-			const reason = "Ship has No Shield";
-			const array = Object.keys(HULLMODS.SHIELD);
+		// 	return array.map((hullModId) =>
+		// 		hullModLogic.hullModToRejectAndGiveReason(
+		// 			hullModArray,
+		// 			hullModId,
+		// 			reason
+		// 		)
+		// 	);
+		// };
+		// // const hideAllShields = () => {
+		// // 	const reason = "Ship has No Shield";
+		// // 	const array = Object.keys(HULLMODS.SHIELD);
 
-			return array.map((hullModId) =>
-				hullModLogic.hullModToRejectAndGiveReason(
-					hullModArray,
-					hullModId,
-					reason
-				)
-			);
-		};
+		// // 	return array.map((hullModId) =>
+		// // 		hullModLogic.hullModToRejectAndGiveReason(
+		// // 			hullModArray,
+		// // 			hullModId,
+		// // 			reason
+		// // 		)
+		// // 	);
+		// // };
+		// const hideOmniShield = () => {
+		// 	const reason = "Already Has OMNI Shield";
 
+		// 	return hullModToRejectAndGiveReason(
+		// 		HULLMODS.SHIELD.adaptiveshields,
+		// 		reason
+		// 	);
+		// };
 		// WHAT HULLMODS TO FILTER
 		// FRONT SHIELD
-		if (shieldType === SHIELD_TYPE.FRONT) {
-			return [...hideFrontShield(), ...hidePhase(), ...hideNoShield()];
-		}
-		// OMNI SHIELD
-		if (shieldType === SHIELD_TYPE.OMNI) {
-			const reason = "Already Has OMNI Shield";
-
-			return hullModToRejectAndGiveReason(
-				HULLMODS.SHIELD.adaptiveshields,
-				reason
-			);
-		}
+		// if (shieldType === SHIELD_TYPE.FRONT) {
+		// 	return [...hideFrontShield(), ...hidePhase(), ...hideNoShield()];
+		// }
+		// // OMNI SHIELD
+		// if (shieldType === SHIELD_TYPE.OMNI) {
+		// 	return hideOmniShield();
+		// }
 
 		// PHASE
+		const array = [];
+
 		if (shieldType === SHIELD_TYPE.PHASE) {
-			return [...hideAllShields()];
+			array.push(
+				...Object.keys(HULLMODS.SHIELD).map((key) => {
+					return key === HULLMODS.SHIELD.frontshield
+						? [key, "Not on Phase Ships"]
+						: [key, "Ship has No Shield"];
+				})
+			);
 		}
 
 		// No Shield Ship
-		if (shieldType === SHIELD_TYPE.NONE) {
-			const reason = "Ship has No Shields";
+		//! Unfinished
+		// if (shieldType === SHIELD_TYPE.NONE) {
+		// 	const reason = "Ship has No Shields";
 
-			return hullModToRejectAndGiveReason(HULLMODS.SHIELD.frontemitter, reason);
-		}
+		// 	return hullModToRejectAndGiveReason(HULLMODS.SHIELD.frontemitter, reason);
+		// }
+
+		return array.map(([hullModId, reason]) =>
+			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
+		);
 	},
 
-	filterSpecialRules: (hullModArray, _userShipBuild) => {
+	filterSpecialRules: (hullModArray) => {
 		const reason = "Only Automated Ships";
 		const array = [HULLMODS.SPECIAL.neural_integrator];
 
@@ -175,6 +213,7 @@ export const hullModLogic = {
 			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
 		);
 	},
+
 	filterByFighterSlots: (hullModArray, userShipBuild) => {
 		const { fighterBays, weaponSlots, hullSize, shieldType } = userShipBuild;
 
@@ -208,7 +247,7 @@ export const hullModLogic = {
 					? "Not on Phase Ship"
 					: hullSize === HULL_SIZE.FRIGATE
 					? "Not on Frigates"
-					: console.warn("filterByFighterSlots"),
+					: console.warn("filterByFighterSlots, converted hangar issue"),
 			]);
 		}
 
@@ -217,6 +256,48 @@ export const hullModLogic = {
 		);
 	},
 
+	filterByCivilianShipType: (hullModArray, shipIsCivilian) => {
+		const array = [];
+
+		if (shipIsCivilian === SHIP_TYPE.MILITARY) {
+			array.push([
+				HULLMODS.LOGISTICS.militarized_subsystems,
+				"Only on Civilian Ships",
+			]);
+		}
+
+		// return empty array
+		if (array.length === MAGIC_NUMBER.ZERO) return array;
+
+		return array.map(([hullModId, reason]) =>
+			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
+		);
+	},
+	filterWeapon: (hullModArray, hullSize, weaponSlots) => {
+		const results = [];
+		const hasBallisticSlots = weaponSlots.some(
+			(hullMod) => hullMod.type === SLOT_TYPE.BALLISTIC
+		);
+
+		const ballistic_rangefinder =
+			!hasBallisticSlots || hullSize === HULL_SIZE.FRIGATE;
+
+		if (ballistic_rangefinder) {
+			const reason =
+				hullSize === HULL_SIZE.FRIGATE
+					? "Not on Frigate"
+					: "No Ballistic / Hybrid Slots";
+
+			results.push([HULLMODS.WEAPONS.ballistic_rangefinder, reason]);
+		}
+
+		if (results.length === MAGIC_NUMBER.ZERO) return results;
+
+		return results.map(([hullModId, reason]) =>
+			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
+		);
+	},
+	// Generic
 	filterDuplicateHullMods: (greenArray, redArray) => {
 		if (!Array.isArray(redArray) || redArray.length < 1) return greenArray;
 
