@@ -21,7 +21,7 @@ class BuildInHullModsView extends View {
 
 	#buildInMarkUp() {
 		if (this.#buildInHullMods.length < 1)
-			return GENERIC_STRING.EMPTY || console.warn("Too Few hullMods to Render");
+			return GENERIC_STRING.EMPTY && console.warn("Too Few hullMods to Render");
 
 		const markup = this.#buildInHullMods
 			.map(
@@ -32,9 +32,9 @@ class BuildInHullModsView extends View {
 						alt="${currentHullMod.short}" />
 					</li>`
 			)
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 
-		return markup;
+		return `<div class="">${markup}</div>`;
 	}
 }
 export default new BuildInHullModsView();

@@ -9,13 +9,13 @@ import HULLMODS_DATA from "./helper/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "doom";
+const shipNameDev = "centurion";
 //
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead //
 // gryphon = cruiser
 // condor = destroyer
-// hound = frigate
+// hound = frigate // centurion
 // Phase = harbinger / doom // shade
 export class Model {
 	dataState = {

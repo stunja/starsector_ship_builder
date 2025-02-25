@@ -72,7 +72,6 @@ export default class HullModController extends ViewModel {
 		try {
 			const allHullMods = this.#allHullMods;
 			const { builtInMods } = this.#userShipBuild.hullMods;
-
 			if (!allHullMods || !builtInMods) {
 				return [];
 			}
