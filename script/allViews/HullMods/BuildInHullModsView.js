@@ -34,7 +34,7 @@ class BuildInHullModsView extends View {
 			)
 			.join(GENERIC_STRING.EMPTY);
 
-		return `<div class="">${markup}</div>`;
+		return `<div class="${classNames.buildInHullModsContainer}">${markup}</div>`;
 	}
 }
 export default new BuildInHullModsView();

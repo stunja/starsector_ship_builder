@@ -9,14 +9,15 @@ import HULLMODS_DATA from "./helper/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "centurion";
+const shipNameDev = "doom";
 //
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead //
 // gryphon = cruiser
-// condor = destroyer
+// destroyer = condor
 // hound = frigate // centurion
 // Phase = harbinger / doom // shade
+// Civilian = shepherd
 export class Model {
 	dataState = {
 		allShips: [],
@@ -459,7 +460,7 @@ const createUserShipBuild = {
 		viewOffset,
 		width,
 		spriteName,
-		builtInMods,
+		builtInMods = [],
 		hullSize,
 		weaponSlots,
 	}) {

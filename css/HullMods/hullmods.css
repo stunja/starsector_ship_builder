@@ -22,7 +22,7 @@
 		flex-direction: column;
 		gap: 1.6rem;
 	}
-	.build-in-hullmods {
+	.build-in-hullmods .build-in-hullmods__container {
 		display: flex;
 		flex-direction: column;
 		margin-left: auto;

@@ -71,7 +71,6 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#processData();
 		this.#createFilterCategories();
-		this.#createHullModsArray();
 		this.#update();
 	}
 	#processData() {
@@ -92,7 +91,13 @@ export default class HullModsPopUp extends ViewModel {
 		this.#shieldType = this.#userShipBuild.shieldType;
 		this.#shipIsCivilian = this.#userShipBuild.shipIsCivilian;
 	}
+
 	#update() {
+		// Not a correct implementation, but it works
+		this.#processData();
+
+		this.#createHullModsArray();
+
 		this.#renderHullModsPopUp();
 
 		this.#eventListeners();
@@ -255,8 +260,7 @@ export default class HullModsPopUp extends ViewModel {
 
 		// For some reason EventListeners can be replaced.
 		// So I reimplement them back.
-		this.#eventListeners();
-		this.#assignActiveClasses();
+		this.#update();
 
 		// Update Controller, to display installedHullMods
 		new HullModController(this.getState()).update();

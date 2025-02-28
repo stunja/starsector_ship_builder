@@ -36,6 +36,8 @@ const SHIELD_TYPE = {
 
 const WEAPON_SLOT_TYPE = {
 	LAUNCH_BAY: "LAUNCH_BAY",
+	HYBRID: "HYBRID",
+	BALLISTIC: "BALLISTIC",
 };
 
 const HULL_SIZE = {
@@ -48,10 +50,40 @@ const SHIP_TYPE = {
 	CIVILIAN: "",
 	MILITARY: "military",
 };
-const SLOT_TYPE = {
-	BALLISTIC: "BALLISTIC",
-};
+const logisticsHullModLimit = 0;
 const HULLMODS = {
+	BUILD_IN: {
+		// Advanced Targeting Core [BuildIn]
+		advancedcore: {
+			id: "advancedcore",
+			name: "Advanced Targeting Core",
+			_whyNot:
+				"Precludes the installation of a Dedicated Targeting Core or an Integrated Targeting Unit.",
+		},
+		civgrade: {
+			id: "civgrade",
+			name: "Civilian-grade Hull",
+			_whyNot:
+				"This hullmod denotes that the ship isn't designed for combat, such as an Atlas-class superfreighter. If Militarized Subsystems are installed, the sensor penalties will be removed.",
+		},
+		distributed_fire_control: {
+			id: "distributed_fire_control",
+			name: "Distributed Fire Control",
+			_whyNot:
+				"Distributed Fire Control is incompatible with Dedicated Targeting Core and Integrated Targeting Unit, but not the Ballistic Rangefinder.",
+		},
+		logic: function (hullModArray, userShipBuild) {
+			const reason = "Already Build In";
+			const builtInMods = userShipBuild.hullMods.builtInMods;
+
+			if (!builtInMods) return [];
+
+			const hullModObject = hullModArray.filter((hullMod) =>
+				builtInMods.find((builtHullMod) => builtHullMod === hullMod.id)
+			);
+			return hullModObject.map((hullMod) => [hullMod, reason]);
+		},
+	},
 	WEAPONS: {
 		// Ballistic Rangefinder
 		ballistic_rangefinder: {
@@ -61,7 +93,7 @@ const HULLMODS = {
 				"hullmod that can be installed on any Destroyer-class, Cruiser-class and Capital-class ship. (Have ballistic slots or hybrid)",
 			reason: {
 				frigate: "Not on Frigates",
-				noBallisticSlots: "Dont have Ballistic or Hybrid Slots",
+				noCorrectWeaponSlots: "No Ballistic or Hybrid Slots",
 			},
 			logic: function (hullMod, userShipBuild) {
 				const { hullSize, weaponSlots } = userShipBuild;
@@ -71,56 +103,276 @@ const HULLMODS = {
 				const isFrigateHull = hullSize === HULL_SIZE.FRIGATE;
 
 				const hasBallisticSlots = weaponSlots.some(
-					(hullMod) => hullMod.type === SLOT_TYPE.BALLISTIC
+					(hullMod) => hullMod.type === WEAPON_SLOT_TYPE.BALLISTIC
 				);
-				// console.log(SLOT_TYPE.);
-				// const hasHybridSlots = weaponSlots.some(
-				// 	(hullMod) => hullMod.type === SLOT_TYPE.BALLISTIC
-				// );
+				const hasHybridSlots = weaponSlots.some(
+					(hullMod) => hullMod.type === WEAPON_SLOT_TYPE.HYBRID
+				);
+				const isNotBallisticOrIsNotHybridSlots =
+					!hasBallisticSlots && !hasHybridSlots;
 
-				if (isFrigateHull || !hasBallisticSlots) {
-					return [
-						hullMod,
-						!hasBallisticSlots ? reason.noBallisticSlots : reason.isFrigateHull,
-					];
+				if (isFrigateHull || isNotBallisticOrIsNotHybridSlots) {
+					const reasonMap = {
+						[isNotBallisticOrIsNotHybridSlots]: reason.noCorrectWeaponSlots,
+						[isFrigateHull]: reason.frigate,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
 		},
-		advancedcore: "advancedcore", // Advanced Targeting Core [BuildIn]
-		targetingunit: "targetingunit", // Integrated Targeting Unit (Not compatible with core and Dedicated)
-		// Dedicated Targeting Core is a hullmod that can only be installed on Cruiser-class & Capital-class ship.
-		// Incompatible with Distributed Fire Control.
-		dedicated_targeting_core: "dedicated_targeting_core", // Dedicated Targeting Core
+
+		// Integrated Targeting Unit
+		targetingunit: {
+			id: "targetingunit",
+			name: "Integrated Targeting Unit",
+			_whyNot:
+				"Incompatible with [Dedicated Targeting Core] or [Distributed Fire Control] or [Advanced Targeting Core]",
+			reason: {
+				dedicated_targeting_core: "Incompatible with Dedicated Targeting Core",
+				advancedcore: "Incompatible with Advanced Targeting Core",
+				distributed_fire_control: "Incompatible with Distributed Fire Control",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.WEAPONS.targetingunit.reason;
+
+				const isDedicatedCoreInstalled = installedHullMods.includes(
+					HULLMODS.WEAPONS.dedicated_targeting_core.id
+				);
+
+				const isAdvancedCoreBuildIn = builtInMods?.includes(
+					HULLMODS.BUILD_IN.advancedcore.id
+				);
+
+				const isDistributedFireControlBuildIn = builtInMods.includes(
+					HULLMODS.BUILD_IN.distributed_fire_control.id
+				);
+
+				if (
+					isDedicatedCoreInstalled ||
+					isAdvancedCoreBuildIn ||
+					isDistributedFireControlBuildIn
+				) {
+					const reasonMap = {
+						[isAdvancedCoreBuildIn]: reason.advancedcore,
+						[isDedicatedCoreInstalled]: reason.dedicated_targeting_core,
+						[isDistributedFireControlBuildIn]: reason.distributed_fire_control,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
+		// Dedicated Targeting Core
+		dedicated_targeting_core: {
+			id: "dedicated_targeting_core",
+			name: "Dedicated Targeting Core",
+			_whyNot:
+				"Dedicated Targeting Core is a hullmod that can only be installed on Cruiser-class & Capital-class ship. incompatible with Dedicated Targeting Core. Incompatible with Distributed Fire Control",
+			reason: {
+				targetingunit: "Incompatible with Integrated Targeting Unit",
+				advancedcore: "Incompatible with Advanced Targeting Core",
+				distributed_fire_control: "Incompatible with Distributed Fire Control",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.WEAPONS.dedicated_targeting_core.reason;
+
+				const isIntegratedTargetingUnitInstalled = installedHullMods.includes(
+					HULLMODS.WEAPONS.targetingunit.id
+				);
+
+				const isAdvancedCoreBuildIn = builtInMods?.includes(
+					HULLMODS.BUILD_IN.advancedcore.id
+				);
+
+				const isDistributedFireControlBuildIn = builtInMods.includes(
+					HULLMODS.BUILD_IN.distributed_fire_control.id
+				);
+
+				if (
+					isIntegratedTargetingUnitInstalled ||
+					isAdvancedCoreBuildIn ||
+					isDistributedFireControlBuildIn
+				) {
+					const reasonMap = {
+						[isAdvancedCoreBuildIn]: reason.advancedcore,
+						[isIntegratedTargetingUnitInstalled]: reason.targetingunit,
+						[isDistributedFireControlBuildIn]: reason.distributed_fire_control,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
 	},
-	CARRIER: {
-		converted_hangar: "converted_hangar", // Converted Hangar (Not On phase Ship)
+	FIGHTER: {
+		// Converted Hangar
+		//! add new installable fighterSlot
+		converted_hangar: {
+			id: "converted_hangar",
+			name: "Converted Hangar",
+			_whyNot:
+				"hullmod that can be installed on any Destroyer-class, Cruiser-class and Capital-class ship, except Phase ships or ships that already have proper fighter bays.",
+			reason: {
+				isFrigateReason: "Not on Frigate",
+				isPhaseReason: "Not on Phase",
+				hasFighterSlotsReason: "Already has Fighter Slots",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { hullSize, shieldType, weaponSlots } = userShipBuild;
+				console.log(userShipBuild);
+				const reason = HULLMODS.FIGHTER.converted_hangar.reason;
+
+				console.log(hullSize);
+				console.log(shieldType);
+				console.log(weaponSlots);
+
+				const isFrigate = hullSize === HULL_SIZE.FRIGATE;
+				const hasFighterSlots = weaponSlots.some(
+					(slot) => slot.type === WEAPON_SLOT_TYPE.LAUNCH_BAY
+				);
+				const isPhase = shieldType === SHIELD_TYPE.PHASE;
+
+				if (isFrigate || hasFighterSlots || isPhase) {
+					const reasonMap = {
+						[isFrigate]: reason.isFrigateReason,
+						[hasFighterSlots]: reason.hasFighterSlotsReason,
+						[isPhase]: reason.isPhaseReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
 		defensive_targeting_array: "defensive_targeting_array", // Defensive Targeting Array (No Fighter Bays)
 		expanded_deck_crew: "expanded_deck_crew", // Expanded Deck Crew (No Standart fighter bays)
 		recovery_shuttles: "recovery_shuttles", // Recovery Shuttles (No Fighter Bays)
 	},
 	SPECIAL: {
-		neural_integrator: "neural_integrator", // Neural Integrator (Turn off, only automated Ships)
-		escort_package: "escort_package", // Escort Package (hullmod that can only be installed on Destroyer-class & Cruiser-class ships.)
-	},
-	LOGISTICS: {
-		converted_fighterbay: "converted_fighterbay", // Converted Fighter Bay (Build In Fighter Bays Only)
-		militarized_subsystems: "militarized_subsystems", // Militarized Subsystems (only CIV grade hulls)
-	},
-	BUILD_IN: {
-		name: "Build In HullMods",
-		reason: "HullMod Already Built In",
-		_why: "",
-		logic: function (hullModArray, userShipBuild) {
-			const reason = HULLMODS.BUILD_IN.reason;
-			const builtInMods = userShipBuild.hullMods.builtInMods;
+		//! Implement Later
+		// Neural Integrator
+		neural_integrator: {
+			id: "neural_integrator",
+			name: "Neural Integrator",
+			_whyNot:
+				"hullmod that can be installed on any ship with the Automated Ship hullmod.",
+			reason: {
+				onlyAutomatedShip: "Only on Automated Ships",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { builtInMods } = userShipBuild.hullMods;
 
-			const hullModObject = hullModArray.filter((hullMod) =>
-				builtInMods.find((builtHullMod) => builtHullMod === hullMod.id)
-			);
-			return hullModObject.map((hullMod) => [hullMod, reason]);
+				const reason = HULLMODS.SPECIAL.neural_integrator.reason;
+				const automatedCheck = false;
+				// const isAdvancedCoreBuildIn = builtInMods.includes(
+				// 	HULLMODS.BUILD_IN.advancedcore.id
+				// );
+
+				if (!automatedCheck) {
+					return [hullMod, reason.onlyAutomatedShip];
+				}
+				return null;
+			},
+		},
+		// Escort Package
+		escort_package: {
+			id: "escort_package",
+			name: "Escort Package",
+			_whyNot:
+				"hullmod that can only be installed on Destroyer-class & Cruiser-class ships.",
+			reason: {
+				hullSizeRule: "Only on Destroyer / Cruiser",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { hullSize } = userShipBuild;
+
+				const reason = HULLMODS.SPECIAL.escort_package.reason;
+
+				const isNotCruiser = hullSize !== HULL_SIZE.CRUISER;
+				const isNotDestroyer = hullSize !== HULL_SIZE.DESTROYER;
+
+				if (isNotCruiser && isNotDestroyer) {
+					return [hullMod, reason.hullSizeRule];
+				}
+				return null;
+			},
 		},
 	},
+	LOGISTICS: {
+		//! Implement Later
+		// Converted Fighter Bay
+		converted_fighterbay: {
+			id: "converted_fighterbay",
+			name: "Converted Fighter Bay",
+			_whyNot:
+				"It can only be installed on ships which have permanently built-in fighter bays such as Shepherd, Tempest or the stock Venture.",
+			reason: {
+				targetingunit: "Incompatible with Integrated Targeting Unit",
+				tooMuchLogic: "Max",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.converted_fighterbay.reason;
+
+				// const isIntegratedTargetingUnitInstalled = installedHullMods.includes(
+				// 	HULLMODS.WEAPONS.targetingunit.id
+				// );
+
+				// const isAdvancedCoreBuildIn = builtInMods?.includes(
+				// 	HULLMODS.BUILD_IN.advancedcore.id
+				// );
+
+				// const isDistributedFireControlBuildIn = builtInMods.includes(
+				// 	HULLMODS.BUILD_IN.distributed_fire_control.id
+				// );
+
+				// if (
+				// 	isIntegratedTargetingUnitInstalled ||
+				// 	isAdvancedCoreBuildIn ||
+				// 	isDistributedFireControlBuildIn
+				// ) {
+				// 	const reasonMap = {
+				// 		[isAdvancedCoreBuildIn]: reason.advancedcore,
+				// 		[isIntegratedTargetingUnitInstalled]: reason.targetingunit,
+				// 		[isDistributedFireControlBuildIn]: reason.distributed_fire_control,
+				// 	};
+
+				// 	return [hullMod, reasonMap.true];
+				// }
+				return null;
+			},
+		},
+		// Militarized Subsystems
+		militarized_subsystems: {
+			id: "militarized_subsystems",
+			name: "Militarized Subsystems",
+			reason: { onlyCivilian: "Only on Civilian Ships" },
+			_why: "hullmod that can be installed on any ship with Civilian-grade Hull. Logistics Limit = 2",
+
+			logic: function (hullMod, userShipBuild) {
+				const reason = HULLMODS.LOGISTICS.militarized_subsystems.reason;
+				const { hullMods } = userShipBuild;
+
+				const isCivilianShip = hullMods.builtInMods.includes(
+					HULLMODS.BUILD_IN.civgrade.id
+				);
+				if (!isCivilianShip) {
+					return [hullMod, reason.onlyCivilian];
+				}
+				return null;
+			},
+		},
+	},
+
 	SHIELD: {
 		// Shield Conversion - Front
 		frontemitter: {
@@ -315,8 +567,8 @@ const HULLMODS = {
 				phaseAnchor: "It is incompatible with Phase Anchor",
 			},
 			logic: function (hullMod, userShipBuild) {
-				const shieldType = userShipBuild.shieldType;
-				const installedHullMods = userShipBuild.hullMods.installedHullMods;
+				const { shieldType, hullMods } = userShipBuild;
+				const installedHullMods = hullMods.installedHullMods;
 				const reason = HULLMODS.PHASE.adaptive_coils.reason;
 
 				const notPhaseShip = shieldType !== SHIELD_TYPE.PHASE;
@@ -344,8 +596,8 @@ const HULLMODS = {
 				phaseCoils: "It is incompatible with Adaptive Phase Coils",
 			},
 			logic: function (hullMod, userShipBuild) {
-				const shieldType = userShipBuild.shieldType;
-				const installedHullMods = userShipBuild.hullMods.installedHullMods;
+				const { shieldType, hullMods } = userShipBuild;
+				const installedHullMods = hullMods.installedHullMods;
 				const reason = HULLMODS.PHASE.phase_anchor.reason;
 
 				const notPhaseShip = shieldType !== SHIELD_TYPE.PHASE;
@@ -366,109 +618,39 @@ const HULLMODS = {
 	},
 	ENGINE: {
 		// Safety Overrides (not on capital) Not on except for ships with a Civilian-grade Hull, unless Militarized Subsystems is also present.
-		safetyoverrides: "safetyoverrides",
+		safetyoverrides: {
+			id: "safetyoverrides",
+			name: "Safety Overrides",
+			_whyNot:
+				"hullmod that can be installed on any Frigate-class, Destroyer-class and Cruiser-class ship, except for ships with a Civilian-grade Hull, unless Militarized Subsystems is also present.",
+			reason: {
+				notOnCapitalShips: "Not on Capital Ship",
+				notOnCivilianShips: "Civilian Ships only with Militarized Subsystems",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { hullSize, hullMods } = userShipBuild;
+				const builtInMods = hullMods.builtInMods;
+				const reason = HULLMODS.ENGINE.safetyoverrides.reason;
+
+				const isShipCapital = hullSize === HULL_SIZE.CAPITAL_SHIP;
+
+				const isShipCivilian = builtInMods.find(
+					(hullModId) => hullModId === HULLMODS.BUILD_IN.civgrade.id
+				);
+
+				if (isShipCivilian || isShipCapital) {
+					return [
+						hullMod,
+						isShipCapital
+							? reason.notOnCapitalShips
+							: reason.notOnCivilianShips,
+					];
+				}
+				return null;
+			},
+		},
 	},
 };
-// const RULES = {
-// 	// SHIELD: {
-// 	// 	FRONT: {
-// 	// 		frontemitter: [HULLMODS.SHIELD.frontemitter, "Already Has Front Shield"],
-// 	// 	},
-// 	// 	ANY: {
-// 	// 		frontshield: [HULLMODS.SHIELD.frontshield, "Has ANY Shield"],
-// 	// 	},
-// 	// 	OMNI: {
-// 	// 		adaptiveshields: [
-// 	// 			HULLMODS.SHIELD.adaptiveshields,
-// 	// 			"Already Has OMNI Shield",
-// 	// 		],
-// 	// 	},
-// 	// 	PHASE: {
-// 	// 		adaptive_coils: [HULLMODS.PHASE.adaptive_coils, "Not a PHASE ship"],
-// 	// 		phase_anchor: [HULLMODS.PHASE.phase_anchor, "Not a PHASE ship"],
-// 	// 	},
-// 	// },
-// 	// SPECIAL: {
-// 	// 	neural_integrator: [
-// 	// 		HULLMODS.SPECIAL.neural_integrator,
-// 	// 		"Only Automated Ships",
-// 	// 	],
-// 	// 	escort_package: [
-// 	// 		HULLMODS.SPECIAL.escort_package,
-// 	// 		"Not a Destroyer / Cruiser",
-// 	// 	],
-// 	// },
-// 	// FIGHTER: {
-// 	// 	NO_BAYS: {
-// 	// 		expanded_deck_crew: [
-// 	// 			HULLMODS.CARRIER.expanded_deck_crew,
-// 	// 			"No Fighter Bays",
-// 	// 		],
-// 	// 		defensive_targeting_array: [
-// 	// 			HULLMODS.CARRIER.defensive_targeting_array,
-// 	// 			"No Fighter Bays",
-// 	// 		],
-// 	// 		recovery_shuttles: [
-// 	// 			HULLMODS.CARRIER.recovery_shuttles,
-// 	// 			"No Fighter Bays",
-// 	// 		],
-// 	// 	},
-// 	// 	NO_BUILD_IN: {
-// 	// 		converted_fighterbay: [
-// 	// 			HULLMODS.LOGISTICS.converted_fighterbay,
-// 	// 			"No Build In Bays",
-// 	// 		],
-// 	// 	},
-// 	// 	CONVERTED_HANGAR: (buildInFighterSlots, shieldType, hullSize) => {
-// 	// 		if (!buildInFighterSlots)
-// 	// 			return [HULLMODS.CARRIER.converted_hangar, "No BuildIn Bays"];
-
-// 	// 		if (shieldType === SHIELD_TYPE.PHASE)
-// 	// 			return [HULLMODS.CARRIER.converted_hangar, "Not on Phase Ship"];
-
-// 	// 		if (hullSize === HULL_SIZE.FRIGATE)
-// 	// 			return [HULLMODS.CARRIER.converted_hangar, "Not on Frigates"];
-// 	// 	},
-// 	// },
-// 	// LOGISTICS: {
-// 	// 	NOT_CIVILIAN_SHIP: [
-// 	// 		HULLMODS.LOGISTICS.militarized_subsystems,
-// 	// 		"Only on Civilian Ships",
-// 	// 	],
-// 	// },
-// 	// WEAPONS: {
-// 	// 	ADVANCED_CORE: {
-// 	// 		dedicated_targeting_core: [
-// 	// 			HULLMODS.WEAPONS.dedicated_targeting_core,
-// 	// 			"Incompatible with Advanced Targeting Core",
-// 	// 		],
-// 	// 		targetingunit: [
-// 	// 			HULLMODS.WEAPONS.targetingunit,
-// 	// 			"Incompatible with Advanced Targeting Core",
-// 	// 		],
-// 	// 	},
-// 	// 	ballistic_rangefinder: (hullSize) => {
-// 	// 		return [
-// 	// 			HULLMODS.WEAPONS.ballistic_rangefinder,
-// 	// 			hullSize === HULL_SIZE.FRIGATE
-// 	// 				? "Not on Frigate"
-// 	// 				: "No Ballistic / Hybrid Slots",
-// 	// 		];
-// 	// 	},
-// 	// },
-// 	// ENGINE: {
-// 	safetyoverrides: [HULLMODS.ENGINE.safetyoverrides, "Not on Capital Ships"],
-// },
-// 	SHIELD: {
-// 		omniShieldCheck: (hullMod) => {
-// 			if (hullMod.id === HULLMODS.SHIELD.adaptiveshields) {
-// 				if (shieldType === SHIELD_TYPE.OMNI) {
-// 					return [hullMod, "Already Has OMNI Shield"];
-// 				}
-// 			}
-// 		},
-// 	},
-// };
 
 export const hullModLogic = {
 	filterController(hullModArray, userShipBuild) {
@@ -513,12 +695,38 @@ export const hullModLogic = {
 		const weaponHullMods = {
 			[HULLMODS.WEAPONS.ballistic_rangefinder.id]:
 				HULLMODS.WEAPONS.ballistic_rangefinder.logic,
-		};
 
+			[HULLMODS.WEAPONS.dedicated_targeting_core.id]:
+				HULLMODS.WEAPONS.dedicated_targeting_core.logic,
+
+			[HULLMODS.WEAPONS.targetingunit.id]: HULLMODS.WEAPONS.targetingunit.logic,
+		};
+		const engineHullMods = {
+			[HULLMODS.ENGINE.safetyoverrides.id]:
+				HULLMODS.ENGINE.safetyoverrides.logic,
+		};
+		const logisticsHullMods = {
+			[HULLMODS.LOGISTICS.militarized_subsystems.id]:
+				HULLMODS.LOGISTICS.militarized_subsystems.logic,
+		};
+		const specialHullMods = {
+			[HULLMODS.SPECIAL.neural_integrator.id]:
+				HULLMODS.SPECIAL.neural_integrator.logic,
+			[HULLMODS.SPECIAL.escort_package.id]:
+				HULLMODS.SPECIAL.escort_package.logic,
+		};
+		const fighterHullMods = {
+			[HULLMODS.FIGHTER.converted_hangar.id]:
+				HULLMODS.FIGHTER.converted_hangar.logic,
+		};
 		const allModifiers = {
 			...shieldHullMods,
 			...phaseHullMods,
 			...weaponHullMods,
+			...engineHullMods,
+			...logisticsHullMods,
+			...specialHullMods,
+			...fighterHullMods,
 		};
 
 		return hullModArray
@@ -610,7 +818,7 @@ export const hullModLogic = {
 	filterWeaponHullMods: (hullModArray, hullSize, weaponSlots, hullMods) => {
 		const results = [];
 		const isAdvancedCoreBuildIn = hullMods.builtInMods.some(
-			(hullMod) => hullMod === HULLMODS.WEAPONS.advancedcore
+			(hullMod) => hullMod === HULLMODS.BUILD_IN.advancedcore
 		);
 
 		// BAL Range Finder

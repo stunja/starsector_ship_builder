@@ -234,6 +234,7 @@ const classNames = {
 	hullMods__button: "hullmods__button--open",
 	// BuildIn HullMods
 	buildInHullmods: "build-in-hullmods",
+	buildInHullModsContainer: "build-in-hullmods__container",
 	hullMod: "hullmod",
 	hullModCost: "hullMod__cost",
 	hullModDescValues: "hullMod__desc--value",
