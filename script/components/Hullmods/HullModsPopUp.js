@@ -10,7 +10,7 @@ import TablePopUpSorter from "../TablePopUpSorter";
 import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import HullModController from "./HullModController";
-import { removeInstalledHullMod, hullModLogic } from "./HullModHelper";
+import { updateInstalledHullMod, hullModLogic } from "./HullModHelper";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
@@ -77,13 +77,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#userState = this.getUserState();
 
-		this.#usableHullMods = this.#userState.usableHullMods.filter(
-			(hullMod) =>
-				// HIDDEN ARE TRUE => HIDE
-				hullMod.hidden !== GENERIC_STRING.TRUE &&
-				// special hide rule
-				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
-		);
+		this.#usableHullMods = this.#filterUsableHullModArray();
 
 		this.#shipHullMods = this.#userShipBuild.hullMods;
 
@@ -136,6 +130,14 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#createRedHullMods();
 	}
+	#filterUsableHullModArray = () =>
+		this.#userState.usableHullMods.filter(
+			(hullMod) =>
+				// HIDDEN ARE TRUE => HIDE
+				hullMod.hidden !== GENERIC_STRING.TRUE &&
+				// special hide rule
+				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
+		);
 	#createGreenHullMods = () => {
 		this.#greenHullMods = this.#usableHullMods;
 	};
@@ -247,11 +249,15 @@ export default class HullModsPopUp extends ViewModel {
 		}
 
 		const { hullmodId } = btn.dataset;
-		const { hullMods } = this.getUserShipBuild();
-
+		const userShipBuild = this.getUserShipBuild();
+		//! remove this
 		this.#test(hullmodId);
 
-		const updatedHullMods = removeInstalledHullMod(hullmodId, hullMods);
+		const updatedHullMods = updateInstalledHullMod(
+			hullmodId,
+			userShipBuild,
+			this.#usableHullMods
+		);
 
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,
@@ -282,10 +288,12 @@ export default class HullModsPopUp extends ViewModel {
 		allTableEntries.forEach((entry) =>
 			entry.classList.remove(CLASSES.WEAPON_POP_UP_ACTIVE)
 		);
+
 		// add active class to elements equal to installedHullMods
 		allTableEntries.forEach((element) => {
 			const { hullmodId } = element.dataset;
-			if (hullmodId && installedHullMods.includes(hullmodId)) {
+
+			if (hullmodId && installedHullMods.some(({ id }) => id === hullmodId)) {
 				element.classList.add(CLASSES.WEAPON_POP_UP_ACTIVE);
 			}
 		});
@@ -343,6 +351,7 @@ export default class HullModsPopUp extends ViewModel {
 			this.#usableHullMods,
 			this.#userShipBuild
 		);
+
 		this.#currentUnavailableHullMods = this.#allUnavailableHullMods;
 
 		// Order Matters First Create Red and then use it in green

@@ -21,8 +21,9 @@ class InstalledHullMods extends View {
 		const markup = this.#addInstalledHullMod();
 		return markup;
 	}
-	#processData([installedHullMods, hullSize]) {
-		this.#installedHullMods = installedHullMods;
+
+	#processData([{ hullMods }, hullSize]) {
+		this.#installedHullMods = hullMods.installedHullMods;
 		this.#hullSize = hullSize;
 	}
 

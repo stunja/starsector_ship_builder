@@ -9,15 +9,17 @@ import HULLMODS_DATA from "./helper/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "doom";
+const shipNameDev = "shepherd";
 //
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
-// paragon // hound // gryphon // shepherd // Hammerhead //
+// paragon // hound // gryphon // shepherd // Hammerhead // monitor
 // gryphon = cruiser
 // destroyer = condor
 // hound = frigate // centurion
 // Phase = harbinger / doom // shade
 // Civilian = shepherd
+
+// monitor //! Check later, issue with weapon slots
 export class Model {
 	dataState = {
 		allShips: [],
@@ -417,7 +419,7 @@ const createUserShipBuild = {
 			defenseId: defenseId,
 
 			// Fighter Bays
-			fighterBays: fighterBays,
+			fighterBays: Number.isFinite(fighterBays) ? fighterBays : 0,
 
 			// Logistical
 			shipIsCivilian: this.isShipCivilian(additionalData.builtInMods),

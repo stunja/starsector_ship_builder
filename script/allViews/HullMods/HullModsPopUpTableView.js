@@ -46,7 +46,6 @@ class HullModsPopUpTableView extends View {
 	#hullModIcon = (crrHullMod) => `
 			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
-	//! issue is here
 	#hullModDescription(currentHullMod) {
 		const regularValues = currentHullMod.effectValues.regularValues;
 		const description = currentHullMod.desc;

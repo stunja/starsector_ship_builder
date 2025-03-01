@@ -8,7 +8,7 @@ import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 import HullModsPopUp from "./HullModsPopUp";
 // Helper
 import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import { removeInstalledHullMod } from "./HullModHelper";
+import { updateInstalledHullMod } from "./HullModHelper";
 
 const EVENT_LISTENER_TARGET = {
 	HULLMODS: `.${classNames.hullMods__button}`,
@@ -50,23 +50,9 @@ export default class HullModController extends ViewModel {
 	}
 	#renderHullModContainer() {
 		BuildInHullModsView.render(this.#buildInHullMods);
-		InstalledHullMods.render([
-			this.#createInstalledHullModsArray(),
-			this.#hullSize,
-		]);
+		InstalledHullMods.render([this.getUserShipBuild(), this.#hullSize]);
 	}
-	// Logic
-	// Use hullModId to fetch HullModObject and create and array
-	#createInstalledHullModsArray() {
-		const allHullMods = this.#allHullMods;
-		const { installedHullMods } = this.getUserShipBuild().hullMods;
 
-		return installedHullMods
-			.map((installedHullMod) =>
-				allHullMods.find((hullmod) => hullmod.id === installedHullMod)
-			)
-			.filter(Boolean);
-	}
 	// Use hullModId to fetch HullModObject and create and array
 	#createBuildInHullModsArray() {
 		try {
@@ -103,7 +89,7 @@ export default class HullModController extends ViewModel {
 		const { hullmodId } = btn.dataset;
 		const { hullMods } = this.getUserShipBuild();
 
-		const updatedHullMods = removeInstalledHullMod(hullmodId, hullMods);
+		const updatedHullMods = updateInstalledHullMod(hullmodId, hullMods);
 
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,

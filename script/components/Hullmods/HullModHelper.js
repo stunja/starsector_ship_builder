@@ -1,14 +1,22 @@
 import HULLMODS_DATA from "../../helper/HullModData";
 import { GENERIC_STRING } from "../../helper/MagicStrings";
 
-export const removeInstalledHullMod = (hullmodId, hullMods) => {
-	const { installedHullMods } = hullMods;
-	const isHullModInstalled = installedHullMods.includes(hullmodId);
+export const updateInstalledHullMod = (
+	hullmodId,
+	userShipBuild,
+	allHullMods
+) => {
+	const hullMods = userShipBuild.hullMods;
+	const installedHullMods = hullMods.installedHullMods;
+
+	const hullModObject = allHullMods.find(({ id }) => id === hullmodId);
+
+	const isHullModInstalled = installedHullMods.includes(hullModObject);
 
 	// if hullMod is installed create new array, without it
 	const updatedInstalledHullMods = isHullModInstalled
-		? installedHullMods.filter((mod) => mod !== hullmodId)
-		: [...installedHullMods, hullmodId];
+		? installedHullMods.filter(({ id }) => id !== hullmodId)
+		: [...installedHullMods, hullModObject];
 
 	return {
 		...hullMods,
@@ -50,7 +58,6 @@ const SHIP_TYPE = {
 	CIVILIAN: "",
 	MILITARY: "military",
 };
-const logisticsHullModLimit = 0;
 const HULLMODS = {
 	BUILD_IN: {
 		// Advanced Targeting Core [BuildIn]
@@ -71,6 +78,11 @@ const HULLMODS = {
 			name: "Distributed Fire Control",
 			_whyNot:
 				"Distributed Fire Control is incompatible with Dedicated Targeting Core and Integrated Targeting Unit, but not the Ballistic Rangefinder.",
+		},
+		fluxshunt: {
+			id: "fluxshunt",
+			name: "Flux Shunt",
+			_whyNot: "Flux Shunt is incompatible with Safety Overrides.",
 		},
 		logic: function (hullModArray, userShipBuild) {
 			const reason = "Already Build In";
@@ -103,10 +115,10 @@ const HULLMODS = {
 				const isFrigateHull = hullSize === HULL_SIZE.FRIGATE;
 
 				const hasBallisticSlots = weaponSlots.some(
-					(hullMod) => hullMod.type === WEAPON_SLOT_TYPE.BALLISTIC
+					({ type }) => type === WEAPON_SLOT_TYPE.BALLISTIC
 				);
 				const hasHybridSlots = weaponSlots.some(
-					(hullMod) => hullMod.type === WEAPON_SLOT_TYPE.HYBRID
+					({ type }) => type === WEAPON_SLOT_TYPE.HYBRID
 				);
 				const isNotBallisticOrIsNotHybridSlots =
 					!hasBallisticSlots && !hasHybridSlots;
@@ -143,7 +155,7 @@ const HULLMODS = {
 					HULLMODS.WEAPONS.dedicated_targeting_core.id
 				);
 
-				const isAdvancedCoreBuildIn = builtInMods?.includes(
+				const isAdvancedCoreBuildIn = builtInMods.includes(
 					HULLMODS.BUILD_IN.advancedcore.id
 				);
 
@@ -187,7 +199,7 @@ const HULLMODS = {
 					HULLMODS.WEAPONS.targetingunit.id
 				);
 
-				const isAdvancedCoreBuildIn = builtInMods?.includes(
+				const isAdvancedCoreBuildIn = builtInMods.includes(
 					HULLMODS.BUILD_IN.advancedcore.id
 				);
 
@@ -211,10 +223,71 @@ const HULLMODS = {
 				return null;
 			},
 		},
+		// Advanced Optics
+		advancedoptics: {
+			id: "advancedoptics",
+			name: "Advanced Optics",
+			_whyNot:
+				"hullmod that can be installed on any ship. Incompatible with High Scatter Amplifier.",
+			reason: {
+				highScatterAmplifierReason: "Incompatible with High Scatter Amplifier",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.WEAPONS.advancedoptics.reason;
+
+				const isHighScatterAmplifierInstalled = installedHullMods.includes(
+					HULLMODS.WEAPONS.high_scatter_amp.id
+				);
+
+				if (isHighScatterAmplifierInstalled) {
+					const reasonMap = {
+						[isHighScatterAmplifierInstalled]:
+							reason.highScatterAmplifierReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
+		// High Scatter Amplifier
+		high_scatter_amp: {
+			id: "high_scatter_amp",
+			name: "High Scatter Amplifier",
+			_whyNot:
+				"hullmod that can be installed on any ship. Incompatible with Advanced Optics.",
+			reason: {
+				advancedOpticsReason: "Incompatible with Advanced Optics",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.WEAPONS.high_scatter_amp.reason;
+
+				const isAdvancedOpticsInstalled = installedHullMods.includes(
+					HULLMODS.WEAPONS.advancedoptics.id
+				);
+
+				const isAdvancedOpticsBuildIn = builtInMods.includes(
+					HULLMODS.WEAPONS.advancedoptics.id
+				);
+
+				if (isAdvancedOpticsInstalled || isAdvancedOpticsBuildIn) {
+					const reasonMap = {
+						[isAdvancedOpticsInstalled]: reason.advancedOpticsReason,
+						[isAdvancedOpticsBuildIn]: reason.advancedOpticsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
 	},
 	FIGHTER: {
 		// Converted Hangar
-		//! add new installable fighterSlot
 		converted_hangar: {
 			id: "converted_hangar",
 			name: "Converted Hangar",
@@ -226,18 +299,12 @@ const HULLMODS = {
 				hasFighterSlotsReason: "Already has Fighter Slots",
 			},
 			logic: function (hullMod, userShipBuild) {
-				const { hullSize, shieldType, weaponSlots } = userShipBuild;
-				console.log(userShipBuild);
+				const { hullSize, shieldType, fighterBays } = userShipBuild;
 				const reason = HULLMODS.FIGHTER.converted_hangar.reason;
 
-				console.log(hullSize);
-				console.log(shieldType);
-				console.log(weaponSlots);
-
 				const isFrigate = hullSize === HULL_SIZE.FRIGATE;
-				const hasFighterSlots = weaponSlots.some(
-					(slot) => slot.type === WEAPON_SLOT_TYPE.LAUNCH_BAY
-				);
+				const hasFighterSlots = fighterBays >= 1;
+
 				const isPhase = shieldType === SHIELD_TYPE.PHASE;
 
 				if (isFrigate || hasFighterSlots || isPhase) {
@@ -252,9 +319,81 @@ const HULLMODS = {
 				return null;
 			},
 		},
-		defensive_targeting_array: "defensive_targeting_array", // Defensive Targeting Array (No Fighter Bays)
-		expanded_deck_crew: "expanded_deck_crew", // Expanded Deck Crew (No Standart fighter bays)
-		recovery_shuttles: "recovery_shuttles", // Recovery Shuttles (No Fighter Bays)
+		// Defensive Targeting Array
+		defensive_targeting_array: {
+			id: "defensive_targeting_array",
+			name: "Defensive Targeting Array",
+			_whyNot: "hullmod that can be installed on any ship with a Fighter Wing.",
+			reason: {
+				hasNoFighterSlotsReason: "No Fighter Slots",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { fighterBays } = userShipBuild;
+
+				const reason = HULLMODS.FIGHTER.defensive_targeting_array.reason;
+
+				const hasNoFighterSlots = fighterBays <= 0;
+
+				if (hasNoFighterSlots) {
+					const reasonMap = {
+						[hasNoFighterSlots]: reason.hasNoFighterSlotsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
+		// Expanded Deck Crew
+		expanded_deck_crew: {
+			id: "expanded_deck_crew",
+			name: "Expanded Deck Crew",
+			_whyNot: "hullmod that can be installed on any ship with a Fighter Wing.",
+			reason: {
+				hasNoFighterSlotsReason: "No Fighter Slots",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { fighterBays } = userShipBuild;
+
+				const reason = HULLMODS.FIGHTER.expanded_deck_crew.reason;
+
+				const hasNoFighterSlots = fighterBays <= 0;
+
+				if (hasNoFighterSlots) {
+					const reasonMap = {
+						[hasNoFighterSlots]: reason.hasNoFighterSlotsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
+		// Recovery Shuttles
+		recovery_shuttles: {
+			id: "recovery_shuttles",
+			name: "Recovery Shuttles",
+			_whyNot: "hullmod that can be installed on any ship with a Fighter Wing.",
+			reason: {
+				hasNoFighterSlotsReason: "No Fighter Slots",
+			},
+			logic: function (hullMod, userShipBuild) {
+				const { fighterBays } = userShipBuild;
+
+				const reason = HULLMODS.FIGHTER.recovery_shuttles.reason;
+
+				const hasNoFighterSlots = fighterBays <= 0;
+
+				if (hasNoFighterSlots) {
+					const reasonMap = {
+						[hasNoFighterSlots]: reason.hasNoFighterSlotsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+		},
 	},
 	SPECIAL: {
 		//! Implement Later
@@ -323,6 +462,7 @@ const HULLMODS = {
 
 				const reason = HULLMODS.LOGISTICS.converted_fighterbay.reason;
 
+				console.log(installedHullMods);
 				// const isIntegratedTargetingUnitInstalled = installedHullMods.includes(
 				// 	HULLMODS.WEAPONS.targetingunit.id
 				// );
@@ -378,18 +518,27 @@ const HULLMODS = {
 		frontemitter: {
 			id: "frontemitter",
 			name: "Shield Conversion - Front",
-			reason: { front: "Already Has Front Shield", any: "Must have a Shield" },
-			_why: "hullmod that can be installed on any ship that has shields",
+			reason: {
+				frontShieldReason: "Already Has Front Shield",
+				noShieldReason: "Must have a Shield",
+			},
+			_why: "hullmod that can be installed on any ship that has shields. Incompatible with Front Shield",
 
 			logic: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
 				const reason = HULLMODS.SHIELD.frontemitter.reason;
 
-				const isNotOmniShield = shieldType !== SHIELD_TYPE.OMNI;
 				const isFrontShield = shieldType === SHIELD_TYPE.FRONT;
+				const hasNoShield =
+					shieldType !== SHIELD_TYPE.OMNI && shieldType !== SHIELD_TYPE.FRONT;
 
-				if (isNotOmniShield) {
-					return [hullMod, isFrontShield ? reason.front : reason.any];
+				if (isFrontShield || hasNoShield) {
+					const reasonMap = {
+						[isFrontShield]: reason.frontShieldReason,
+						[hasNoShield]: reason.noShieldReason,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
@@ -398,19 +547,28 @@ const HULLMODS = {
 		adaptiveshields: {
 			id: "adaptiveshields",
 			name: "Shield Conversion - Omni",
-			reason: { omni: "Already Has OMNI Shield", any: "Must have a Shield" },
+			reason: {
+				omniShieldReason: "Already Has OMNI Shield",
+				noShieldReason: "Must have a Shield",
+			},
 			_whyNot:
-				"hullmod that can be installed on any ship that has shields. (Front Shield)",
+				"hullmod that can be installed on any ship that has shields. Incompatible with OMNI Shield",
 
 			logic: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
 				const reason = HULLMODS.SHIELD.adaptiveshields.reason;
 
-				const isNotFrontShield = shieldType !== SHIELD_TYPE.FRONT;
 				const isOmniShield = shieldType === SHIELD_TYPE.OMNI;
+				const hasNoShield =
+					shieldType !== SHIELD_TYPE.OMNI && shieldType !== SHIELD_TYPE.FRONT;
 
-				if (isNotFrontShield) {
-					return [hullMod, isOmniShield ? reason.omni : reason.any];
+				if (isOmniShield || hasNoShield) {
+					const reasonMap = {
+						[isOmniShield]: reason.omniShieldReason,
+						[hasNoShield]: reason.noShieldReason,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
@@ -477,7 +635,7 @@ const HULLMODS = {
 			id: "extendedshieldemitter",
 			name: "Extended Shields",
 			_whyNot: "hullmod that can be installed on any ship that has shields",
-			reason: { noShield: "Must have a Shield" },
+			reason: { noShieldReason: "Must have a Shield" },
 			logic: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
 				const reason = HULLMODS.SHIELD.extendedshieldemitter.reason;
@@ -486,12 +644,12 @@ const HULLMODS = {
 					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
 
 				if (noShield) {
-					return [hullMod, reason.noShield];
+					return [hullMod, reason.noShieldReason];
 				}
 				return null;
 			},
 		},
-		//! unfinished
+
 		// Makeshift Shield Generator
 		frontshield: {
 			id: "frontshield",
@@ -499,22 +657,33 @@ const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any ship that has no native shields other than Phase ships. Incompatible with Shield Shunt.",
 			reason: {
-				noShield: "Not on Phase Ships",
-				hasShield: "Already has a Shield",
-				shieldShunt: "Incompatible with Shield Shunt",
+				isPhaseShipReason: "Not on Phase Ship",
+				hasShieldReason: "Already has a Shield",
+				shieldShuntReason: "Incompatible with Shield Shunt",
 			},
 			logic: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
+				const { installedHullMods } = userShipBuild.hullMods;
 
 				const reason = HULLMODS.SHIELD.frontshield.reason;
 
 				const isPhase = shieldType === SHIELD_TYPE.PHASE;
-				const noShield =
-					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
-				const isShieldShuntInstalled = "";
 
-				if (isPhase || noShield) {
-					return [hullMod, reason.noShield];
+				const hasShield =
+					shieldType === SHIELD_TYPE.FRONT && shieldType === SHIELD_TYPE.OMNI;
+
+				const isShieldShuntInstalled = installedHullMods.includes(
+					HULLMODS.SHIELD.shield_shunt.id
+				);
+
+				if (isPhase || hasShield || isShieldShuntInstalled) {
+					const reasonMap = {
+						[isPhase]: reason.isPhaseShipReason,
+						[hasShield]: reason.hasShieldReason,
+						[isShieldShuntInstalled]: reason.shieldShuntReason,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
@@ -538,17 +707,17 @@ const HULLMODS = {
 				const noShield =
 					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
 
-				const isMakeShiftGeneratorInstalled = installedHullMods.find(
-					(hullModId) => hullModId === HULLMODS.SHIELD.frontshield.id
+				const isMakeShiftGeneratorInstalled = installedHullMods.includes(
+					HULLMODS.SHIELD.frontshield.id
 				);
 
 				if (noShield || isMakeShiftGeneratorInstalled) {
-					return [
-						hullMod,
-						isMakeShiftGeneratorInstalled
-							? reason.shieldGenerator
-							: reason.noShield,
-					];
+					const reasonMap = {
+						[isMakeShiftGeneratorInstalled]: reason.shieldGenerator,
+						[noShield]: reason.noShield,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
@@ -617,34 +786,51 @@ const HULLMODS = {
 		},
 	},
 	ENGINE: {
-		// Safety Overrides (not on capital) Not on except for ships with a Civilian-grade Hull, unless Militarized Subsystems is also present.
+		// Safety Overrides
 		safetyoverrides: {
 			id: "safetyoverrides",
 			name: "Safety Overrides",
 			_whyNot:
 				"hullmod that can be installed on any Frigate-class, Destroyer-class and Cruiser-class ship, except for ships with a Civilian-grade Hull, unless Militarized Subsystems is also present.",
 			reason: {
-				notOnCapitalShips: "Not on Capital Ship",
-				notOnCivilianShips: "Civilian Ships only with Militarized Subsystems",
+				notOnCapitalShipReason: "Not on Capital Ship",
+				notOnCivilianShipReason:
+					"Civilian Ships only with Militarized Subsystems",
+				fluxShuntReason: "Incompatible with Flux Shunt.",
 			},
 			logic: function (hullMod, userShipBuild) {
 				const { hullSize, hullMods } = userShipBuild;
-				const builtInMods = hullMods.builtInMods;
+				const { builtInMods, installedHullMods } = hullMods;
+
 				const reason = HULLMODS.ENGINE.safetyoverrides.reason;
 
+				// Not on Capital Ship
 				const isShipCapital = hullSize === HULL_SIZE.CAPITAL_SHIP;
 
-				const isShipCivilian = builtInMods.find(
-					(hullModId) => hullModId === HULLMODS.BUILD_IN.civgrade.id
+				// Incompatible with Flux Shunt
+				const hasFluxShunt = builtInMods.includes(
+					HULLMODS.BUILD_IN.fluxshunt.id
 				);
 
-				if (isShipCivilian || isShipCapital) {
-					return [
-						hullMod,
-						isShipCapital
-							? reason.notOnCapitalShips
-							: reason.notOnCivilianShips,
-					];
+				// Civilian Ships only with Militarized Subsystems
+				const isShipCivilian = builtInMods.includes(
+					HULLMODS.BUILD_IN.civgrade.id
+				);
+				const isMilitarizedSubsystemsInstalled = installedHullMods.includes(
+					HULLMODS.LOGISTICS.militarized_subsystems.id
+				);
+				// if not Militarized Subsystems installed would set true, if true than make it red
+				const isCivilianCheck =
+					isShipCivilian && !isMilitarizedSubsystemsInstalled;
+
+				if (isShipCapital || isCivilianCheck || hasFluxShunt) {
+					const reasonMap = {
+						[isShipCapital]: reason.notOnCapitalShipReason,
+						[isCivilianCheck]: reason.notOnCivilianShipReason,
+						[hasFluxShunt]: reason.fluxShuntReason,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
@@ -700,6 +886,12 @@ export const hullModLogic = {
 				HULLMODS.WEAPONS.dedicated_targeting_core.logic,
 
 			[HULLMODS.WEAPONS.targetingunit.id]: HULLMODS.WEAPONS.targetingunit.logic,
+
+			[HULLMODS.WEAPONS.advancedoptics.id]:
+				HULLMODS.WEAPONS.advancedoptics.logic,
+
+			[HULLMODS.WEAPONS.high_scatter_amp.id]:
+				HULLMODS.WEAPONS.high_scatter_amp.logic,
 		};
 		const engineHullMods = {
 			[HULLMODS.ENGINE.safetyoverrides.id]:
@@ -708,17 +900,32 @@ export const hullModLogic = {
 		const logisticsHullMods = {
 			[HULLMODS.LOGISTICS.militarized_subsystems.id]:
 				HULLMODS.LOGISTICS.militarized_subsystems.logic,
+
+			[HULLMODS.LOGISTICS.converted_fighterbay.id]:
+				HULLMODS.LOGISTICS.converted_fighterbay.logic,
 		};
+
 		const specialHullMods = {
 			[HULLMODS.SPECIAL.neural_integrator.id]:
 				HULLMODS.SPECIAL.neural_integrator.logic,
 			[HULLMODS.SPECIAL.escort_package.id]:
 				HULLMODS.SPECIAL.escort_package.logic,
 		};
+
 		const fighterHullMods = {
 			[HULLMODS.FIGHTER.converted_hangar.id]:
 				HULLMODS.FIGHTER.converted_hangar.logic,
+
+			[HULLMODS.FIGHTER.defensive_targeting_array.id]:
+				HULLMODS.FIGHTER.defensive_targeting_array.logic,
+
+			[HULLMODS.FIGHTER.expanded_deck_crew.id]:
+				HULLMODS.FIGHTER.expanded_deck_crew.logic,
+
+			[HULLMODS.FIGHTER.recovery_shuttles.id]:
+				HULLMODS.FIGHTER.recovery_shuttles.logic,
 		};
+
 		const allModifiers = {
 			...shieldHullMods,
 			...phaseHullMods,
@@ -738,126 +945,6 @@ export const hullModLogic = {
 			.filter(Boolean); // remove undefined
 	},
 
-	filterSpecialType: (hullModArray, hullSize) => {
-		const array = [];
-		const shipAutomated = true;
-
-		// Rules
-		const isNotCruiserOrDestroyer =
-			hullSize !== HULL_SIZE.CRUISER && hullSize !== HULL_SIZE.DESTROYER;
-
-		// HullMods
-		// Neural Integrator on AUTO ships
-		if (shipAutomated) array.push(RULES.SPECIAL.neural_integrator);
-
-		// Escord Package
-		if (isNotCruiserOrDestroyer) array.push(RULES.SPECIAL.escort_package);
-
-		return array.map(([hullModId, reason]) =>
-			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
-		);
-	},
-
-	filterByFighterSlots: (hullModArray, userShipBuild) => {
-		const { fighterBays, weaponSlots, hullSize, shieldType } = userShipBuild;
-
-		const array = [];
-
-		const buildInFighterSlots = weaponSlots.some(
-			(hullMod) => hullMod.type === WEAPON_SLOT_TYPE.LAUNCH_BAY
-		);
-
-		// No Fighter Slots
-		if (fighterBays === 0 || !Number.isFinite(fighterBays)) {
-			array.push(
-				RULES.FIGHTER.NO_BAYS.defensive_targeting_array,
-				RULES.FIGHTER.NO_BAYS.expanded_deck_crew,
-				RULES.FIGHTER.NO_BAYS.recovery_shuttles
-			);
-		}
-
-		// No Build In Fighter Slots
-		if (!buildInFighterSlots) {
-			array.push(RULES.FIGHTER.NO_BUILD_IN.converted_fighterbay);
-		}
-
-		// Converted Hangar
-		if (
-			!buildInFighterSlots ||
-			shieldType === SHIELD_TYPE.PHASE ||
-			hullSize === HULL_SIZE.FRIGATE
-		) {
-			array.push(
-				RULES.FIGHTER.CONVERTED_HANGAR(
-					buildInFighterSlots,
-					shieldType,
-					hullSize
-				)
-			);
-		}
-
-		return array.map(([hullModId, reason]) =>
-			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
-		);
-	},
-
-	filterByCivilianShipType: (hullModArray, shipIsCivilian) => {
-		const array = [];
-
-		const shipIsNotCivilian = shipIsCivilian === SHIP_TYPE.MILITARY;
-		if (shipIsNotCivilian) array.push(RULES.LOGISTICS.NOT_CIVILIAN_SHIP);
-
-		// return empty array
-		if (array.length === 0) return array;
-
-		return array.map(([hullModId, reason]) =>
-			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
-		);
-	},
-
-	filterWeaponHullMods: (hullModArray, hullSize, weaponSlots, hullMods) => {
-		const results = [];
-		const isAdvancedCoreBuildIn = hullMods.builtInMods.some(
-			(hullMod) => hullMod === HULLMODS.BUILD_IN.advancedcore
-		);
-
-		// BAL Range Finder
-		const ballisticRangeFinderNotAllowed =
-			!hasBallisticSlots || hullSize === HULL_SIZE.FRIGATE;
-		const hasBallisticSlots = weaponSlots.some(
-			(hullMod) => hullMod.type === SLOT_TYPE.BALLISTIC
-		);
-		if (ballisticRangeFinderNotAllowed) {
-			results.push(RULES.WEAPONS.ballistic_rangefinder(hullSize));
-		}
-		// Advanced Core
-		if (isAdvancedCoreBuildIn) {
-			results.push(
-				RULES.WEAPONS.ADVANCED_CORE.dedicated_targeting_core,
-				RULES.WEAPONS.ADVANCED_CORE.targetingunit
-			);
-		}
-
-		// Guard and Return
-		if (results.length === 0) return results;
-
-		return results.map(([hullModId, reason]) =>
-			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
-		);
-	},
-	filterEngineHullMods(hullModArray, hullSize) {
-		const results = [];
-		if (hullSize === HULL_SIZE.CAPITAL_SHIP) {
-			results.push(RULES.ENGINE.safetyoverrides);
-		}
-
-		// Guard and Return
-		if (results.length === 0) return results;
-
-		return results.map(([hullModId, reason]) =>
-			hullModLogic.hullModToRejectAndGiveReason(hullModArray, hullModId, reason)
-		);
-	},
 	// Generic
 	filterDuplicateHullMods: (greenArray, redArray) => {
 		if (!Array.isArray(redArray) || redArray.length < 1) return greenArray;
