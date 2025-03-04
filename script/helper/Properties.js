@@ -1,0 +1,23 @@
+export const SHIELD_TYPE = {
+	FRONT: "FRONT",
+	OMNI: "OMNI",
+	PHASE: "PHASE",
+	NONE: "NONE",
+};
+
+export const WEAPON_SLOT_TYPE = {
+	LAUNCH_BAY: "LAUNCH_BAY",
+	HYBRID: "HYBRID",
+	BALLISTIC: "BALLISTIC",
+};
+
+export const HULL_SIZE = {
+	FRIGATE: "FRIGATE",
+	DESTROYER: "DESTROYER",
+	CRUISER: "CRUISER",
+	CAPITAL_SHIP: "CAPITAL_SHIP",
+};
+export const SHIP_TYPE = {
+	CIVILIAN: "",
+	MILITARY: "military",
+};

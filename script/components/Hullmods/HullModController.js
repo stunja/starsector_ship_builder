@@ -36,7 +36,8 @@ export default class HullModController extends ViewModel {
 		this.#userShipBuild = this.#userState.userShipBuild;
 		this.#hullSize = this.#userShipBuild.hullSize;
 
-		this.#buildInHullMods = this.#createBuildInHullModsArray();
+		// this.#buildInHullMods = this.#createBuildInHullModsArray();
+		this.#buildInHullMods = this.#userShipBuild.hullMods.builtInMods;
 	}
 	update() {
 		this.#hullModContainerRender();
@@ -54,24 +55,26 @@ export default class HullModController extends ViewModel {
 	}
 
 	// Use hullModId to fetch HullModObject and create and array
-	#createBuildInHullModsArray() {
-		try {
-			const allHullMods = this.#allHullMods;
-			const { builtInMods } = this.#userShipBuild.hullMods;
-			if (!allHullMods || !builtInMods) {
-				return [];
-			}
+	// #createBuildInHullModsArray() {
+	// 	try {
+	// 		const allHullMods = this.#allHullMods;
+	// 		const { builtInMods } = this.#userShipBuild.hullMods;
+	// 		if (!allHullMods || !builtInMods) {
+	// 			return [];
+	// 		}
+	// 		console.log(builtInMods);
+	// 		const newArray = builtInMods
+	// 			.map((buildInHullMod) =>
+	// 				allHullMods.find((hullmod) => hullmod.id === buildInHullMod)
+	// 			)
+	// 			.filter(Boolean);
 
-			return builtInMods
-				.map((buildInHullMod) =>
-					allHullMods.find((hullmod) => hullmod.id === buildInHullMod)
-				)
-				.filter(Boolean);
-		} catch (error) {
-			console.error("Error finding built-in hull mods:", error);
-			return [];
-		}
-	}
+	// 		return builtInMods;
+	// 	} catch (error) {
+	// 		console.error("Error finding built-in hull mods:", error);
+	// 		return [];
+	// 	}
+	// }
 	#openHullModPopUp = (btn) => {
 		const { hullmodButtonType } = btn.dataset;
 		if (hullmodButtonType === HULLMOD_BUTTON_TYPE.OPEN) {
@@ -87,9 +90,13 @@ export default class HullModController extends ViewModel {
 			return;
 		}
 		const { hullmodId } = btn.dataset;
-		const { hullMods } = this.getUserShipBuild();
+		const userShipBuild = this.getUserShipBuild();
 
-		const updatedHullMods = updateInstalledHullMod(hullmodId, hullMods);
+		const updatedHullMods = updateInstalledHullMod(
+			hullmodId,
+			userShipBuild,
+			this.#allHullMods
+		);
 
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,

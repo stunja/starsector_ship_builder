@@ -1,16 +1,18 @@
 // View Model
 import ViewModel from "../../ViewModel";
+import HullModController from "./HullModController";
 // View
 import HullModsPopUpView from "../../allViews/HullMods/HullModsPopUpView";
 import HullModsPopUpHeaderView from "../../allViews/HullMods/HullModsPopUpHeaderView";
 import HullModsPopUpTableView from "../../allViews/HullMods/HullModsPopUpTableView";
+import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
 // Helper Function
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
-import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import HullModController from "./HullModController";
-import { updateInstalledHullMod, hullModLogic } from "./HullModHelper";
+import { updateInstalledHullMod } from "./HullModHelper";
+import HullModFilter from "./HullModFilter";
+import HullModLogic from "./HullModLogic";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
@@ -171,11 +173,6 @@ export default class HullModsPopUp extends ViewModel {
 			EVENT_LISTENER_TYPE.CLICK,
 			this.#toggleHullMod
 		);
-		// HullModsPopUpTableView.addClickHandler(
-		// 	EVENT_LISTENER_TARGET.TABLE_ENTRIES,
-		// 	EVENT_LISTENER_TYPE.HOVER,
-		// 	this.#showAdditionalInformationOnHover
-		// );
 	}
 	#closePopUp() {
 		// Close if clicked outside
@@ -346,8 +343,10 @@ export default class HullModsPopUp extends ViewModel {
 	};
 	// HullMods unavailable Logic
 	#splitHullModArrayIntoGreenAndRed() {
+		const test = HullModLogic.controller(this.#userShipBuild);
+		// console.log(test);
 		// check if hullMod already Build In
-		this.#allUnavailableHullMods = hullModLogic.filterController(
+		this.#allUnavailableHullMods = HullModFilter.controller(
 			this.#usableHullMods,
 			this.#userShipBuild
 		);
@@ -358,7 +357,7 @@ export default class HullModsPopUp extends ViewModel {
 		// remove redHullMods from GreenHullMods
 		this.#createRedHullMods();
 
-		this.#greenHullMods = hullModLogic.filterDuplicateHullMods(
+		this.#greenHullMods = HullModFilter.filterDuplicateHullMods(
 			this.#greenHullMods,
 			this.#redHullMods
 		);

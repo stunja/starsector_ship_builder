@@ -5,11 +5,11 @@ import {
 	extractDataFromObject,
 } from "./helper/helperFunction.js";
 import URL from "./helper/url.js";
-import HULLMODS_DATA from "./helper/HullModData.js";
+import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "shepherd";
+const shipNameDev = "hound";
 //
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor
@@ -18,6 +18,7 @@ const shipNameDev = "shepherd";
 // hound = frigate // centurion
 // Phase = harbinger / doom // shade
 // Civilian = shepherd
+// no shield (hound)
 
 // monitor //! Check later, issue with weapon slots
 export class Model {
@@ -96,6 +97,11 @@ export class Model {
 				ships
 			);
 
+			const updateUserShipBuild = hullMods.updateBuiltInHullMods(
+				userShipBuild,
+				hullmods
+			);
+
 			this.updateState("dataState", {
 				allShips: ships,
 				allWeapons: filteredWeaponsWithAdditionalData,
@@ -104,10 +110,10 @@ export class Model {
 				allFighters: updatedFighters,
 				allDescriptions: desc,
 			});
-			this.updateUserShipBuild(userShipBuild);
+			this.updateUserShipBuild(updateUserShipBuild);
 			this.updateState("userState", {
 				_currentShip: updatedCurrentShip,
-				_baseShipBuild: userShipBuild,
+				_baseShipBuild: updateUserShipBuild,
 				usableHullMods: hullModsWithEffectValues,
 			});
 		} catch (err) {
@@ -797,6 +803,18 @@ const hullMods = {
 				effectValues: { regularValues, sModsValues },
 			};
 		});
+	},
+	updateBuiltInHullMods: (userShipBuild, hullMods) => {
+		const builtInMods = userShipBuild.hullMods.builtInMods;
+
+		const newBuildInMods = builtInMods.map((hullModId) =>
+			hullMods.find(({ id }) => id === hullModId)
+		);
+		const newHullMods = {
+			...userShipBuild.hullMods,
+			builtInMods: newBuildInMods,
+		};
+		return { ...userShipBuild, hullMods: newHullMods };
 	},
 };
 
