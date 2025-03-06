@@ -21,13 +21,13 @@ export const updateInstalledHullMod = (
 	};
 };
 
+const HULLMOD_HULLSIZE = {
+	CAPITAL_SHIP: "cost_capital",
+	CRUISER: "cost_cruiser",
+	DESTROYER: "cost_dest",
+	FRIGATE: "cost_frigate",
+};
 export const normalizedHullSize = (currentHullMod, shipSize) => {
-	const differentValueBasedOnShipSize = {
-		CAPITAL_SHIP: "cost_capital",
-		CRUISER: "cost_cruiser",
-		DESTROYER: "cost_dest",
-		FRIGATE: "cost_frigate",
-	};
-	const keyToFind = differentValueBasedOnShipSize[shipSize];
+	const keyToFind = HULLMOD_HULLSIZE[shipSize];
 	return currentHullMod[keyToFind];
 };

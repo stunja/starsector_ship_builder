@@ -1,12 +1,12 @@
 import ViewModel from "../../ViewModel";
-import classNames from "../../helper/DomClassNames";
+import ShipStats from "../ShipStats/ShipStats";
+import HullModsPopUp from "./HullModsPopUp";
 // View
 import InstalledHullMods from "../../allViews/HullMods/InstalledHullModsView";
 import HullModView from "../../allViews/HullMods/HullModView";
 import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
-// HullMods
-import HullModsPopUp from "./HullModsPopUp";
 // Helper
+import classNames from "../../helper/DomClassNames";
 import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import { updateInstalledHullMod } from "./HullModHelper";
 
@@ -36,11 +36,11 @@ export default class HullModController extends ViewModel {
 		this.#userShipBuild = this.#userState.userShipBuild;
 		this.#hullSize = this.#userShipBuild.hullSize;
 
-		// this.#buildInHullMods = this.#createBuildInHullModsArray();
 		this.#buildInHullMods = this.#userShipBuild.hullMods.builtInMods;
 	}
 	update() {
 		this.#hullModContainerRender();
+
 		this.#renderHullModContainer();
 
 		this.#hullModContainerEventListener();
@@ -54,27 +54,6 @@ export default class HullModController extends ViewModel {
 		InstalledHullMods.render([this.getUserShipBuild(), this.#hullSize]);
 	}
 
-	// Use hullModId to fetch HullModObject and create and array
-	// #createBuildInHullModsArray() {
-	// 	try {
-	// 		const allHullMods = this.#allHullMods;
-	// 		const { builtInMods } = this.#userShipBuild.hullMods;
-	// 		if (!allHullMods || !builtInMods) {
-	// 			return [];
-	// 		}
-	// 		console.log(builtInMods);
-	// 		const newArray = builtInMods
-	// 			.map((buildInHullMod) =>
-	// 				allHullMods.find((hullmod) => hullmod.id === buildInHullMod)
-	// 			)
-	// 			.filter(Boolean);
-
-	// 		return builtInMods;
-	// 	} catch (error) {
-	// 		console.error("Error finding built-in hull mods:", error);
-	// 		return [];
-	// 	}
-	// }
 	#openHullModPopUp = (btn) => {
 		const { hullmodButtonType } = btn.dataset;
 		if (hullmodButtonType === HULLMOD_BUTTON_TYPE.OPEN) {
@@ -103,6 +82,11 @@ export default class HullModController extends ViewModel {
 			hullMods: updatedHullMods,
 		});
 
+		// clear installed hullMods
+		this.installedHullModLogic();
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
+		// Update the hullModController including render
 		this.update();
 	};
 	// Event Listeners

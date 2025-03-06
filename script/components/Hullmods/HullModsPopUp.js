@@ -1,6 +1,8 @@
 // View Model
 import ViewModel from "../../ViewModel";
 import HullModController from "./HullModController";
+import ShipStats from "../ShipStats/ShipStats";
+
 // View
 import HullModsPopUpView from "../../allViews/HullMods/HullModsPopUpView";
 import HullModsPopUpHeaderView from "../../allViews/HullMods/HullModsPopUpHeaderView";
@@ -12,7 +14,15 @@ import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import { updateInstalledHullMod } from "./HullModHelper";
 import HullModFilter from "./HullModFilter";
-import HullModLogic from "./HullModLogic";
+
+import {
+	SHIELD_TYPE,
+	WEAPON_SLOT_TYPE,
+	HULL_SIZE,
+	SHIP_TYPE,
+} from "../../helper/Properties";
+
+// import { HULLMODS } from "./HullModData";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
@@ -91,6 +101,8 @@ export default class HullModsPopUp extends ViewModel {
 	#update() {
 		// Not a correct implementation, but it works
 		this.#processData();
+
+		this.installedHullModLogic();
 
 		this.#createHullModsArray();
 
@@ -265,6 +277,9 @@ export default class HullModsPopUp extends ViewModel {
 		// So I reimplement them back.
 		this.#update();
 
+		// keep the order
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
 		// Update Controller, to display installedHullMods
 		new HullModController(this.getState()).update();
 	};
@@ -313,6 +328,7 @@ export default class HullModsPopUp extends ViewModel {
 		if (!btn?.dataset) {
 			throw new Error("Invalid button element provided");
 		}
+
 		const { filter: filterUiTag } = btn.dataset;
 		this.#sortByInstalledCategory = true;
 
@@ -343,8 +359,6 @@ export default class HullModsPopUp extends ViewModel {
 	};
 	// HullMods unavailable Logic
 	#splitHullModArrayIntoGreenAndRed() {
-		const test = HullModLogic.controller(this.#userShipBuild);
-		// console.log(test);
 		// check if hullMod already Build In
 		this.#allUnavailableHullMods = HullModFilter.controller(
 			this.#usableHullMods,

@@ -1,28 +1,7 @@
 "use strict";
 
-const defaultRemSize = 10;
-// const initialize = async function () {
-// 	try {
-// 		// await model.modelInit(); //! I need to use it in the future, to control the load
-// 		// searchView.addSearchHandler(findCreateDisplayCurrentShip);
-// 		BuilderController.init();
-// 		SearchController.init();
-// 		// console.log(model.state);
-// 		// Renders All main containers
-// 		// StatsController.init();
-// 		// ShipInfoController.init();
-// 		// HullModController.init();
-// 		// FighterController.init();
-// 		// HangarController.init();
-// 		// AdditionalInfoController.init();
-// 		// BuilderButtonsController.init();
+import { HULLMODS } from "./components/Hullmods/HullModData";
 
-// 		// console.log(model.state);
-// 		// model.Model;
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
 export default class ViewModel {
 	#model;
 	constructor(model) {
@@ -74,6 +53,64 @@ export default class ViewModel {
 			...weaponPopUp,
 			isWeaponPopUpOpen: isOpen,
 		});
+	}
+
+	installedHullModLogic() {
+		const userShipBuild = this.getUserShipBuild();
+		const baseUserShipBuild = this._getBaseShipBuild();
+		const { installedHullMods } = userShipBuild.hullMods;
+		const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
+
+		// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
+		const resetUserShipBuild = {
+			...baseUserShipBuild,
+			hullMods,
+			installedWeapons,
+			capacitors,
+			vents,
+		};
+
+		// userShipBuild with updated values from HullMods
+		const userShipBuildWithActiveHullModEffect = installedHullMods
+			?.map((hullMod) => {
+				const [hullModObject] = this.findHullModKeyName(HULLMODS, hullMod.id);
+
+				if (!hullModObject) {
+					console.warn(`Hull mod not found: ${hullMod.id}`);
+					return null;
+				}
+				return hullModObject.hullModLogic
+					? hullModObject.hullModLogic(resetUserShipBuild, hullMod)
+					: null;
+			})
+			.filter(Boolean);
+
+		// update or reset userShipBuild
+		const updateUserShipBuild =
+			userShipBuildWithActiveHullModEffect.length > 0
+				? userShipBuildWithActiveHullModEffect[0]
+				: resetUserShipBuild;
+
+		this.setUpdateUserShipBuild({ ...updateUserShipBuild });
+	}
+
+	findHullModKeyName(obj, searchKey, matches = []) {
+		// Early return if obj is null or not an object
+		if (!obj || typeof obj !== "object") return matches;
+
+		// Direct key match
+		if (obj[searchKey] !== undefined) {
+			matches.push(obj[searchKey]);
+		}
+
+		// Recursive search through object properties
+		for (const key in obj) {
+			if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+				this.findHullModKeyName(obj[key], searchKey, matches);
+			}
+		}
+
+		return matches;
 	}
 }
 ///////////////

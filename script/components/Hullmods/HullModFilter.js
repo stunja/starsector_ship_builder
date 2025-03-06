@@ -1,6 +1,12 @@
 import { HULLMODS } from "./HullModData";
+// ViewModels
+import ViewModel from "../../ViewModel";
 
-class HullModFilter {
+const HULLMOD_ID = "id";
+class HullModFilter extends ViewModel {
+	constructor() {
+		super();
+	}
 	controller(hullModArray, userShipBuild) {
 		return [
 			...this.#filterBuildInHullMods(hullModArray, userShipBuild),
@@ -12,6 +18,7 @@ class HullModFilter {
 	}
 
 	#filterHullMods(hullModArray, userShipBuild) {
+		// JOIN into a single function
 		const shieldHullMods = {
 			[HULLMODS.SHIELD.adaptiveshields.id]:
 				HULLMODS.SHIELD.adaptiveshields.filterReason,
@@ -65,12 +72,22 @@ class HullModFilter {
 			[HULLMODS.ENGINE.safetyoverrides.id]:
 				HULLMODS.ENGINE.safetyoverrides.filterReason,
 		};
+		// Logistics
 		const logisticsHullMods = {
 			[HULLMODS.LOGISTICS.militarized_subsystems.id]:
 				HULLMODS.LOGISTICS.militarized_subsystems.filterReason,
 
 			[HULLMODS.LOGISTICS.converted_fighterbay.id]:
 				HULLMODS.LOGISTICS.converted_fighterbay.filterReason,
+
+			[HULLMODS.LOGISTICS.additional_berthing.id]:
+				HULLMODS.LOGISTICS.additional_berthing.filterReason,
+
+			[HULLMODS.LOGISTICS.auxiliary_fuel_tanks.id]:
+				HULLMODS.LOGISTICS.auxiliary_fuel_tanks.filterReason,
+
+			[HULLMODS.LOGISTICS.hiressensors.id]:
+				HULLMODS.LOGISTICS.hiressensors.filterReason,
 		};
 
 		const specialHullMods = {
@@ -93,6 +110,27 @@ class HullModFilter {
 			[HULLMODS.FIGHTER.recovery_shuttles.id]:
 				HULLMODS.FIGHTER.recovery_shuttles.filterReason,
 		};
+		//! unfinished
+		const hullModsCategoryKeys = Object.keys(HULLMODS);
+		console.log(hullModsCategoryKeys);
+		const test = hullModsCategoryKeys.map((categoryKey) => {
+			const categoryObject = this.findHullModKeyName(HULLMODS, categoryKey);
+
+			const firstTarget = `HULLMODS.${categoryKey}.${categoryObject.id}.id`;
+			const secondTarget = `HULLMODS.${categoryKey}.${categoryObject.id}.filterReason`;
+
+			return {
+				[firstTarget]: secondTarget,
+			};
+		});
+		console.log(test);
+		// const arrayOfId = this.findHullModKeyName(HULLMODS, "BUILD_IN");
+		// const arrayOfId = this.findHullModKeyName(HULLMODS, "BUILD_IN");
+		// const test = arrayOfId.map((id) => {
+		// [HULLMODS.FIGHTER.recovery_shuttles.id]:
+		// HULLMODS.FIGHTER.recovery_shuttles.filterReason,
+		// });
+		// console.log(arrayOfId);
 
 		const allModifiers = {
 			...shieldHullMods,

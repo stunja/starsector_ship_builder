@@ -9,8 +9,7 @@ import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "hound";
-//
+const shipNameDev = "venture"; // hound // venture
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor
 // gryphon = cruiser
@@ -21,6 +20,8 @@ const shipNameDev = "hound";
 // no shield (hound)
 
 // monitor //! Check later, issue with weapon slots
+// !venture fix fighter Slots, it should be build in
+
 export class Model {
 	dataState = {
 		allShips: [],
@@ -469,6 +470,7 @@ const createUserShipBuild = {
 		width,
 		spriteName,
 		builtInMods = [],
+		builtInWings = null,
 		hullSize,
 		weaponSlots,
 	}) {
@@ -480,6 +482,7 @@ const createUserShipBuild = {
 				viewOffset,
 				width,
 				spriteName,
+				builtInWings,
 			},
 			hullMods: { builtInMods, installedHullMods: [] },
 			hullSize,

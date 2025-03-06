@@ -5,6 +5,35 @@ import {
 	SHIP_TYPE,
 } from "../../helper/Properties";
 
+import { normalizedHullSize } from "./HullModHelper";
+
+const VALUE_CHANGE = {
+	INCREASE: "increase",
+	DECREASE: "decrease",
+};
+const UI_TAGS = {
+	LOGISTICS: "Logistics",
+};
+// Simple Percent converter
+export const convertStringPercentIntoNumber = (
+	string,
+	action,
+	valueToModify
+) => {
+	if (typeof string !== "string" || !string.includes("%")) {
+		throw new Error("Invalid percentage string format");
+	}
+	const percent = Number.parseInt(string) / 100;
+	const percentValue = valueToModify * percent;
+
+	const finalValue =
+		action === VALUE_CHANGE.INCREASE
+			? valueToModify + percentValue
+			: valueToModify - percentValue;
+
+	return finalValue;
+};
+
 export const HULLMODS = {
 	BUILD_IN: {
 		// Advanced Targeting Core
@@ -54,8 +83,8 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any Destroyer-class, Cruiser-class and Capital-class ship. (Have ballistic slots or hybrid)",
 			reason: {
-				frigate: "Not on Frigates",
-				noCorrectWeaponSlots: "No Ballistic or Hybrid Slots",
+				isFrigateReason: "Not on Frigates",
+				noCorrectWeaponSlotsReason: "No Ballistic or Hybrid Slots",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { hullSize, weaponSlots } = userShipBuild;
@@ -75,8 +104,9 @@ export const HULLMODS = {
 
 				if (isFrigateHull || isNotBallisticOrIsNotHybridSlots) {
 					const reasonMap = {
-						[isNotBallisticOrIsNotHybridSlots]: reason.noCorrectWeaponSlots,
-						[isFrigateHull]: reason.frigate,
+						[isNotBallisticOrIsNotHybridSlots]:
+							reason.noCorrectWeaponSlotsReason,
+						[isFrigateHull]: reason.isFrigateReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -92,9 +122,11 @@ export const HULLMODS = {
 			_whyNot:
 				"Incompatible with [Dedicated Targeting Core] or [Distributed Fire Control] or [Advanced Targeting Core]",
 			reason: {
-				dedicated_targeting_core: "Incompatible with Dedicated Targeting Core",
-				advancedcore: "Incompatible with Advanced Targeting Core",
-				distributed_fire_control: "Incompatible with Distributed Fire Control",
+				hasDedicatedTargetingCoreReason:
+					"Incompatible with Dedicated Targeting Core",
+				hasAdvancedCoreReason: "Incompatible with Advanced Targeting Core",
+				hasDistributedFireControlReason:
+					"Incompatible with Distributed Fire Control",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
@@ -117,9 +149,10 @@ export const HULLMODS = {
 					isDistributedFireControlBuildIn
 				) {
 					const reasonMap = {
-						[isAdvancedCoreBuildIn]: reason.advancedcore,
-						[isDedicatedCoreInstalled]: reason.dedicated_targeting_core,
-						[isDistributedFireControlBuildIn]: reason.distributed_fire_control,
+						[isAdvancedCoreBuildIn]: reason.hasAdvancedCoreReason,
+						[isDedicatedCoreInstalled]: reason.hasDedicatedTargetingCoreReason,
+						[isDistributedFireControlBuildIn]:
+							reason.hasDistributedFireControlReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -134,9 +167,12 @@ export const HULLMODS = {
 			_whyNot:
 				"Dedicated Targeting Core is a hullmod that can only be installed on Cruiser-class & Capital-class ship. incompatible with Dedicated Targeting Core. Incompatible with Distributed Fire Control",
 			reason: {
-				targetingunit: "Incompatible with Integrated Targeting Unit",
-				advancedcore: "Incompatible with Advanced Targeting Core",
-				distributed_fire_control: "Incompatible with Distributed Fire Control",
+				hasIntegratedTargetingUnitReason:
+					"Incompatible with Integrated Targeting Unit",
+				hasAdvancedTargetingCoreReason:
+					"Incompatible with Advanced Targeting Core",
+				hasDistributedFireControlReason:
+					"Incompatible with Distributed Fire Control",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
@@ -161,9 +197,11 @@ export const HULLMODS = {
 					isDistributedFireControlBuildIn
 				) {
 					const reasonMap = {
-						[isAdvancedCoreBuildIn]: reason.advancedcore,
-						[isIntegratedTargetingUnitInstalled]: reason.targetingunit,
-						[isDistributedFireControlBuildIn]: reason.distributed_fire_control,
+						[isAdvancedCoreBuildIn]: reason.hasAdvancedTargetingCoreReason,
+						[isIntegratedTargetingUnitInstalled]:
+							reason.hasIntegratedTargetingUnitReason,
+						[isDistributedFireControlBuildIn]:
+							reason.hasDistributedFireControlReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -178,7 +216,8 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any ship. Incompatible with High Scatter Amplifier.",
 			reason: {
-				highScatterAmplifierReason: "Incompatible with High Scatter Amplifier",
+				isHighScatterAmplifierReason:
+					"Incompatible with High Scatter Amplifier",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
@@ -192,7 +231,7 @@ export const HULLMODS = {
 				if (isHighScatterAmplifierInstalled) {
 					const reasonMap = {
 						[isHighScatterAmplifierInstalled]:
-							reason.highScatterAmplifierReason,
+							reason.isHighScatterAmplifierReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -207,7 +246,7 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any ship. Incompatible with Advanced Optics.",
 			reason: {
-				advancedOpticsReason: "Incompatible with Advanced Optics",
+				isAdvancedOpticsReason: "Incompatible with Advanced Optics",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
@@ -224,8 +263,8 @@ export const HULLMODS = {
 
 				if (isAdvancedOpticsInstalled || isAdvancedOpticsBuildIn) {
 					const reasonMap = {
-						[isAdvancedOpticsInstalled]: reason.advancedOpticsReason,
-						[isAdvancedOpticsBuildIn]: reason.advancedOpticsReason,
+						[isAdvancedOpticsInstalled]: reason.isAdvancedOpticsReason,
+						[isAdvancedOpticsBuildIn]: reason.isAdvancedOpticsReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -273,7 +312,7 @@ export const HULLMODS = {
 			name: "Defensive Targeting Array",
 			_whyNot: "hullmod that can be installed on any ship with a Fighter Wing.",
 			reason: {
-				hasNoFighterSlotsReason: "No Fighter Slots",
+				noFighterSlotsReason: "No Fighter Slots",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { fighterBays } = userShipBuild;
@@ -284,7 +323,7 @@ export const HULLMODS = {
 
 				if (hasNoFighterSlots) {
 					const reasonMap = {
-						[hasNoFighterSlots]: reason.hasNoFighterSlotsReason,
+						[hasNoFighterSlots]: reason.noFighterSlotsReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -298,7 +337,7 @@ export const HULLMODS = {
 			name: "Expanded Deck Crew",
 			_whyNot: "hullmod that can be installed on any ship with a Fighter Wing.",
 			reason: {
-				hasNoFighterSlotsReason: "No Fighter Slots",
+				noFighterSlotsReason: "No Fighter Slots",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { fighterBays } = userShipBuild;
@@ -309,7 +348,7 @@ export const HULLMODS = {
 
 				if (hasNoFighterSlots) {
 					const reasonMap = {
-						[hasNoFighterSlots]: reason.hasNoFighterSlotsReason,
+						[hasNoFighterSlots]: reason.noFighterSlotsReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -323,7 +362,7 @@ export const HULLMODS = {
 			name: "Recovery Shuttles",
 			_whyNot: "hullmod that can be installed on any ship with a Fighter Wing.",
 			reason: {
-				hasNoFighterSlotsReason: "No Fighter Slots",
+				noFighterSlotsReason: "No Fighter Slots",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { fighterBays } = userShipBuild;
@@ -334,7 +373,7 @@ export const HULLMODS = {
 
 				if (hasNoFighterSlots) {
 					const reasonMap = {
-						[hasNoFighterSlots]: reason.hasNoFighterSlotsReason,
+						[hasNoFighterSlots]: reason.noFighterSlotsReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -352,7 +391,7 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any ship with the Automated Ship hullmod.",
 			reason: {
-				onlyAutomatedShip: "Only on Automated Ships",
+				notAutomatedShip: "Only on Automated Ships",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { builtInMods } = userShipBuild.hullMods;
@@ -361,7 +400,7 @@ export const HULLMODS = {
 				const automatedCheck = false;
 
 				if (!automatedCheck) {
-					return [hullMod, reason.onlyAutomatedShip];
+					return [hullMod, reason.notAutomatedShip];
 				}
 				return null;
 			},
@@ -373,7 +412,7 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can only be installed on Destroyer-class & Cruiser-class ships.",
 			reason: {
-				hullSizeRule: "Only on Destroyer / Cruiser",
+				notCorrectHullSizeReason: "Only on Destroyer / Cruiser",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { hullSize } = userShipBuild;
@@ -384,14 +423,195 @@ export const HULLMODS = {
 				const isNotDestroyer = hullSize !== HULL_SIZE.DESTROYER;
 
 				if (isNotCruiser && isNotDestroyer) {
-					return [hullMod, reason.hullSizeRule];
+					return [hullMod, reason.notCorrectHullSizeReason];
 				}
 				return null;
 			},
 		},
 	},
 	LOGISTICS: {
-		//! Implement Later
+		// Auxiliary Fuel Tanks
+		auxiliary_fuel_tanks: {
+			id: "auxiliary_fuel_tanks",
+			name: "Auxiliary Fuel Tanks",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Max 2 Logistics Mods Per Ship",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.auxiliary_fuel_tanks.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+			// "Increases maximum fuel capacity by 30/60/100/200, depending on hull size,
+			// or by 30%, whichever is higher. For civilian-grade hulls, also increases maintenance
+			// supply use by 100%.",
+			hullModLogic: function (userShipBuild, hullMod) {},
+
+			// S-mod bonus: Doubles the fuel capacity increase and, for civilian hulls,
+			// negates the maintenance cost increase.
+		},
+		// Additional Berthing
+		additional_berthing: {
+			id: "additional_berthing",
+			name: "Additional Berthing",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Only 2 Logistics Mods Per Ship",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.additional_berthing.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+			// "Shield => FRONT and has a 90 degree arc. Top speed decrease by 20%",
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Doubles the crew capacity increase and, for civilian hulls,
+			// negates the maintenance cost increase.
+		},
+		// Efficiency Overhaul
+		efficiency_overhaul: {
+			id: "efficiency_overhaul",
+			name: "Efficiency Overhaul",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Max 2 Logistics Mods Per Ship",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.efficiency_overhaul.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+			// Reduces supply use for maintenance, fuel use, and minimum crew required by 20%.
+			// Increases the combat readiness recovery and repair rates by 50%.
+			// The per-day supply consumption for CR recovery is increased to account for the
+			// increased recovery rate, but the total supply cost remains the same.",
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Reduces maintenance cost, fuel use, and minimum crew requirement by a further 10%.
+		},
+		// Expanded Cargo Holds
+		expanded_cargo_holds: {
+			id: "expanded_cargo_holds",
+			name: "Expanded Cargo Holds",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Max 2 Logistics Mods Per Ship",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.expanded_cargo_holds.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+
+			// Increases maximum cargo capacity by 30/60/100/200, depending on hull size, or by 30%, whichever is higher.
+			// For civilian-grade hulls, also increases maintenance supply use by 50%.
+
+			hullModLogic: function (userShipBuild, hullMod) {},
+
+			// S-mod bonus: Doubles the cargo capacity increase and, for civilian hulls,
+			// negates the maintenance cost increase.
+			sModsLogic: function () {},
+		},
+		// High Resolution Sensors
+		hiressensors: {
+			id: "hiressensors",
+			name: "High Resolution Sensors",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Max 2 Logistics Mods Per Ship",
+				isAlreadyInstalledReason: "Already Build-In",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.hiressensors.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+				const isAlreadyInstalled = builtInMods.some(
+					({ id }) => id === HULLMODS.LOGISTICS.hiressensors.id
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2 || isAlreadyInstalled) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+						[isAlreadyInstalled]: reason.isAlreadyInstalledReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+
+			// A ship with high resolution sensors increases the fleet's sensors by 50/75/100/150,
+			//  depending on the hull size. Each additional ship with high resolution
+			//  sensors provides diminishing returns. The higher the highest sensor
+			//  range increase from a single ship in the fleet, the later diminishing returns kick in.
+
+			hullModLogic: function (userShipBuild, hullMod) {},
+
+			// S-mod bonus: Increases the ship's in-combat vision range by 1000/1500/2000/2500, based on hull size.
+			sModsLogic: function () {},
+		},
+
 		// Converted Fighter Bay
 		converted_fighterbay: {
 			id: "converted_fighterbay",
@@ -399,64 +619,235 @@ export const HULLMODS = {
 			_whyNot:
 				"It can only be installed on ships which have permanently built-in fighter bays such as Shepherd, Tempest or the stock Venture.",
 			reason: {
-				targetingunit: "Incompatible with Integrated Targeting Unit",
-				tooMuchLogic: "Max",
+				maxLogisticsReason: "Max 2 Logistics Mods Per Ship",
+				noBuildInFighterBaysReason: "Needs Build-In Fighter Bays",
 			},
 			filterReason: function (hullMod, userShipBuild) {
-				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+				const { installedHullMods } = userShipBuild.hullMods;
+				const { builtInWings } = userShipBuild.secondaryData;
 
 				const reason = HULLMODS.LOGISTICS.converted_fighterbay.reason;
 
-				// console.log(installedHullMods);
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
 
-				// console.log(userShipBuild);
-				// const isIntegratedTargetingUnitInstalled = installedHullMods.includes(
-				// 	HULLMODS.WEAPONS.targetingunit.id
-				// );
+				const noBuildInFighterBays = !builtInWings;
 
-				// const isAdvancedCoreBuildIn = builtInMods?.includes(
-				// 	HULLMODS.BUILD_IN.advancedcore.id
-				// );
+				if (maxLogisticsHullModsInstalled.length > 2 || noBuildInFighterBays) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+						[noBuildInFighterBays]: reason.noBuildInFighterBaysReason,
+					};
 
-				// const isDistributedFireControlBuildIn = builtInMods.includes(
-				// 	HULLMODS.BUILD_IN.distributed_fire_control.id
-				// );
-
-				// if (
-				// 	isIntegratedTargetingUnitInstalled ||
-				// 	isAdvancedCoreBuildIn ||
-				// 	isDistributedFireControlBuildIn
-				// ) {
-				// 	const reasonMap = {
-				// 		[isAdvancedCoreBuildIn]: reason.advancedcore,
-				// 		[isIntegratedTargetingUnitInstalled]: reason.targetingunit,
-				// 		[isDistributedFireControlBuildIn]: reason.distributed_fire_control,
-				// 	};
-
-				// 	return [hullMod, reasonMap.true];
-				// }
+					return [hullMod, reasonMap.true];
+				}
 				return null;
 			},
+			// Converts the ship's fighter bays housing built-in wings into improvised cargo holds, giving it an additional 50 cargo and reducing it's crew requirements by 20% per fighter bay. The crew reduction is limited to a maximum of 80%.
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Monthly maintenance cost reduced by 15% per fighter bay.
+			sModsLogic: function () {},
 		},
 		// Militarized Subsystems
 		militarized_subsystems: {
 			id: "militarized_subsystems",
 			name: "Militarized Subsystems",
-			reason: { onlyCivilian: "Only on Civilian Ships" },
+			reason: {
+				notCivilianReason: "Only on Civilian Ships",
+				maxLogisticsReason: "Max 2 Logistics Mods Per Ship",
+			},
 			_why: "hullmod that can be installed on any ship with Civilian-grade Hull. Logistics Limit = 2",
 
 			filterReason: function (hullMod, userShipBuild) {
 				const reason = HULLMODS.LOGISTICS.militarized_subsystems.reason;
-				const { hullMods } = userShipBuild;
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
 
-				const isCivilianShip = hullMods.builtInMods.some(
-					({ id }) => id === HULLMODS.BUILD_IN.civgrade.id
+				const notCivilianShip = builtInMods.some(
+					({ id }) => id !== HULLMODS.BUILD_IN.civgrade.id
 				);
-				if (!isCivilianShip) {
-					return [hullMod, reason.onlyCivilian];
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2 || notCivilianShip) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+						[notCivilianShip]: reason.notCivilianReason,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
+
+			// Removes the penalties from a civilian-grade hull, and increases maximum burn level by 1.
+			// Increases minimum crew required by 100%.
+
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Negates the increased crew requirements.
+			sModsLogic: function () {},
+		},
+
+		// Insulated Engine Assembly
+		insulatedengine: {
+			id: "insulatedengine",
+			name: "Insulated Engine Assembly",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Only 2 Logistics Mods Per Ship",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.insulatedengine.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+
+			// Increases the durability of the ship's engines by 100%, and the ship's hull integrity by 10%.
+			// The ship's sensor profile is also reduced by 50%.
+
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Increases engine durability by a further 100%, and Increases the sensor profile reduction to 90%.
+			sModsLogic: function () {},
+		},
+
+		// Solar Shielding
+		solar_shielding: {
+			id: "solar_shielding",
+			name: "Solar Shielding",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Only 2 Logistics Mods Per Ship",
+				isAlreadyInstalledReason: "Already Build-In",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.solar_shielding.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				const isAlreadyInstalled = builtInMods.some(
+					({ id }) => id === HULLMODS.LOGISTICS.solar_shielding.id
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2 || isAlreadyInstalled) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+						[isAlreadyInstalled]: reason.isAlreadyInstalledReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+
+			// Originally developed by Diktat engineers after spending cycles dealing with the unique
+			// conditions of the inner Askonia system. Decreases the effect operating in a solar corona
+			//  has on combat readiness by 75%; also has the same effect against storms in deep hyperspace.
+
+			// In combat situations, reduces energy damage taken by 10%.
+
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Increases the protection from solar coronae and similar hazards to 100%.
+			sModsLogic: function () {},
+		},
+		// Surveying Equipment
+		surveying_equipment: {
+			id: "surveying_equipment",
+			name: "Surveying Equipment",
+			_whyNot:
+				"hullmod that can be installed on any ship to provide surveying costs reductions.",
+			reason: {
+				maxLogisticsReason: "Only 2 Logistics Mods Per Ship",
+				isAlreadyInstalledReason: "Already Build-In",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.surveying_equipment.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				const isAlreadyInstalled = builtInMods.some(
+					({ id }) => id === HULLMODS.LOGISTICS.surveying_equipment.id
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2 || isAlreadyInstalled) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+						[isAlreadyInstalled]: reason.isAlreadyInstalledReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+
+			// Reduces the heavy machinery and supplies required to perform surveys by 5/10/20/40 depending on hull size, down to a minimum of 5 for each.
+
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Increases the survey cost reduction by 100%.
+			sModsLogic: function () {},
+		},
+
+		// Augmented Drive Field
+		augmentedengines: {
+			id: "augmentedengines",
+			name: "Augmented Drive Field",
+			_whyNot:
+				"hullmod that can be installed on any ship to provide surveying costs reductions.",
+			reason: {
+				maxLogisticsReason: "Only 2 Logistics Mods Per Ship",
+				isAlreadyInstalledReason: "Already Build-In",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+
+				const reason = HULLMODS.LOGISTICS.augmentedengines.reason;
+
+				const maxLogisticsHullModsInstalled = installedHullMods.filter(
+					({ uiTags }) => uiTags.includes(UI_TAGS.LOGISTICS)
+				);
+
+				const isAlreadyInstalled = builtInMods.some(
+					({ id }) => id === HULLMODS.LOGISTICS.augmentedengines.id
+				);
+
+				if (maxLogisticsHullModsInstalled.length > 2 || isAlreadyInstalled) {
+					const reasonMap = {
+						[maxLogisticsHullModsInstalled]: reason.maxLogisticsReason,
+						[isAlreadyInstalled]: reason.isAlreadyInstalledReason,
+					};
+
+					return [hullMod, reasonMap.true];
+				}
+				return null;
+			},
+
+			// Increases the maximum burn level by 2.
+			hullModLogic: function (userShipBuild, hullMod) {},
+			// S-mod bonus: Increases maximum burn level by a further +1.
+			sModsLogic: function () {},
 		},
 	},
 
@@ -466,7 +857,7 @@ export const HULLMODS = {
 			id: "frontemitter",
 			name: "Shield Conversion - Front",
 			reason: {
-				frontShieldReason: "Already Has Front Shield",
+				hasFrontShieldReason: "Already Has Front Shield",
 				noShieldReason: "Must have a Shield",
 			},
 			_why: "hullmod that can be installed on any ship that has shields. Incompatible with Front Shield",
@@ -481,7 +872,7 @@ export const HULLMODS = {
 
 				if (isFrontShield || hasNoShield) {
 					const reasonMap = {
-						[isFrontShield]: reason.frontShieldReason,
+						[isFrontShield]: reason.hasFrontShieldReason,
 						[hasNoShield]: reason.noShieldReason,
 					};
 
@@ -495,7 +886,7 @@ export const HULLMODS = {
 			id: "adaptiveshields",
 			name: "Shield Conversion - Omni",
 			reason: {
-				omniShieldReason: "Already Has OMNI Shield",
+				hasOmniShieldReason: "Already Has OMNI Shield",
 				noShieldReason: "Must have a Shield",
 			},
 			_whyNot:
@@ -512,7 +903,7 @@ export const HULLMODS = {
 
 				if (isOmniShield || hasNoShield) {
 					const reasonMap = {
-						[isOmniShield]: reason.omniShieldReason,
+						[isOmniShield]: reason.hasOmniShieldReason,
 						[hasNoShield]: reason.noShieldReason,
 					};
 
@@ -526,7 +917,7 @@ export const HULLMODS = {
 			id: "advancedshieldemitter",
 			name: "Accelerated Shields",
 			_whyNot: "hullmod that can be installed on any ship that has shields",
-			reason: { noShield: "Must have a Shield" },
+			reason: { noShieldReason: "Must have a Shield" },
 			filterReason: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
 				const reason = HULLMODS.SHIELD.advancedshieldemitter.reason;
@@ -535,7 +926,7 @@ export const HULLMODS = {
 					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
 
 				if (noShield) {
-					return [hullMod, reason.noShield];
+					return [hullMod, reason.noShieldReason];
 				}
 				return null;
 			},
@@ -545,7 +936,7 @@ export const HULLMODS = {
 			id: "stabilizedshieldemitter",
 			name: "Stabilized Shields",
 			_whyNot: "hullmod that can be installed on any ship that has shields",
-			reason: { noShield: "Must have a Shield" },
+			reason: { noShieldReason: "Must have a Shield" },
 			filterReason: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
 				const reason = HULLMODS.SHIELD.stabilizedshieldemitter.reason;
@@ -554,7 +945,7 @@ export const HULLMODS = {
 					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
 
 				if (noShield) {
-					return [hullMod, reason.noShield];
+					return [hullMod, reason.noShieldReason];
 				}
 				return null;
 			},
@@ -564,7 +955,7 @@ export const HULLMODS = {
 			id: "hardenedshieldemitter",
 			name: "Hardened Shields",
 			_whyNot: "hullmod that can be installed on any ship that has shields",
-			reason: { noShield: "Must have a Shield" },
+			reason: { noShieldReason: "Must have a Shield" },
 			filterReason: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
 				const reason = HULLMODS.SHIELD.hardenedshieldemitter.reason;
@@ -573,7 +964,7 @@ export const HULLMODS = {
 					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
 
 				if (noShield) {
-					return [hullMod, reason.noShield];
+					return [hullMod, reason.noShieldReason];
 				}
 				return null;
 			},
@@ -599,6 +990,7 @@ export const HULLMODS = {
 		},
 
 		// Makeshift Shield Generator
+		//! unfinished, I need // shieldUpkeep // shieldEfficiency from the game
 		frontshield: {
 			id: "frontshield",
 			name: "Makeshift Shield Generator",
@@ -614,6 +1006,12 @@ export const HULLMODS = {
 				const { installedHullMods } = userShipBuild.hullMods;
 
 				const reason = HULLMODS.SHIELD.frontshield.reason;
+
+				const isGeneratorAlreadyInstalled = installedHullMods.some(
+					({ id }) => id === HULLMODS.SHIELD.frontshield.id
+				);
+
+				if (isGeneratorAlreadyInstalled) return null;
 
 				const isPhase = shieldType === SHIELD_TYPE.PHASE;
 
@@ -635,10 +1033,35 @@ export const HULLMODS = {
 				}
 				return null;
 			},
-			//! here
-			hullModLogic: function (userShipBuild) {
-				// console.log(userShipBuild);
-				console.log("hullModLogic");
+			_hullModEffect:
+				"Shield => FRONT and has a 90 degree arc. Top speed decrease by 20%",
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, speed, hullSize } = userShipBuild;
+				const [newShieldArc, decreaseSpeedByPercent] =
+					hullMod.effectValues.regularValues;
+
+				// Shield Front
+				const updateShieldType = SHIELD_TYPE.FRONT;
+				// New Speed
+				const newTopSpeed = convertStringPercentIntoNumber(
+					decreaseSpeedByPercent,
+					VALUE_CHANGE.DECREASE,
+					speed
+				);
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+				// shieldUpkeep
+
+				// shieldEfficiency
+
+				return {
+					...userShipBuild,
+					shieldType: updateShieldType,
+					shieldArc: newShieldArc,
+					speed: newTopSpeed,
+					ordinancePoints: newOrdinancePoints,
+				};
 			},
 		},
 		// Shield Shunt
@@ -648,8 +1071,9 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any ship that has shields. Incompatible with Makeshift Shield Generator.",
 			reason: {
-				noShield: "No Shield",
-				shieldGenerator: "Incompatible with Makeshift Shield Generator",
+				noShieldReason: "No Shield",
+				hasShieldGeneratorReason:
+					"Incompatible with Makeshift Shield Generator",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const shieldType = userShipBuild.shieldType;
@@ -666,8 +1090,8 @@ export const HULLMODS = {
 
 				if (noShield || isMakeShiftGeneratorInstalled) {
 					const reasonMap = {
-						[isMakeShiftGeneratorInstalled]: reason.shieldGenerator,
-						[noShield]: reason.noShield,
+						[isMakeShiftGeneratorInstalled]: reason.hasShieldGeneratorReason,
+						[noShield]: reason.noShieldReason,
 					};
 
 					return [hullMod, reasonMap.true];
@@ -685,8 +1109,8 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any phase ship. It is incompatible with Phase Anchor.",
 			reason: {
-				noPhase: "Not a Phase",
-				phaseAnchor: "It is incompatible with Phase Anchor",
+				notPhaseReason: "Not a Phase Ship",
+				hasPhaseAnchorReason: "It is incompatible with Phase Anchor",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { shieldType, hullMods } = userShipBuild;
@@ -700,10 +1124,12 @@ export const HULLMODS = {
 				);
 
 				if (notPhaseShip || isPhaseAnchorInstalled) {
-					return [
-						hullMod,
-						isPhaseAnchorInstalled ? reason.phaseAnchor : reason.noPhase,
-					];
+					const reasonMap = {
+						[isPhaseAnchorInstalled]: reason.hasPhaseAnchorReason,
+						[notPhaseShip]: reason.notPhaseReason,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
@@ -714,8 +1140,8 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any phase ship. It is incompatible with Adaptive Phase Coils.",
 			reason: {
-				noPhase: "Not a Phase",
-				phaseCoils: "It is incompatible with Adaptive Phase Coils",
+				notPhaseReason: "Not a Phase Ship",
+				hasPhaseCoilsReason: "It is incompatible with Adaptive Phase Coils",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { shieldType, hullMods } = userShipBuild;
@@ -729,10 +1155,12 @@ export const HULLMODS = {
 				);
 
 				if (notPhaseShip || isPhaseCoilsInstalled) {
-					return [
-						hullMod,
-						isPhaseCoilsInstalled ? reason.phaseCoils : reason.noPhase,
-					];
+					const reasonMap = {
+						[isPhaseCoilsInstalled]: reason.hasPhaseCoilsReason,
+						[notPhaseShip]: reason.notPhaseReason,
+					};
+
+					return [hullMod, reasonMap.true];
 				}
 				return null;
 			},
@@ -747,9 +1175,9 @@ export const HULLMODS = {
 				"hullmod that can be installed on any Frigate-class, Destroyer-class and Cruiser-class ship, except for ships with a Civilian-grade Hull, unless Militarized Subsystems is also present.",
 			reason: {
 				notOnCapitalShipReason: "Not on Capital Ship",
-				notOnCivilianShipReason:
+				onlyCivilianShipWithMilReason:
 					"Civilian Ships only with Militarized Subsystems",
-				fluxShuntReason: "Incompatible with Flux Shunt.",
+				hasFluxShuntReason: "Incompatible with Flux Shunt.",
 			},
 			filterReason: function (hullMod, userShipBuild) {
 				const { hullSize, hullMods } = userShipBuild;
@@ -779,8 +1207,8 @@ export const HULLMODS = {
 				if (isShipCapital || isCivilianCheck || hasFluxShunt) {
 					const reasonMap = {
 						[isShipCapital]: reason.notOnCapitalShipReason,
-						[isCivilianCheck]: reason.notOnCivilianShipReason,
-						[hasFluxShunt]: reason.fluxShuntReason,
+						[isCivilianCheck]: reason.onlyCivilianShipWithMilReason,
+						[hasFluxShunt]: reason.hasFluxShuntReason,
 					};
 
 					return [hullMod, reasonMap.true];
