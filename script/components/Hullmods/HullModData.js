@@ -63,17 +63,6 @@ export const HULLMODS = {
 			name: "Flux Shunt",
 			_whyNot: "Flux Shunt is incompatible with Safety Overrides.",
 		},
-		filterReason: function (hullModArray, userShipBuild) {
-			const reason = "Already Build In";
-			const builtInMods = userShipBuild.hullMods.builtInMods;
-
-			if (!builtInMods) return [];
-
-			const hullModObject = hullModArray.filter((hullMod) =>
-				builtInMods.find((builtHullMod) => builtHullMod === hullMod.id)
-			);
-			return hullModObject.map((hullMod) => [hullMod, reason]);
-		},
 	},
 	WEAPONS: {
 		// Ballistic Rangefinder

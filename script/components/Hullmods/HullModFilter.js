@@ -14,134 +14,44 @@ class HullModFilter extends ViewModel {
 		];
 	}
 	#filterBuildInHullMods(hullModArray, userShipBuild) {
-		return HULLMODS.BUILD_IN.filterReason(hullModArray, userShipBuild);
+		const reason = "Already Build In";
+		const builtInMods = userShipBuild.hullMods.builtInMods;
+
+		if (!builtInMods) return [];
+
+		const hullModObject = hullModArray.filter((hullMod) =>
+			builtInMods.find((builtHullMod) => builtHullMod === hullMod.id)
+		);
+		return hullModObject.map((hullMod) => [hullMod, reason]);
 	}
 
 	#filterHullMods(hullModArray, userShipBuild) {
-		// JOIN into a single function
-		const shieldHullMods = {
-			[HULLMODS.SHIELD.adaptiveshields.id]:
-				HULLMODS.SHIELD.adaptiveshields.filterReason,
-
-			[HULLMODS.SHIELD.advancedshieldemitter.id]:
-				HULLMODS.SHIELD.advancedshieldemitter.filterReason,
-
-			[HULLMODS.SHIELD.frontemitter.id]:
-				HULLMODS.SHIELD.frontemitter.filterReason,
-
-			[HULLMODS.SHIELD.frontshield.id]:
-				HULLMODS.SHIELD.frontshield.filterReason,
-
-			[HULLMODS.SHIELD.shield_shunt.id]:
-				HULLMODS.SHIELD.shield_shunt.filterReason,
-
-			[HULLMODS.SHIELD.stabilizedshieldemitter.id]:
-				HULLMODS.SHIELD.stabilizedshieldemitter.filterReason,
-
-			[HULLMODS.SHIELD.hardenedshieldemitter.id]:
-				HULLMODS.SHIELD.hardenedshieldemitter.filterReason,
-
-			[HULLMODS.SHIELD.extendedshieldemitter.id]:
-				HULLMODS.SHIELD.extendedshieldemitter.filterReason,
-		};
-
-		const phaseHullMods = {
-			[HULLMODS.PHASE.adaptive_coils.id]:
-				HULLMODS.PHASE.adaptive_coils.filterReason,
-			[HULLMODS.PHASE.phase_anchor.id]:
-				HULLMODS.PHASE.phase_anchor.filterReason,
-		};
-
-		const weaponHullMods = {
-			[HULLMODS.WEAPONS.ballistic_rangefinder.id]:
-				HULLMODS.WEAPONS.ballistic_rangefinder.filterReason,
-
-			[HULLMODS.WEAPONS.dedicated_targeting_core.id]:
-				HULLMODS.WEAPONS.dedicated_targeting_core.filterReason,
-
-			[HULLMODS.WEAPONS.targetingunit.id]:
-				HULLMODS.WEAPONS.targetingunit.filterReason,
-
-			[HULLMODS.WEAPONS.advancedoptics.id]:
-				HULLMODS.WEAPONS.advancedoptics.filterReason,
-
-			[HULLMODS.WEAPONS.high_scatter_amp.id]:
-				HULLMODS.WEAPONS.high_scatter_amp.filterReason,
-		};
-		const engineHullMods = {
-			[HULLMODS.ENGINE.safetyoverrides.id]:
-				HULLMODS.ENGINE.safetyoverrides.filterReason,
-		};
-		// Logistics
-		const logisticsHullMods = {
-			[HULLMODS.LOGISTICS.militarized_subsystems.id]:
-				HULLMODS.LOGISTICS.militarized_subsystems.filterReason,
-
-			[HULLMODS.LOGISTICS.converted_fighterbay.id]:
-				HULLMODS.LOGISTICS.converted_fighterbay.filterReason,
-
-			[HULLMODS.LOGISTICS.additional_berthing.id]:
-				HULLMODS.LOGISTICS.additional_berthing.filterReason,
-
-			[HULLMODS.LOGISTICS.auxiliary_fuel_tanks.id]:
-				HULLMODS.LOGISTICS.auxiliary_fuel_tanks.filterReason,
-
-			[HULLMODS.LOGISTICS.hiressensors.id]:
-				HULLMODS.LOGISTICS.hiressensors.filterReason,
-		};
-
-		const specialHullMods = {
-			[HULLMODS.SPECIAL.neural_integrator.id]:
-				HULLMODS.SPECIAL.neural_integrator.filterReason,
-			[HULLMODS.SPECIAL.escort_package.id]:
-				HULLMODS.SPECIAL.escort_package.filterReason,
-		};
-
-		const fighterHullMods = {
-			[HULLMODS.FIGHTER.converted_hangar.id]:
-				HULLMODS.FIGHTER.converted_hangar.filterReason,
-
-			[HULLMODS.FIGHTER.defensive_targeting_array.id]:
-				HULLMODS.FIGHTER.defensive_targeting_array.filterReason,
-
-			[HULLMODS.FIGHTER.expanded_deck_crew.id]:
-				HULLMODS.FIGHTER.expanded_deck_crew.filterReason,
-
-			[HULLMODS.FIGHTER.recovery_shuttles.id]:
-				HULLMODS.FIGHTER.recovery_shuttles.filterReason,
-		};
-		//! unfinished
+		// grabs keys from hullMods (Categories like FIGHTER / ENGINE)
 		const hullModsCategoryKeys = Object.keys(HULLMODS);
-		console.log(hullModsCategoryKeys);
-		const test = hullModsCategoryKeys.map((categoryKey) => {
-			const categoryObject = this.findHullModKeyName(HULLMODS, categoryKey);
 
-			const firstTarget = `HULLMODS.${categoryKey}.${categoryObject.id}.id`;
-			const secondTarget = `HULLMODS.${categoryKey}.${categoryObject.id}.filterReason`;
+		// Create a OBJECT with OBJECTS (key:value)
+		const allModifiers = hullModsCategoryKeys.reduce((acc, categoryKey) => {
+			// FIND hullMods by their category. For example all fighters
+			const [categoryObjectArray] = this.findHullModKeyName(
+				HULLMODS,
+				categoryKey
+			);
 
-			return {
-				[firstTarget]: secondTarget,
-			};
-		});
-		console.log(test);
-		// const arrayOfId = this.findHullModKeyName(HULLMODS, "BUILD_IN");
-		// const arrayOfId = this.findHullModKeyName(HULLMODS, "BUILD_IN");
-		// const test = arrayOfId.map((id) => {
-		// [HULLMODS.FIGHTER.recovery_shuttles.id]:
-		// HULLMODS.FIGHTER.recovery_shuttles.filterReason,
-		// });
-		// console.log(arrayOfId);
+			// create an object with [proper Id and filterReason function]
+			// (reason to filter the hullMod => if any);
+			Object.keys(categoryObjectArray).forEach((hullModId) => {
+				const { id: targetId, filterReason: targetFunction = null } =
+					HULLMODS[categoryKey][hullModId];
 
-		const allModifiers = {
-			...shieldHullMods,
-			...phaseHullMods,
-			...weaponHullMods,
-			...engineHullMods,
-			...logisticsHullMods,
-			...specialHullMods,
-			...fighterHullMods,
-		};
+				if (targetFunction) {
+					acc[targetId] = targetFunction;
+				}
+			});
 
+			return acc;
+		}, {});
+
+		// find hullMods from all usablehullMods
 		return hullModArray
 			.map((hullMod) => {
 				// if finds modifier calls the function, if not return null
