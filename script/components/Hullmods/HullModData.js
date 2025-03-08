@@ -67,6 +67,46 @@ export const HULLMODS = {
 		},
 	},
 	WEAPONS: {
+		// Armored Weapon Mounts
+		armoredweapons: {
+			id: "armoredweapons",
+			name: "Armored Weapon Mounts",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Increases the durability of all weapons by 100% and reduces recoil by 25%,
+			//  but decreases their turn rate by 25%.
+			// Also increases the ship's armor by 10%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, armor, hullSize } = userShipBuild;
+
+				const [
+					_weaponDurability,
+					_reduceWeaponRecoil,
+					_decreaseWeaponTurnRate,
+					addArmorPercent,
+				] = hullMod.effectValues.regularValues;
+
+				// New Armor Value
+				const newArmorValue = convertStringPercentIntoNumber(
+					addArmorPercent,
+					VALUE_CHANGE.INCREASE,
+					armor
+				);
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				console.log(armor, newArmorValue);
+				return {
+					...userShipBuild,
+					armor: newArmorValue,
+					ordinancePoints: newOrdinancePoints,
+				};
+			},
+			// S-mod bonus: Increases the rate of fire of all non-missile weapons by 10%.
+			sModsLogic: function () {},
+		},
 		// Ballistic Rangefinder
 		ballistic_rangefinder: {
 			id: "ballistic_rangefinder",
