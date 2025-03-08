@@ -22,8 +22,6 @@ import {
 	SHIP_TYPE,
 } from "../../helper/Properties";
 
-// import { HULLMODS } from "./HullModData";
-
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
 	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
@@ -84,6 +82,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#processData();
 		this.#createFilterCategories();
 		this.#update();
+		this.#render();
 	}
 	#processData() {
 		this.#userShipBuild = this.getUserShipBuild();
@@ -102,16 +101,18 @@ export default class HullModsPopUp extends ViewModel {
 		// Not a correct implementation, but it works
 		this.#processData();
 
-		this.installedHullModLogic();
+		this.updateUserShipBuildWithHullModLogic();
 
 		this.#createHullModsArray();
-
+	}
+	#render() {
 		this.#renderHullModsPopUp();
 
 		this.#eventListeners();
 
 		this.#assignActiveClasses();
 	}
+
 	#renderHullModsPopUp() {
 		// Container
 		HullModsPopUpView.render(this.#greenHullMods);
@@ -140,7 +141,7 @@ export default class HullModsPopUp extends ViewModel {
 	#createHullModsArray() {
 		this.#createGreenHullMods();
 
-		this.#splitHullModArrayIntoGreenAndRed();
+		this.#updateGreenAndRedHullMods();
 
 		this.#createRedHullMods();
 	}
@@ -196,6 +197,7 @@ export default class HullModsPopUp extends ViewModel {
 	// TablePopUpSorter
 	#popUpSorter = (btn) => {
 		const { category } = btn.dataset;
+
 		if (SKIP_SORT_CATEGORY[category]) return this.#installedSpecialSorter();
 
 		this.#regularSorter(category);
@@ -210,7 +212,11 @@ export default class HullModsPopUp extends ViewModel {
 		]);
 
 		this.#sortByInstalledCategory = true;
-		this.#update();
+
+		// Split Array into Usable and unUsable HullMods
+		this.#updateGreenAndRedHullMods();
+		// Render
+		this.#render();
 	}
 
 	// Special sorter for installed category
@@ -225,22 +231,29 @@ export default class HullModsPopUp extends ViewModel {
 			this.#greenHullMods = this.#greenHullMods.toSorted((hullModA, hullModB) =>
 				hullModA.name.localeCompare(hullModB.name)
 			);
-			this.#update();
+
+			// Render
+			this.#render();
 			return;
 		}
 
 		const installedHullMods = this.#shipHullMods.installedHullMods;
 
 		const putAtTheTop = this.#greenHullMods.filter((hullMod) =>
-			installedHullMods.includes(hullMod.id)
+			installedHullMods.find(
+				(installedHullMod) => installedHullMod.id === hullMod.id
+			)
 		);
-
-		const shorterArray = this.#greenHullMods.filter(
-			(hullMod) => !installedHullMods.includes(hullMod.id)
+		const shorterArray = this.#greenHullMods.filter((hullMod) =>
+			installedHullMods.find(
+				(installedHullMod) => installedHullMod.id !== hullMod.id
+			)
 		);
 
 		this.#greenHullMods = [...putAtTheTop, ...shorterArray];
-		this.#update();
+
+		// Split Array into Usable and unUsable HullMods
+		this.#render();
 	}
 	//! Remove this
 	#test(id) {
@@ -273,9 +286,13 @@ export default class HullModsPopUp extends ViewModel {
 			hullMods: updatedHullMods,
 		});
 
-		// For some reason EventListeners can be replaced.
-		// So I reimplement them back.
-		this.#update();
+		// Update UserShipBuild With new values
+		this.updateUserShipBuildWithHullModLogic();
+		// fetch update userShipBuild
+		this.#userShipBuild = this.getUserShipBuild();
+		this.#updateGreenAndRedHullMods();
+		// Render & EventListeners
+		this.#render();
 
 		// keep the order
 		// Update shipStats to render new fields
@@ -345,6 +362,7 @@ export default class HullModsPopUp extends ViewModel {
 		// Assign btn.DataSet to currentFilter => to pass then into render Filter
 		this.#currentFilter = filterUiTag;
 		this.#update();
+		this.#render();
 
 		function updateArray(arr) {
 			return arr.filter((hullMod) => {
@@ -357,8 +375,8 @@ export default class HullModsPopUp extends ViewModel {
 			});
 		}
 	};
-	// HullMods unavailable Logic
-	#splitHullModArrayIntoGreenAndRed() {
+	// Green (available) Red (Unavailable)
+	#updateGreenAndRedHullMods() {
 		// check if hullMod already Build In
 		this.#allUnavailableHullMods = HullModFilter.controller(
 			this.#usableHullMods,

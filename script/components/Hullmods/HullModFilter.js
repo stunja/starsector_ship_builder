@@ -2,7 +2,6 @@ import { HULLMODS } from "./HullModData";
 // ViewModels
 import ViewModel from "../../ViewModel";
 
-const HULLMOD_ID = "id";
 class HullModFilter extends ViewModel {
 	constructor() {
 		super();

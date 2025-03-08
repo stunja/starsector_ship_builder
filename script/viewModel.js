@@ -55,7 +55,7 @@ export default class ViewModel {
 		});
 	}
 
-	installedHullModLogic() {
+	updateUserShipBuildWithHullModLogic() {
 		const userShipBuild = this.getUserShipBuild();
 		const baseUserShipBuild = this._getBaseShipBuild();
 		const { installedHullMods } = userShipBuild.hullMods;

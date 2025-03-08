@@ -1,9 +1,4 @@
-const opCostPerHullSize = {
-	CAPITAL_SHIP: "cost_capital",
-	CRUISER: "cost_cruiser",
-	DESTROYER: "cost_dest",
-	FRIGATE: "cost_frigate",
-};
+import { HULLMOD_COST_KEYS } from "../helper/Properties";
 
 class TablePopUpSorter {
 	#isAscending;
@@ -43,7 +38,7 @@ class TablePopUpSorter {
 	};
 
 	update([category, tableType, currentArray, userShipBuild]) {
-		this.#hullSize = opCostPerHullSize[userShipBuild?.hullSize];
+		this.#hullSize = HULLMOD_COST_KEYS[userShipBuild?.hullSize];
 
 		// Use different data between Tables
 		const sortTableType =

@@ -21,3 +21,10 @@ export const SHIP_TYPE = {
 	CIVILIAN: "",
 	MILITARY: "military",
 };
+
+export const HULLMOD_COST_KEYS = {
+	CAPITAL_SHIP: "cost_capital",
+	CRUISER: "cost_cruiser",
+	DESTROYER: "cost_dest",
+	FRIGATE: "cost_frigate",
+};

@@ -83,7 +83,7 @@ export default class HullModController extends ViewModel {
 		});
 
 		// clear installed hullMods
-		this.installedHullModLogic();
+		this.updateUserShipBuildWithHullModLogic();
 		// Update shipStats to render new fields
 		new ShipStats(this.getState()).update();
 		// Update the hullModController including render
