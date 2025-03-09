@@ -503,6 +503,54 @@ export const HULLMODS = {
 				return null;
 			},
 		},
+		// Hardened Subsystems
+		hardened_subsystems: {
+			id: "hardened_subsystems",
+			name: "Hardened Subsystems",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Increases peak operating time for ships that suffer degraded performance from extended deployment by 50%.
+			// Also reduces the rate at which combat readiness degrades by 25%.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const {
+					ordinancePoints,
+					hullSize,
+					peakPerformanceSec,
+					crLossPerSecond,
+				} = userShipBuild;
+
+				const [increasePeakOperatingTime, reduceDegradationOfCombatReasiness] =
+					hullMod.effectValues.regularValues;
+
+				// Increase PeakPerformance
+				const newPeakPerformance = convertStringPercentIntoNumber(
+					increasePeakOperatingTime,
+					VALUE_CHANGE.INCREASE,
+					peakPerformanceSec
+				);
+
+				// reduce CR loss
+				const newCRloss = convertStringPercentIntoNumber(
+					reduceDegradationOfCombatReasiness,
+					VALUE_CHANGE.INCREASE,
+					crLossPerSecond
+				);
+
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					peakPerformanceSec: newPeakPerformance,
+					crLossPerSecond: newCRloss,
+				};
+			},
+
+			// S-mod bonus: Increases 0-flux speed boost by 10, and doubles the 0-flux turn rate bonus.
+			sModsLogic: function () {},
+		},
 	},
 	LOGISTICS: {
 		// Auxiliary Fuel Tanks
