@@ -96,8 +96,7 @@ export const HULLMODS = {
 				// Add OP cost
 				const newOrdinancePoints =
 					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
-				console.log(armor, newArmorValue);
+				console.log(userShipBuild);
 				return {
 					...userShipBuild,
 					armor: newArmorValue,
@@ -1224,6 +1223,48 @@ export const HULLMODS = {
 
 				return null;
 			},
+		},
+		// Auxiliary Thrusters
+		auxiliarythrusters: {
+			id: "auxiliarythrusters",
+			name: "Auxiliary Thrusters",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Increases the ship's maneuverability by 50%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, acceleration, turnAcceleration } =
+					userShipBuild;
+
+				const [increaseManeuverability] = hullMod.effectValues.regularValues;
+				// Increase in acceleration
+				const newAcceleration = convertStringPercentIntoNumber(
+					increaseManeuverability,
+					VALUE_CHANGE.INCREASE,
+					acceleration
+				);
+
+				// Increase in turnAcceleration
+				const newTurnAcceleration = convertStringPercentIntoNumber(
+					increaseManeuverability,
+					VALUE_CHANGE.INCREASE,
+					turnAcceleration
+				);
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+				console.log(acceleration, turnAcceleration);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					acceleration: newAcceleration,
+					turnAcceleration: newTurnAcceleration,
+				};
+			},
+
+			// S-mod bonus: Increases 0-flux speed boost by 10, and doubles the 0-flux turn rate bonus.
+			sModsLogic: function () {},
 		},
 	},
 };
