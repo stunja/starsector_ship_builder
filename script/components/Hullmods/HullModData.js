@@ -551,6 +551,50 @@ export const HULLMODS = {
 			// S-mod bonus: Increases 0-flux speed boost by 10, and doubles the 0-flux turn rate bonus.
 			sModsLogic: function () {},
 		},
+		// Flux Coil Adjunct
+		fluxcoil: {
+			id: "fluxcoil",
+			name: "Flux Coil Adjunct",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Increases the ship's flux capacity by 600/1200/1800/3000, depending on hull size.
+			// Not as efficient as flux capacitors - most useful when added to a design that already
+			// carries the maximum possible number of capacitors.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, fluxCapacity } = userShipBuild;
+
+				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
+					hullMod.effectValues.regularValues;
+
+				// Increase Flux Capacity
+				const fluxValueBasedOnHullSize =
+					hullSize === HULL_SIZE.FRIGATE
+						? frigateFlux
+						: HULL_SIZE.DESTROYER
+						? destroyerFlux
+						: HULL_SIZE.CRUISER
+						? cruiserFlux
+						: HULL_SIZE.CAPITAL_SHIP
+						? capitalFlux
+						: "error with new Flux Capacity";
+
+				const newFluxCapacity = fluxCapacity + fluxValueBasedOnHullSize;
+
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					fluxCapacity: newFluxCapacity,
+				};
+			},
+
+			// S-mod bonus: Increases flux capacity by a further 200/400/600/1000, making the coil as efficient as adding capacitors.
+			sModsLogic: function () {},
+		},
 	},
 	LOGISTICS: {
 		// Auxiliary Fuel Tanks

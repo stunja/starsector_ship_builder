@@ -79,7 +79,7 @@ export default class CapacitorsAndVents extends ViewModel {
 	#changeValue = (btn, controllerType) => {
 		const { buttonValue } = btn.dataset;
 		const userShipBuild = this.getUserShipBuild();
-
+		console.log(userShipBuild);
 		// Should be only, just in case
 
 		if (!Object.values(CONTROLS.BUTTON_ACTIONS).includes(buttonValue)) return;
