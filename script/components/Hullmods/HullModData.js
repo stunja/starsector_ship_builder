@@ -336,6 +336,7 @@ export const HULLMODS = {
 	},
 	FIGHTER: {
 		// Converted Hangar
+		//! add Logic later, sounds very complicated
 		converted_hangar: {
 			id: "converted_hangar",
 			name: "Converted Hangar",
@@ -406,6 +407,34 @@ export const HULLMODS = {
 				if (hasNoFighterSlots) return [hullMod, reason.noFighterSlotsReason];
 
 				return null;
+			},
+
+			// IGNORE // Reduces the rate at which the fighter replacement rate decreases due to fighter losses by 10%,
+			// IGNORE // and increases the rate at which it recovers by 20%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, fighterBays, minCrew } =
+					userShipBuild;
+
+				const [
+					_descreasesFighterLosses,
+					_increaseFighterLossRecovery,
+					increaseCrewRequirement,
+				] = hullMod.effectValues.regularValues;
+
+				// Increases the crew required by 20 per fighter bay.
+				const newCrewRequirement =
+					minCrew + increaseCrewRequirement * fighterBays;
+
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					minCrew: newCrewRequirement,
+				};
 			},
 		},
 		// Recovery Shuttles
@@ -1013,6 +1042,27 @@ export const HULLMODS = {
 
 				return null;
 			},
+
+			// Increases the shield's coverage by 60 degrees.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, shieldArc } = userShipBuild;
+
+				const [increaseShieldArc] = hullMod.effectValues.regularValues;
+
+				const totalShieldArc = shieldArc + increaseShieldArc;
+				const newShieldArc = totalShieldArc >= 360 ? 360 : totalShieldArc;
+
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					shieldArc: newShieldArc,
+				};
+			},
+			// S-mod bonus: Increases the shield's coverage by an additional 60 degrees.
 		},
 
 		// Makeshift Shield Generator
