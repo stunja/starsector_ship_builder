@@ -296,6 +296,44 @@ export const HULLMODS = {
 			},
 		},
 	},
+	DEFENSES: {
+		// Blast Doors
+		blast_doors: {
+			id: "blast_doors",
+			name: "Blast Doors",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Installs additional hermetic and heavily reinforced doors at critical junctures throughout the ship.
+			// Increases hull integrity by 20%.
+			//
+			// IGNORE // Ship takes 60% fewer crew casualties from hull damage sustained in combat.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hitPoints, hullSize } = userShipBuild;
+
+				const [increaseHullIntegrity, _crewCasulties] =
+					hullMod.effectValues.regularValues;
+
+				// New Armor Value
+				const newHullIntegrity = convertStringPercentIntoNumber(
+					increaseHullIntegrity,
+					VALUE_CHANGE.INCREASE,
+					hitPoints
+				);
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					hitPoints: newHullIntegrity,
+				};
+			},
+			// S-mod bonus: Increases the crew casualty reduction to 85%.
+			sModsLogic: function () {},
+		},
+	},
 	FIGHTER: {
 		// Converted Hangar
 		converted_hangar: {
@@ -1231,11 +1269,14 @@ export const HULLMODS = {
 			_whyNot: "hullmod that can be installed on any ship.",
 
 			// Increases the ship's maneuverability by 50%.
-
 			hullModLogic: function (userShipBuild, hullMod) {
-				const { ordinancePoints, hullSize, acceleration, turnAcceleration } =
-					userShipBuild;
-
+				const {
+					ordinancePoints,
+					hullSize,
+					acceleration,
+					turnAcceleration,
+					deceleration,
+				} = userShipBuild;
 				const [increaseManeuverability] = hullMod.effectValues.regularValues;
 				// Increase in acceleration
 				const newAcceleration = convertStringPercentIntoNumber(
@@ -1244,6 +1285,12 @@ export const HULLMODS = {
 					acceleration
 				);
 
+				// Increase in deceleration
+				const newDeceleration = convertStringPercentIntoNumber(
+					increaseManeuverability,
+					VALUE_CHANGE.INCREASE,
+					deceleration
+				);
 				// Increase in turnAcceleration
 				const newTurnAcceleration = convertStringPercentIntoNumber(
 					increaseManeuverability,
@@ -1253,12 +1300,12 @@ export const HULLMODS = {
 				// Add OP cost
 				const newOrdinancePoints =
 					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-				console.log(acceleration, turnAcceleration);
 
 				return {
 					...userShipBuild,
 					ordinancePoints: newOrdinancePoints,
 					acceleration: newAcceleration,
+					deceleration: newDeceleration,
 					turnAcceleration: newTurnAcceleration,
 				};
 			},
