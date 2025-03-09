@@ -1023,6 +1023,30 @@ export const HULLMODS = {
 
 				return null;
 			},
+			// Reduces the amount of damage taken by shields by 20%.
+			// Also reduces the chance that shields will be pierced by EMP arcs from weapons like the Ion Beam.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, shieldEfficiency } = userShipBuild;
+
+				const [reduceShieldDamage] = hullMod.effectValues.regularValues;
+
+				// New Shield Efficiency
+				const newShieldEfficiency = convertStringPercentIntoNumber(
+					reduceShieldDamage,
+					VALUE_CHANGE.DECREASE,
+					shieldEfficiency
+				);
+
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					shieldEfficiency: newShieldEfficiency,
+				};
+			},
 		},
 		// Extended Shields
 		extendedshieldemitter: {
