@@ -580,7 +580,6 @@ export const HULLMODS = {
 						: "error with new Flux Capacity";
 
 				const newFluxCapacity = fluxCapacity + fluxValueBasedOnHullSize;
-
 				// Add OP cost
 				const newOrdinancePoints =
 					ordinancePoints + normalizedHullSize(hullMod, hullSize);

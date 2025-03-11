@@ -1,6 +1,6 @@
 import ViewModel from "../../ViewModel.js";
 
-import OrdinancePointsView from "../../allViews/Stats/ordinancePointsView.js";
+import OrdinancePointsView from "../../allViews/Stats/OrdinancePointsView.js";
 import SpeedArmorHullView from "../../allViews/Stats/SpeedArmorHullView.js";
 import WeaponFluxView from "../../allViews/Stats/WeaponFluxView.js";
 import ShieldOrPhaseView from "../../allViews/Stats/ShieldOrPhaseView.js";
