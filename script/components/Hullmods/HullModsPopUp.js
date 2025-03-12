@@ -100,7 +100,6 @@ export default class HullModsPopUp extends ViewModel {
 	#update() {
 		// Not a correct implementation, but it works
 		this.#processData();
-
 		this.updateUserShipBuildWithHullModLogic();
 
 		this.#createHullModsArray();

@@ -78,7 +78,7 @@ export default class HullModController extends ViewModel {
 		);
 
 		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
+			...userShipBuild,
 			hullMods: updatedHullMods,
 		});
 

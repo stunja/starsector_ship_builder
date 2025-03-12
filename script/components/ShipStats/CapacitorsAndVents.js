@@ -4,11 +4,10 @@ import ViewModel from "../../ViewModel";
 // Views
 import CapacitorsView from "../../allViews/Stats/CapacitorsView";
 import OrdinancePointsView from "../../allViews/Stats/OrdinancePointsView";
+import ShieldOrPhaseView from "../../allViews/Stats/ShieldOrPhaseView";
 
 import VentsView from "../../allViews/Stats/VentsView";
 import classNames from "../../helper/DomClassNames";
-
-// import ShipStats from "./ShipStats";
 
 const CONTROLS = {
 	BUTTON_ACTIONS: {
@@ -56,11 +55,13 @@ const SHIP_SYSTEMS = {
 // Joined Capacitor and Vents controller
 // mostly identical
 export default class CapacitorsAndVents extends ViewModel {
+	#userShipBuild;
 	#currentFluxCapacity;
 	#currentFluxDissipation;
 
 	constructor(model) {
 		super(model);
+		this.#userShipBuild = this.getUserShipBuild();
 	}
 	update() {
 		this.#processData();
@@ -70,22 +71,22 @@ export default class CapacitorsAndVents extends ViewModel {
 		this.#updateValues();
 	}
 	#processData() {
-		this.#currentFluxCapacity = this.getUserShipBuild().fluxCapacity;
-		this.#currentFluxDissipation = this.getUserShipBuild().fluxDissipation;
+		this.#currentFluxCapacity = this.#userShipBuild.fluxCapacity;
+		this.#currentFluxDissipation = this.#userShipBuild.fluxDissipation;
 	}
 	#updateValues() {
-		const userShipBuild = this.getUserShipBuild();
+		this.#userShipBuild = this.getUserShipBuild();
 
 		const {
 			fluxCapacity,
+			fluxDissipation,
 			fluxCapacityPerSingleActiveCapacitor,
 			capacitors,
 			capacitorsOrdinanceCost,
 			ordinancePoints,
-			fluxDissipation,
 			vents,
 			fluxDissipationPerSingleActiveVent,
-		} = userShipBuild;
+		} = this.#userShipBuild;
 
 		const updateFluxCapacity =
 			this.#currentFluxCapacity +
@@ -97,18 +98,21 @@ export default class CapacitorsAndVents extends ViewModel {
 		const updateOrdinanceCost = capacitors * capacitorsOrdinanceCost;
 
 		this.setUpdateUserShipBuild({
-			...userShipBuild,
+			...this.#userShipBuild,
 			ordinancePoints: updateOrdinanceCost,
 			fluxCapacity: updateFluxCapacity,
 			fluxDissipation: updateFluxDissipation,
 		});
 
-		OrdinancePointsView.render(this.getUserShipBuild());
+		this.#userShipBuild = this.getUserShipBuild();
+
+		OrdinancePointsView.render(this.#userShipBuild);
+		ShieldOrPhaseView.render(this.#userShipBuild);
 		this.#capacitorHandler();
 		this.#ventsHandler();
 	}
 	#capacitorHandler() {
-		CapacitorsView.render(this.getUserShipBuild());
+		CapacitorsView.render(this.#userShipBuild);
 
 		CapacitorsView.addClickHandler(
 			EVENT_LISTENER_TARGET.CAPACITOR,
@@ -117,7 +121,7 @@ export default class CapacitorsAndVents extends ViewModel {
 		);
 	}
 	#ventsHandler() {
-		VentsView.render(this.getUserShipBuild());
+		VentsView.render(this.#userShipBuild);
 
 		VentsView.addClickHandler(
 			EVENT_LISTENER_TARGET.VENTS,
@@ -127,121 +131,40 @@ export default class CapacitorsAndVents extends ViewModel {
 	}
 	#handleButtonChange = (btn) => {
 		const { buttonName, buttonValue } = btn.dataset;
-		if (buttonName === CONTROLS.BUTTON_DATASET.SHIP_CAPACITORS) {
+
+		if (buttonName === CONTROLS.BUTTON_DATASET.SHIP_CAPACITORS)
 			this.#changeCapacitorValue(buttonValue);
-		}
-		if (buttonName === CONTROLS.BUTTON_DATASET.SHIP_VENTS) {
+
+		if (buttonName === CONTROLS.BUTTON_DATASET.SHIP_VENTS)
 			this.#changeVentsValue(buttonValue);
-		}
 	};
 	#changeCapacitorValue(buttonValue) {
-		const userShipBuild = this.getUserShipBuild();
-		const { capacitors } = userShipBuild;
-
-		const updateValue =
-			buttonValue === CONTROLS.BUTTON_ACTIONS.PLUS
-				? capacitors + 1
-				: capacitors - 1;
+		const { capacitors, maxCapacitors } = this.#userShipBuild;
 
 		this.setUpdateUserShipBuild({
-			...userShipBuild,
-			capacitors: updateValue,
+			...this.#userShipBuild,
+			capacitors: this.#buttonControls(buttonValue, capacitors, maxCapacitors),
 		});
 
 		this.#updateValues();
 	}
+
 	#changeVentsValue(buttonValue) {
-		const userShipBuild = this.getUserShipBuild();
-		const { vents } = userShipBuild;
-
-		const updateValue =
-			buttonValue === CONTROLS.BUTTON_ACTIONS.PLUS ? vents + 1 : vents - 1;
+		const { vents, maxVents } = this.#userShipBuild;
 
 		this.setUpdateUserShipBuild({
-			...userShipBuild,
-			vents: updateValue,
+			...this.#userShipBuild,
+			vents: this.#buttonControls(buttonValue, vents, maxVents),
 		});
 
 		this.#updateValues();
 	}
 
-	// #changeValue = (btn, controllerType) => {
-	// 	const { buttonValue } = btn.dataset;
-	// 	const userShipBuild = this.getUserShipBuild();
-	// 	// Should be only, just in case
+	#buttonControls = (buttonValue, target, maxTarget) => {
+		if (buttonValue === CONTROLS.BUTTON_ACTIONS.PLUS)
+			return target >= maxTarget ? target : target + 1;
 
-	// 	if (!Object.values(CONTROLS.BUTTON_ACTIONS).includes(buttonValue)) return;
-
-	// 	// Trying ot use ENUMS
-	// 	const increment = buttonValue === CONTROLS.BUTTON_ACTIONS.PLUS ? 1 : -1;
-
-	// 	if (controllerType === CONTROLS.TYPE.CAPACITORS) {
-	// 		const newShipBuild = this.#updateCapacitor(userShipBuild, increment);
-	// 		this.setUpdateUserShipBuild(newShipBuild);
-	// 		this.capacitorHandler();
-	// 	}
-
-	// 	if (controllerType === CONTROLS.TYPE.VENTS) {
-	// 		const newShipBuild = this.#updateVents(userShipBuild, increment);
-	// 		this.setUpdateUserShipBuild(newShipBuild);
-	// 		this.ventsHandler#ventsHandler();
-	// 	}
-	// };
-	// #updateCapacitor(currentState, increment) {
-	// 	// Base Flux is default flux for a ship
-	// 	// currentCapacitors are current number of capacitors on a ship between 0 and max capacitors
-	// 	// fluxCapacity per shit is value based on shipSize (Capital ship === 200)
-	// 	const updatedState = this.#updateSystemValue(
-	// 		currentState,
-	// 		increment,
-	// 		SHIP_SYSTEMS.CAPACITORS
-	// 	);
-
-	// 	return this.#updateDeriveValue(updatedState, SHIP_SYSTEMS.FLUXCAP);
-	// }
-	// // Vents
-	// handleVentChange = (btn) => {
-	// 	this.#changeValue(btn, CONTROLS.TYPE.VENTS);
-	// };
-	// #updateVents(currentState, increment) {
-	// 	const updatedState = this.#updateSystemValue(
-	// 		currentState,
-	// 		increment,
-	// 		SHIP_SYSTEMS.VENTS
-	// 	);
-
-	// 	return this.#updateDeriveValue(updatedState, SHIP_SYSTEMS.FLUX_DISSIPATION);
-	// }
-
-	// #updateSystemValue(state, increment, system) {
-	// 	const newValue = state[system.CURRENT] + increment;
-
-	// 	// defense from overflow
-	// 	if (newValue < 0 || newValue > state[system.MAX]) {
-	// 		return state;
-	// 	}
-
-	// 	return {
-	// 		...state,
-	// 		[system.CURRENT]: newValue,
-	// 	};
-	// }
-	// // Increase in number of capacitors increase flux capacity.
-	// #updateDeriveValue(state, target) {
-	// 	// a hack, but it works
-	// 	const _baseState = this._getBaseShipBuild();
-	// 	const userState = this.getUserShipBuild();
-
-	// 	const test = {
-	// 		[target.CAPACITY]:
-	// 			userState[target.CAPACITY] +
-	// 			state[target.SELECTOR] * state[target.FLUX_PER_VALUE],
-	// 	};
-	// 	console.log(test);
-	// 	return {
-	// 		...state,
-	// 		[target.CAPACITY]:
-	// 			_baseState[target.CAPACITY] +
-	// 			state[target.SELECTOR] * state[target.FLUX_PER_VALUE],
-	// 	};
+		if (buttonValue === CONTROLS.BUTTON_ACTIONS.MINUS)
+			return target <= 0 ? target : target - 1;
+	};
 }

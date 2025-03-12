@@ -33,6 +33,21 @@ export const convertStringPercentIntoNumber = (
 
 	return finalValue;
 };
+const hullModHullSizeConverter = (
+	target,
+	frigate,
+	destroyer,
+	cruiser,
+	capital
+) => {
+	if (target === HULL_SIZE.FRIGATE) return frigate;
+
+	if (target === HULL_SIZE.DESTROYER) return destroyer;
+
+	if (target === HULL_SIZE.CRUISER) return cruiser;
+
+	if (target === HULL_SIZE.CAPITAL_SHIP) return capital;
+};
 
 export const HULLMODS = {
 	// BUILD-IN
@@ -333,6 +348,43 @@ export const HULLMODS = {
 			// S-mod bonus: Increases the crew casualty reduction to 85%.
 			sModsLogic: function () {},
 		},
+		// Heavy Armor
+		heavyarmor: {
+			id: "heavyarmor",
+			name: "Heavy Armor",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Increases the ship's armor by 150/300/400/500 points, depending on hull size.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, armor } = userShipBuild;
+
+				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
+					hullMod.effectValues.regularValues;
+
+				// Value based on Hull Size
+				const valueBasedOnHullSize = hullModHullSizeConverter(
+					hullSize,
+					frigateFlux,
+					destroyerFlux,
+					cruiserFlux,
+					capitalFlux
+				);
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				const newArmor = armor + valueBasedOnHullSize;
+				console.log(ordinancePoints, normalizedHullSize(hullMod, hullSize));
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					armor: newArmor,
+				};
+			},
+
+			// S-mod penalty: Reduces the ship's maneuverability by 25%.
+			sModsLogic: function () {},
+		},
 	},
 	FIGHTER: {
 		// Converted Hangar
@@ -567,19 +619,15 @@ export const HULLMODS = {
 				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
 					hullMod.effectValues.regularValues;
 
-				// Increase Flux Capacity
-				const fluxValueBasedOnHullSize =
-					hullSize === HULL_SIZE.FRIGATE
-						? frigateFlux
-						: HULL_SIZE.DESTROYER
-						? destroyerFlux
-						: HULL_SIZE.CRUISER
-						? cruiserFlux
-						: HULL_SIZE.CAPITAL_SHIP
-						? capitalFlux
-						: "error with new Flux Capacity";
+				const valueBasedOnHullSize = hullModHullSizeConverter(
+					hullSize,
+					frigateFlux,
+					destroyerFlux,
+					cruiserFlux,
+					capitalFlux
+				);
 
-				const newFluxCapacity = fluxCapacity + fluxValueBasedOnHullSize;
+				const newFluxCapacity = fluxCapacity + valueBasedOnHullSize;
 				// Add OP cost
 				const newOrdinancePoints =
 					ordinancePoints + normalizedHullSize(hullMod, hullSize);
@@ -592,6 +640,47 @@ export const HULLMODS = {
 			},
 
 			// S-mod bonus: Increases flux capacity by a further 200/400/600/1000, making the coil as efficient as adding capacitors.
+			sModsLogic: function () {},
+		},
+
+		// Flux Distributor
+		fluxdistributor: {
+			id: "fluxdistributor",
+			name: "Flux Distributor",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Increases the ship's flux dissipation by 30/60/90/150, depending on hull size.
+			// Not as efficient as flux vents - most useful when added to a design that already carries
+			// the maximum possible number of vents.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, fluxDissipation } = userShipBuild;
+
+				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
+					hullMod.effectValues.regularValues;
+
+				// Increase Flux Dissipation
+				const valueBasedOnHullSize = hullModHullSizeConverter(
+					hullSize,
+					frigateFlux,
+					destroyerFlux,
+					cruiserFlux,
+					capitalFlux
+				);
+
+				const newFluxDissipation = fluxDissipation + valueBasedOnHullSize;
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+					fluxDissipation: newFluxDissipation,
+				};
+			},
+
+			// S-mod bonus: Increases flux dissipation by a further 10/20/30/50, making the distributor as efficient as adding vents.
 			sModsLogic: function () {},
 		},
 	},
