@@ -289,15 +289,18 @@ export default class HullModsPopUp extends ViewModel {
 		this.updateUserShipBuildWithHullModLogic();
 		// fetch update userShipBuild
 		this.#userShipBuild = this.getUserShipBuild();
+
 		this.#updateGreenAndRedHullMods();
 		// Render & EventListeners
 		this.#render();
-
+		// console.log(this.#userShipBuild.ordinancePoints);
 		// keep the order
 		// Update shipStats to render new fields
 		new ShipStats(this.getState()).update();
 		// Update Controller, to display installedHullMods
 		new HullModController(this.getState()).update();
+		//
+		console.log(this.getUserShipBuild());
 	};
 
 	// Turn HullMod Entry to Active => different Color

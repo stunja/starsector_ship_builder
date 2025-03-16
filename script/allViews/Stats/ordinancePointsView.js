@@ -7,24 +7,28 @@ const STRING = {
 class OrdinancePointsView extends View {
 	_localParent = `.${classNames.ordinancePointsGraph}`;
 
+	#userShipBuild;
 	generateMarkup() {
-		const userShipBuild = this._data;
+		this.#userShipBuild = this._data;
 
-		const markup = `
-           <li>
-             <h5 class="${classNames.ordinanceGraphTitle}">
-               ${STRING.GRAPH_TITLE}
-             </h5>
-           </li>
-           <li class="${classNames.ordinanceGraphBody}">
-             <div class="${classNames.ordinanceGraphPoints}">
-               <h5 class="${classNames.ordinancePointsRenderTextClass}">${userShipBuild.ordinancePoints}</h5>
-               <span> / </span>
-               <h5 class="${classNames.ordinanceGraphPointsMaxPoints}">${userShipBuild.maxOrdinancePoints}</h5>
-             </div>
-           </li>
-          `;
-		return markup;
+		return this.#ordinancePointsMarkup();
 	}
+	#ordinancePointsMarkup = () =>
+		`<li>
+          <h5 class="${classNames.ordinanceGraphTitle}">
+            ${STRING.GRAPH_TITLE}
+          </h5>
+        </li>
+        <li class="${classNames.ordinanceGraphBody}">
+          <div class="${classNames.ordinanceGraphPoints}">
+            <h5 class="${classNames.ordinancePointsRenderTextClass}">
+              ${this.#userShipBuild.ordinancePoints || 0}
+            </h5>
+            <span> / </span>
+            <h5 class="${classNames.ordinanceGraphPointsMaxPoints}">
+              ${this.#userShipBuild.maxOrdinancePoints}
+            </h5>
+          </div>
+        </li>`;
 }
 export default new OrdinancePointsView();

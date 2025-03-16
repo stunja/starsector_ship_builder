@@ -10,28 +10,35 @@ import { normalizedHullSize } from "./HullModHelper";
 const VALUE_CHANGE = {
 	INCREASE: "increase",
 	DECREASE: "decrease",
+	MULTIPLY: "multiply",
+	DIVISION: "division ",
 };
 const UI_TAGS = {
 	LOGISTICS: "Logistics",
 };
 // Simple Percent converter
-export const convertStringPercentIntoNumber = (
-	string,
-	action,
-	valueToModify
-) => {
+const convertStringPercentIntoNumber = (string, action, valueToModify) => {
 	if (typeof string !== "string" || !string.includes("%")) {
 		throw new Error("Invalid percentage string format");
 	}
 	const percent = Number.parseInt(string) / 100;
 	const percentValue = valueToModify * percent;
 
-	const finalValue =
-		action === VALUE_CHANGE.INCREASE
-			? valueToModify + percentValue
-			: valueToModify - percentValue;
-
-	return finalValue;
+	if (action === VALUE_CHANGE.INCREASE) {
+		return valueToModify + percentValue;
+	}
+	if (action === VALUE_CHANGE.DECREASE) {
+		return valueToModify - percentValue;
+	}
+	if (action === VALUE_CHANGE.MULTIPLY) {
+		return valueToModify * percentValue;
+	}
+	if (action === VALUE_CHANGE.DIVISION) {
+		return valueToModify / percentValue;
+	}
+	if (action === VALUE_CHANGE.RETURN) {
+		return percentValue;
+	}
 };
 const hullModHullSizeConverter = (
 	target,
@@ -48,7 +55,63 @@ const hullModHullSizeConverter = (
 
 	if (target === HULL_SIZE.CAPITAL_SHIP) return capital;
 };
+const updateOrdinancePoints = function (ordinancePoints, hullMod, hullSize) {
+	return ordinancePoints + normalizedHullSize(hullMod, hullSize);
+};
 
+// If Civilian increases maintenance supply use by 100%
+const isCivilianInreaseSuppliesPerMonth = function (
+	hullMods,
+	increaseOfSupplyUseIfCivilian,
+	suppliesPerMonth
+) {
+	const isCivilian = hullMods.builtInMods.some(
+		({ id }) => id === HULLMODS.BUILD_IN.civgrade.id
+	);
+
+	const updateSuppliesPerMonth = convertStringPercentIntoNumber(
+		increaseOfSupplyUseIfCivilian,
+		VALUE_CHANGE.INCREASE,
+		suppliesPerMonth
+	);
+
+	return isCivilian ? updateSuppliesPerMonth : suppliesPerMonth;
+};
+
+// Increases maximum crew
+const updateMaxCrew = function (
+	hullSize,
+	frigateFlux,
+	destroyerFlux,
+	cruiserFlux,
+	capitalFlux,
+	increaseByPercentValue,
+	maxCrew
+) {
+	const maximumCrewCapacityBasedOnHullSize = hullModHullSizeConverter(
+		hullSize,
+		frigateFlux,
+		destroyerFlux,
+		cruiserFlux,
+		capitalFlux
+	);
+
+	const percentOfMaxCrew = convertStringPercentIntoNumber(
+		increaseByPercentValue,
+		VALUE_CHANGE.RETURN,
+		maxCrew
+	);
+
+	// whichever is higher
+
+	const crewFromFixedValue = maxCrew + maximumCrewCapacityBasedOnHullSize;
+
+	const crewFromPercentage = maxCrew + percentOfMaxCrew;
+
+	return Math.max(crewFromFixedValue, crewFromPercentage);
+};
+
+//
 export const HULLMODS = {
 	// BUILD-IN
 	// NO FILTER REASON => ONLY LOGIC
@@ -369,12 +432,14 @@ export const HULLMODS = {
 					cruiserFlux,
 					capitalFlux
 				);
+
+				const newArmor = armor + valueBasedOnHullSize;
+
 				// Add OP cost
 				const newOrdinancePoints =
 					ordinancePoints + normalizedHullSize(hullMod, hullSize);
 
-				const newArmor = armor + valueBasedOnHullSize;
-				console.log(ordinancePoints, normalizedHullSize(hullMod, hullSize));
+				console.log(newOrdinancePoints);
 				return {
 					...userShipBuild,
 					ordinancePoints: newOrdinancePoints,
@@ -685,6 +750,81 @@ export const HULLMODS = {
 		},
 	},
 	LOGISTICS: {
+		// Additional Berthing
+		additional_berthing: {
+			id: "additional_berthing",
+			name: "Additional Berthing",
+			_whyNot:
+				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
+			reason: {
+				maxLogisticsReason: "Only 2 Logistics Mods Per Ship",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { installedHullMods } = userShipBuild.hullMods;
+
+				const { id: currentId, reason } =
+					HULLMODS.LOGISTICS.additional_berthing;
+
+				// Max 2 Logistics Mods Per Ship
+				const maxLogisticsLimit = installedHullMods.filter(
+					({ id, uiTags }) =>
+						id !== currentId && uiTags.includes(UI_TAGS.LOGISTICS)
+				).length;
+
+				if (maxLogisticsLimit >= 2) return [hullMod, reason.maxLogisticsReason];
+
+				return null;
+			},
+
+			// Increases maximum crew capacity by 30/60/100/200, depending on hull size, or by 30%, whichever is higher.
+			// For civilian-grade hulls, also increases maintenance supply use by 100%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const {
+					ordinancePoints,
+					hullSize,
+					maxCrew,
+					hullMods,
+					suppliesPerMonth,
+				} = userShipBuild;
+
+				// Extract Values
+				const {
+					regularValues: [
+						frigateFlux,
+						destroyerFlux,
+						cruiserFlux,
+						capitalFlux,
+						increaseByPercentValue,
+						increaseOfSupplyUseIfCivilian,
+					],
+				} = hullMod.effectValues;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					suppliesPerMonth: isCivilianInreaseSuppliesPerMonth(
+						hullMods,
+						increaseOfSupplyUseIfCivilian,
+						suppliesPerMonth
+					),
+					maxCrew: updateMaxCrew(
+						hullSize,
+						frigateFlux,
+						destroyerFlux,
+						cruiserFlux,
+						capitalFlux,
+						increaseByPercentValue,
+						maxCrew
+					),
+				};
+			},
+			// S-mod bonus: Doubles the crew capacity increase and, for civilian hulls, negates the maintenance cost increase.
+		},
 		// Auxiliary Fuel Tanks
 		auxiliary_fuel_tanks: {
 			id: "auxiliary_fuel_tanks",
@@ -718,36 +858,7 @@ export const HULLMODS = {
 			// S-mod bonus: Doubles the fuel capacity increase and, for civilian hulls,
 			// negates the maintenance cost increase.
 		},
-		// Additional Berthing
-		additional_berthing: {
-			id: "additional_berthing",
-			name: "Additional Berthing",
-			_whyNot:
-				"hullmod that can be installed on any ship. Ships are limited to 2 such logistics hullmods at any one time.",
-			reason: {
-				maxLogisticsReason: "Only 2 Logistics Mods Per Ship",
-			},
-			filterReason: function (hullMod, userShipBuild) {
-				const { installedHullMods } = userShipBuild.hullMods;
 
-				const { id: currentId, reason } =
-					HULLMODS.LOGISTICS.additional_berthing;
-
-				// Max 2 Logistics Mods Per Ship
-				const maxLogisticsLimit = installedHullMods.filter(
-					({ id, uiTags }) =>
-						id !== currentId && uiTags.includes(UI_TAGS.LOGISTICS)
-				).length;
-
-				if (maxLogisticsLimit >= 2) return [hullMod, reason.maxLogisticsReason];
-
-				return null;
-			},
-			// "Shield => FRONT and has a 90 degree arc. Top speed decrease by 20%",
-			hullModLogic: function (userShipBuild, hullMod) {},
-			// S-mod bonus: Doubles the crew capacity increase and, for civilian hulls,
-			// negates the maintenance cost increase.
-		},
 		// Efficiency Overhaul
 		efficiency_overhaul: {
 			id: "efficiency_overhaul",
@@ -1147,6 +1258,7 @@ export const HULLMODS = {
 				return null;
 			},
 		},
+		//! unfinished
 		// Accelerated Shields
 		advancedshieldemitter: {
 			id: "advancedshieldemitter",
@@ -1165,6 +1277,21 @@ export const HULLMODS = {
 
 				return null;
 			},
+
+			// Increases the turn rate of the ship's shields by 100% and the rate at which they are raised by 100%
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				// Add OP cost
+				const newOrdinancePoints =
+					ordinancePoints + normalizedHullSize(hullMod, hullSize);
+
+				return {
+					...userShipBuild,
+					ordinancePoints: newOrdinancePoints,
+				};
+			},
+			// S-mod bonus: Increases the shield's turn rate and raise rate by an additional 100%
 		},
 		// Stabilized Shields
 		stabilizedshieldemitter: {
@@ -1577,7 +1704,7 @@ export const HULLMODS_DATA = {
 	"Automated Repair Unit": [["50%"], ["25%", "33%"]],
 	"Armored Weapon Mounts": [["100%", "25%", "25%", "10%"], ["10%"]],
 	"Advanced Turret Gyros": [["75%"], ["25%", "5%"]],
-	"Additional Berthing": [[30, 60, 100, 200, "30%", "50%"], []],
+	"Additional Berthing": [[30, 60, 100, 200, "30%", "100%"], []],
 	"Auxiliary Fuel Tanks": [[30, 60, 100, 200, "30%", "50%"], []],
 	"Augmented Drive Field": [[2], [1]],
 	"Extended Shields": [[60], [60]],

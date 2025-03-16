@@ -58,6 +58,7 @@ export default class ViewModel {
 	updateUserShipBuildWithHullModLogic() {
 		const userShipBuild = this.getUserShipBuild();
 		const baseUserShipBuild = this._getBaseShipBuild();
+
 		const { installedHullMods } = userShipBuild.hullMods;
 		const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
 
@@ -84,7 +85,6 @@ export default class ViewModel {
 					: null;
 			})
 			.filter(Boolean);
-
 		// update or reset userShipBuild
 		const updateUserShipBuild =
 			userShipBuildWithActiveHullModEffect.length > 0

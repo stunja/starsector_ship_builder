@@ -58,6 +58,7 @@ export default class CapacitorsAndVents extends ViewModel {
 	#userShipBuild;
 	#currentFluxCapacity;
 	#currentFluxDissipation;
+	#currentOrdinancePoints;
 
 	constructor(model) {
 		super(model);
@@ -66,40 +67,43 @@ export default class CapacitorsAndVents extends ViewModel {
 	update() {
 		this.#processData();
 		this.#capacitorHandler();
-
 		this.#ventsHandler();
+
 		this.#updateValues();
 	}
 	#processData() {
 		this.#currentFluxCapacity = this.#userShipBuild.fluxCapacity;
 		this.#currentFluxDissipation = this.#userShipBuild.fluxDissipation;
+		this.#currentOrdinancePoints = this.#userShipBuild.ordinancePoints;
 	}
 	#updateValues() {
 		this.#userShipBuild = this.getUserShipBuild();
 
 		const {
-			fluxCapacity,
-			fluxDissipation,
 			fluxCapacityPerSingleActiveCapacitor,
 			capacitors,
 			capacitorsOrdinanceCost,
-			ordinancePoints,
 			vents,
 			fluxDissipationPerSingleActiveVent,
 		} = this.#userShipBuild;
 
+		// Update Capacity
 		const updateFluxCapacity =
 			this.#currentFluxCapacity +
 			fluxCapacityPerSingleActiveCapacitor * capacitors;
 
+		// Update Dissipation
 		const updateFluxDissipation =
 			this.#currentFluxDissipation + fluxDissipationPerSingleActiveVent * vents;
 
-		const updateOrdinanceCost = capacitors * capacitorsOrdinanceCost;
+		// Ordinance Cost
+		const updateOrdinancePoints =
+			this.#currentOrdinancePoints +
+			(capacitors + vents) * capacitorsOrdinanceCost;
 
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,
-			ordinancePoints: updateOrdinanceCost,
+			ordinancePoints: updateOrdinancePoints,
 			fluxCapacity: updateFluxCapacity,
 			fluxDissipation: updateFluxDissipation,
 		});
@@ -108,6 +112,7 @@ export default class CapacitorsAndVents extends ViewModel {
 
 		OrdinancePointsView.render(this.#userShipBuild);
 		ShieldOrPhaseView.render(this.#userShipBuild);
+
 		this.#capacitorHandler();
 		this.#ventsHandler();
 	}
