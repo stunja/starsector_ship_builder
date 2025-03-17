@@ -125,5 +125,37 @@ const HullModHelper = {
 	updateMaxShipBurn(currentShipBurn, incrementShipBurn) {
 		return currentShipBurn + incrementShipBurn;
 	},
+	// Increases fuel capacity
+	updateFuelCapacity(
+		hullSize,
+		frigateFlux,
+		destroyerFlux,
+		cruiserFlux,
+		capitalFlux,
+		increaseByPercentValue,
+		fuelCap
+	) {
+		const maximumBasedOnHullSize = this.hullModHullSizeConverter(
+			hullSize,
+			frigateFlux,
+			destroyerFlux,
+			cruiserFlux,
+			capitalFlux
+		);
+
+		const percentOfMax = this.convertStringPercentIntoNumber(
+			increaseByPercentValue,
+			VALUE_CHANGE.RETURN,
+			fuelCap
+		);
+
+		// whichever is higher
+
+		const valueFromFixedValue = fuelCap + maximumBasedOnHullSize;
+
+		const valueFromPercentage = fuelCap + percentOfMax;
+
+		return Math.max(valueFromFixedValue, valueFromPercentage);
+	},
 };
 export default HullModHelper;
