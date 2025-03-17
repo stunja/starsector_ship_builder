@@ -5,7 +5,7 @@ import DataSet from "../../helper/DataSet.js";
 import URL from "../../helper/url.js";
 import classNames from "../../helper/DomClassNames.js";
 import { GENERIC_STRING } from "../../helper/MagicStrings.js";
-import { normalizedHullSize } from "../../components/Hullmods/HullModHelper.js";
+import HullModHelper from "../../components/Hullmods/HullModHelper.js";
 
 const BUTTON_TYPE = {
 	MINUS: "-",
@@ -48,7 +48,7 @@ class InstalledHullMods extends View {
 	// Markups
 	#hullModCostMarkup = (currentHullMod) => `
 				<p class="${classNames.hullModCost}">
-					[${normalizedHullSize(currentHullMod, this.#hullSize)}]
+					[${HullModHelper.normalizedHullSize(currentHullMod, this.#hullSize)}]
 				</p>`;
 
 	#buttonMarkup = (currentHullMod) =>

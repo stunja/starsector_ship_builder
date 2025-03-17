@@ -12,7 +12,7 @@ import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilter
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import { updateInstalledHullMod } from "./HullModHelper";
+import HullModHelper from "./HullModHelper";
 import HullModFilter from "./HullModFilter";
 
 import {
@@ -274,7 +274,7 @@ export default class HullModsPopUp extends ViewModel {
 		//! remove this
 		this.#test(hullmodId);
 
-		const updatedHullMods = updateInstalledHullMod(
+		const updatedHullMods = HullModHelper.updateInstalledHullMod(
 			hullmodId,
 			userShipBuild,
 			this.#usableHullMods

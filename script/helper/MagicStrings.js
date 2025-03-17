@@ -10,3 +10,11 @@ export const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
 	HOVER: "mouseover",
 };
+
+// HullModHelper
+export const VALUE_CHANGE = {
+	INCREASE: "increase",
+	DECREASE: "decrease",
+	MULTIPLY: "multiply",
+	DIVISION: "division ",
+};

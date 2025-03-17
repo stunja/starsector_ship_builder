@@ -3,8 +3,8 @@ import DataSet from "../../helper/DataSet.js";
 import URL from "../../helper/url.js";
 // View
 import View from "../view.js";
-import { normalizedHullSize } from "../../components/Hullmods/HullModHelper.js";
 import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import HullModHelper from "../../components/Hullmods/HullModHelper.js";
 // Helper
 
 const HULLMOD_ARRAY_TYPE = {
@@ -70,7 +70,7 @@ class HullModsPopUpTableView extends View {
 
 	#opCostMarkup = (currentHullMod) =>
 		`<li class="${classNames.tableEntry}">
-			<p>${normalizedHullSize(currentHullMod, this.#hullSize)}</p>
+			<p>${HullModHelper.normalizedHullSize(currentHullMod, this.#hullSize)}</p>
 		</li>`;
 
 	#reasonMarkup = (string) => {

@@ -8,7 +8,7 @@ import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 // Helper
 import classNames from "../../helper/DomClassNames";
 import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import { updateInstalledHullMod } from "./HullModHelper";
+import HullModHelper from "./HullModHelper";
 
 const EVENT_LISTENER_TARGET = {
 	HULLMODS: `.${classNames.hullMods__button}`,
@@ -71,7 +71,7 @@ export default class HullModController extends ViewModel {
 		const { hullmodId } = btn.dataset;
 		const userShipBuild = this.getUserShipBuild();
 
-		const updatedHullMods = updateInstalledHullMod(
+		const updatedHullMods = HullModHelper.updateInstalledHullMod(
 			hullmodId,
 			userShipBuild,
 			this.#allHullMods

@@ -5,110 +5,11 @@ import {
 	SHIP_TYPE,
 } from "../../helper/Properties";
 
-import { normalizedHullSize } from "./HullModHelper";
+import HullModHelper from "./HullModHelper";
+import { VALUE_CHANGE } from "../../helper/MagicStrings";
 
-const VALUE_CHANGE = {
-	INCREASE: "increase",
-	DECREASE: "decrease",
-	MULTIPLY: "multiply",
-	DIVISION: "division ",
-};
 const UI_TAGS = {
 	LOGISTICS: "Logistics",
-};
-// Simple Percent converter
-const convertStringPercentIntoNumber = (string, action, valueToModify) => {
-	if (typeof string !== "string" || !string.includes("%")) {
-		throw new Error("Invalid percentage string format");
-	}
-	const percent = Number.parseInt(string) / 100;
-	const percentValue = valueToModify * percent;
-
-	if (action === VALUE_CHANGE.INCREASE) {
-		return valueToModify + percentValue;
-	}
-	if (action === VALUE_CHANGE.DECREASE) {
-		return valueToModify - percentValue;
-	}
-	if (action === VALUE_CHANGE.MULTIPLY) {
-		return valueToModify * percentValue;
-	}
-	if (action === VALUE_CHANGE.DIVISION) {
-		return valueToModify / percentValue;
-	}
-	if (action === VALUE_CHANGE.RETURN) {
-		return percentValue;
-	}
-};
-const hullModHullSizeConverter = (
-	target,
-	frigate,
-	destroyer,
-	cruiser,
-	capital
-) => {
-	if (target === HULL_SIZE.FRIGATE) return frigate;
-
-	if (target === HULL_SIZE.DESTROYER) return destroyer;
-
-	if (target === HULL_SIZE.CRUISER) return cruiser;
-
-	if (target === HULL_SIZE.CAPITAL_SHIP) return capital;
-};
-const updateOrdinancePoints = function (ordinancePoints, hullMod, hullSize) {
-	return ordinancePoints + normalizedHullSize(hullMod, hullSize);
-};
-
-// If Civilian increases maintenance supply use by 100%
-const isCivilianInreaseSuppliesPerMonth = function (
-	hullMods,
-	increaseOfSupplyUseIfCivilian,
-	suppliesPerMonth
-) {
-	const isCivilian = hullMods.builtInMods.some(
-		({ id }) => id === HULLMODS.BUILD_IN.civgrade.id
-	);
-
-	const updateSuppliesPerMonth = convertStringPercentIntoNumber(
-		increaseOfSupplyUseIfCivilian,
-		VALUE_CHANGE.INCREASE,
-		suppliesPerMonth
-	);
-
-	return isCivilian ? updateSuppliesPerMonth : suppliesPerMonth;
-};
-
-// Increases maximum crew
-const updateMaxCrew = function (
-	hullSize,
-	frigateFlux,
-	destroyerFlux,
-	cruiserFlux,
-	capitalFlux,
-	increaseByPercentValue,
-	maxCrew
-) {
-	const maximumCrewCapacityBasedOnHullSize = hullModHullSizeConverter(
-		hullSize,
-		frigateFlux,
-		destroyerFlux,
-		cruiserFlux,
-		capitalFlux
-	);
-
-	const percentOfMaxCrew = convertStringPercentIntoNumber(
-		increaseByPercentValue,
-		VALUE_CHANGE.RETURN,
-		maxCrew
-	);
-
-	// whichever is higher
-
-	const crewFromFixedValue = maxCrew + maximumCrewCapacityBasedOnHullSize;
-
-	const crewFromPercentage = maxCrew + percentOfMaxCrew;
-
-	return Math.max(crewFromFixedValue, crewFromPercentage);
 };
 
 //
@@ -166,19 +67,21 @@ export const HULLMODS = {
 				] = hullMod.effectValues.regularValues;
 
 				// New Armor Value
-				const newArmorValue = convertStringPercentIntoNumber(
+				const newArmorValue = HullModHelper.convertStringPercentIntoNumber(
 					addArmorPercent,
 					VALUE_CHANGE.INCREASE,
 					armor
 				);
 				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-				console.log(userShipBuild);
+
 				return {
 					...userShipBuild,
 					armor: newArmorValue,
-					ordinancePoints: newOrdinancePoints,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
 				};
 			},
 			// S-mod bonus: Increases the rate of fire of all non-missile weapons by 10%.
