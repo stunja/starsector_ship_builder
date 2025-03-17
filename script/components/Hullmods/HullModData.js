@@ -66,17 +66,15 @@ export const HULLMODS = {
 					addArmorPercent,
 				] = hullMod.effectValues.regularValues;
 
-				// New Armor Value
-				const newArmorValue = HullModHelper.convertStringPercentIntoNumber(
-					addArmorPercent,
-					VALUE_CHANGE.INCREASE,
-					armor
-				);
-				// Add OP cost
-
 				return {
 					...userShipBuild,
-					armor: newArmorValue,
+					// New Armor Value
+					armor: HullModHelper.convertStringPercentIntoNumber(
+						addArmorPercent,
+						VALUE_CHANGE.INCREASE,
+						armor
+					),
+					// Add OP cost
 					ordinancePoints: HullModHelper.updateOrdinancePoints(
 						ordinancePoints,
 						hullMod,
@@ -692,30 +690,29 @@ export const HULLMODS = {
 				} = userShipBuild;
 
 				// Extract Values
-				const {
-					regularValues: [
-						frigateFlux,
-						destroyerFlux,
-						cruiserFlux,
-						capitalFlux,
-						increaseByPercentValue,
-						increaseOfSupplyUseIfCivilian,
-					],
-				} = hullMod.effectValues;
+				const [
+					frigateFlux,
+					destroyerFlux,
+					cruiserFlux,
+					capitalFlux,
+					increaseByPercentValue,
+					increaseOfSupplyUseIfCivilian,
+				] = hullMod.effectValues.regularValues;
 
 				return {
 					...userShipBuild,
-					ordinancePoints: updateOrdinancePoints(
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
 						ordinancePoints,
 						hullMod,
 						hullSize
 					),
-					suppliesPerMonth: isCivilianInreaseSuppliesPerMonth(
+					suppliesPerMonth: HullModHelper.isCivilianInreaseSuppliesPerMonth(
 						hullMods,
 						increaseOfSupplyUseIfCivilian,
-						suppliesPerMonth
+						suppliesPerMonth,
+						HULLMODS.BUILD_IN.civgrade.id
 					),
-					maxCrew: updateMaxCrew(
+					maxCrew: HullModHelper.updateMaxCrew(
 						hullSize,
 						frigateFlux,
 						destroyerFlux,
@@ -1097,7 +1094,23 @@ export const HULLMODS = {
 			},
 
 			// Increases the maximum burn level by 2.
-			hullModLogic: function (userShipBuild, hullMod) {},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, shipBurn } = userShipBuild;
+
+				// Extract Values
+
+				const [increaseMaxBurn] = hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					shipBurn: HullModHelper.updateMaxShipBurn(shipBurn, increaseMaxBurn),
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullSize,
+						hullMod
+					),
+				};
+			},
 			// S-mod bonus: Increases maximum burn level by a further +1.
 			sModsLogic: function () {},
 		},

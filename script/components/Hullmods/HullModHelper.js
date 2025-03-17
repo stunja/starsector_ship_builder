@@ -1,5 +1,11 @@
 // Helper
 import { VALUE_CHANGE } from "../../helper/MagicStrings";
+import {
+	SHIELD_TYPE,
+	WEAPON_SLOT_TYPE,
+	HULL_SIZE,
+	SHIP_TYPE,
+} from "../../helper/Properties";
 
 const HULLMOD_HULLSIZE = {
 	CAPITAL_SHIP: "cost_capital",
@@ -70,11 +76,10 @@ const HullModHelper = {
 	isCivilianInreaseSuppliesPerMonth(
 		hullMods,
 		increaseOfSupplyUseIfCivilian,
-		suppliesPerMonth
+		suppliesPerMonth,
+		civGradeId
 	) {
-		const isCivilian = hullMods.builtInMods.some(
-			({ id }) => id === HULLMODS.BUILD_IN.civgrade.id
-		);
+		const isCivilian = hullMods.builtInMods.some(({ id }) => id === civGradeId);
 
 		const updateSuppliesPerMonth = this.convertStringPercentIntoNumber(
 			increaseOfSupplyUseIfCivilian,
@@ -115,6 +120,10 @@ const HullModHelper = {
 		const crewFromPercentage = maxCrew + percentOfMaxCrew;
 
 		return Math.max(crewFromFixedValue, crewFromPercentage);
+	},
+	// Increase Max Ship Burn
+	updateMaxShipBurn(currentShipBurn, incrementShipBurn) {
+		return currentShipBurn + incrementShipBurn;
 	},
 };
 export default HullModHelper;
