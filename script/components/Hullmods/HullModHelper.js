@@ -125,6 +125,7 @@ const HullModHelper = {
 	updateMaxShipBurn(currentShipBurn, incrementShipBurn) {
 		return currentShipBurn + incrementShipBurn;
 	},
+
 	// Increases fuel capacity
 	updateFuelCapacity(
 		hullSize,
@@ -156,6 +157,39 @@ const HullModHelper = {
 		const valueFromPercentage = fuelCap + percentOfMax;
 
 		return Math.max(valueFromFixedValue, valueFromPercentage);
+	},
+
+	// Increase Cargo Capacity
+	increaseCargo(cargoCap, increaseCargoBy, countBuiltInWings) {
+		return cargoCap + increaseCargoBy * countBuiltInWings;
+	},
+
+	// Decrease Min Crew Requirment
+	decreaseMinCrewReq(
+		minCrew,
+		reduceMinCrewPerFighterBay,
+		crewReductionLimit,
+		countBuiltInWings
+	) {
+		const percentOfReduceMinCrewPerFighterBay =
+			this.convertStringPercentIntoNumber(
+				reduceMinCrewPerFighterBay,
+				VALUE_CHANGE.RETURN,
+				minCrew
+			);
+
+		const percentOfCrewReductionLimit = this.convertStringPercentIntoNumber(
+			crewReductionLimit,
+			VALUE_CHANGE.RETURN,
+			minCrew
+		);
+
+		// if less than 80%, use first value, if not use second value (which is limit value)
+		const decreaseBy = Math.min(
+			percentOfReduceMinCrewPerFighterBay * countBuiltInWings,
+			percentOfCrewReductionLimit
+		);
+		return minCrew - decreaseBy;
 	},
 };
 export default HullModHelper;

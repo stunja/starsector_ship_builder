@@ -293,20 +293,22 @@ export const HULLMODS = {
 				const [increaseHullIntegrity, _crewCasulties] =
 					hullMod.effectValues.regularValues;
 
-				// New Armor Value
-				const newHullIntegrity = convertStringPercentIntoNumber(
-					increaseHullIntegrity,
-					VALUE_CHANGE.INCREASE,
-					hitPoints
-				);
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					hitPoints: newHullIntegrity,
+
+					// Add OP cost
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+
+					// New Armor Value
+					hitPoints: HullModHelper.convertStringPercentIntoNumber(
+						increaseHullIntegrity,
+						VALUE_CHANGE.INCREASE,
+						hitPoints
+					),
 				};
 			},
 			// S-mod bonus: Increases the crew casualty reduction to 85%.
@@ -942,8 +944,45 @@ export const HULLMODS = {
 
 				return null;
 			},
-			// Converts the ship's fighter bays housing built-in wings into improvised cargo holds, giving it an additional 50 cargo and reducing it's crew requirements by 20% per fighter bay. The crew reduction is limited to a maximum of 80%.
-			hullModLogic: function (userShipBuild, hullMod) {},
+
+			// Converts the ship's fighter bays housing built-in wings into improvised cargo holds, giving it an additional 50 cargo
+			// and reducing it's crew requirements by 20% per fighter bay.
+			// The crew reduction is limited to a maximum of 80%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, secondaryData, cargoCap, minCrew } =
+					userShipBuild;
+
+				const { builtInWings } = secondaryData;
+				const countBuiltInWings = builtInWings.length;
+
+				// Extract Values
+				const [
+					increaseCargoBy,
+					reduceMinCrewPerFighterBay,
+					crewReductionLimit,
+				] = hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					minCrew: HullModHelper.decreaseMinCrewReq(
+						minCrew,
+						reduceMinCrewPerFighterBay,
+						crewReductionLimit,
+						countBuiltInWings
+					),
+					cargoCap: HullModHelper.increaseCargo(
+						cargoCap,
+						increaseCargoBy,
+						countBuiltInWings
+					),
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 			// S-mod bonus: Monthly maintenance cost reduced by 15% per fighter bay.
 			sModsLogic: function () {},
 		},
@@ -1617,35 +1656,36 @@ export const HULLMODS = {
 					deceleration,
 				} = userShipBuild;
 				const [increaseManeuverability] = hullMod.effectValues.regularValues;
-				// Increase in acceleration
-				const newAcceleration = convertStringPercentIntoNumber(
-					increaseManeuverability,
-					VALUE_CHANGE.INCREASE,
-					acceleration
-				);
-
-				// Increase in deceleration
-				const newDeceleration = convertStringPercentIntoNumber(
-					increaseManeuverability,
-					VALUE_CHANGE.INCREASE,
-					deceleration
-				);
-				// Increase in turnAcceleration
-				const newTurnAcceleration = convertStringPercentIntoNumber(
-					increaseManeuverability,
-					VALUE_CHANGE.INCREASE,
-					turnAcceleration
-				);
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
 
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					acceleration: newAcceleration,
-					deceleration: newDeceleration,
-					turnAcceleration: newTurnAcceleration,
+					// Add OP cost
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+
+					// Increase in acceleration
+					acceleration: HullModHelper.convertStringPercentIntoNumber(
+						increaseManeuverability,
+						VALUE_CHANGE.INCREASE,
+						acceleration
+					),
+
+					// Increase in deceleration
+					deceleration: HullModHelper.convertStringPercentIntoNumber(
+						increaseManeuverability,
+						VALUE_CHANGE.INCREASE,
+						deceleration
+					),
+
+					// Increase in turnAcceleration
+					turnAcceleration: HullModHelper.convertStringPercentIntoNumber(
+						increaseManeuverability,
+						VALUE_CHANGE.INCREASE,
+						turnAcceleration
+					),
 				};
 			},
 
