@@ -172,5 +172,9 @@ const HullModHelper = {
 			target
 		);
 	},
+	// Increases the crew required by 20 per fighter bay.
+	increaseMinCrewByFighterBay(minCrew, increaseCrewRequirement, fighterBays) {
+		return minCrew + increaseCrewRequirement * fighterBays;
+	},
 };
 export default HullModHelper;

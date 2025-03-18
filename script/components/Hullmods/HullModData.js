@@ -453,18 +453,20 @@ export const HULLMODS = {
 					increaseCrewRequirement,
 				] = hullMod.effectValues.regularValues;
 
-				// Increases the crew required by 20 per fighter bay.
-				const newCrewRequirement =
-					minCrew + increaseCrewRequirement * fighterBays;
-
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					minCrew: newCrewRequirement,
+					// Add OP cost
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					// Increases the crew required by 20 per fighter bay.
+					minCrew: HullModHelper.increaseMinCrewByFighterBay(
+						minCrew,
+						increaseCrewRequirement,
+						fighterBays
+					),
 				};
 			},
 		},
