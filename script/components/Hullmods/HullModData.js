@@ -177,11 +177,22 @@ export const HULLMODS = {
 					"Incompatible with Advanced Targeting Core",
 				hasDistributedFireControlReason:
 					"Incompatible with Distributed Fire Control",
+				isFrigateOrDestroyerReason: "Not on Frigate / Destroyer",
 			},
+
+			// Not frigate or destoyer
 			filterReason: function (hullMod, userShipBuild) {
 				const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+				const { hullSize } = userShipBuild;
 
 				const { reason } = HULLMODS.WEAPONS.dedicated_targeting_core;
+
+				// Not on Frigate / Destroyer
+				const isFrigateOrDestroyer =
+					hullSize === HULL_SIZE.FRIGATE || hullSize === HULL_SIZE.DESTROYER;
+
+				if (isFrigateOrDestroyer)
+					return [hullMod, reason.isFrigateOrDestroyerReason];
 
 				// Incompatible with Integrated Targeting Unit
 				const hasIntegratedTargetingUnitInstalled = installedHullMods.some(
@@ -832,7 +843,47 @@ export const HULLMODS = {
 			// Increases the combat readiness recovery and repair rates by 50%.
 			// The per-day supply consumption for CR recovery is increased to account for the
 			// increased recovery rate, but the total supply cost remains the same.",
-			hullModLogic: function (userShipBuild, hullMod) {},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const {
+					ordinancePoints,
+					hullSize,
+					minCrew,
+					fuelPerLY,
+					suppliesPerMonth,
+					crRecoveryPerDay,
+				} = userShipBuild;
+
+				// Extract Values
+				const [
+					supplyPerMonthFuelMinCrew,
+					increasesCombatReadinessRecoveryRepairRates,
+				] = hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					minCrew: HullModHelper.decreaseValue(
+						minCrew,
+						supplyPerMonthFuelMinCrew
+					),
+					fuelPerLY: HullModHelper.decreaseValue(
+						fuelPerLY,
+						supplyPerMonthFuelMinCrew
+					),
+					suppliesPerMonth: HullModHelper.decreaseValue(
+						suppliesPerMonth,
+						supplyPerMonthFuelMinCrew
+					),
+					crRecoveryPerDay: HullModHelper.increaseValue(
+						crRecoveryPerDay,
+						increasesCombatReadinessRecoveryRepairRates
+					),
+				};
+			},
 			// S-mod bonus: Reduces maintenance cost, fuel use, and minimum crew requirement by a further 10%.
 		},
 		// Expanded Cargo Holds

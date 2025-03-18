@@ -9,7 +9,7 @@ import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "astral"; // hound // venture
+const shipNameDev = "shepherd"; // hound // venture
 
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor

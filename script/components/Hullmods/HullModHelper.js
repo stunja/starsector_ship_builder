@@ -191,5 +191,19 @@ const HullModHelper = {
 		);
 		return minCrew - decreaseBy;
 	},
+	increaseValue(target, percentOfValueString) {
+		return this.convertStringPercentIntoNumber(
+			percentOfValueString,
+			VALUE_CHANGE.INCREASE,
+			target
+		);
+	},
+	decreaseValue(target, percentOfValueString) {
+		return this.convertStringPercentIntoNumber(
+			percentOfValueString,
+			VALUE_CHANGE.DECREASE,
+			target
+		);
+	},
 };
 export default HullModHelper;
