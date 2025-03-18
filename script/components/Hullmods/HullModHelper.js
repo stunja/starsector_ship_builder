@@ -89,15 +89,15 @@ const HullModHelper = {
 
 		return isCivilian ? updateSuppliesPerMonth : suppliesPerMonth;
 	},
-	// Increases maximum crew
-	updateMaxCrew(
+	// Increases Max Crew / Cargo / Fuel
+	updateMaxCrewCargoFuel(
 		hullSize,
 		frigateFlux,
 		destroyerFlux,
 		cruiserFlux,
 		capitalFlux,
 		increaseByPercentValue,
-		maxCrew
+		target
 	) {
 		const maximumCrewCapacityBasedOnHullSize = this.hullModHullSizeConverter(
 			hullSize,
@@ -107,56 +107,23 @@ const HullModHelper = {
 			capitalFlux
 		);
 
-		const percentOfMaxCrew = this.convertStringPercentIntoNumber(
+		const percentOftarget = this.convertStringPercentIntoNumber(
 			increaseByPercentValue,
 			VALUE_CHANGE.RETURN,
-			maxCrew
+			target
 		);
 
 		// whichever is higher
 
-		const crewFromFixedValue = maxCrew + maximumCrewCapacityBasedOnHullSize;
+		const crewFromFixedValue = target + maximumCrewCapacityBasedOnHullSize;
 
-		const crewFromPercentage = maxCrew + percentOfMaxCrew;
+		const crewFromPercentage = target + percentOftarget;
 
 		return Math.max(crewFromFixedValue, crewFromPercentage);
 	},
 	// Increase Max Ship Burn
 	updateMaxShipBurn(currentShipBurn, incrementShipBurn) {
 		return currentShipBurn + incrementShipBurn;
-	},
-
-	// Increases fuel capacity
-	updateFuelCapacity(
-		hullSize,
-		frigateFlux,
-		destroyerFlux,
-		cruiserFlux,
-		capitalFlux,
-		increaseByPercentValue,
-		fuelCap
-	) {
-		const maximumBasedOnHullSize = this.hullModHullSizeConverter(
-			hullSize,
-			frigateFlux,
-			destroyerFlux,
-			cruiserFlux,
-			capitalFlux
-		);
-
-		const percentOfMax = this.convertStringPercentIntoNumber(
-			increaseByPercentValue,
-			VALUE_CHANGE.RETURN,
-			fuelCap
-		);
-
-		// whichever is higher
-
-		const valueFromFixedValue = fuelCap + maximumBasedOnHullSize;
-
-		const valueFromPercentage = fuelCap + percentOfMax;
-
-		return Math.max(valueFromFixedValue, valueFromPercentage);
 	},
 
 	// Increase Cargo Capacity

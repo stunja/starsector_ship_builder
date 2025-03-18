@@ -725,7 +725,7 @@ export const HULLMODS = {
 						suppliesPerMonth,
 						HULLMODS.BUILD_IN.civgrade.id
 					),
-					maxCrew: HullModHelper.updateMaxCrew(
+					maxCrew: HullModHelper.updateMaxCrewCargoFuel(
 						hullSize,
 						frigateFlux,
 						destroyerFlux,
@@ -798,7 +798,7 @@ export const HULLMODS = {
 						suppliesPerMonth,
 						HULLMODS.BUILD_IN.civgrade.id
 					),
-					fuelCap: HullModHelper.updateFuelCapacity(
+					fuelCap: HullModHelper.updateMaxCrewCargoFuel(
 						hullSize,
 						frigateFlux,
 						destroyerFlux,
@@ -915,7 +915,48 @@ export const HULLMODS = {
 			// Increases maximum cargo capacity by 30/60/100/200, depending on hull size, or by 30%, whichever is higher.
 			// For civilian-grade hulls, also increases maintenance supply use by 50%.
 
-			hullModLogic: function (userShipBuild, hullMod) {},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const {
+					ordinancePoints,
+					hullSize,
+					cargoCap,
+					hullMods,
+					suppliesPerMonth,
+				} = userShipBuild;
+				// Extract Values
+				const [
+					frigateFlux,
+					destroyerFlux,
+					cruiserFlux,
+					capitalFlux,
+					increaseByPercentValue,
+					increaseOfSupplyUseIfCivilian,
+				] = hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					suppliesPerMonth: HullModHelper.isCivilianInreaseSuppliesPerMonth(
+						hullMods,
+						increaseOfSupplyUseIfCivilian,
+						suppliesPerMonth,
+						HULLMODS.BUILD_IN.civgrade.id
+					),
+					cargoCap: HullModHelper.updateMaxCrewCargoFuel(
+						hullSize,
+						frigateFlux,
+						destroyerFlux,
+						cruiserFlux,
+						capitalFlux,
+						increaseByPercentValue,
+						cargoCap
+					),
+				};
+			},
 
 			// S-mod bonus: Doubles the cargo capacity increase and, for civilian hulls,
 			// negates the maintenance cost increase.
