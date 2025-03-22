@@ -1276,12 +1276,6 @@ export const HULLMODS = {
 
 				return null;
 			},
-
-			// Reduces the heavy machinery and supplies required to perform surveys by 5/10/20/40 depending on hull size, down to a minimum of 5 for each.
-
-			hullModLogic: function (userShipBuild, hullMod) {},
-			// S-mod bonus: Increases the survey cost reduction by 100%.
-			sModsLogic: function () {},
 		},
 
 		// Augmented Drive Field
@@ -1356,7 +1350,6 @@ export const HULLMODS = {
 
 				// Already Has Front Shield
 				const isFrontShield = shieldType === SHIELD_TYPE.FRONT;
-
 				if (isFrontShield) return [hullMod, reason.hasFrontShieldReason];
 
 				// Must have a Shield
@@ -1385,7 +1378,6 @@ export const HULLMODS = {
 
 				// Already Has OMNI Shield
 				const hasOmniShield = shieldType === SHIELD_TYPE.OMNI;
-
 				if (hasOmniShield) return [hullMod, reason.hasOmniShieldReason];
 
 				// Must have a Shield
@@ -1397,7 +1389,6 @@ export const HULLMODS = {
 				return null;
 			},
 		},
-		//! unfinished
 		// Accelerated Shields
 		advancedshieldemitter: {
 			id: "advancedshieldemitter",
@@ -1421,13 +1412,13 @@ export const HULLMODS = {
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize } = userShipBuild;
 
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
 				};
 			},
 			// S-mod bonus: Increases the shield's turn rate and raise rate by an additional 100%
@@ -1450,6 +1441,28 @@ export const HULLMODS = {
 
 				return null;
 			},
+
+			// Reduces the amount of soft flux raised shields generate per second by 50%.
+			// Does not affect the hard flux generated as a result of shields taking damage.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, shieldUpkeep } = userShipBuild;
+
+				// Extract Values
+				const [reduceSoftFluxBy] = hullMod.effectValues.regularValues;
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					shieldUpkeep: HullModHelper.decreaseValue(
+						shieldUpkeep,
+						reduceSoftFluxBy
+					),
+				};
+			},
+			// S-mod bonus: Converts 10% of the hard flux damage taken by shields to soft flux.
 		},
 		// Hardened Shields
 		hardenedshieldemitter: {
@@ -1614,6 +1627,12 @@ export const HULLMODS = {
 				const { shieldType } = userShipBuild;
 				const { installedHullMods } = userShipBuild.hullMods;
 
+				// Already has Shield Shunt
+				const isShieldShuntInstalled = installedHullMods.some(
+					({ id }) => id === HULLMODS.SHIELD.shield_shunt.id
+				);
+				if (isShieldShuntInstalled) return null;
+
 				// Must have a shield
 				const noShield =
 					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
@@ -1635,37 +1654,28 @@ export const HULLMODS = {
 				const { ordinancePoints, armor, hullSize } = userShipBuild;
 
 				const [addArmorPercent] = hullMod.effectValues.regularValues;
-
-				// Remove Shield
-				const updateShieldType = SHIELD_TYPE.NONE;
-
-				// New Armor Value
-				const newArmorValue = convertStringPercentIntoNumber(
-					addArmorPercent,
-					VALUE_CHANGE.INCREASE,
-					armor
-				);
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
-				// Remove Shield Upkeep
-				const newShieldUpkeep = 0;
-
-				// Remove Shield Efficiency
-				const newShieldEfficiency = 0;
-
-				// Remove Shield Arc
-				const newShieldArc = 0;
+				console.log(armor);
+				console.log(addArmorPercent);
 
 				return {
 					...userShipBuild,
-					shieldType: updateShieldType,
-					shieldArc: newShieldArc,
-					armor: newArmorValue,
-					ordinancePoints: newOrdinancePoints,
-					shieldUpkeep: newShieldUpkeep,
-					shieldEfficiency: newShieldEfficiency,
+					// Remove Shield
+					shieldType: SHIELD_TYPE.NONE,
+					// Increase Shield
+					armor: HullModHelper.convertStringPercentIntoNumber(
+						addArmorPercent,
+						VALUE_CHANGE.INCREASE,
+						armor
+					),
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					// Clear Props
+					shieldArc: 0,
+					shieldUpkeep: 0,
+					shieldEfficiency: 0,
 				};
 			},
 			// S-mod bonus: Increases the ship's armor by an additional 15%.
