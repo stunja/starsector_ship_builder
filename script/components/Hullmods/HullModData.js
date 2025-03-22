@@ -325,6 +325,7 @@ export const HULLMODS = {
 			// S-mod bonus: Increases the crew casualty reduction to 85%.
 			sModsLogic: function () {},
 		},
+
 		// Heavy Armor
 		heavyarmor: {
 			id: "heavyarmor",
@@ -359,6 +360,35 @@ export const HULLMODS = {
 
 			// S-mod penalty: Reduces the ship's maneuverability by 25%.
 			sModsLogic: function () {},
+		},
+
+		// Reinforced Bulkheads
+		reinforcedhull: {
+			id: "reinforcedhull",
+			name: "Reinforced Bulkheads",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// Increases the ship's hull integrity by 40%. If disabled,
+			// the ship will not break apart and is almost always recoverable after the battle.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, hitPoints } = userShipBuild;
+
+				const [newHullIntegrity] = hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					hitPoints: HullModHelper.convertStringPercentIntoNumber(
+						newHullIntegrity,
+						VALUE_CHANGE.INCREASE,
+						hitPoints
+					),
+				};
+			},
 		},
 	},
 	FIGHTER: {
@@ -503,7 +533,7 @@ export const HULLMODS = {
 
 				// Only on Automated Ships
 				const automatedCheck = false;
-				if (automatedCheck) return [hullMod, reason.notAutomatedShip];
+				if (!automatedCheck) return [hullMod, reason.notAutomatedShip];
 
 				return null;
 			},
