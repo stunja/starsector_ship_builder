@@ -1148,7 +1148,28 @@ export const HULLMODS = {
 			// Increases the durability of the ship's engines by 100%, and the ship's hull integrity by 10%.
 			// The ship's sensor profile is also reduced by 50%.
 
-			hullModLogic: function (userShipBuild, hullMod) {},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, hitPoints, sensorProfile } =
+					userShipBuild;
+
+				// Extract Values
+				const [_engineDurability, newHullIntegrity, newSensorProfile] =
+					hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					hitPoints: HullModHelper.increaseValue(hitPoints, newHullIntegrity),
+					sensorProfile: HullModHelper.decreaseValue(
+						sensorProfile,
+						newSensorProfile
+					),
+				};
+			},
 			// S-mod bonus: Increases engine durability by a further 100%, and Increases the sensor profile reduction to 90%.
 			sModsLogic: function () {},
 		},
