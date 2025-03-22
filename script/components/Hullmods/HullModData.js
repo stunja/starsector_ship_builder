@@ -1800,6 +1800,42 @@ export const HULLMODS = {
 			// S-mod bonus: Increases 0-flux speed boost by 10, and doubles the 0-flux turn rate bonus.
 			sModsLogic: function () {},
 		},
+		// Nav Relay
+		nav_relay: {
+			id: "nav_relay",
+			name: "Nav Relay",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// When deployed in combat, increases the nav rating of your fleet by 2%/3%/4%/5%,
+			// depending on this ship's hull size.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, speed } = userShipBuild;
+
+				// Extract Values
+				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
+					hullMod.effectValues.regularValues;
+
+				console.log(userShipBuild);
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					speed: HullModHelper.increaseValue(
+						speed,
+						HullModHelper.hullModHullSizeConverter(
+							hullSize,
+							frigateFlux,
+							destroyerFlux,
+							cruiserFlux,
+							capitalFlux
+						)
+					),
+				};
+			},
+		},
 	},
 };
 // The Data was manually collected by Me.

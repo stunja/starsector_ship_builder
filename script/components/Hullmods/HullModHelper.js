@@ -36,6 +36,15 @@ const HullModHelper = {
 		const keyToFind = HULLMOD_HULLSIZE[shipSize];
 		return currentHullMod[keyToFind];
 	},
+	hullModHullSizeConverter(target, frigate, destroyer, cruiser, capital) {
+		if (target === HULL_SIZE.FRIGATE) return frigate;
+
+		if (target === HULL_SIZE.DESTROYER) return destroyer;
+
+		if (target === HULL_SIZE.CRUISER) return cruiser;
+
+		if (target === HULL_SIZE.CAPITAL_SHIP) return capital;
+	},
 	// Simple Percent converter
 	convertStringPercentIntoNumber(string, action, valueToModify) {
 		if (typeof string !== "string" || !string.includes("%")) {
@@ -59,15 +68,6 @@ const HullModHelper = {
 		if (action === VALUE_CHANGE.RETURN) {
 			return percentValue;
 		}
-	},
-	hullModHullSizeConverter(target, frigate, destroyer, cruiser, capital) {
-		if (target === HULL_SIZE.FRIGATE) return frigate;
-
-		if (target === HULL_SIZE.DESTROYER) return destroyer;
-
-		if (target === HULL_SIZE.CRUISER) return cruiser;
-
-		if (target === HULL_SIZE.CAPITAL_SHIP) return capital;
 	},
 	updateOrdinancePoints(ordinancePoints, hullMod, hullSize) {
 		return ordinancePoints + this.normalizedHullSize(hullMod, hullSize);
