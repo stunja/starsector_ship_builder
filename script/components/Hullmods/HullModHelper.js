@@ -176,5 +176,29 @@ const HullModHelper = {
 	increaseMinCrewByFighterBay(minCrew, increaseCrewRequirement, fighterBays) {
 		return minCrew + increaseCrewRequirement * fighterBays;
 	},
+	// Update Shield Arc
+	updateShieldArc(shieldArc, increaseShieldArc) {
+		const fullCircle = 360;
+		const totalShieldArc = shieldArc + increaseShieldArc;
+
+		return totalShieldArc >= fullCircle ? fullCircle : totalShieldArc;
+	},
+
+	// Increase Flux Capacity / Dissipation
+	updateFluxCapacityOrDissipation(
+		target,
+		hullSize,
+		[frigateFlux, destroyerFlux, cruiserFlux, capitalFlux]
+	) {
+		const valueBasedOnHullSize = this.hullModHullSizeConverter(
+			hullSize,
+			frigateFlux,
+			destroyerFlux,
+			cruiserFlux,
+			capitalFlux
+		);
+
+		return target + valueBasedOnHullSize;
+	},
 };
 export default HullModHelper;

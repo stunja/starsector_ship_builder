@@ -338,26 +338,22 @@ export const HULLMODS = {
 				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
 					hullMod.effectValues.regularValues;
 
-				// Value based on Hull Size
-				const valueBasedOnHullSize = hullModHullSizeConverter(
-					hullSize,
-					frigateFlux,
-					destroyerFlux,
-					cruiserFlux,
-					capitalFlux
-				);
-
-				const newArmor = armor + valueBasedOnHullSize;
-
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
-				console.log(newOrdinancePoints);
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					armor: newArmor,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					armor:
+						armor +
+						HullModHelper.hullModHullSizeConverter(
+							hullSize,
+							frigateFlux,
+							destroyerFlux,
+							cruiserFlux,
+							capitalFlux
+						),
 				};
 			},
 
@@ -555,29 +551,23 @@ export const HULLMODS = {
 				const [increasePeakOperatingTime, reduceDegradationOfCombatReasiness] =
 					hullMod.effectValues.regularValues;
 
-				// Increase PeakPerformance
-				const newPeakPerformance = convertStringPercentIntoNumber(
-					increasePeakOperatingTime,
-					VALUE_CHANGE.INCREASE,
-					peakPerformanceSec
-				);
-
-				// reduce CR loss
-				const newCRloss = convertStringPercentIntoNumber(
-					reduceDegradationOfCombatReasiness,
-					VALUE_CHANGE.INCREASE,
-					crLossPerSecond
-				);
-
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					peakPerformanceSec: newPeakPerformance,
-					crLossPerSecond: newCRloss,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					peakPerformanceSec: HullModHelper.convertStringPercentIntoNumber(
+						increasePeakOperatingTime,
+						VALUE_CHANGE.INCREASE,
+						peakPerformanceSec
+					),
+					crLossPerSecond: HullModHelper.convertStringPercentIntoNumber(
+						reduceDegradationOfCombatReasiness,
+						VALUE_CHANGE.INCREASE,
+						crLossPerSecond
+					),
 				};
 			},
 
@@ -597,26 +587,18 @@ export const HULLMODS = {
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize, fluxCapacity } = userShipBuild;
 
-				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
-					hullMod.effectValues.regularValues;
-
-				const valueBasedOnHullSize = hullModHullSizeConverter(
-					hullSize,
-					frigateFlux,
-					destroyerFlux,
-					cruiserFlux,
-					capitalFlux
-				);
-
-				const newFluxCapacity = fluxCapacity + valueBasedOnHullSize;
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					fluxCapacity: newFluxCapacity,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					fluxCapacity: HullModHelper.updateFluxCapacityOrDissipation(
+						fluxCapacity,
+						hullSize,
+						hullMod.effectValues.regularValues
+					),
 				};
 			},
 
@@ -637,27 +619,18 @@ export const HULLMODS = {
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize, fluxDissipation } = userShipBuild;
 
-				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
-					hullMod.effectValues.regularValues;
-
-				// Increase Flux Dissipation
-				const valueBasedOnHullSize = hullModHullSizeConverter(
-					hullSize,
-					frigateFlux,
-					destroyerFlux,
-					cruiserFlux,
-					capitalFlux
-				);
-
-				const newFluxDissipation = fluxDissipation + valueBasedOnHullSize;
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					fluxDissipation: newFluxDissipation,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					fluxDissipation: HullModHelper.updateFluxCapacityOrDissipation(
+						fluxDissipation,
+						hullSize,
+						hullMod.effectValues.regularValues
+					),
 				};
 			},
 
@@ -1002,7 +975,31 @@ export const HULLMODS = {
 			//  sensors provides diminishing returns. The higher the highest sensor
 			//  range increase from a single ship in the fleet, the later diminishing returns kick in.
 
-			hullModLogic: function (userShipBuild, hullMod) {},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, sensorStrength } = userShipBuild;
+
+				// Extract Values
+				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
+					hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					sensorStrength:
+						sensorStrength +
+						HullModHelper.hullModHullSizeConverter(
+							hullSize,
+							frigateFlux,
+							destroyerFlux,
+							cruiserFlux,
+							capitalFlux
+						),
+				};
+			},
 
 			// S-mod bonus: Increases the ship's in-combat vision range by 1000/1500/2000/2500, based on hull size.
 			sModsLogic: function () {},
@@ -1428,21 +1425,17 @@ export const HULLMODS = {
 
 				const [reduceShieldDamage] = hullMod.effectValues.regularValues;
 
-				// New Shield Efficiency
-				const newShieldEfficiency = convertStringPercentIntoNumber(
-					reduceShieldDamage,
-					VALUE_CHANGE.DECREASE,
-					shieldEfficiency
-				);
-
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					shieldEfficiency: newShieldEfficiency,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					shieldEfficiency: HullModHelper.decreaseValue(
+						shieldEfficiency,
+						reduceShieldDamage
+					),
 				};
 			},
 		},
@@ -1471,17 +1464,17 @@ export const HULLMODS = {
 
 				const [increaseShieldArc] = hullMod.effectValues.regularValues;
 
-				const totalShieldArc = shieldArc + increaseShieldArc;
-				const newShieldArc = totalShieldArc >= 360 ? 360 : totalShieldArc;
-
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-
 				return {
 					...userShipBuild,
-					ordinancePoints: newOrdinancePoints,
-					shieldArc: newShieldArc,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					shieldArc: HullModHelper.updateShieldArc(
+						shieldArc,
+						increaseShieldArc
+					),
 				};
 			},
 			// S-mod bonus: Increases the shield's coverage by an additional 60 degrees.
