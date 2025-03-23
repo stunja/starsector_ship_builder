@@ -1774,7 +1774,6 @@ export const HULLMODS = {
 			},
 		},
 	},
-	//! missing
 	ENGINE: {
 		// Safety Overrides
 		safetyoverrides: {
@@ -1820,11 +1819,11 @@ export const HULLMODS = {
 
 				return null;
 			},
-			//Disabling safety protocols increases the ship's top speed in combat by 50/30/20
+			// Disabling safety protocols increases the ship's top speed in combat by 50/30/20
 			// (depending on ship size, with a corresponding increase in acceleration) and allows the zero-flux engine boost to take effect
 			// regardless of flux level. The flux dissipation rate, including that of additional vents, is increased by a factor of 2.
 			// Reduces the peak performance time by a factor of 3, prevents the use of active venting,
-			// and drastically reduces weapon ranges past 450 units.
+			//// [IGNORE] and drastically reduces weapon ranges past 450 units.
 			// Can not be installed on civilian or capital ships.
 			hullModLogic: function (userShipBuild, hullMod) {
 				const {
