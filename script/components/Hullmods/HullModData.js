@@ -1388,6 +1388,23 @@ export const HULLMODS = {
 
 				return null;
 			},
+			// Converts frontal shields to omni-directional. Reduces the shield's arc by 30%.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize, shieldArc } = userShipBuild;
+				console.log(userShipBuild);
+				// Extract Values
+				const [lowerShieldArcBy] = hullMod.effectValues.regularValues;
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					shieldArc: HullModHelper.decreaseValue(shieldArc, lowerShieldArcBy),
+				};
+			},
+			// S-mod bonus: Negates the shield arc penalty.
 		},
 		// Accelerated Shields
 		advancedshieldemitter: {
