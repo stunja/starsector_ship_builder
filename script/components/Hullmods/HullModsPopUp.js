@@ -100,6 +100,7 @@ export default class HullModsPopUp extends ViewModel {
 	#update() {
 		// Not a correct implementation, but it works
 		this.#processData();
+
 		this.updateUserShipBuildWithHullModLogic();
 
 		this.#createHullModsArray();
@@ -250,7 +251,7 @@ export default class HullModsPopUp extends ViewModel {
 		);
 
 		this.#greenHullMods = [...putAtTheTop, ...shorterArray];
-
+		console.log(this.#greenHullMods);
 		// Split Array into Usable and unUsable HullMods
 		this.#render();
 	}
@@ -290,10 +291,11 @@ export default class HullModsPopUp extends ViewModel {
 		// fetch update userShipBuild
 		this.#userShipBuild = this.getUserShipBuild();
 
-		this.#updateGreenAndRedHullMods();
+		this.#update();
+
 		// Render & EventListeners
 		this.#render();
-		// console.log(this.#userShipBuild.ordinancePoints);
+
 		// keep the order
 		// Update shipStats to render new fields
 		new ShipStats(this.getState()).update();

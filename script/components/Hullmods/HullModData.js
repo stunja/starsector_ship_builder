@@ -1487,15 +1487,16 @@ export const HULLMODS = {
 			name: "Hardened Shields",
 			_whyNot: "hullmod that can be installed on any ship that has shields",
 			reason: { noShieldReason: "Must have a Shield" },
+
 			filterReason: function (hullMod, userShipBuild) {
-				const shieldType = userShipBuild.shieldType;
+				const { shieldType } = userShipBuild;
 				const reason = HULLMODS.SHIELD.hardenedshieldemitter.reason;
 
-				// Must have a Shield
-				const noShield =
-					shieldType !== SHIELD_TYPE.FRONT && shieldType !== SHIELD_TYPE.OMNI;
+				const hasNoFrontShield = shieldType !== SHIELD_TYPE.FRONT;
+				const hasNoOmniShield = shieldType !== SHIELD_TYPE.OMNI;
 
-				if (noShield) return [hullMod, reason.noShieldReason];
+				if (hasNoOmniShield && hasNoFrontShield)
+					return [hullMod, reason.noShieldReason];
 
 				return null;
 			},
@@ -1578,6 +1579,13 @@ export const HULLMODS = {
 				const { shieldType } = userShipBuild;
 				const { installedHullMods } = userShipBuild.hullMods;
 
+				// is already installed
+				const isGeneratorInstalled = installedHullMods.some(
+					({ id }) => id === HULLMODS.SHIELD.frontemitter.id
+				);
+				if (isGeneratorInstalled) return null;
+
+				console.log(isGeneratorInstalled);
 				// Not on Phase Ship
 				const isPhase = shieldType === SHIELD_TYPE.PHASE;
 				if (isPhase) return [hullMod, reason.isPhaseShipReason];
@@ -1598,32 +1606,39 @@ export const HULLMODS = {
 				return null;
 			},
 			// "Shield => FRONT and has a 90 degree arc. Top speed decrease by 20%",
+			// Set shieldEfficiency and shieldUpkeep
 			hullModLogic: function (userShipBuild, hullMod) {
-				const { ordinancePoints, speed, hullSize } = userShipBuild;
+				const {
+					ordinancePoints,
+					speed,
+					hullSize,
+					shieldEfficiency,
+					shieldUpkeep,
+				} = userShipBuild;
 				const [newShieldArc, decreaseSpeedByPercent] =
 					hullMod.effectValues.regularValues;
 
-				// Shield Front
-				const updateShieldType = SHIELD_TYPE.FRONT;
-				// New Speed
-				const newTopSpeed = convertStringPercentIntoNumber(
-					decreaseSpeedByPercent,
-					VALUE_CHANGE.DECREASE,
-					speed
-				);
-				// Add OP cost
-				const newOrdinancePoints =
-					ordinancePoints + normalizedHullSize(hullMod, hullSize);
-				// shieldUpkeep
-
-				// shieldEfficiency
+				// Checked with Hound
+				const newShieldEfficiency = 1.2;
+				const newShieldUpkeep = 0.25;
 
 				return {
 					...userShipBuild,
-					shieldType: updateShieldType,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					shieldType: SHIELD_TYPE.FRONT,
 					shieldArc: newShieldArc,
-					speed: newTopSpeed,
-					ordinancePoints: newOrdinancePoints,
+					// Decrease Speed
+					speed: HullModHelper.convertStringPercentIntoNumber(
+						decreaseSpeedByPercent,
+						VALUE_CHANGE.DECREASE,
+						speed
+					),
+					shieldEfficiency: newShieldEfficiency,
+					shieldUpkeep: newShieldUpkeep,
 				};
 			},
 		},
@@ -1759,6 +1774,7 @@ export const HULLMODS = {
 			},
 		},
 	},
+	//! missing
 	ENGINE: {
 		// Safety Overrides
 		safetyoverrides: {
@@ -1803,6 +1819,57 @@ export const HULLMODS = {
 					return [hullMod, reason.onlyCivilianShipWithMilReason];
 
 				return null;
+			},
+			//Disabling safety protocols increases the ship's top speed in combat by 50/30/20
+			// (depending on ship size, with a corresponding increase in acceleration) and allows the zero-flux engine boost to take effect
+			// regardless of flux level. The flux dissipation rate, including that of additional vents, is increased by a factor of 2.
+			// Reduces the peak performance time by a factor of 3, prevents the use of active venting,
+			// and drastically reduces weapon ranges past 450 units.
+			// Can not be installed on civilian or capital ships.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const {
+					ordinancePoints,
+					hullSize,
+					speed,
+					fluxDissipation,
+					fluxDissipationPerSingleActiveVent,
+					peakPerformanceSec,
+				} = userShipBuild;
+
+				const [
+					increaseFrigateSpeed,
+					increaseDestoyerSpeed,
+					increaseCruiserSpeed,
+					fluxMulty,
+					reducePeakPerformanceByMulty,
+					_reduceWeaponRange,
+				] = hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+					// Increase Speed
+					speed:
+						speed +
+						HullModHelper.hullModHullSizeConverter(
+							hullSize,
+							increaseFrigateSpeed,
+							increaseDestoyerSpeed,
+							increaseCruiserSpeed,
+							0
+						),
+					// double flux dissipation
+					fluxDissipation: fluxDissipation * fluxMulty,
+					// double flux from perSingleFlux
+					fluxDissipationPerSingleActiveVent:
+						fluxDissipationPerSingleActiveVent * fluxMulty,
+					// Lower peak perfomance by 3
+					peakPerformanceSec: peakPerformanceSec / reducePeakPerformanceByMulty,
+				};
 			},
 		},
 		// Auxiliary Thrusters

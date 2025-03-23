@@ -36,14 +36,20 @@ const HullModHelper = {
 		const keyToFind = HULLMOD_HULLSIZE[shipSize];
 		return currentHullMod[keyToFind];
 	},
-	hullModHullSizeConverter(target, frigate, destroyer, cruiser, capital) {
-		if (target === HULL_SIZE.FRIGATE) return frigate;
+	hullModHullSizeConverter(
+		targetHullSize,
+		frigate,
+		destroyer,
+		cruiser,
+		capital
+	) {
+		if (targetHullSize === HULL_SIZE.FRIGATE) return frigate;
 
-		if (target === HULL_SIZE.DESTROYER) return destroyer;
+		if (targetHullSize === HULL_SIZE.DESTROYER) return destroyer;
 
-		if (target === HULL_SIZE.CRUISER) return cruiser;
+		if (targetHullSize === HULL_SIZE.CRUISER) return cruiser;
 
-		if (target === HULL_SIZE.CAPITAL_SHIP) return capital;
+		if (targetHullSize === HULL_SIZE.CAPITAL_SHIP) return capital;
 	},
 	// Simple Percent converter
 	convertStringPercentIntoNumber(string, action, valueToModify) {
