@@ -85,6 +85,24 @@ export const HULLMODS = {
 			// S-mod bonus: Increases the rate of fire of all non-missile weapons by 10%.
 			sModsLogic: function () {},
 		},
+		// Advanced Turret Gyros
+		turretgyros: {
+			id: "turretgyros",
+			name: "Armored Weapon Mounts",
+			_whyNot: "hullmod that can be installed on any ship.",
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+		},
 		// Ballistic Rangefinder
 		ballistic_rangefinder: {
 			id: "ballistic_rangefinder",
@@ -116,6 +134,18 @@ export const HULLMODS = {
 					return [hullMod, reason.noCorrectWeaponSlotsReason];
 
 				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 
@@ -162,6 +192,18 @@ export const HULLMODS = {
 					return [hullMod, reason.hasDistributedFireControlReason];
 
 				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 		// Dedicated Targeting Core
@@ -220,6 +262,18 @@ export const HULLMODS = {
 
 				return null;
 			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 		},
 		// Advanced Optics
 		advancedoptics: {
@@ -254,6 +308,18 @@ export const HULLMODS = {
 
 				return null;
 			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 		},
 		// High Scatter Amplifier
 		high_scatter_amp: {
@@ -284,6 +350,110 @@ export const HULLMODS = {
 
 				return null;
 			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+		},
+
+		// ECCM Package
+		eccm: {
+			id: "eccm",
+			name: "ECCM Package",
+
+			// [IGNORE ALL]
+			// Reduces the chance for missiles launched by the ship to be affected by electronic counter-measures and flares by 50%.
+			// A CPU core adjunct in each missile increases missile top speed by 25% and missile maneuverability by 50%, as well
+			// as significantly improving the guidance algorithm.
+			// Also reduces the weapon range reduction due to superior enemy Electronic Warfare by 50%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+			// S-mod bonus: Fully negates the effect of ECM and flares on missiles fired by this ship.
+		},
+		// ECM Package
+		ecm: {
+			id: "ecm",
+			name: "ECM Package",
+
+			// [IGNORE ALL]
+			// When deployed in combat, grants 1%/2%/3%/4% ECM rating, depending on this ship's hull size.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+		},
+
+		// Expanded Magazines
+		magazines: {
+			id: "magazines",
+			name: "Expanded Magazines",
+
+			// [IGNORE ALL]
+			// Increases the ammo capacity or the number of charges for ballistic and energy weapons by 50%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+			// S-mod bonus: Increases the ammo/charge regeneration rate for ballistic and energy weapons by 50%.
+		},
+		// Expanded Missile Racks
+		missleracks: {
+			id: "missleracks",
+			name: "Expanded Missile Racks",
+
+			// [IGNORE ALL]
+			// Increases the ammo capacity of missile weapons by 100%.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+			// S-mod penalty: Reduces rate of fire of missiles by 20%.
 		},
 	},
 	DEFENSES: {
@@ -390,6 +560,45 @@ export const HULLMODS = {
 				};
 			},
 		},
+		// Automated Repair Unit
+		autorepair: {
+			id: "autorepair",
+			name: "Reinforced Bulkheads",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			// [IGNORE] Reduces the time required to repair disabled weapons and engines (in combat) by 50%.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+			// [IGNORE] S-mod bonus: Reduces repair time to 25%, and reduces overload duration by 33%.
+		},
+		// Integrated Point Defense AI
+		pointdefenseai: {
+			id: "pointdefenseai",
+			name: "Integrated Point Defense AI",
+			_whyNot: "hullmod that can be installed on any ship.",
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+		},
 	},
 	FIGHTER: {
 		// Converted Hangar
@@ -425,6 +634,18 @@ export const HULLMODS = {
 
 				return null;
 			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 		},
 		// Defensive Targeting Array
 		defensive_targeting_array: {
@@ -444,6 +665,18 @@ export const HULLMODS = {
 				if (hasNoFighterSlots) return [hullMod, reason.noFighterSlotsReason];
 
 				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 		// Expanded Deck Crew
@@ -515,6 +748,18 @@ export const HULLMODS = {
 
 				return null;
 			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 		},
 	},
 	SPECIAL: {
@@ -536,6 +781,18 @@ export const HULLMODS = {
 				if (!automatedCheck) return [hullMod, reason.notAutomatedShip];
 
 				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 		// Escort Package
@@ -560,6 +817,18 @@ export const HULLMODS = {
 					return [hullMod, reason.notCorrectHullSizeReason];
 
 				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 		// Hardened Subsystems
@@ -666,6 +935,44 @@ export const HULLMODS = {
 
 			// S-mod bonus: Increases flux dissipation by a further 10/20/30/50, making the distributor as efficient as adding vents.
 			sModsLogic: function () {},
+		},
+
+		// Neural Interface
+		neural_interface: {
+			id: "neural_interface",
+			name: "Neural Interface",
+			_whyNot: "hullmod that can be installed on any ship.",
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+		},
+
+		// Resistant Flux Conduits
+		fluxbreakers: {
+			id: "fluxbreakers",
+			name: "Neural Interface",
+			_whyNot: "hullmod that can be installed on any ship.",
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 		},
 	},
 	LOGISTICS: {
@@ -1235,13 +1542,25 @@ export const HULLMODS = {
 				return null;
 			},
 
+			// [IGNORE ALL]
 			// Originally developed by Diktat engineers after spending cycles dealing with the unique
 			// conditions of the inner Askonia system. Decreases the effect operating in a solar corona
 			//  has on combat readiness by 75%; also has the same effect against storms in deep hyperspace.
 
 			// In combat situations, reduces energy damage taken by 10%.
 
-			hullModLogic: function (userShipBuild, hullMod) {},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 			// S-mod bonus: Increases the protection from solar coronae and similar hazards to 100%.
 			sModsLogic: function () {},
 		},
@@ -1275,6 +1594,18 @@ export const HULLMODS = {
 				if (maxLogisticsLimit >= 2) return [hullMod, reason.maxLogisticsReason];
 
 				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 
@@ -1358,6 +1689,19 @@ export const HULLMODS = {
 				if (hasNoShield) return [hullMod, reason.noShieldReason];
 
 				return null;
+			},
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 		// Shield Conversion - Omni
@@ -1743,6 +2087,18 @@ export const HULLMODS = {
 
 				return null;
 			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
 		},
 		phase_anchor: {
 			id: "phase_anchor",
@@ -1769,6 +2125,18 @@ export const HULLMODS = {
 				if (isPhaseCoilsInstalled) return [hullMod, reason.hasPhaseCoilsReason];
 
 				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
 			},
 		},
 	},
