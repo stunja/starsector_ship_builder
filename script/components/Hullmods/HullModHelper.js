@@ -33,8 +33,11 @@ const HullModHelper = {
 		};
 	},
 	normalizedHullSize(currentHullMod, shipSize) {
+		if (!currentHullMod || !shipSize)
+			console.warn(`Error in HullModHelper.normalizedHullSize`);
+
 		const keyToFind = HULLMOD_HULLSIZE[shipSize];
-		return currentHullMod[keyToFind];
+		return currentHullMod[keyToFind] ?? 0;
 	},
 	hullModHullSizeConverter(
 		targetHullSize,
@@ -76,6 +79,9 @@ const HullModHelper = {
 		}
 	},
 	updateOrdinancePoints(ordinancePoints, hullMod, hullSize) {
+		if (!this.normalizedHullSize(hullMod, hullSize)) {
+			console.warn(`Error in HullModHelper.updateOrdinancePoints`);
+		}
 		return ordinancePoints + this.normalizedHullSize(hullMod, hullSize);
 	},
 	// If Civilian increases maintenance supply use by 100%

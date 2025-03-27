@@ -287,9 +287,10 @@ export default class HullModsPopUp extends ViewModel {
 		});
 
 		// Update UserShipBuild With new values
-		this.updateUserShipBuildWithHullModLogic();
+		// this.updateUserShipBuildWithHullModLogic();
+
 		// fetch update userShipBuild
-		this.#userShipBuild = this.getUserShipBuild();
+		// this.#userShipBuild = this.getUserShipBuild();
 
 		this.#update();
 

@@ -71,27 +71,38 @@ export default class ViewModel {
 			vents,
 		};
 
-		// userShipBuild with updated values from HullMods
-		const userShipBuildWithActiveHullModEffect = installedHullMods
-			?.map((hullMod) => {
-				const [hullModObject] = this.findHullModKeyName(HULLMODS, hullMod.id);
+		const updateShipBuild = () => {
+			let currentShipBuild = resetUserShipBuild;
+			const userShipBuildWithActiveHullModEffect = installedHullMods
+				?.map((hullMod) => {
+					const [hullModObject] = this.findHullModKeyName(HULLMODS, hullMod.id);
 
-				if (!hullModObject) {
-					console.warn(`Hull mod not found: ${hullMod.id}`);
+					if (!hullModObject) {
+						console.warn(`Hull mod not found: ${hullMod.id}`);
+						return null;
+					}
+
+					if (hullModObject.hullModLogic) {
+						return (currentShipBuild = hullModObject.hullModLogic(
+							currentShipBuild,
+							hullMod
+						));
+					}
+
 					return null;
-				}
-				return hullModObject.hullModLogic
-					? hullModObject.hullModLogic(resetUserShipBuild, hullMod)
-					: null;
-			})
-			.filter(Boolean);
-		// update or reset userShipBuild
-		const updateUserShipBuild =
-			userShipBuildWithActiveHullModEffect.length > 0
-				? userShipBuildWithActiveHullModEffect[0]
-				: resetUserShipBuild;
+				})
+				.filter(Boolean);
 
-		this.setUpdateUserShipBuild({ ...updateUserShipBuild });
+			return userShipBuildWithActiveHullModEffect;
+		};
+		// Reset UserShipBuild
+		if (updateShipBuild().length < 1) {
+			this.setUpdateUserShipBuild({ ...resetUserShipBuild });
+			return;
+		}
+		this.setUpdateUserShipBuild({
+			...updateShipBuild().at(-1),
+		});
 	}
 
 	findHullModKeyName(obj, searchKey, matches = []) {

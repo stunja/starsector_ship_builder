@@ -1204,7 +1204,7 @@ export const HULLMODS = {
 			sModsLogic: function () {},
 		},
 
-		// Solar Shielding
+		// Solar Shieldin
 		solar_shielding: {
 			id: "solar_shielding",
 			name: "Solar Shielding",
@@ -1315,17 +1315,16 @@ export const HULLMODS = {
 				const { ordinancePoints, hullSize, shipBurn } = userShipBuild;
 
 				// Extract Values
-
 				const [increaseMaxBurn] = hullMod.effectValues.regularValues;
 
 				return {
 					...userShipBuild,
-					shipBurn: HullModHelper.updateMaxShipBurn(shipBurn, increaseMaxBurn),
 					ordinancePoints: HullModHelper.updateOrdinancePoints(
 						ordinancePoints,
-						hullSize,
-						hullMod
+						hullMod,
+						hullSize
 					),
+					shipBurn: HullModHelper.updateMaxShipBurn(shipBurn, increaseMaxBurn),
 				};
 			},
 			// S-mod bonus: Increases maximum burn level by a further +1.
@@ -1581,11 +1580,10 @@ export const HULLMODS = {
 
 				// is already installed
 				const isGeneratorInstalled = installedHullMods.some(
-					({ id }) => id === HULLMODS.SHIELD.frontemitter.id
+					({ id }) => id === HULLMODS.SHIELD.frontshield.id
 				);
 				if (isGeneratorInstalled) return null;
 
-				console.log(isGeneratorInstalled);
 				// Not on Phase Ship
 				const isPhase = shieldType === SHIELD_TYPE.PHASE;
 				if (isPhase) return [hullMod, reason.isPhaseShipReason];
