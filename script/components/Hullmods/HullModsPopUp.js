@@ -228,31 +228,25 @@ export default class HullModsPopUp extends ViewModel {
 
 		// one way sort of InstalledArray
 		if (this.#sortByInstalledCategory) {
-			this.#greenHullMods = this.#greenHullMods.toSorted((hullModA, hullModB) =>
+			this.#greenHullMods.sort((hullModA, hullModB) =>
 				hullModA.name.localeCompare(hullModB.name)
 			);
-
 			// Render
 			this.#render();
 			return;
 		}
 
+		// Split Array into Usable and unUsable HullMods
 		const installedHullMods = this.#shipHullMods.installedHullMods;
 
-		const putAtTheTop = this.#greenHullMods.filter((hullMod) =>
-			installedHullMods.find(
-				(installedHullMod) => installedHullMod.id === hullMod.id
-			)
-		);
-		const shorterArray = this.#greenHullMods.filter((hullMod) =>
-			installedHullMods.find(
-				(installedHullMod) => installedHullMod.id !== hullMod.id
-			)
-		);
+		this.#greenHullMods.sort((a, b) => {
+			const topDownSort = installedHullMods.some(({ id }) => id === a.id);
+			const downTopSort = installedHullMods.some(({ id }) => id === b.id);
 
-		this.#greenHullMods = [...putAtTheTop, ...shorterArray];
-		console.log(this.#greenHullMods);
-		// Split Array into Usable and unUsable HullMods
+			// sorting logic (zero means no change)
+			return topDownSort ? -1 : downTopSort ? 1 : 0;
+		});
+		// Render
 		this.#render();
 	}
 	//! Remove this
