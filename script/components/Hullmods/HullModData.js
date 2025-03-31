@@ -2028,8 +2028,6 @@ export const HULLMODS = {
 				const { ordinancePoints, armor, hullSize } = userShipBuild;
 
 				const [addArmorPercent] = hullMod.effectValues.regularValues;
-				console.log(armor);
-				console.log(addArmorPercent);
 
 				return {
 					...userShipBuild,

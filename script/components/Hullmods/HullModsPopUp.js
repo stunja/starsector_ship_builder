@@ -117,11 +117,12 @@ export default class HullModsPopUp extends ViewModel {
 		// Container
 		HullModsPopUpView.render(this.#greenHullMods);
 
-		// Header
+		// Filter
 		HullModsPopUpFilterView.render([
 			this.#filterCategories,
 			this.#currentFilter,
 		]);
+		// Header
 		HullModsPopUpHeaderView.render(this.#greenHullMods);
 
 		// Table
@@ -145,18 +146,22 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#createRedHullMods();
 	}
-	#filterUsableHullModArray = () =>
-		this.#userState.usableHullMods.filter(
+	// Removes HullMods with [hidden] and [special] rules
+	#filterUsableHullModArray = () => {
+		return this.#userState.usableHullMods.filter(
 			(hullMod) =>
 				// HIDDEN ARE TRUE => HIDE
 				hullMod.hidden !== GENERIC_STRING.TRUE &&
 				// special hide rule
 				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
 		);
+	};
+
+	// Available HullMods [Green]
 	#createGreenHullMods = () => {
 		this.#greenHullMods = this.#usableHullMods;
 	};
-
+	// Unavailable HullMods [Red]
 	#createRedHullMods = () => {
 		this.#redHullMods = this.#usableHullMods.filter((hullMod) =>
 			this.#allUnavailableHullMods.find(
@@ -187,8 +192,8 @@ export default class HullModsPopUp extends ViewModel {
 			this.#toggleHullMod
 		);
 	}
+	// Close if clicked outside
 	#closePopUp() {
-		// Close if clicked outside
 		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
 			CLASSES.TABLE_CONTAINER,
 			HullModsPopUpView._clearRender
@@ -249,14 +254,7 @@ export default class HullModsPopUp extends ViewModel {
 		// Render
 		this.#render();
 	}
-	//! Remove this
-	#test(id) {
-		const currentHullMod = this.#usableHullMods.find(
-			(hullMod) => hullMod.id === id
-		);
-		console.log(currentHullMod.id);
-		console.log(currentHullMod.name);
-	}
+
 	// Add // Remove HullMod
 	#toggleHullMod = (btn) => {
 		if (!btn?.dataset?.hullmodId) {
@@ -266,8 +264,6 @@ export default class HullModsPopUp extends ViewModel {
 
 		const { hullmodId } = btn.dataset;
 		const userShipBuild = this.getUserShipBuild();
-		//! remove this
-		this.#test(hullmodId);
 
 		const updatedHullMods = HullModHelper.updateInstalledHullMod(
 			hullmodId,
@@ -280,13 +276,20 @@ export default class HullModsPopUp extends ViewModel {
 			hullMods: updatedHullMods,
 		});
 
-		// Update UserShipBuild With new values
-		// this.updateUserShipBuildWithHullModLogic();
+		// First updateShipBuild with New Logic
+		this.updateUserShipBuildWithHullModLogic();
 
-		// fetch update userShipBuild
-		// this.#userShipBuild = this.getUserShipBuild();
-
+		// Update all values including [red] and [green] array
+		// has dublication with [updateUserShipBuildWithHullModLogic] but without, it overwrites with old parameneters
 		this.#update();
+
+		// only show case currentFilter which is not [all]
+		if (this.#currentFilter !== MISSING_CATEGORY) {
+			this.#filterHullModArrayBySelectedHullModCategory(this.#currentFilter);
+		}
+
+		// Update reason for [red] array
+		this.#currentUnavailableHullModsWithReason();
 
 		// Render & EventListeners
 		this.#render();
@@ -296,8 +299,6 @@ export default class HullModsPopUp extends ViewModel {
 		new ShipStats(this.getState()).update();
 		// Update Controller, to display installedHullMods
 		new HullModController(this.getState()).update();
-		//
-		console.log(this.getUserShipBuild());
 	};
 
 	// Turn HullMod Entry to Active => different Color
@@ -340,6 +341,7 @@ export default class HullModsPopUp extends ViewModel {
 			.toSorted((a, b) => a.localeCompare(b));
 	}
 
+	// Create new [green] array with selected UiTags (HullMod Type)
 	#filterTable = (btn) => {
 		if (!btn?.dataset) {
 			throw new Error("Invalid button element provided");
@@ -348,22 +350,24 @@ export default class HullModsPopUp extends ViewModel {
 		const { filter: filterUiTag } = btn.dataset;
 		this.#sortByInstalledCategory = true;
 
-		// Creates newHullModArray, which is equal to ALL hullmods
-		this.#createHullModsArray();
+		this.#update();
 		// If not ALL do the filter, otherwise SKIP
 		if (filterUiTag !== MISSING_CATEGORY) {
-			this.#greenHullMods = updateArray(this.#greenHullMods);
-			this.#redHullMods = updateArray(this.#redHullMods);
+			this.#filterHullModArrayBySelectedHullModCategory(filterUiTag);
 		}
 
 		this.#currentUnavailableHullModsWithReason();
 
 		// Assign btn.DataSet to currentFilter => to pass then into render Filter
 		this.#currentFilter = filterUiTag;
-		this.#update();
+		//
 		this.#render();
+	};
+	#filterHullModArrayBySelectedHullModCategory(filterUiTag) {
+		this.#greenHullMods = filterArray(this.#greenHullMods);
+		this.#redHullMods = filterArray(this.#redHullMods);
 
-		function updateArray(arr) {
+		function filterArray(arr) {
 			return arr.filter((hullMod) => {
 				if (!hullMod?.uiTags) return false;
 
@@ -373,7 +377,7 @@ export default class HullModsPopUp extends ViewModel {
 				return uiTagArray.includes(filterUiTag);
 			});
 		}
-	};
+	}
 	// Green (available) Red (Unavailable)
 	#updateGreenAndRedHullMods() {
 		// check if hullMod already Build In
