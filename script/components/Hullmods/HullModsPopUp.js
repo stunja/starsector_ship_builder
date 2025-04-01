@@ -21,7 +21,7 @@ import {
 	HULL_SIZE,
 	SHIP_TYPE,
 } from "../../helper/Properties";
-import ScrollPosition from "../../helper/ScrollPosition";
+import { ScrollPosition } from "../../helper/ScrollPosition";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
@@ -80,6 +80,8 @@ export default class HullModsPopUp extends ViewModel {
 	constructor(model) {
 		super(model);
 
+		new ScrollPosition().clear(classNames.tableContainer);
+
 		this.#processData();
 		this.#createFilterCategories();
 		this.#update();
@@ -113,8 +115,7 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#assignActiveClasses();
 
-		ScrollPosition.clear(classNames.tableContainer);
-		ScrollPosition.save(classNames.tableContainer);
+		new ScrollPosition().save(classNames.tableContainer);
 	}
 
 	#renderHullModsPopUp() {
@@ -299,7 +300,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#render();
 
 		// Scroll to position user previously was, to prevent annoying jumps
-		ScrollPosition.load(classNames.tableContainer);
+		new ScrollPosition().load(classNames.tableContainer);
 
 		// keep the order
 		// Update shipStats to render new fields
