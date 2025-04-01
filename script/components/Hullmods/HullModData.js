@@ -1734,7 +1734,7 @@ export const HULLMODS = {
 			// Converts frontal shields to omni-directional. Reduces the shield's arc by 30%.
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize, shieldArc } = userShipBuild;
-				console.log(userShipBuild);
+
 				// Extract Values
 				const [lowerShieldArcBy] = hullMod.effectValues.regularValues;
 				return {
