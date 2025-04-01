@@ -281,6 +281,9 @@ export default class HullModsPopUp extends ViewModel {
 			hullMods: updatedHullMods,
 		});
 
+		// OverWrite Sort
+		this.#sortByInstalledCategory = true;
+
 		// First updateShipBuild with New Logic
 		this.updateUserShipBuildWithHullModLogic();
 
