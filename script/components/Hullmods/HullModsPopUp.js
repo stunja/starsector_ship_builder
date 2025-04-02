@@ -98,6 +98,9 @@ export default class HullModsPopUp extends ViewModel {
 		this.#builtInMods = this.#userShipBuild.hullMods.builtInMods;
 		this.#shieldType = this.#userShipBuild.shieldType;
 		this.#shipIsCivilian = this.#userShipBuild.shipIsCivilian;
+
+		//! delete
+		console.log(this.#shipHullMods);
 	}
 
 	#update() {

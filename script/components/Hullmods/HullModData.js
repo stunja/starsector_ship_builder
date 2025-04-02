@@ -30,19 +30,240 @@ export const HULLMODS = {
 			name: "Civilian-grade Hull",
 			_whyNot:
 				"This hullmod denotes that the ship isn't designed for combat, such as an Atlas-class superfreighter. If Militarized Subsystems are installed, the sensor penalties will be removed.",
+
+			// Increases sensor profile by 100%. Reduces sensor strength by 50%.
 		},
+
 		// Distributed Fire Control
 		distributed_fire_control: {
 			id: "distributed_fire_control",
 			name: "Distributed Fire Control",
 			_whyNot:
 				"Distributed Fire Control is incompatible with Dedicated Targeting Core and Integrated Targeting Unit, but not the Ballistic Rangefinder.",
+
+			//Much of the damage that takes weapons offline is to external control runs and power conduits.
+			// This ship's weapons are engineered to operate more independently,
+			// reducing their exposure to damage by 50% and reducing the EMP damage taken by the ship overall by 50%.
 		},
+		//! add incompatibility
 		// Flux Shunt
 		fluxshunt: {
 			id: "fluxshunt",
 			name: "Flux Shunt",
 			_whyNot: "Flux Shunt is incompatible with Safety Overrides.",
+
+			// Allows the ship to dissipate hard flux at 50% of the normal rate while shields are on.
+		},
+
+		// Ablative Armor
+		ablative_armor: {
+			id: "ablative_armor",
+			name: "Ablative Armor",
+			_whyNot: "Built-in hullmod only available on the Invictus.",
+
+			// An ancient design intended to stop micro-meteorites through sheer volume of material in place, before the advent of "spaced" armor.
+			// Reduces the effective armor strength for the damage reduction calculation to 10% of its actual value.
+			// However, ships of this design tend to carry extremely heavy armor.
+		},
+
+		// Heavy Ballistics Integration
+		hbi: {
+			id: "hbi",
+			name: "Heavy Ballistics Integration",
+			_whyNot:
+				"Built-in only hullmod. Available on the following hulls: Conquest. Onslaught, Invictus. The Ordnance Expertise skill will calculate its bonus after the OP reduction.",
+
+			// Reduces the ordnance point cost of large ballistic weapons by 10.
+		},
+
+		// Vast Hangar
+		vast_hangar: {
+			id: "vast_hangar",
+			name: "Vast Hangar",
+			_whyNot:
+				"The Vast Hangar is a built-in only hullmod. Can be found on the following ships: Invictus.",
+
+			// The number of fighter bays added by Converted Hangar is increased by 1, and its performance matches that of a dedicated fighter bay -
+			// all the penalties and modifiers including those to the ships deployment cost, are negated.
+		},
+
+		// Delicate Machinery
+		delicate: {
+			id: "delicate",
+			name: "Delicate Machinery",
+			_whyNot: "The Delicate Machinery is a built-in only hullmod.",
+
+			// The ship systems require excessive maintenance and do not stand up well under the rigours of prolonged engagements.
+			// Increases the rate of in-combat CR decay after peak performance time runs out by 50%.
+		},
+		// Phase Field
+		phasefield: {
+			id: "phasefield",
+			name: "Phase Field",
+			_whyNot: "The Phase Field is a built-in only hullmod.",
+
+			// The ship is able to run a low-grade phase field for extended periods of time, reducing its effective sensor profile by 50%.
+			// In addition, the fleet's detected-at-range is reduced by a multiplier based on the total sensor profile of the 5 highest-profile ships in the fleet, and the total sensor strength of the 5 phase ships with the highest sensor strength values. This effect only applies when the fleet's transponder is turned off.
+			// Fleetwide sensor strength increases - such as from High Resolution Sensors - do not factor into this calculation.
+		},
+		// Advanced Ground Support
+		advanced_ground_support: {
+			id: "advanced_ground_support",
+			name: "Advanced Ground Support",
+			_whyNot:
+				"This hullmod is a superior version of the the Ground Support Package hullmod: it is effectively twice as effective as the Ground Support Package.",
+
+			// Close support weapons and counter-measures for ground defenses.
+			// Increases the effective strength of planetary raids by 200, up to the total number of marines in the fleet.
+		},
+		// B-Deck
+		bdeck: {
+			id: "bdeck",
+			name: "B-Deck",
+			_whyNot: "Built-in hullmod only available on the Drover.",
+
+			// Once per combat, when the fighter replacement rate reaches 40%, the fighter launch bays are switched to operate from a "B-deck".
+			// Standby fighters are launched to rapidly bring wings back to full strength, and the fighter replacement rate is set to 100%.
+		},
+
+		// Drive Field Stabilizer
+		drive_field_stabilizer: {
+			id: "drive_field_stabilizer",
+			name: "Drive Field Stabilizer",
+			_whyNot: "Built-in hullmod only available on the Ox.",
+
+			// Stabilizes the fleet's drive bubble, increasing the maximum burn of the fleet by 1. The effect of multiple stabilizers is cumulative.
+			// Increases the ship's sensor profile by 200.
+		},
+
+		// High Maintenance
+		high_maintenance: {
+			id: "high_maintenance",
+			name: "High Maintenance",
+			_whyNot: "This is built into the Hyperion and the Ox.",
+
+			// Increases the monthly maintenance supply cost by 100%.
+		},
+
+		// Energy Bolt Coherer
+		coherer: {
+			id: "coherer",
+			name: "Energy Bolt Coherer",
+			_whyNot:
+				"A special Built-in only hullmod that uniquely changes depending on whether or not the ship has a crew complement. +200 non-beam energy weapon range for [REDACTED] ships. +100 non-beam energy weapon range and +50% crew casualties in combat for any crewed ship.",
+
+			// Originally designed by the Tri-Tachyon Corporation for use on its combat droneships, the coherence field strength has to be dialed down to allow operation on crewed vessels.
+			// Increases the range of all non-beam Energy and Hybrid weapons by 100/200.
+			// The coherence field is unstable under combat conditions, with stresses on the hull resulting in spot failures that releases bursts of lethal radiation. Crew casualties in combat are increased by 50%.
+		},
+
+		// Automated Ship
+		automated: {
+			id: "automated",
+			name: "Automated Ship",
+			_whyNot:
+				"Automated Ship is a built-in hullmod that only appears on droneships, such as those from the Domain Exploration Derelict.",
+
+			// This ship is fully automated, and does not require - and can not take on - any human crew.
+			// Automated ships usually required specialized equipment and expertise to maintain, resulting in a maximum combat readiness penalty of 100%. This penalty can be offset by a fleet commander skilled in the use of automated ships.
+		},
+
+		// Experimental Phase Coils
+		ex_phase_coils: {
+			id: "ex_phase_coils",
+			name: "Experimental Phase Coils",
+			_whyNot:
+				"Automated Ship is a built-in hullmod that only appears Ziggurat.",
+
+			// Reduces phase cloak cooldown by 80%.
+		},
+
+		// Ground Support Package
+		ground_support: {
+			id: "ground_support",
+			name: "Ground Support Package",
+			_whyNot: "Built-in only hullmod. Available on: Valkyrie, Colossus Mk.III",
+
+			// Close support weapons and counter-measures for ground defenses.
+			// Increases the effective strength of planetary raids by 100, up to the total number of marines in the fleet.
+		},
+		// Rugged Construction
+		rugged: {
+			id: "rugged",
+			name: "Rugged Construction",
+			_whyNot: "Rugged Construction is a built-in hullmod.",
+
+			// Reduces most negative effects of d-mods by 50%. If disabled or destroyed in combat, the ship has a 50% chance to avoid new d-mods, and is almost always recoverable after the battle.
+			// In addition, the supply cost to recover from deployment - and to effect repairs if the ship is disabled - is reduced by 50%.
+		},
+		// Shielded Cargo Holds
+		shielded_holds: {
+			id: "shielded_holds",
+			name: "Shielded Cargo Holds",
+			_whyNot: "Shielded Cargo Holds is a built-in hullmod.",
+
+			// Commonly found on ships that can't always rely on shields to protect their cargo from cosmic radiation.
+			// Only a few tweaks are needed to have the shielding confound long-range cargo scans, reducing the probability of contraband being detected.
+		},
+		// Salvage Gantry
+		repair_gantry: {
+			id: "repair_gantry",
+			name: "Salvage Gantry",
+			_whyNot: "Salvage Gantry is a built-in hullmod.",
+
+			// Increases the resources gained from salvaging abandoned stations, derelicts,
+			// floating hulks, and other such by 10%/25%/30%/40%, depending on hull size.
+			// Only affects the recovery of common resources such as fuel and supplies, and not rare items like blueprints.
+			// In addition, 20% of the bonus applies to post-battle salvage.
+			// Each additional ship with a salvage gantry provides diminishing returns.
+			// The higher the highest recovery bonus from a single ship in the fleet, the later the diminishing returns kick in.
+		},
+
+		//! implement later
+		// Fourteenth Battlegroup
+		test: {
+			id: "test",
+			name: "Salvage Gantry",
+			_whyNot: "Salvage Gantry is a built-in hullmod.",
+
+			// This ship is a survivor of the original 14th Domain Battlegroup which founded the Hegemony.
+			// It is a prime specimen of the Domain Navy's "decisive battle" doctrine, particularly exhibited by
+			// a series of radical structural modifications (performed with pre-Collapse industrial methods)
+			// which allow the mounting of heavier armor plating by a flat increase of 100 standard units, with
+			//  only a 8% reduction in speed and maneuverability. Exceptionally well-tuned energy systems increase
+			// flux throughput and capacity by 5% over standard examples of this hull.
+		},
+
+		// Converted Cargo Bay
+		test: {
+			id: "test",
+			name: "Converted Cargo Bay",
+			_whyNot: "Built-in hullmod only available on the Colossus Mk.III.",
+
+			// This ship's cargo hold has been converted to house a pair of fighter bays.
+			// The improvised manufactory that produces fighter chassis is unreliable, and most components have minor defects.
+			// Fighter speed reduced by 25%, and damage taken increased by 25%.
+		},
+		// Special Modifications
+		test: {
+			id: "test",
+			name: "Converted Cargo Bay",
+			_whyNot:
+				"Built-in only hullmod, unique to Lion's Guard ships. This hullmod is considered as a D-mod and can be removed by restoring the vessel. ",
+
+			// Crew casualties in combat are increased by 10%. The base flux dissipation rate is reduced by 5%, and the repair rate for disabled weapons and engines is reduced by 25%.
+		},
+		//! 0.98a
+		// Design Compromises
+		test: {
+			id: "test",
+			name: "Converted Cargo Bay",
+			_whyNot: "Built-in hullmod only available on the Anubis.",
+
+			// The ship's performance suffers from competing design priorities, with multiple bleeding-edge projects integrated too late in the design cycle.
+			// The ship's flux dissipation and capacity, even the nominal base values, are reduced by 40%
+			// The range of ballistic weapons is reduced by 15%, the rate of fire of missile weapons is reduced by 50%, and the flux generation of energy weapons is increased by 100%.
+			// On the plus side, extra nanoforge capacity can be brought online more easily, alloving the installation of a Converted Hangar despite the ship already having a fighter bay, increasing the number of operational fighter bays to 2.
 		},
 	},
 	WEAPONS: {
@@ -974,6 +1195,26 @@ export const HULLMODS = {
 				};
 			},
 		},
+
+		// Operations Center
+		operations_center: {
+			id: "operations_center",
+			name: "Operations Center",
+			_whyNot: "hullmod that can be installed on any ship.",
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+		},
 	},
 	LOGISTICS: {
 		// Additional Berthing
@@ -1737,6 +1978,7 @@ export const HULLMODS = {
 
 				// Extract Values
 				const [lowerShieldArcBy] = hullMod.effectValues.regularValues;
+
 				return {
 					...userShipBuild,
 					ordinancePoints: HullModHelper.updateOrdinancePoints(

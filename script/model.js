@@ -9,7 +9,7 @@ import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "astral"; // hound // venture
+const shipNameDev = "shepherd"; // hound // venture
 
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor
@@ -19,9 +19,20 @@ const shipNameDev = "astral"; // hound // venture
 // Phase = harbinger / doom // shade
 // Civilian = shepherd
 // no shield (hound)
+//! fulgent = automated ship
+// ziggurat
+// monitor
+// valkyrie
 
 // monitor //! Check later, issue with weapon slots
-// !venture fix fighter Slots, it should be build in
+// !venture fix fighter Slots, it should be build in\
+// !phantom issue
+// drover
+
+//! Colossus Mk.III can't even search
+
+// 0.98a
+// executor
 
 export class Model {
 	dataState = {
