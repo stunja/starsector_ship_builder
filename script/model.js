@@ -112,7 +112,7 @@ export class Model {
 
 			const updateUserShipBuild = hullMods.updateBuiltInHullMods(
 				userShipBuild,
-				hullmods
+				hullModsWithEffectValues
 			);
 
 			this.updateState("dataState", {
@@ -808,6 +808,7 @@ const hullMods = {
 
 		return data.map(({ name, ...hullMod }) => {
 			const values = hullModsData[name];
+
 			if (!values) return { ...hullMod, name };
 
 			const [regularValues = {}, sModsValues = {}] = values;
@@ -830,5 +831,9 @@ const hullMods = {
 			builtInMods: newBuildInMods,
 		};
 		return { ...userShipBuild, hullMods: newHullMods };
+	},
+	addBuildInHullModsEffect: (data) => {
+		console.log("test");
+		console.log(data);
 	},
 };

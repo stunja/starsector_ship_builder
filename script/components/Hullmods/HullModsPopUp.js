@@ -2,18 +2,19 @@
 import ViewModel from "../../ViewModel";
 import HullModController from "./HullModController";
 import ShipStats from "../ShipStats/ShipStats";
-
 // View
 import HullModsPopUpView from "../../allViews/HullMods/HullModsPopUpView";
 import HullModsPopUpHeaderView from "../../allViews/HullMods/HullModsPopUpHeaderView";
 import HullModsPopUpTableView from "../../allViews/HullMods/HullModsPopUpTableView";
 import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilterView";
+//
+import HullModHelper from "./HullModHelper";
+import HullModFilter from "./HullModFilter";
 // Helper Function
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import HullModHelper from "./HullModHelper";
-import HullModFilter from "./HullModFilter";
+import { updateUserShipBuildWithHullModLogic } from "../../helper/helperFunction";
 
 import {
 	SHIELD_TYPE,
@@ -56,6 +57,7 @@ export default class HullModsPopUp extends ViewModel {
 
 	// #greenHullMods;
 	#userState;
+	#_baseUserShipBuild;
 	#shipHullMods;
 
 	#hullSize;
@@ -89,25 +91,36 @@ export default class HullModsPopUp extends ViewModel {
 	}
 	#processData() {
 		this.#userShipBuild = this.getUserShipBuild();
+		this.#_baseUserShipBuild = this._getBaseShipBuild();
 		this.#userState = this.getUserState();
 
 		this.#usableHullMods = this.#filterUsableHullModArray();
-
 		this.#shipHullMods = this.#userShipBuild.hullMods;
 
 		this.#builtInMods = this.#userShipBuild.hullMods.builtInMods;
 		this.#shieldType = this.#userShipBuild.shieldType;
 		this.#shipIsCivilian = this.#userShipBuild.shipIsCivilian;
 
-		//! delete
-		console.log(this.#shipHullMods);
+		// console.log(this.#usableHullMods);
+		// console.log(this.#userState.usableHullMods);
 	}
 
 	#update() {
 		// Not a correct implementation, but it works
 		this.#processData();
 
-		this.updateUserShipBuildWithHullModLogic();
+		console.log(
+			updateUserShipBuildWithHullModLogic(
+				this.getUserShipBuild(),
+				this._getBaseShipBuild()
+			)
+		);
+		// this.setUpdateUserShipBuild({
+		// 	...updateUserShipBuildWithHullModLogic(
+		// 		this.getUserShipBuild(),
+		// 		this._getBaseShipBuild()
+		// 	),
+		// });
 
 		this.#createHullModsArray();
 	}
@@ -287,8 +300,13 @@ export default class HullModsPopUp extends ViewModel {
 		// OverWrite Sort
 		this.#sortByInstalledCategory = true;
 
-		// First updateShipBuild with New Logic
-		this.updateUserShipBuildWithHullModLogic();
+		// Fetch fresh data and updateShipBuild with New Logic
+		this.setUpdateUserShipBuild({
+			...updateUserShipBuildWithHullModLogic(
+				this.getUserShipBuild(),
+				this._getBaseShipBuild()
+			),
+		});
 
 		// Update all values including [red] and [green] array
 		// has dublication with [updateUserShipBuildWithHullModLogic] but without, it overwrites with old parameneters

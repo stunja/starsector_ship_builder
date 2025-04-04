@@ -1,4 +1,5 @@
 import { HULLMODS } from "./HullModData";
+import { findHullModKeyName } from "../../helper/helperFunction";
 // ViewModels
 import ViewModel from "../../ViewModel";
 
@@ -31,10 +32,7 @@ class HullModFilter extends ViewModel {
 		// Create a OBJECT with OBJECTS (key:value)
 		const allModifiers = hullModsCategoryKeys.reduce((acc, categoryKey) => {
 			// FIND hullMods by their category. For example all fighters
-			const [categoryObjectArray] = this.findHullModKeyName(
-				HULLMODS,
-				categoryKey
-			);
+			const [categoryObjectArray] = findHullModKeyName(HULLMODS, categoryKey);
 
 			// create an object with [proper Id and filterReason function]
 			// (reason to filter the hullMod => if any);

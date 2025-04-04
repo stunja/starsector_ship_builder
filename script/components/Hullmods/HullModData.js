@@ -23,7 +23,12 @@ export const HULLMODS = {
 			name: "Advanced Targeting Core",
 			_whyNot:
 				"Precludes the installation of a Dedicated Targeting Core or an Integrated Targeting Unit.",
+
+			// [Extends Weapon Range]
+			// Extends the range of ballistic and energy weapons by 100%. The range of point-defense weapons is only extended by 60%.
+			// Precludes the installation of a Dedicated Targeting Core or an Integrated Targeting Unit.
 		},
+
 		// Civilian-grade Hull
 		civgrade: {
 			id: "civgrade",
@@ -32,6 +37,30 @@ export const HULLMODS = {
 				"This hullmod denotes that the ship isn't designed for combat, such as an Atlas-class superfreighter. If Militarized Subsystems are installed, the sensor penalties will be removed.",
 
 			// Increases sensor profile by 100%. Reduces sensor strength by 50%.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { sensorProfile, sensorStrength } = userShipBuild;
+
+				// Extract Values
+				const [increaseSensorProfilePercent, decreaseSensorStengthPercent] =
+					hullMod.effectValues.regularValues;
+
+				// console.log(increaseSensorProfilePercent, decreaseSensorStengthPercent);
+
+				// HullModHelper.increaseValue(
+				// 	crRecoveryPerDay,
+				// 	increasesCombatReadinessRecoveryRepairRates
+				// ),
+				// sensorProfile: 30
+				// sensorStrength: 30
+				// console.log(userShipBuild);
+				return {
+					...userShipBuild,
+					// sensorProfile: HullModHelper.increaseValue(
+					// 	sensorProfile,
+					// 	increasesCombatReadinessRecoveryRepairRates
+					// ),
+				};
+			},
 		},
 
 		// Distributed Fire Control
@@ -2693,6 +2722,7 @@ export const HULLMODS_DATA = {
 	"Surveying Equipment": [[5, 10, 20, 40, 5], ["100%"]],
 	"Shielded Cargo Holds": [[], []],
 	"Salvage Gantry": [["10%", "25%", "30%", "40%", "20%"], []],
-	"Civilian-grade Hull": [[100, 50], []],
 	"High Maintenance": [[100], []],
+	// Build IN
+	"Civilian-grade Hull": [[100, 50], []],
 };

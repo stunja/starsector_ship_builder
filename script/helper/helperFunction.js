@@ -1,3 +1,6 @@
+// Import
+import { HULLMODS } from "../components/Hullmods/HullModData";
+//
 export const renameKeysFromCSVdata = function (obj) {
 	const renameObj = {};
 
@@ -41,6 +44,73 @@ export const extractDataFromObject = (propertiesToExtract, data) =>
 		{}
 	);
 
+export const updateUserShipBuildWithHullModLogic = function (
+	userShipBuild,
+	baseUserShipBuild
+) {
+	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
+
+	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
+	const resetUserShipBuild = {
+		...baseUserShipBuild,
+		hullMods,
+		installedWeapons,
+		capacitors,
+		vents,
+	};
+
+	const updateShipBuild = () => {
+		let currentShipBuild = resetUserShipBuild;
+		const userShipBuildWithActiveHullModEffect = installedHullMods
+			?.map((hullMod) => {
+				const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
+
+				if (!hullModObject) {
+					console.warn(`Hull mod not found: ${hullMod.id}`);
+					return null;
+				}
+
+				if (hullModObject.hullModLogic) {
+					return (currentShipBuild = hullModObject.hullModLogic(
+						currentShipBuild,
+						hullMod
+					));
+				}
+
+				return null;
+			})
+			.filter(Boolean);
+
+		return userShipBuildWithActiveHullModEffect;
+	};
+
+	// Reset UserShipBuild
+	if (updateShipBuild().length < 1) {
+		return resetUserShipBuild;
+	}
+
+	return updateShipBuild().at(-1);
+};
+
+export const findHullModKeyName = function (obj, searchKey, matches = []) {
+	// Early return if obj is null or not an object
+	if (!obj || typeof obj !== "object") return matches;
+
+	// Direct key match
+	if (obj[searchKey] !== undefined) {
+		matches.push(obj[searchKey]);
+	}
+
+	// Recursive search through object properties
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+			findHullModKeyName(obj[key], searchKey, matches);
+		}
+	}
+
+	return matches;
+};
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original

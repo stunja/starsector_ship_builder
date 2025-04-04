@@ -49,78 +49,82 @@ export default class ViewModel {
 	// General Functions
 	isWeaponPopUpStateOpen(isOpen = false) {
 		const weaponPopUp = this.getUiState().weaponPopUp;
+
 		this.setUpdateWeaponPopUpState({
 			...weaponPopUp,
 			isWeaponPopUpOpen: isOpen,
 		});
 	}
 
-	updateUserShipBuildWithHullModLogic() {
-		const userShipBuild = this.getUserShipBuild();
-		const baseUserShipBuild = this._getBaseShipBuild();
+	// updateUserShipBuildWithHullModLogic() {
+	// 	const userShipBuild = this.getUserShipBuild();
+	// 	const baseUserShipBuild = this._getBaseShipBuild();
 
-		const { installedHullMods } = userShipBuild.hullMods;
-		const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
+	// 	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+	// 	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
+	// 	console.log(userShipBuild.hullMods);
+	// 	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
+	// 	const resetUserShipBuild = {
+	// 		...baseUserShipBuild,
+	// 		hullMods,
+	// 		installedWeapons,
+	// 		capacitors,
+	// 		vents,
+	// 	};
+	// 	console.log("test");
+	// 	const updateShipBuild = () => {
+	// 		let currentShipBuild = resetUserShipBuild;
+	// 		const userShipBuildWithActiveHullModEffect = [
+	// 			...installedHullMods,
+	// 			...builtInMods,
+	// 		]
+	// 			?.map((hullMod) => {
+	// 				const [hullModObject] = this.findHullModKeyName(HULLMODS, hullMod.id);
 
-		// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
-		const resetUserShipBuild = {
-			...baseUserShipBuild,
-			hullMods,
-			installedWeapons,
-			capacitors,
-			vents,
-		};
+	// 				if (!hullModObject) {
+	// 					console.warn(`Hull mod not found: ${hullMod.id}`);
+	// 					return null;
+	// 				}
 
-		const updateShipBuild = () => {
-			let currentShipBuild = resetUserShipBuild;
-			const userShipBuildWithActiveHullModEffect = installedHullMods
-				?.map((hullMod) => {
-					const [hullModObject] = this.findHullModKeyName(HULLMODS, hullMod.id);
+	// 				if (hullModObject.hullModLogic) {
+	// 					return (currentShipBuild = hullModObject.hullModLogic(
+	// 						currentShipBuild,
+	// 						hullMod
+	// 					));
+	// 				}
 
-					if (!hullModObject) {
-						console.warn(`Hull mod not found: ${hullMod.id}`);
-						return null;
-					}
+	// 				return null;
+	// 			})
+	// 			.filter(Boolean);
 
-					if (hullModObject.hullModLogic) {
-						return (currentShipBuild = hullModObject.hullModLogic(
-							currentShipBuild,
-							hullMod
-						));
-					}
+	// 		return userShipBuildWithActiveHullModEffect;
+	// 	};
+	// 	// Reset UserShipBuild
+	// 	if (updateShipBuild().length < 1) {
+	// 		this.setUpdateUserShipBuild({ ...resetUserShipBuild });
+	// 		return;
+	// 	}
+	// 	this.setUpdateUserShipBuild({
+	// 		...updateShipBuild().at(-1),
+	// 	});
+	// }
 
-					return null;
-				})
-				.filter(Boolean);
+	// findHullModKeyName(obj, searchKey, matches = []) {
+	// 	// Early return if obj is null or not an object
+	// 	if (!obj || typeof obj !== "object") return matches;
 
-			return userShipBuildWithActiveHullModEffect;
-		};
-		// Reset UserShipBuild
-		if (updateShipBuild().length < 1) {
-			this.setUpdateUserShipBuild({ ...resetUserShipBuild });
-			return;
-		}
-		this.setUpdateUserShipBuild({
-			...updateShipBuild().at(-1),
-		});
-	}
+	// 	// Direct key match
+	// 	if (obj[searchKey] !== undefined) {
+	// 		matches.push(obj[searchKey]);
+	// 	}
 
-	findHullModKeyName(obj, searchKey, matches = []) {
-		// Early return if obj is null or not an object
-		if (!obj || typeof obj !== "object") return matches;
+	// 	// Recursive search through object properties
+	// 	for (const key in obj) {
+	// 		if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+	// 			this.findHullModKeyName(obj[key], searchKey, matches);
+	// 		}
+	// 	}
 
-		// Direct key match
-		if (obj[searchKey] !== undefined) {
-			matches.push(obj[searchKey]);
-		}
-
-		// Recursive search through object properties
-		for (const key in obj) {
-			if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
-				this.findHullModKeyName(obj[key], searchKey, matches);
-			}
-		}
-
-		return matches;
-	}
+	// 	return matches;
+	// }
 }
