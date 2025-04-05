@@ -44,7 +44,7 @@ export const HULLMODS = {
 				const [increaseSensorProfilePercent, decreaseSensorStengthPercent] =
 					hullMod.effectValues.regularValues;
 
-				// console.log(increaseSensorProfilePercent, decreaseSensorStengthPercent);
+				console.log(increaseSensorProfilePercent, decreaseSensorStengthPercent);
 
 				// HullModHelper.increaseValue(
 				// 	crRecoveryPerDay,
@@ -560,14 +560,24 @@ export const HULLMODS = {
 			},
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize } = userShipBuild;
+				const { builtInMods } = userShipBuild.hullMods;
+
+				const { id: currentId } = HULLMODS.WEAPONS.advancedoptics;
+
+				// Advanced Optics BuildIn
+				const hasAdvancedOpticsBuildIn = builtInMods.some(
+					({ id }) => id === currentId
+				);
 
 				return {
 					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
+					ordinancePoints: hasAdvancedOpticsBuildIn
+						? ordinancePoints
+						: HullModHelper.updateOrdinancePoints(
+								ordinancePoints,
+								hullMod,
+								hullSize
+						  ),
 				};
 			},
 		},
@@ -618,23 +628,41 @@ export const HULLMODS = {
 		eccm: {
 			id: "eccm",
 			name: "ECCM Package",
-
+			reason: {
+				isAlreadyBuildInReason: "Already Build-In",
+			},
 			// [IGNORE ALL]
 			// Reduces the chance for missiles launched by the ship to be affected by electronic counter-measures and flares by 50%.
 			// A CPU core adjunct in each missile increases missile top speed by 25% and missile maneuverability by 50%, as well
 			// as significantly improving the guidance algorithm.
 			// Also reduces the weapon range reduction due to superior enemy Electronic Warfare by 50%.
+			filterReason: function (hullMod, userShipBuild) {
+				const { builtInMods } = userShipBuild.hullMods;
+				const { id: currentId, reason } = HULLMODS.WEAPONS.eccm;
 
+				// Incompatible with Advanced Optics
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
+
+				if (isAlreadyBuildIn) return [hullMod, reason.isAlreadyBuildInReason];
+
+				return null;
+			},
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize } = userShipBuild;
+				const { id: currentId } = HULLMODS.WEAPONS.eccm;
+				const { builtInMods } = userShipBuild.hullMods;
+
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
 
 				return {
 					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
+					ordinancePoints: isAlreadyBuildIn
+						? ordinancePoints
+						: HullModHelper.updateOrdinancePoints(
+								ordinancePoints,
+								hullMod,
+								hullSize
+						  ),
 				};
 			},
 			// S-mod bonus: Fully negates the effect of ECM and flares on missiles fired by this ship.
@@ -643,20 +671,39 @@ export const HULLMODS = {
 		ecm: {
 			id: "ecm",
 			name: "ECM Package",
+			reason: {
+				isAlreadyBuildInReason: "Already Build-In",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { builtInMods } = userShipBuild.hullMods;
+				const { id: currentId, reason } = HULLMODS.WEAPONS.ecm;
 
+				// Incompatible with Advanced Optics
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
+
+				if (isAlreadyBuildIn) return [hullMod, reason.isAlreadyBuildInReason];
+
+				return null;
+			},
 			// [IGNORE ALL]
 			// When deployed in combat, grants 1%/2%/3%/4% ECM rating, depending on this ship's hull size.
 
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize } = userShipBuild;
+				const { id: currentId } = HULLMODS.WEAPONS.ecm;
+				const { builtInMods } = userShipBuild.hullMods;
+
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
 
 				return {
 					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
+					ordinancePoints: isAlreadyBuildIn
+						? ordinancePoints
+						: HullModHelper.updateOrdinancePoints(
+								ordinancePoints,
+								hullMod,
+								hullSize
+						  ),
 				};
 			},
 		},
@@ -1584,18 +1631,27 @@ export const HULLMODS = {
 
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize, sensorStrength } = userShipBuild;
+				const { builtInMods } = userShipBuild.hullMods;
+				const { id: currentId } = HULLMODS.LOGISTICS.hiressensors;
 
 				// Extract Values
 				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
 					hullMod.effectValues.regularValues;
 
+				// High Resolution Sensors Build-In
+				const isAlreadyInstalled = builtInMods.some(
+					({ id }) => id === currentId
+				);
+
 				return {
 					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
+					ordinancePoints: isAlreadyInstalled
+						? ordinancePoints
+						: HullModHelper.updateOrdinancePoints(
+								ordinancePoints,
+								hullMod,
+								hullSize
+						  ),
 					sensorStrength:
 						sensorStrength +
 						HullModHelper.hullModHullSizeConverter(
@@ -1821,14 +1877,22 @@ export const HULLMODS = {
 
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize } = userShipBuild;
+				const { builtInMods } = userShipBuild.hullMods;
+
+				const { id: currentId } = HULLMODS.LOGISTICS.solar_shielding;
+
+				// Already Installed
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
 
 				return {
 					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
+					ordinancePoints: isAlreadyBuildIn
+						? ordinancePoints
+						: HullModHelper.updateOrdinancePoints(
+								ordinancePoints,
+								hullMod,
+								hullSize
+						  ),
 				};
 			},
 			// S-mod bonus: Increases the protection from solar coronae and similar hazards to 100%.
@@ -1867,14 +1931,22 @@ export const HULLMODS = {
 			},
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize } = userShipBuild;
+				const { builtInMods } = userShipBuild.hullMods;
+
+				const { id: currentId } = HULLMODS.LOGISTICS.surveying_equipment;
+
+				// Already Installed
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
 
 				return {
 					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
+					ordinancePoints: isAlreadyBuildIn
+						? ordinancePoints
+						: HullModHelper.updateOrdinancePoints(
+								ordinancePoints,
+								hullMod,
+								hullSize
+						  ),
 				};
 			},
 		},
@@ -1894,11 +1966,9 @@ export const HULLMODS = {
 
 				const { id: currentId, reason } = HULLMODS.LOGISTICS.augmentedengines;
 
-				const isAlreadyInstalled = builtInMods.some(
-					({ id }) => id === currentId
-				);
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
 
-				if (isAlreadyInstalled) return [hullMod, reason.isAlreadyBuildInReason];
+				if (isAlreadyBuildIn) return [hullMod, reason.isAlreadyBuildInReason];
 
 				// Max 2 Logistics Mods Per Ship
 				const maxLogisticsLimit = installedHullMods.filter(
@@ -1914,17 +1984,23 @@ export const HULLMODS = {
 			// Increases the maximum burn level by 2.
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize, shipBurn } = userShipBuild;
+				const { builtInMods } = userShipBuild.hullMods;
+				const { id: currentId } = HULLMODS.LOGISTICS.augmentedengines;
+
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
 
 				// Extract Values
 				const [increaseMaxBurn] = hullMod.effectValues.regularValues;
 
 				return {
 					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
+					ordinancePoints: isAlreadyBuildIn
+						? ordinancePoints
+						: HullModHelper.updateOrdinancePoints(
+								ordinancePoints,
+								hullMod,
+								hullSize
+						  ),
 					shipBurn: HullModHelper.updateMaxShipBurn(shipBurn, increaseMaxBurn),
 				};
 			},

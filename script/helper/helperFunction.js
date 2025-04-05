@@ -62,7 +62,8 @@ export const updateUserShipBuildWithHullModLogic = function (
 
 	const updateShipBuild = () => {
 		let currentShipBuild = resetUserShipBuild;
-		const userShipBuildWithActiveHullModEffect = installedHullMods
+
+		return [...builtInMods, ...installedHullMods]
 			?.map((hullMod) => {
 				const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
 
@@ -81,8 +82,6 @@ export const updateUserShipBuildWithHullModLogic = function (
 				return null;
 			})
 			.filter(Boolean);
-
-		return userShipBuildWithActiveHullModEffect;
 	};
 
 	// Reset UserShipBuild
