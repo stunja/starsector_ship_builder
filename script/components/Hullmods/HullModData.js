@@ -44,21 +44,16 @@ export const HULLMODS = {
 				const [increaseSensorProfilePercent, decreaseSensorStengthPercent] =
 					hullMod.effectValues.regularValues;
 
-				console.log(increaseSensorProfilePercent, decreaseSensorStengthPercent);
-
-				// HullModHelper.increaseValue(
-				// 	crRecoveryPerDay,
-				// 	increasesCombatReadinessRecoveryRepairRates
-				// ),
-				// sensorProfile: 30
-				// sensorStrength: 30
-				// console.log(userShipBuild);
 				return {
 					...userShipBuild,
-					// sensorProfile: HullModHelper.increaseValue(
-					// 	sensorProfile,
-					// 	increasesCombatReadinessRecoveryRepairRates
-					// ),
+					sensorProfile: HullModHelper.increaseValue(
+						sensorProfile,
+						increaseSensorProfilePercent
+					),
+					sensorStrength: HullModHelper.decreaseValue(
+						sensorStrength,
+						decreaseSensorStengthPercent
+					),
 				};
 			},
 		},
@@ -2800,5 +2795,5 @@ export const HULLMODS_DATA = {
 	"Salvage Gantry": [["10%", "25%", "30%", "40%", "20%"], []],
 	"High Maintenance": [[100], []],
 	// Build IN
-	"Civilian-grade Hull": [[100, 50], []],
+	"Civilian-grade Hull": [["100%", "50%"], []],
 };
