@@ -161,6 +161,7 @@ export const HULLMODS = {
 			_whyNot:
 				"This hullmod is a superior version of the the Ground Support Package hullmod: it is effectively twice as effective as the Ground Support Package.",
 
+			// [IGNORE]
 			// Close support weapons and counter-measures for ground defenses.
 			// Increases the effective strength of planetary raids by 200, up to the total number of marines in the fleet.
 		},
@@ -170,6 +171,7 @@ export const HULLMODS = {
 			name: "B-Deck",
 			_whyNot: "Built-in hullmod only available on the Drover.",
 
+			// [IGNORE]
 			// Once per combat, when the fighter replacement rate reaches 40%, the fighter launch bays are switched to operate from a "B-deck".
 			// Standby fighters are launched to rapidly bring wings back to full strength, and the fighter replacement rate is set to 100%.
 		},
@@ -191,6 +193,21 @@ export const HULLMODS = {
 			_whyNot: "This is built into the Hyperion and the Ox.",
 
 			// Increases the monthly maintenance supply cost by 100%.
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { suppliesPerMonth } = userShipBuild;
+
+				// Extract Values
+				const [increaseMaintenanceCostPercent] =
+					hullMod.effectValues.regularValues;
+				console.log(increaseMaintenanceCostPercent);
+				return {
+					...userShipBuild,
+					suppliesPerMonth: HullModHelper.increaseValue(
+						suppliesPerMonth,
+						increaseMaintenanceCostPercent
+					),
+				};
+			},
 		},
 
 		// Energy Bolt Coherer
@@ -235,6 +252,7 @@ export const HULLMODS = {
 			// Close support weapons and counter-measures for ground defenses.
 			// Increases the effective strength of planetary raids by 100, up to the total number of marines in the fleet.
 		},
+
 		// Rugged Construction
 		rugged: {
 			id: "rugged",
@@ -244,6 +262,7 @@ export const HULLMODS = {
 			// Reduces most negative effects of d-mods by 50%. If disabled or destroyed in combat, the ship has a 50% chance to avoid new d-mods, and is almost always recoverable after the battle.
 			// In addition, the supply cost to recover from deployment - and to effect repairs if the ship is disabled - is reduced by 50%.
 		},
+
 		// Shielded Cargo Holds
 		shielded_holds: {
 			id: "shielded_holds",
@@ -253,12 +272,14 @@ export const HULLMODS = {
 			// Commonly found on ships that can't always rely on shields to protect their cargo from cosmic radiation.
 			// Only a few tweaks are needed to have the shielding confound long-range cargo scans, reducing the probability of contraband being detected.
 		},
+
 		// Salvage Gantry
 		repair_gantry: {
 			id: "repair_gantry",
 			name: "Salvage Gantry",
 			_whyNot: "Salvage Gantry is a built-in hullmod.",
 
+			// [IGNORE]
 			// Increases the resources gained from salvaging abandoned stations, derelicts,
 			// floating hulks, and other such by 10%/25%/30%/40%, depending on hull size.
 			// Only affects the recovery of common resources such as fuel and supplies, and not rare items like blueprints.
@@ -2772,7 +2793,6 @@ export const HULLMODS_DATA = {
 	"High Scatter Amplifier": [["10%", 200, "50%"], ["5%"]],
 	"Integrated Targeting Unit": [["10%", "20%", "40%", "60%"], []],
 	"ECM Package": [["1%", "2%", "3%", "4%"], []],
-	"Missile Autoforge": [[], []],
 	"Energy Bolt Coherer": [[100, "50%"], []],
 	"Auxiliary Thrusters": [["50%"], [10]],
 	"Unstable Injector": [[25, 20, 15, 15, "15%", "25%"], []],
@@ -2814,10 +2834,9 @@ export const HULLMODS_DATA = {
 	],
 	"Efficiency Overhaul": [["20%", "50%"], ["10%"]],
 	"Surveying Equipment": [[5, 10, 20, 40, 5], ["100%"]],
-	"Shielded Cargo Holds": [[], []],
 	"Salvage Gantry": [["10%", "25%", "30%", "40%", "20%"], []],
-	"High Maintenance": [[100], []],
 	// Build IN
 	"Civilian-grade Hull": [["100%", "50%"], []],
 	"Phase Field": [["50%", 5, 5], []],
+	"High Maintenance": [["100%"], []],
 };
