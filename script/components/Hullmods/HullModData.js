@@ -24,6 +24,7 @@ export const HULLMODS = {
 			_whyNot:
 				"Precludes the installation of a Dedicated Targeting Core or an Integrated Targeting Unit.",
 
+			// [IGNORE]
 			// [Extends Weapon Range]
 			// Extends the range of ballistic and energy weapons by 100%. The range of point-defense weapons is only extended by 60%.
 			// Precludes the installation of a Dedicated Targeting Core or an Integrated Targeting Unit.
@@ -65,17 +66,19 @@ export const HULLMODS = {
 			_whyNot:
 				"Distributed Fire Control is incompatible with Dedicated Targeting Core and Integrated Targeting Unit, but not the Ballistic Rangefinder.",
 
+			// [IGNORE]
 			//Much of the damage that takes weapons offline is to external control runs and power conduits.
 			// This ship's weapons are engineered to operate more independently,
 			// reducing their exposure to damage by 50% and reducing the EMP damage taken by the ship overall by 50%.
 		},
-		//! add incompatibility
+
 		// Flux Shunt
 		fluxshunt: {
 			id: "fluxshunt",
 			name: "Flux Shunt",
 			_whyNot: "Flux Shunt is incompatible with Safety Overrides.",
 
+			// [IGNORE]
 			// Allows the ship to dissipate hard flux at 50% of the normal rate while shields are on.
 		},
 
@@ -85,11 +88,13 @@ export const HULLMODS = {
 			name: "Ablative Armor",
 			_whyNot: "Built-in hullmod only available on the Invictus.",
 
+			// [IGNORE]
 			// An ancient design intended to stop micro-meteorites through sheer volume of material in place, before the advent of "spaced" armor.
 			// Reduces the effective armor strength for the damage reduction calculation to 10% of its actual value.
 			// However, ships of this design tend to carry extremely heavy armor.
 		},
 
+		//! I have no idea how to implement
 		// Heavy Ballistics Integration
 		hbi: {
 			id: "hbi",
@@ -100,6 +105,7 @@ export const HULLMODS = {
 			// Reduces the ordnance point cost of large ballistic weapons by 10.
 		},
 
+		//! Later
 		// Vast Hangar
 		vast_hangar: {
 			id: "vast_hangar",
@@ -117,9 +123,11 @@ export const HULLMODS = {
 			name: "Delicate Machinery",
 			_whyNot: "The Delicate Machinery is a built-in only hullmod.",
 
+			// [IGNORE]
 			// The ship systems require excessive maintenance and do not stand up well under the rigours of prolonged engagements.
 			// Increases the rate of in-combat CR decay after peak performance time runs out by 50%.
 		},
+
 		// Phase Field
 		phasefield: {
 			id: "phasefield",
@@ -127,8 +135,24 @@ export const HULLMODS = {
 			_whyNot: "The Phase Field is a built-in only hullmod.",
 
 			// The ship is able to run a low-grade phase field for extended periods of time, reducing its effective sensor profile by 50%.
+			// [IGNORE BELOW]
 			// In addition, the fleet's detected-at-range is reduced by a multiplier based on the total sensor profile of the 5 highest-profile ships in the fleet, and the total sensor strength of the 5 phase ships with the highest sensor strength values. This effect only applies when the fleet's transponder is turned off.
 			// Fleetwide sensor strength increases - such as from High Resolution Sensors - do not factor into this calculation.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { sensorProfile } = userShipBuild;
+
+				// Extract Values
+				const [reduceSensorProfilePercent] = hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					sensorProfile: HullModHelper.decreaseValue(
+						sensorProfile,
+						reduceSensorProfilePercent
+					),
+				};
+			},
 		},
 		// Advanced Ground Support
 		advanced_ground_support: {
@@ -2782,7 +2806,6 @@ export const HULLMODS_DATA = {
 	"Operations Center": [["250%"], []],
 	"Militarized Subsystems": [[1, "100%"], []],
 	"Phase Anchor": [[0, "2x", "1x"], []],
-	"Phase Field": [["50%", 5, 5], []],
 
 	"Expanded Cargo Holds": [[30, 60, 100, 200, "30%", "50%"], []],
 	"High Resolution Sensors": [
@@ -2796,4 +2819,5 @@ export const HULLMODS_DATA = {
 	"High Maintenance": [[100], []],
 	// Build IN
 	"Civilian-grade Hull": [["100%", "50%"], []],
+	"Phase Field": [["50%", 5, 5], []],
 };
