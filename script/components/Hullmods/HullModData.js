@@ -113,6 +113,7 @@ export const HULLMODS = {
 			_whyNot:
 				"The Vast Hangar is a built-in only hullmod. Can be found on the following ships: Invictus.",
 
+			// [IMPLEMENT IN Converted Hangar]
 			// The number of fighter bays added by Converted Hangar is increased by 1, and its performance matches that of a dedicated fighter bay -
 			// all the penalties and modifiers including those to the ships deployment cost, are negated.
 		},
@@ -199,7 +200,7 @@ export const HULLMODS = {
 				// Extract Values
 				const [increaseMaintenanceCostPercent] =
 					hullMod.effectValues.regularValues;
-				console.log(increaseMaintenanceCostPercent);
+
 				return {
 					...userShipBuild,
 					suppliesPerMonth: HullModHelper.increaseValue(
@@ -217,11 +218,13 @@ export const HULLMODS = {
 			_whyNot:
 				"A special Built-in only hullmod that uniquely changes depending on whether or not the ship has a crew complement. +200 non-beam energy weapon range for [REDACTED] ships. +100 non-beam energy weapon range and +50% crew casualties in combat for any crewed ship.",
 
+			// [IGNORE]
 			// Originally designed by the Tri-Tachyon Corporation for use on its combat droneships, the coherence field strength has to be dialed down to allow operation on crewed vessels.
 			// Increases the range of all non-beam Energy and Hybrid weapons by 100/200.
 			// The coherence field is unstable under combat conditions, with stresses on the hull resulting in spot failures that releases bursts of lethal radiation. Crew casualties in combat are increased by 50%.
 		},
 
+		//! add filter
 		// Automated Ship
 		automated: {
 			id: "automated",
@@ -230,7 +233,9 @@ export const HULLMODS = {
 				"Automated Ship is a built-in hullmod that only appears on droneships, such as those from the Domain Exploration Derelict.",
 
 			// This ship is fully automated, and does not require - and can not take on - any human crew.
-			// Automated ships usually required specialized equipment and expertise to maintain, resulting in a maximum combat readiness penalty of 100%. This penalty can be offset by a fleet commander skilled in the use of automated ships.
+			// Automated ships usually required specialized equipment and expertise to maintain,
+			// resulting in a maximum combat readiness penalty of 100%. This penalty can be offset by a
+			// fleet commander skilled in the use of automated ships.
 		},
 
 		// Experimental Phase Coils
@@ -240,6 +245,7 @@ export const HULLMODS = {
 			_whyNot:
 				"Automated Ship is a built-in hullmod that only appears Ziggurat.",
 
+			// [IGNORE]
 			// Reduces phase cloak cooldown by 80%.
 		},
 
@@ -259,6 +265,7 @@ export const HULLMODS = {
 			name: "Rugged Construction",
 			_whyNot: "Rugged Construction is a built-in hullmod.",
 
+			// [IGNORE]
 			// Reduces most negative effects of d-mods by 50%. If disabled or destroyed in combat, the ship has a 50% chance to avoid new d-mods, and is almost always recoverable after the battle.
 			// In addition, the supply cost to recover from deployment - and to effect repairs if the ship is disabled - is reduced by 50%.
 		},
@@ -289,26 +296,26 @@ export const HULLMODS = {
 		},
 
 		//! implement later
+		// Legion (XIV)
 		// Fourteenth Battlegroup
 		test: {
 			id: "test",
 			name: "Salvage Gantry",
 			_whyNot: "Salvage Gantry is a built-in hullmod.",
 
-			// This ship is a survivor of the original 14th Domain Battlegroup which founded the Hegemony.
-			// It is a prime specimen of the Domain Navy's "decisive battle" doctrine, particularly exhibited by
-			// a series of radical structural modifications (performed with pre-Collapse industrial methods)
 			// which allow the mounting of heavier armor plating by a flat increase of 100 standard units, with
-			//  only a 8% reduction in speed and maneuverability. Exceptionally well-tuned energy systems increase
+			// only a 8% reduction in speed and maneuverability. Exceptionally well-tuned energy systems increase
 			// flux throughput and capacity by 5% over standard examples of this hull.
 		},
-
+		//!
 		// Converted Cargo Bay
+		// Colossus Mk.III
 		test: {
 			id: "test",
 			name: "Converted Cargo Bay",
 			_whyNot: "Built-in hullmod only available on the Colossus Mk.III.",
 
+			// [IGNORE]
 			// This ship's cargo hold has been converted to house a pair of fighter bays.
 			// The improvised manufactory that produces fighter chassis is unreliable, and most components have minor defects.
 			// Fighter speed reduced by 25%, and damage taken increased by 25%.
@@ -971,8 +978,24 @@ export const HULLMODS = {
 
 				return null;
 			},
+
+			// Increases fighter refit time by 1.5x, and the fighter replacement rate both decays and recovers 1.5x more slowly.
+			// In addition, bombers returning to rearm (or fighters returning to repair) take 40% of their base time to relaunch,
+			// where it normally takes under a second
+			// Increases the minimum crew by 20 to account for pilots and fighter crews.
+			// Increases the ship's deployment points and supply cost to recover from deployment by 1
+			//  for every 5 ordnance points spent on fighters, or by at least 1 point. This comes with a
+			// proportional increase in combat readiness lost per deployment.
+
 			hullModLogic: function (userShipBuild, hullMod) {
-				const { ordinancePoints, hullSize } = userShipBuild;
+				const { ordinancePoints, hullSize, hullMods } = userShipBuild;
+
+				console.log(hullMods);
+
+				// check vast_hangar
+				// The number of fighter bays added by Converted Hangar is increased by 1,
+				// and its performance matches that of a dedicated fighter bay - all the penalties and
+				// modifiers including those to the ships deployment cost, are negated.
 
 				return {
 					...userShipBuild,

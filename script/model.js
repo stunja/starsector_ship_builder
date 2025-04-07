@@ -8,8 +8,10 @@ import URL from "./helper/url.js";
 import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import Papa from "papaparse";
 
+import { SHIELD_TYPE } from "./helper/Properties.js";
+
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "ox"; // hound // venture
+const shipNameDev = "invictus"; // hound // venture
 
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor
@@ -424,7 +426,7 @@ const createUserShipBuild = {
 			turnAcceleration: turnAcceleration,
 
 			// Shield Type || Shield / Phase / No Shield
-			shieldType: shieldType,
+			shieldType: this.correctShieldType(shieldType, phaseCost, phaseUpkeep),
 			shieldArc: shieldArc,
 			shieldEfficiency: shieldEfficiency,
 			shieldUpkeep: shieldUpkeep,
@@ -545,6 +547,15 @@ const createUserShipBuild = {
 		return builtInMods?.some((hullmod) => hullmod.id === "civgrade")
 			? "civilian"
 			: "military";
+	},
+	correctShieldType(shieldType, phaseCost, phaseUpkeep) {
+		const hasNoCostOrNoUpkeep =
+			!Number.isFinite(phaseCost) || !Number.isFinite(phaseUpkeep);
+
+		if (shieldType === SHIELD_TYPE.PHASE && hasNoCostOrNoUpkeep)
+			return SHIELD_TYPE.NONE;
+
+		return shieldType;
 	},
 };
 const updateFighters = {
