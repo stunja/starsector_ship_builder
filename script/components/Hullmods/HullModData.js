@@ -946,7 +946,6 @@ export const HULLMODS = {
 	},
 	FIGHTER: {
 		// Converted Hangar
-		//! add Logic later, sounds very complicated
 		converted_hangar: {
 			id: "converted_hangar",
 			name: "Converted Hangar",
@@ -978,20 +977,35 @@ export const HULLMODS = {
 
 				return null;
 			},
-
+			// Increases the minimum crew by 20 to account for pilots and fighter crews.
+			// [IGNORE]
 			// Increases fighter refit time by 1.5x, and the fighter replacement rate both decays and recovers 1.5x more slowly.
 			// In addition, bombers returning to rearm (or fighters returning to repair) take 40% of their base time to relaunch,
 			// where it normally takes under a second
-			// Increases the minimum crew by 20 to account for pilots and fighter crews.
 			// Increases the ship's deployment points and supply cost to recover from deployment by 1
-			//  for every 5 ordnance points spent on fighters, or by at least 1 point. This comes with a
+			// for every 5 ordnance points spent on fighters, or by at least 1 point. This comes with a
 			// proportional increase in combat readiness lost per deployment.
 
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hullSize, hullMods } = userShipBuild;
 
-				console.log(hullMods);
+				const { id: currentId } = HULLMODS.BUILD_IN.vast_hangar;
+				const { builtInMods } = hullMods;
 
+				const isVastHangarInstalled = builtInMods.some(
+					({ id }) => id === currentId
+				);
+
+				console.log(isVastHangarInstalled);
+				console.log(userShipBuild);
+				const [
+					_increasesFighterRefitTimeBy,
+					_lowerFighterReplacementBothDecayAndRecoverBy,
+					_increaseCruiserSpeed,
+					increaseMinCrewReqByFlatNumber,
+				] = hullMod.effectValues.regularValues;
+				// vast_hangar
+				// builtInMods
 				// check vast_hangar
 				// The number of fighter bays added by Converted Hangar is increased by 1,
 				// and its performance matches that of a dedicated fighter bay - all the penalties and
