@@ -5,10 +5,15 @@ export const SHIELD_TYPE = {
 	NONE: "NONE",
 };
 
-export const WEAPON_SLOT_TYPE = {
-	LAUNCH_BAY: "LAUNCH_BAY",
-	HYBRID: "HYBRID",
-	BALLISTIC: "BALLISTIC",
+export const WEAPON_SLOT = {
+	SIZE: {
+		MEDIUM: "MEDIUM",
+	},
+	TYPE: {
+		LAUNCH_BAY: "LAUNCH_BAY",
+		HYBRID: "HYBRID",
+		BALLISTIC: "BALLISTIC",
+	},
 };
 
 export const HULL_SIZE = {

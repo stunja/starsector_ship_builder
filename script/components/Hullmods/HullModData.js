@@ -1,12 +1,12 @@
 import {
 	SHIELD_TYPE,
-	WEAPON_SLOT_TYPE,
 	HULL_SIZE,
 	SHIP_TYPE,
+	WEAPON_SLOT,
 } from "../../helper/Properties";
 
 import HullModHelper from "./HullModHelper";
-import { VALUE_CHANGE } from "../../helper/MagicStrings";
+import { VALUE_CHANGE, GENERIC_STRING } from "../../helper/MagicStrings";
 
 const UI_TAGS = {
 	LOGISTICS: "Logistics",
@@ -423,8 +423,8 @@ export const HULLMODS = {
 				// Only with Hybrid or Ballistic Slots
 				const noBallisticOrHybridSlots = weaponSlots.some(
 					({ type }) =>
-						type === WEAPON_SLOT_TYPE.BALLISTIC ||
-						type === WEAPON_SLOT_TYPE.HYBRID
+						type === WEAPON_SLOT.TYPE.BALLISTIC ||
+						type === WEAPON_SLOT.TYPE.HYBRID
 				);
 
 				if (!noBallisticOrHybridSlots)
@@ -987,29 +987,73 @@ export const HULLMODS = {
 			// proportional increase in combat readiness lost per deployment.
 
 			hullModLogic: function (userShipBuild, hullMod) {
-				const { ordinancePoints, hullSize, hullMods } = userShipBuild;
+				const {
+					ordinancePoints,
+					hullSize,
+					hullMods,
+					minCrew,
+					weaponSlots,
+					installedWeapons,
+				} = userShipBuild;
+				const { builtInMods } = hullMods;
 
 				const { id: currentId } = HULLMODS.BUILD_IN.vast_hangar;
-				const { builtInMods } = hullMods;
 
 				const isVastHangarInstalled = builtInMods.some(
 					({ id }) => id === currentId
 				);
 
-				console.log(isVastHangarInstalled);
-				console.log(userShipBuild);
 				const [
 					_increasesFighterRefitTimeBy,
 					_lowerFighterReplacementBothDecayAndRecoverBy,
 					_increaseCruiserSpeed,
 					increaseMinCrewReqByFlatNumber,
 				] = hullMod.effectValues.regularValues;
-				// vast_hangar
-				// builtInMods
-				// check vast_hangar
-				// The number of fighter bays added by Converted Hangar is increased by 1,
-				// and its performance matches that of a dedicated fighter bay - all the penalties and
-				// modifiers including those to the ships deployment cost, are negated.
+
+				// HORRENDOUS implementation but it works
+				//? there is a bug, where installed weapons don't clear out.
+				const slotsToCreate = isVastHangarInstalled ? 2 : 1;
+
+				const createNewProps = Array.from(
+					{
+						length: slotsToCreate,
+					},
+					(_, i) => {
+						const currentWeaponId = `IWS-${i + 100}`;
+						return {
+							newWeaponSlots: {
+								id: currentWeaponId,
+								mount: "HIDDEN",
+								size: WEAPON_SLOT.SIZE.MEDIUM,
+								type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
+							},
+							newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
+						};
+					}
+				);
+
+				const createNewInstalledWeapons = () => {
+					// Filter IWS weapons directly
+					const iwsWeapons = installedWeapons.filter(
+						(weapon) => weapon[0] && weapon[0].includes("IWS")
+					);
+
+					// Return early if no IWS weapons
+					if (iwsWeapons.length < 1) {
+						return createNewProps.map((arr) => arr.newInstalledWeapons);
+					}
+
+					// Remove duplicates
+					const seen = new Set();
+					return iwsWeapons.filter((item) => {
+						const id = item[0];
+						if (seen.has(id)) {
+							return false;
+						}
+						seen.add(id);
+						return true;
+					});
+				};
 
 				return {
 					...userShipBuild,
@@ -1018,6 +1062,22 @@ export const HULLMODS = {
 						hullMod,
 						hullSize
 					),
+
+					minCrew: isVastHangarInstalled
+						? minCrew
+						: minCrew + increaseMinCrewReqByFlatNumber,
+
+					weaponSlots: [
+						...[...new Set(weaponSlots)], // filter duplicates
+						...createNewProps.map((arr) => arr.newWeaponSlots), // add new weaponSlots
+					],
+
+					installedWeapons: [
+						...installedWeapons.filter(
+							(weapon) => weapon[0] && !weapon[0].includes("IWS")
+						),
+						...createNewInstalledWeapons(),
+					],
 				};
 			},
 		},

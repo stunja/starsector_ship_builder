@@ -2,6 +2,7 @@
 import ViewModel from "../../ViewModel";
 import HullModController from "./HullModController";
 import ShipStats from "../ShipStats/ShipStats";
+import FighterSlots from "../Fighter/FighterSlots";
 // View
 import HullModsPopUpView from "../../allViews/HullMods/HullModsPopUpView";
 import HullModsPopUpHeaderView from "../../allViews/HullMods/HullModsPopUpHeaderView";
@@ -16,12 +17,8 @@ import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import { updateUserShipBuildWithHullModLogic } from "../../helper/helperFunction";
 
-import {
-	SHIELD_TYPE,
-	WEAPON_SLOT_TYPE,
-	HULL_SIZE,
-	SHIP_TYPE,
-} from "../../helper/Properties";
+import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
+
 import { ScrollPosition } from "../../helper/ScrollPosition";
 
 const EVENT_LISTENER_TARGET = {
@@ -109,20 +106,17 @@ export default class HullModsPopUp extends ViewModel {
 		// Not a correct implementation, but it works
 		this.#processData();
 
-		console.log(
-			updateUserShipBuildWithHullModLogic(
+		//! not sure if this is needed
+		this.setUpdateUserShipBuild({
+			...updateUserShipBuildWithHullModLogic(
 				this.getUserShipBuild(),
 				this._getBaseShipBuild()
-			)
-		);
-		// this.setUpdateUserShipBuild({
-		// 	...updateUserShipBuildWithHullModLogic(
-		// 		this.getUserShipBuild(),
-		// 		this._getBaseShipBuild()
-		// 	),
-		// });
+			),
+		});
 
 		this.#createHullModsArray();
+
+		console.log(this.#userShipBuild);
 	}
 	#render() {
 		this.#renderHullModsPopUp();
@@ -331,6 +325,8 @@ export default class HullModsPopUp extends ViewModel {
 		new ShipStats(this.getState()).update();
 		// Update Controller, to display installedHullMods
 		new HullModController(this.getState()).update();
+		// Update Fighter Slots (in case change in amount fighter Bays)
+		new FighterSlots(this.getState()).update();
 	};
 
 	// Turn HullMod Entry to Active => different Color

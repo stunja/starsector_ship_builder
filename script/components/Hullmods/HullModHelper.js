@@ -2,17 +2,11 @@
 import { VALUE_CHANGE } from "../../helper/MagicStrings";
 import {
 	SHIELD_TYPE,
-	WEAPON_SLOT_TYPE,
 	HULL_SIZE,
 	SHIP_TYPE,
+	HULLMOD_COST_KEYS,
 } from "../../helper/Properties";
 
-const HULLMOD_HULLSIZE = {
-	CAPITAL_SHIP: "cost_capital",
-	CRUISER: "cost_cruiser",
-	DESTROYER: "cost_dest",
-	FRIGATE: "cost_frigate",
-};
 const HullModHelper = {
 	updateInstalledHullMod(hullmodId, userShipBuild, allHullMods) {
 		const { hullMods } = userShipBuild;
@@ -36,7 +30,7 @@ const HullModHelper = {
 		if (!currentHullMod || !shipSize)
 			console.warn(`Error in HullModHelper.normalizedHullSize`);
 
-		const keyToFind = HULLMOD_HULLSIZE[shipSize];
+		const keyToFind = HULLMOD_COST_KEYS[shipSize];
 		return currentHullMod[keyToFind] ?? 0;
 	},
 	hullModHullSizeConverter(

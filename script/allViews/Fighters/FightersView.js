@@ -1,30 +1,28 @@
 import classNames from "../../helper/DomClassNames";
 import DataSet from "../../helper/DataSet";
 import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
-
+import { GENERIC_STRING } from "../../helper/MagicStrings";
+import { WEAPON_SLOT } from "../../helper/Properties";
+// View
 import View from "../view";
 import FighterSprite from "./FighterSprite";
-import { createWebSocketModuleRunnerTransport } from "vite/module-runner";
 
 const STRING = {
 	HEADER: "Fighter Bays",
 	EMPTY: "",
 };
-const WEAPON_SLOT_FIGHTER = "LAUNCH_BAY";
-//! Only Render of Container Implemented so far.
+
 class FightersView extends View {
 	_localParent = `.${classNames.fighterContainer}`;
 
 	#installedWeapons;
 	#weaponSlots;
-	#userShipBuild;
 
 	#allFighters;
 
 	#processData([userShipBuild, allFighters]) {
 		this.#allFighters = allFighters;
 
-		this.#userShipBuild = userShipBuild;
 		this.#installedWeapons = userShipBuild.installedWeapons;
 		this.#weaponSlots = userShipBuild.weaponSlots;
 	}
@@ -51,28 +49,30 @@ class FightersView extends View {
 	#fighterSlotsMarkup() {
 		const fighterSlots = this.#createFighterSlotsArray();
 		if (fighterSlots.length === 0) return STRING.EMPTY;
+
 		//prettier-ignore
 		return fighterSlots
 			.map(
 				(fighterSlot) => {
 					const currentFighter = this.#findCurrentFighter(fighterSlot);
+					
 				return	`
-                        <div class="${classNames.fighterSlotContainer}">
-                            <figure class="${classNames.fighterSlot}"
-                                ${DataSet.dataFighterId}="${fighterSlot.id}"
-                            >
-								${currentFighter ? FighterSprite.renderElement(currentFighter) : ""}
-                            </figure>
-                        </div>
-                    `
+		                <div class="${classNames.fighterSlotContainer}">
+		                    <figure class="${classNames.fighterSlot}"
+		                        ${DataSet.dataFighterId}="${fighterSlot.id}"
+		                    >
+								${currentFighter ? FighterSprite.renderElement(currentFighter) : GENERIC_STRING.EMPTY}
+		                    </figure>
+		                </div>
+		            `
 				}
 			)
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 	}
 
 	#createFighterSlotsArray = () =>
 		this.#weaponSlots.filter(
-			(fighterObject) => fighterObject.type === WEAPON_SLOT_FIGHTER
+			(fighterObject) => fighterObject.type === WEAPON_SLOT.TYPE.LAUNCH_BAY
 		);
 
 	#findCurrentFighter = (weaponSlot) => {

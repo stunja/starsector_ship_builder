@@ -83,6 +83,29 @@ export const updateUserShipBuildWithHullModLogic = function (
 			})
 			.filter(Boolean);
 	};
+	// const updateShipBuild = () => {
+	// 	let currentShipBuild = resetUserShipBuild;
+
+	// 	return [...builtInMods, ...installedHullMods]
+	// 		?.map((hullMod) => {
+	// 			const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
+
+	// 			if (!hullModObject) {
+	// 				console.warn(`Hull mod not found: ${hullMod.id}`);
+	// 				return null;
+	// 			}
+
+	// 			if (hullModObject.hullModLogic) {
+	// 				return (currentShipBuild = hullModObject.hullModLogic(
+	// 					currentShipBuild,
+	// 					hullMod
+	// 				));
+	// 			}
+
+	// 			return null;
+	// 		})
+	// 		.filter(Boolean);
+	// };
 
 	// Reset UserShipBuild
 	if (updateShipBuild().length < 1) {
