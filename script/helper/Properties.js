@@ -14,6 +14,9 @@ export const WEAPON_SLOT = {
 		HYBRID: "HYBRID",
 		BALLISTIC: "BALLISTIC",
 	},
+	MOUNT: {
+		HIDDEN: "HIDDEN",
+	},
 };
 
 export const HULL_SIZE = {

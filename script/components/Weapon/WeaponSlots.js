@@ -5,6 +5,7 @@ import {
 	weaponSlotIdIntoWeaponSlotObject,
 	findCurrentWeaponSlotFromWeaponSlotId,
 } from "../../helper/helperFunction.js";
+import { WEAPON_SLOT } from "../../helper/Properties.js";
 // View
 import WeaponSlotsView from "../../allViews/Weapons/WeaponSlotsView.js";
 // View Model
@@ -121,17 +122,23 @@ export default class WeaponSlots extends ViewModel {
 		});
 	}
 	#weaponSpriteRotate(currentWeaponSlot) {
-		const { id: weaponSlotId, angle } = currentWeaponSlot;
+		const { id: weaponSlotId, angle, mount } = currentWeaponSlot;
+
+		// Some slots are hidden, not need to rotate them
+		if (mount === WEAPON_SLOT.MOUNT.HIDDEN) return null;
+
 		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
 
 		const targetElement = document.querySelector(
 			`.${classNames.weaponSlot}${localParent} .${classNames.weaponSprite}`
 		);
-
 		targetElement.style.setProperty("--weapon-rotate", `${-angle}deg`);
 	}
 	#currentWeaponSpritePxIntoRemConversion(currentWeaponSlot) {
-		const { id: weaponSlotId } = currentWeaponSlot;
+		const { id: weaponSlotId, mount } = currentWeaponSlot;
+
+		// Some slots are hidden, not need to rotate them
+		if (mount === WEAPON_SLOT.MOUNT.HIDDEN) return null;
 
 		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
 		const target = document.querySelector(

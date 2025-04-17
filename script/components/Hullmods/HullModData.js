@@ -7,6 +7,10 @@ import {
 
 import HullModHelper from "./HullModHelper";
 import { VALUE_CHANGE, GENERIC_STRING } from "../../helper/MagicStrings";
+import {
+	createNewWeaponSlotsAndInstalledWeapons,
+	toggleAdditionalInstalledWeapons,
+} from "../../helper/helperFunction";
 
 const UI_TAGS = {
 	LOGISTICS: "Logistics",
@@ -1012,48 +1016,9 @@ export const HULLMODS = {
 
 				// HORRENDOUS implementation but it works
 				//? there is a bug, where installed weapons don't clear out.
-				const slotsToCreate = isVastHangarInstalled ? 2 : 1;
-
-				const createNewProps = Array.from(
-					{
-						length: slotsToCreate,
-					},
-					(_, i) => {
-						const currentWeaponId = `IWS-${i + 100}`;
-						return {
-							newWeaponSlots: {
-								id: currentWeaponId,
-								mount: "HIDDEN",
-								size: WEAPON_SLOT.SIZE.MEDIUM,
-								type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
-							},
-							newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
-						};
-					}
-				);
-
-				const createNewInstalledWeapons = () => {
-					// Filter IWS weapons directly
-					const iwsWeapons = installedWeapons.filter(
-						(weapon) => weapon[0] && weapon[0].includes("IWS")
-					);
-
-					// Return early if no IWS weapons
-					if (iwsWeapons.length < 1) {
-						return createNewProps.map((arr) => arr.newInstalledWeapons);
-					}
-
-					// Remove duplicates
-					const seen = new Set();
-					return iwsWeapons.filter((item) => {
-						const id = item[0];
-						if (seen.has(id)) {
-							return false;
-						}
-						seen.add(id);
-						return true;
-					});
-				};
+				const amountOfNewSlotsToCreate = isVastHangarInstalled ? 2 : 1;
+				const additionalWeaponSlotsAndInstalledWeapons =
+					createNewWeaponSlotsAndInstalledWeapons(amountOfNewSlotsToCreate);
 
 				return {
 					...userShipBuild,
@@ -1069,14 +1034,19 @@ export const HULLMODS = {
 
 					weaponSlots: [
 						...[...new Set(weaponSlots)], // filter duplicates
-						...createNewProps.map((arr) => arr.newWeaponSlots), // add new weaponSlots
+						// ...createNewProps.map((arr) => arr.newWeaponSlots), // add new weaponSlots
+						...additionalWeaponSlotsAndInstalledWeapons.newWeaponSlots, // add new weaponSlots
 					],
 
 					installedWeapons: [
 						...installedWeapons.filter(
 							(weapon) => weapon[0] && !weapon[0].includes("IWS")
 						),
-						...createNewInstalledWeapons(),
+						// ...createNewInstalledWeapons(installedWeapons, slotsToCreate),
+						...toggleAdditionalInstalledWeapons(
+							installedWeapons,
+							additionalWeaponSlotsAndInstalledWeapons.newInstalledWeapons
+						),
 					],
 				};
 			},

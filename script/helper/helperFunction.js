@@ -1,5 +1,12 @@
 // Import
 import { HULLMODS } from "../components/Hullmods/HullModData";
+import {
+	SHIELD_TYPE,
+	HULL_SIZE,
+	SHIP_TYPE,
+	WEAPON_SLOT,
+} from "../helper/Properties";
+import { GENERIC_STRING } from "../helper/MagicStrings";
 //
 export const renameKeysFromCSVdata = function (obj) {
 	const renameObj = {};
@@ -27,7 +34,8 @@ export const convertStringsIntoNumbersCSVdata = function (dataArray) {
 			const value = obj[key];
 
 			// if value is empty string, leave it as empty string, otherwise return a number
-			const convertedValue = value !== "" ? Number(value) : "";
+			const convertedValue =
+				value !== GENERIC_STRING.EMPTY ? Number(value) : GENERIC_STRING.EMPTY;
 
 			convertedObj[key] = isNaN(convertedValue) ? value : convertedValue;
 		});
@@ -51,70 +59,154 @@ export const updateUserShipBuildWithHullModLogic = function (
 	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
 	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
 
+	const newInstalledWeapons = updateInstalledWeapons(
+		installedHullMods,
+		installedWeapons
+	);
+
 	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
-	const resetUserShipBuild = {
+	let currentShipBuild = {
 		...baseUserShipBuild,
 		hullMods,
-		installedWeapons,
+		installedWeapons: newInstalledWeapons || installedWeapons,
 		capacitors,
 		vents,
 	};
 
-	const updateShipBuild = () => {
-		let currentShipBuild = resetUserShipBuild;
+	// Apply each hull mod effect sequentially
+	const allHullMods = [...builtInMods, ...installedHullMods];
 
-		return [...builtInMods, ...installedHullMods]
-			?.map((hullMod) => {
-				const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
-
-				if (!hullModObject) {
-					console.warn(`Hull mod not found: ${hullMod.id}`);
-					return null;
-				}
-
-				if (hullModObject.hullModLogic) {
-					return (currentShipBuild = hullModObject.hullModLogic(
-						currentShipBuild,
-						hullMod
-					));
-				}
-
-				return null;
-			})
-			.filter(Boolean);
-	};
-	// const updateShipBuild = () => {
-	// 	let currentShipBuild = resetUserShipBuild;
-
-	// 	return [...builtInMods, ...installedHullMods]
-	// 		?.map((hullMod) => {
-	// 			const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
-
-	// 			if (!hullModObject) {
-	// 				console.warn(`Hull mod not found: ${hullMod.id}`);
-	// 				return null;
-	// 			}
-
-	// 			if (hullModObject.hullModLogic) {
-	// 				return (currentShipBuild = hullModObject.hullModLogic(
-	// 					currentShipBuild,
-	// 					hullMod
-	// 				));
-	// 			}
-
-	// 			return null;
-	// 		})
-	// 		.filter(Boolean);
-	// };
-
-	// Reset UserShipBuild
-	if (updateShipBuild().length < 1) {
-		return resetUserShipBuild;
+	if (!allHullMods.length) {
+		return currentShipBuild;
 	}
 
-	return updateShipBuild().at(-1);
+	for (const hullMod of allHullMods) {
+		const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
+
+		if (!hullModObject) {
+			console.warn(`Hull mod not found: ${hullMod.id}`);
+			continue;
+		}
+
+		if (hullModObject.hullModLogic) {
+			currentShipBuild = hullModObject.hullModLogic(currentShipBuild, hullMod);
+		}
+	}
+
+	return currentShipBuild;
+};
+// remove duplicateIWS
+const updateInstalledWeapons = (installedHullMods, installedWeapons) => {
+	const targetClass = "converted_hangar";
+	// Converted Hangar
+	const isHangarExpansionPresent = installedHullMods.some(
+		({ id }) => id === targetClass
+	);
+
+	// exit if no additional installedWeapons are needed
+	if (!isHangarExpansionPresent) {
+		return installedWeapons.filter(
+			([weaponSlotId, _weaponId]) =>
+				weaponSlotId && !weaponSlotId.includes("IWS")
+		);
+	}
+};
+// IWS weapons are speciaal installedWeapons added by a HULLMOD
+export const createNewWeaponSlotsAndInstalledWeapons = function (
+	howManySlotsToCreate
+) {
+	const createNewProps = Array.from(
+		{
+			length: howManySlotsToCreate,
+		},
+		(_, i) => {
+			const currentWeaponId = `IWS-${i + 100}`;
+			return {
+				newWeaponSlots: {
+					id: currentWeaponId,
+					mount: WEAPON_SLOT.MOUNT.HIDDEN,
+					size: WEAPON_SLOT.SIZE.MEDIUM,
+					type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
+				},
+				newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
+			};
+		}
+	);
+	return {
+		newInstalledWeapons: createNewProps.map((arr) => arr.newInstalledWeapons),
+		newWeaponSlots: createNewProps.map((arr) => arr.newWeaponSlots),
+	};
 };
 
+// RemoveIwsWeapons
+export const toggleAdditionalInstalledWeapons = function (
+	installedWeapons,
+	newInstalledWeapons
+) {
+	// Filter IWS weapons directly
+	const iwsWeapons = installedWeapons.filter(
+		([weaponSlotId, _weaponId]) => weaponSlotId && weaponSlotId.includes("IWS")
+	);
+
+	// Return early if no IWS weapons
+	if (iwsWeapons.length < 1) {
+		return newInstalledWeapons;
+	}
+
+	// Remove duplicates
+	const seen = new Set();
+	return iwsWeapons.filter((item) => {
+		const id = item[0];
+		if (seen.has(id)) {
+			return false;
+		}
+		seen.add(id);
+		return true;
+	});
+};
+// export const createNewInstalledWeapons = function (
+// 	installedWeapons,
+// 	howManySlotsToCreate
+// ) {
+// 	const createNewProps = Array.from(
+// 		{
+// 			length: howManySlotsToCreate,
+// 		},
+// 		(_, i) => {
+// 			const currentWeaponId = `IWS-${i + 100}`;
+// 			return {
+// 				newWeaponSlots: {
+// 					id: currentWeaponId,
+// 					mount: WEAPON_SLOT.MOUNT.HIDDEN,
+// 					size: WEAPON_SLOT.SIZE.MEDIUM,
+// 					type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
+// 				},
+// 				newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
+// 			};
+// 		}
+// 	);
+// 	// Filter IWS weapons directly
+// 	const iwsWeapons = installedWeapons.filter(
+// 		(weapon) => weapon[0] && weapon[0].includes("IWS")
+// 	);
+
+// 	// Return early if no IWS weapons
+// 	if (iwsWeapons.length < 1) {
+// 		return createNewProps.map((arr) => arr.newInstalledWeapons);
+// 	}
+
+// 	// Remove duplicates
+// 	const seen = new Set();
+// 	return iwsWeapons.filter((item) => {
+// 		const id = item[0];
+// 		if (seen.has(id)) {
+// 			return false;
+// 		}
+// 		seen.add(id);
+// 		return true;
+// 	});
+// };
+///
 export const findHullModKeyName = function (obj, searchKey, matches = []) {
 	// Early return if obj is null or not an object
 	if (!obj || typeof obj !== "object") return matches;
