@@ -242,15 +242,16 @@ export const HULLMODS = {
 			// The coherence field is unstable under combat conditions, with stresses on the hull resulting in spot failures that releases bursts of lethal radiation. Crew casualties in combat are increased by 50%.
 		},
 
-		// TODO
-		//! add filter
 		// Automated Ship
+		//? I need to implement it, in a model. Due to a loading issues;
 		automated: {
 			id: "automated",
 			name: "Automated Ship",
 			_whyNot:
 				"Automated Ship is a built-in hullmod that only appears on droneships, such as those from the Domain Exploration Derelict.",
 
+			// Just add a special tag // isAutomated
+			// [IGNORE]
 			// This ship is fully automated, and does not require - and can not take on - any human crew.
 			// Automated ships usually required specialized equipment and expertise to maintain,
 			// resulting in a maximum combat readiness penalty of 100%. This penalty can be offset by a
@@ -1198,7 +1199,6 @@ export const HULLMODS = {
 		},
 	},
 	SPECIAL: {
-		//! Implement Later
 		// Neural Integrator
 		neural_integrator: {
 			id: "neural_integrator",
@@ -1206,14 +1206,45 @@ export const HULLMODS = {
 			_whyNot:
 				"hullmod that can be installed on any ship with the Automated Ship hullmod.",
 			reason: {
-				notAutomatedShip: "Only on Automated Ships",
+				onlyAutomatedShip: "Only on Automated Ships",
 			},
 			filterReason: function (hullMod, userShipBuild) {
+				const { isAutomated } = userShipBuild;
 				const { reason } = HULLMODS.SPECIAL.neural_integrator;
 
 				// Only on Automated Ships
-				const automatedCheck = false;
-				if (!automatedCheck) return [hullMod, reason.notAutomatedShip];
+				if (isAutomated === false) return [hullMod, reason.onlyAutomatedShip];
+
+				return null;
+			},
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { ordinancePoints, hullSize } = userShipBuild;
+
+				return {
+					...userShipBuild,
+					ordinancePoints: HullModHelper.updateOrdinancePoints(
+						ordinancePoints,
+						hullMod,
+						hullSize
+					),
+				};
+			},
+		},
+
+		// Neural Interface
+		neural_interface: {
+			id: "neural_interface",
+			name: "Neural Interface",
+			_whyNot: "hullmod that can be installed on any ship.",
+			reason: {
+				notOnAutomatedShips: "Not on Automated Ships",
+			},
+			filterReason: function (hullMod, userShipBuild) {
+				const { isAutomated } = userShipBuild;
+				const { reason } = HULLMODS.SPECIAL.neural_interface;
+
+				// Not on Automated Ships
+				if (isAutomated === true) return [hullMod, reason.notOnAutomatedShips];
 
 				return null;
 			},
@@ -1370,25 +1401,6 @@ export const HULLMODS = {
 
 			// S-mod bonus: Increases flux dissipation by a further 10/20/30/50, making the distributor as efficient as adding vents.
 			sModsLogic: function () {},
-		},
-
-		// Neural Interface
-		neural_interface: {
-			id: "neural_interface",
-			name: "Neural Interface",
-			_whyNot: "hullmod that can be installed on any ship.",
-			hullModLogic: function (userShipBuild, hullMod) {
-				const { ordinancePoints, hullSize } = userShipBuild;
-
-				return {
-					...userShipBuild,
-					ordinancePoints: HullModHelper.updateOrdinancePoints(
-						ordinancePoints,
-						hullMod,
-						hullSize
-					),
-				};
-			},
 		},
 
 		// Resistant Flux Conduits

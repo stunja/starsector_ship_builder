@@ -11,7 +11,7 @@ import Papa from "papaparse";
 import { SHIELD_TYPE } from "./helper/Properties.js";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "ox"; // hound // venture
+const shipNameDev = "invictus"; // hound // venture
 
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor
@@ -94,7 +94,6 @@ export class Model {
 				currentShip
 			);
 
-			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
 			// HullMods
 			const allHullMods = hullMods.createUsableHullMods(hullmods);
 			const hullModsWithEffectValues =
@@ -112,9 +111,14 @@ export class Model {
 				ships
 			);
 
-			const updateUserShipBuild = hullMods.updateBuiltInHullMods(
+			// UserShipBuild
+			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
+			const userShipBuildBuildInHullMods = hullMods.updateBuiltInHullMods(
 				userShipBuild,
 				hullModsWithEffectValues
+			);
+			const finalUserShipBuild = hullMods.checkIfAutomatedShip(
+				userShipBuildBuildInHullMods
 			);
 
 			this.updateState("dataState", {
@@ -125,10 +129,10 @@ export class Model {
 				allFighters: updatedFighters,
 				allDescriptions: desc,
 			});
-			this.updateUserShipBuild(updateUserShipBuild);
+			this.updateUserShipBuild(finalUserShipBuild);
 			this.updateState("userState", {
 				_currentShip: updatedCurrentShip,
-				_baseShipBuild: updateUserShipBuild,
+				_baseShipBuild: finalUserShipBuild,
 				usableHullMods: hullModsWithEffectValues,
 			});
 		} catch (err) {
@@ -846,5 +850,12 @@ const hullMods = {
 	addBuildInHullModsEffect: (data) => {
 		console.log("test");
 		console.log(data);
+	},
+
+	checkIfAutomatedShip: (data) => {
+		const { builtInMods } = data.hullMods;
+		const hullModId = "automated";
+		const isAutomated = builtInMods.some(({ id }) => id === hullModId);
+		return { ...data, isAutomated };
 	},
 };
