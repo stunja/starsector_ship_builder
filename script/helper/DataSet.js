@@ -1,7 +1,6 @@
 const DataSet = {
 	dataFighterId: "data-fighter-id",
 	dataId: "data-id",
-	dataHullModId: "data-hullmod-id",
 	dataCategory: "data-category",
 	dataArc: "data-arc",
 	dataAngle: "data-angle",
@@ -13,5 +12,9 @@ const DataSet = {
 	dataNavButtonType: "data-nav-button-type",
 	// Pop Up
 	dataWeaponPopUpId: "data-weapon-pop-up-id",
+	// HullMods
+	dataHullModId: "data-hullmod-id",
+	//
+	dataFilter: "data-filter",
 };
 export default DataSet;

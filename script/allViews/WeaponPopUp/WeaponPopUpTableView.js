@@ -6,35 +6,30 @@ import WeaponSpriteView from "../../allViews/Weapons/WeaponSpriteView.js";
 
 class WeaponPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
-
+	#currentWeaponArray;
+	#weaponSlot;
+	#installedWeapons;
 	generateMarkup() {
-		const [userShipBuild, currentWeaponArray, weaponSlot] = this._data;
-		const markup = `${this.#tableBodyRender(
-			currentWeaponArray,
-			userShipBuild.installedWeapons,
-			weaponSlot
-		)}`;
+		this.#processData(this._data);
+
+		const markup = this.#tableBodyRender();
 		return markup;
 	}
-	#tableBodyRender(currentWeaponArray, installedWeapons, weaponSlot) {
-		const assignActiveClass = (crrWpn) => {
-			if (!crrWpn) return;
+	#processData(data) {
+		const [userShipBuild, currentWeaponArray, weaponSlot] = data;
+		this.#installedWeapons = userShipBuild.installedWeapons;
 
-			const isActiveClass = installedWeapons.find(
-				([slotId, wpnObjId]) =>
-					slotId === weaponSlot.id && wpnObjId === crrWpn.id
-			);
+		this.#currentWeaponArray = currentWeaponArray;
+		this.#weaponSlot = weaponSlot;
+	}
 
-			// empty space so they are not joined classes
-			return isActiveClass ? ` ${classNames.weaponPopUpActive}` : "";
-		};
-
+	#tableBodyRender() {
 		const entryMarkup = (crrWpn) => `
-			<ul class="${classNames.tableEntries}${assignActiveClass(crrWpn)}"  
+			<ul class="${classNames.tableEntries}${this.#assignActiveClass(crrWpn)}"  
 				${DataSet.dataWeaponPopUpId}="${crrWpn.id}">
 
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${WeaponSpriteView.renderElement([crrWpn, weaponSlot])}
+					${WeaponSpriteView.renderElement([crrWpn, this.#weaponSlot])}
 				</li>
 				<li class="${classNames.tableEntry} ${classNames.tableName}">${crrWpn.name}</li>
 				<li class="${classNames.tableEntry}">
@@ -45,8 +40,22 @@ class WeaponPopUpTableView extends View {
 			</ul>
 			`;
 
-		return currentWeaponArray.map((crrWpn) => entryMarkup(crrWpn)).join("");
+		return this.#currentWeaponArray
+			.map((crrWpn) => entryMarkup(crrWpn))
+			.join("");
 	}
+	#assignActiveClass = (crrWpn) => {
+		if (!crrWpn) return;
+
+		const isActiveClass = this.#installedWeapons.find(
+			([slotId, wpnObjId]) =>
+				slotId === this.#weaponSlot.id && wpnObjId === crrWpn.id
+		);
+
+		// empty space so they are not joined classes
+		return isActiveClass ? ` ${classNames.weaponPopUpActive}` : "";
+	};
+
 	#weaponTypeStringConversion = (damageType) =>
 		damageType
 			.split("_")

@@ -31,7 +31,11 @@
 	--composite-slot: rgba(170, 221, 68, 1);
 	--universal-slot: rgba(170, 170, 170, 1);
 	--fragmentation-color: rgba(255, 224, 102, 0.5);
+
+	--warning-color: rgba(152, 0, 0, 1);
+	--warning-hover-color: rgba(116, 0, 0, 1);
 }
+
 * {
 	box-sizing: content-box;
 	margin: 0;

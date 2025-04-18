@@ -1,0 +1,47 @@
+/* Hull mods */
+.build-in-hullmods {
+}
+.hullmods {
+	display: flex;
+	flex-direction: column;
+	gap: 2.4rem;
+	padding: 2.4rem 0;
+
+	.hullmods__header {
+		text-align: right;
+	}
+	.hullmods__container,
+	.build-in-hullmods,
+	.installed-hullmods {
+		display: flex;
+		flex-direction: column;
+		gap: 1.6rem;
+	}
+	.hullmods__container {
+		display: flex;
+		flex-direction: column;
+		gap: 1.6rem;
+	}
+	.build-in-hullmods .build-in-hullmods__container {
+		display: flex;
+		flex-direction: column;
+		margin-left: auto;
+
+		background-color: rgba(0, 0, 0, 0.25);
+		border: 1px solid rgba(0, 0, 0, 0.5);
+
+		padding: 1.6rem;
+		gap: 1.6rem;
+
+		.hullmod {
+			/* width: max-content; */
+
+			padding-left: 2.4rem;
+			/* padding: 1.4rem 1.4rem 1.4rem 2.4rem; */
+		}
+	}
+	.hullMod__cost {
+		font-weight: 800;
+		font-size: 1.8rem;
+	}
+}

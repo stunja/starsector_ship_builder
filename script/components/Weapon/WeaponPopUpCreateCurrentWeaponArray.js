@@ -1,4 +1,5 @@
 import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
+
 const SIZE = {
 	LARGE: "LARGE",
 	MEDIUM: "MEDIUM",
@@ -18,7 +19,6 @@ class WeaponPopUpCreateCurrentWeaponArray {
 	// Main function
 	weaponFilterArray(weaponSlot, allWeaponsObjects) {
 		const filteredWeapons = this.#filterWeapons(allWeaponsObjects, weaponSlot);
-
 		return filteredWeapons;
 	}
 	// There is 3 sizes and 7 types of weapons.
@@ -100,7 +100,6 @@ class WeaponPopUpCreateCurrentWeaponArray {
 			slot.size,
 			"Invalid slot SIZE"
 		);
-
 		return weapons.filter(typeFilter).filter(sizeFilter).sort(this.#sortByOPs);
 	};
 }

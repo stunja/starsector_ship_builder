@@ -1,8 +1,12 @@
+// View Functions
 import View from "../../allViews/view";
+// Helper Functions
 import classNames from "../../helper/DomClassNames";
+import { GENERIC_STRING } from "../../helper/MagicStrings";
 
 const SHIELD_TYPE = {
-	SHIELD: "FRONT" || "OMNI",
+	SHIELD_FRONT: "FRONT",
+	SHIELD_OMNI: "OMNI",
 	PHASE: "PHASE",
 	NO_SHIELD: "",
 };
@@ -24,37 +28,24 @@ class ShieldOrPhaseView extends View {
 		const userShipBuild = this._data;
 
 		const shieldTypeRenderers = {
-			[SHIELD_TYPE.SHIELD]: () => this.#shieldDataRender(userShipBuild),
+			[SHIELD_TYPE.SHIELD_FRONT]: () => this.#shieldDataRender(userShipBuild),
+			[SHIELD_TYPE.SHIELD_OMNI]: () => this.#shieldDataRender(userShipBuild),
 			[SHIELD_TYPE.PHASE]: () => this.#phaseDataRender(userShipBuild),
 			[SHIELD_TYPE.NO_SHIELD]: () => this.#noShieldDataRender(),
 		};
 
-		const markup = shieldTypeRenderers[userShipBuild.shieldType]?.() || "";
+		const markup =
+			shieldTypeRenderers[userShipBuild.shieldType]?.() || GENERIC_STRING.EMPTY;
 
 		return markup;
-	}
-	#calculatePhaseValues(data) {
-		// I have no idea why this solves the issue, but it is.
-		// Checked correct numbers with DOOM // SHADE // HARBRINGER
-		// DOOM 500 / 500 = 0.05 / 0.05
-		// Harbrider 250 / 200 = 0.05 / 0.04
-		// currentFluxCapacity: 5000
-		return {
-			upkeepString: data.fluxCapacity * data.phaseUpkeep,
-			activationCostString: data.fluxCapacity * data.phaseCost,
-		};
-	}
-	#calculateShieldValues(data) {
-		return {
-			arc: data.shieldArc,
-			fluxPerSec: data.fluxDissipation * data.shieldUpkeep,
-			fluxPerDmg: data.shieldEfficiency,
-		};
 	}
 
 	#phaseDataRender(state) {
 		const { upkeepString, activationCostString } =
 			this.#calculatePhaseValues(state);
+
+		if (upkeepString === 0 && activationCostString === 0)
+			return GENERIC_STRING.EMPTY;
 
 		return `
             <ul class="${classNames.flexFlexEndGap} ${classNames.shieldFlux}">
@@ -110,6 +101,26 @@ class ShieldOrPhaseView extends View {
 				)}
             </ul>
           `;
+	}
+
+	#calculateShieldValues(data) {
+		return {
+			arc: data.shieldArc,
+			fluxPerSec: 200 * data.shieldUpkeep,
+			fluxPerDmg: data.shieldEfficiency,
+		};
+	}
+
+	#calculatePhaseValues(data) {
+		// I have no idea why this solves the issue, but it is.
+		// Checked correct numbers with DOOM // SHADE // HARBRINGER
+		// DOOM 500 / 500 = 0.05 / 0.05
+		// Harbrider 250 / 200 = 0.05 / 0.04
+		// currentFluxCapacity: 5000
+		return {
+			upkeepString: data.fluxCapacity * data.phaseUpkeep,
+			activationCostString: data.fluxCapacity * data.phaseCost,
+		};
 	}
 }
 export default new ShieldOrPhaseView();

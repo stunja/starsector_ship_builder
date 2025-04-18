@@ -143,16 +143,25 @@ const classNames = {
 	tableBody: "table-body",
 
 	// tableContainerBody: "table-container__body",
+	tableFilter: "table-filter",
 	tableHeader: "table-header",
 	tableHeaderEntry: "table-header-entry",
 	tableEntries: "table-entries",
 	tableEntry: "table-entry",
+	tableEntryAvailable: "table-entry--available",
+	tableEntryUnavailable: "table-entry--unavailable",
 
 	tableIcon: "table__icon",
 	tableName: "table__name",
-	// tableType: "table__type",
+	tableDesc: "table__desc",
+	tableType: "table__type",
+	tableInstalledIcon: "table__installed-icon",
 	// tableRange: "table__range",
 	// tableCost: "table__cost",
+	// HullMod Filter
+	filterHeader: "filter-header",
+	filterButtons: "filter-buttons",
+	filterButton: "filter-button",
 
 	//! Cancer
 	//! I need to simplify all of this
@@ -219,21 +228,27 @@ const classNames = {
 	// HullMods
 	hullModsPopUp: "hullmods-pop-up",
 	hullMods: "hullmods",
-	hullMods__Header: "hullmods__header",
-	hullMods__Container: "hullmods__container",
-	hullMods__Buttons: "hullmods__buttons",
-	hullMods__Button: "hullmods__button--open",
+	hullMods__header: "hullmods__header",
+	hullMods__container: "hullmods__container",
+	hullMods__buttons: "hullmods__buttons",
+	hullMods__button: "hullmods__button--open",
 	// BuildIn HullMods
 	buildInHullmods: "build-in-hullmods",
-	buildInHullmods__HullMod: "build-in-hullmods__hullmod",
+	buildInHullModsContainer: "build-in-hullmods__container",
+	hullMod: "hullmod",
+	hullModCost: "hullMod__cost",
+	hullModDescValues: "hullMod__desc--value",
+	removeInstalledHullModButton: "remove-installed-hullmod-button",
 
 	// Added Hull Mods
-	addedHullmods: "added-hullmods",
-	addedHullMods__hullmod: "added-hullmods__hullmod",
-	addedHullMods__RemoveButton: "added-hullmod__remove-button",
+	installedHullMods: "installed-hullmods",
+	// addedHullMods__hullmod: "added-hullmods__hullmod",
+	// addedHullMods__RemoveButton: "added-hullmod__remove-button",
 
 	// Builder Buttons Section
 	builderButton: "builder-button",
+	// HullMod Filter
+	hullModsFilterActive: "hullMods__filter--active",
 };
 
 export default classNames;

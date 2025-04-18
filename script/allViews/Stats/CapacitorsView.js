@@ -8,8 +8,11 @@ const BUTTON = {
 };
 class CapacitorsView extends View {
 	_localParent = `.${classNames.shipCapacitorsContainer}`;
+	#currentShipBuild;
+
 	generateMarkup() {
 		const data = this._data;
+		this.#processData(data);
 
 		const markup = `
               ${this.#capacitorsMarkup(data)}
@@ -17,7 +20,9 @@ class CapacitorsView extends View {
               `;
 		return markup;
 	}
-
+	#processData(data) {
+		this.#currentShipBuild = data;
+	}
 	#capacitorsMarkup(currentShipBuild) {
 		return `
           <li class="${classNames.flexFlexEndGap} ${classNames.shipCapacitors__Edit}">

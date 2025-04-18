@@ -1,3 +1,13 @@
+// Import
+import { HULLMODS } from "../components/Hullmods/HullModData";
+import {
+	SHIELD_TYPE,
+	HULL_SIZE,
+	SHIP_TYPE,
+	WEAPON_SLOT,
+} from "../helper/Properties";
+import { GENERIC_STRING } from "../helper/MagicStrings";
+//
 export const renameKeysFromCSVdata = function (obj) {
 	const renameObj = {};
 
@@ -24,25 +34,14 @@ export const convertStringsIntoNumbersCSVdata = function (dataArray) {
 			const value = obj[key];
 
 			// if value is empty string, leave it as empty string, otherwise return a number
-			const convertedValue = value !== "" ? Number(value) : "";
+			const convertedValue =
+				value !== GENERIC_STRING.EMPTY ? Number(value) : GENERIC_STRING.EMPTY;
 
 			convertedObj[key] = isNaN(convertedValue) ? value : convertedValue;
 		});
 		return convertedObj;
 	});
 };
-
-//! I need to remove this
-export const calculateHullModCost = (hullMod) =>
-	Number(hullMod[state.currentShipBuild.hullModCost]);
-
-export const weaponSlotIdIntoWeaponSlotObject = (allWeapons, weaponSlotId) =>
-	allWeapons.find((slot) => slot.id === weaponSlotId);
-
-export const findCurrentWeaponSlotFromWeaponSlotId = (
-	weaponSlots,
-	weaponSlotId
-) => weaponSlots.find((slot) => slot.id === weaponSlotId);
 
 export const extractDataFromObject = (propertiesToExtract, data) =>
 	propertiesToExtract.reduce(
@@ -52,3 +51,188 @@ export const extractDataFromObject = (propertiesToExtract, data) =>
 		}),
 		{}
 	);
+
+export const updateUserShipBuildWithHullModLogic = function (
+	userShipBuild,
+	baseUserShipBuild
+) {
+	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
+
+	const newInstalledWeapons = updateInstalledWeapons(
+		installedHullMods,
+		installedWeapons
+	);
+
+	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
+	let currentShipBuild = {
+		...baseUserShipBuild,
+		hullMods,
+		installedWeapons: newInstalledWeapons || installedWeapons,
+		capacitors,
+		vents,
+	};
+
+	// Apply each hull mod effect sequentially
+	const allHullMods = [...builtInMods, ...installedHullMods];
+
+	if (!allHullMods.length) {
+		return currentShipBuild;
+	}
+
+	for (const hullMod of allHullMods) {
+		const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
+
+		if (!hullModObject) {
+			console.warn(`Hull mod not found: ${hullMod.id}`);
+			continue;
+		}
+
+		if (hullModObject.hullModLogic) {
+			currentShipBuild = hullModObject.hullModLogic(currentShipBuild, hullMod);
+		}
+	}
+
+	return currentShipBuild;
+};
+// remove duplicateIWS
+const updateInstalledWeapons = (installedHullMods, installedWeapons) => {
+	const targetClass = "converted_hangar";
+	// Converted Hangar
+	const isHangarExpansionPresent = installedHullMods.some(
+		({ id }) => id === targetClass
+	);
+
+	// exit if no additional installedWeapons are needed
+	if (!isHangarExpansionPresent) {
+		return installedWeapons.filter(
+			([weaponSlotId, _weaponId]) =>
+				weaponSlotId && !weaponSlotId.includes("IWS")
+		);
+	}
+};
+// IWS weapons are speciaal installedWeapons added by a HULLMOD
+export const createNewWeaponSlotsAndInstalledWeapons = function (
+	howManySlotsToCreate
+) {
+	const createNewProps = Array.from(
+		{
+			length: howManySlotsToCreate,
+		},
+		(_, i) => {
+			const currentWeaponId = `IWS-${i + 100}`;
+			return {
+				newWeaponSlots: {
+					id: currentWeaponId,
+					mount: WEAPON_SLOT.MOUNT.HIDDEN,
+					size: WEAPON_SLOT.SIZE.MEDIUM,
+					type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
+				},
+				newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
+			};
+		}
+	);
+	return {
+		newInstalledWeapons: createNewProps.map((arr) => arr.newInstalledWeapons),
+		newWeaponSlots: createNewProps.map((arr) => arr.newWeaponSlots),
+	};
+};
+
+// RemoveIwsWeapons
+export const toggleAdditionalInstalledWeapons = function (
+	installedWeapons,
+	newInstalledWeapons
+) {
+	// Filter IWS weapons directly
+	const iwsWeapons = installedWeapons.filter(
+		([weaponSlotId, _weaponId]) => weaponSlotId && weaponSlotId.includes("IWS")
+	);
+
+	// Return early if no IWS weapons
+	if (iwsWeapons.length < 1) {
+		return newInstalledWeapons;
+	}
+
+	// Remove duplicates
+	const seen = new Set();
+	return iwsWeapons.filter((item) => {
+		const id = item[0];
+		if (seen.has(id)) {
+			return false;
+		}
+		seen.add(id);
+		return true;
+	});
+};
+// export const createNewInstalledWeapons = function (
+// 	installedWeapons,
+// 	howManySlotsToCreate
+// ) {
+// 	const createNewProps = Array.from(
+// 		{
+// 			length: howManySlotsToCreate,
+// 		},
+// 		(_, i) => {
+// 			const currentWeaponId = `IWS-${i + 100}`;
+// 			return {
+// 				newWeaponSlots: {
+// 					id: currentWeaponId,
+// 					mount: WEAPON_SLOT.MOUNT.HIDDEN,
+// 					size: WEAPON_SLOT.SIZE.MEDIUM,
+// 					type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
+// 				},
+// 				newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
+// 			};
+// 		}
+// 	);
+// 	// Filter IWS weapons directly
+// 	const iwsWeapons = installedWeapons.filter(
+// 		(weapon) => weapon[0] && weapon[0].includes("IWS")
+// 	);
+
+// 	// Return early if no IWS weapons
+// 	if (iwsWeapons.length < 1) {
+// 		return createNewProps.map((arr) => arr.newInstalledWeapons);
+// 	}
+
+// 	// Remove duplicates
+// 	const seen = new Set();
+// 	return iwsWeapons.filter((item) => {
+// 		const id = item[0];
+// 		if (seen.has(id)) {
+// 			return false;
+// 		}
+// 		seen.add(id);
+// 		return true;
+// 	});
+// };
+///
+export const findHullModKeyName = function (obj, searchKey, matches = []) {
+	// Early return if obj is null or not an object
+	if (!obj || typeof obj !== "object") return matches;
+
+	// Direct key match
+	if (obj[searchKey] !== undefined) {
+		matches.push(obj[searchKey]);
+	}
+
+	// Recursive search through object properties
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+			findHullModKeyName(obj[key], searchKey, matches);
+		}
+	}
+
+	return matches;
+};
+/////
+//! Probably Remove Later
+// Why do I even need these? too simple to even keep, just need to rework original
+export const weaponSlotIdIntoWeaponSlotObject = (allWeapons, weaponSlotId) =>
+	allWeapons.find((slot) => slot.id === weaponSlotId);
+
+// Why do I even need these? too simple to even keep, just need to rework original
+export const findCurrentWeaponSlotFromWeaponSlotId = (
+	weaponSlots,
+	weaponSlotId
+) => weaponSlots.find((slot) => slot.id === weaponSlotId);

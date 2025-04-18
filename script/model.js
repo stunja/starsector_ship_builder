@@ -5,17 +5,37 @@ import {
 	extractDataFromObject,
 } from "./helper/helperFunction.js";
 import URL from "./helper/url.js";
+import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import Papa from "papaparse";
 
+import { SHIELD_TYPE } from "./helper/Properties.js";
+
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "astral";
-//
-//invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
-// paragon // hound // gryphon // shepherd // Hammerhead //
+const shipNameDev = "invictus"; // hound // venture
+
+// invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
+// paragon // hound // gryphon // shepherd // Hammerhead // monitor
 // gryphon = cruiser
-// condor = destroyer
-// hound = frigate
+// destroyer = condor
+// hound = frigate // centurion
 // Phase = harbinger / doom // shade
+// Civilian = shepherd
+// no shield (hound)
+//! fulgent = automated ship
+// ziggurat
+// monitor
+// valkyrie
+
+// monitor //! Check later, issue with weapon slots
+// !venture fix fighter Slots, it should be build in\
+// !phantom issue
+// drover
+
+//! Colossus Mk.III can't even search
+
+// 0.98a
+// executor
+
 export class Model {
 	dataState = {
 		allShips: [],
@@ -74,9 +94,11 @@ export class Model {
 				currentShip
 			);
 
-			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
 			// HullMods
-			const usableHullMods = createUsableHullMods(hullmods);
+			const allHullMods = hullMods.createUsableHullMods(hullmods);
+			const hullModsWithEffectValues =
+				hullMods.injectHullModEffectValueData(allHullMods);
+
 			// Weapons
 			const weaponOnly = this.#filterWeaponsOnly(weapons);
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
@@ -89,6 +111,16 @@ export class Model {
 				ships
 			);
 
+			// UserShipBuild
+			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
+			const userShipBuildBuildInHullMods = hullMods.updateBuiltInHullMods(
+				userShipBuild,
+				hullModsWithEffectValues
+			);
+			const finalUserShipBuild = hullMods.checkIfAutomatedShip(
+				userShipBuildBuildInHullMods
+			);
+
 			this.updateState("dataState", {
 				allShips: ships,
 				allWeapons: filteredWeaponsWithAdditionalData,
@@ -97,11 +129,11 @@ export class Model {
 				allFighters: updatedFighters,
 				allDescriptions: desc,
 			});
-			this.updateUserShipBuild(userShipBuild);
+			this.updateUserShipBuild(finalUserShipBuild);
 			this.updateState("userState", {
 				_currentShip: updatedCurrentShip,
-				_baseShipBuild: userShipBuild,
-				usableHullMods: usableHullMods,
+				_baseShipBuild: finalUserShipBuild,
+				usableHullMods: hullModsWithEffectValues,
 			});
 		} catch (err) {
 			console.log(`Failed to Load Resources ${err}`);
@@ -398,7 +430,7 @@ const createUserShipBuild = {
 			turnAcceleration: turnAcceleration,
 
 			// Shield Type || Shield / Phase / No Shield
-			shieldType: shieldType,
+			shieldType: this.correctShieldType(shieldType, phaseCost, phaseUpkeep),
 			shieldArc: shieldArc,
 			shieldEfficiency: shieldEfficiency,
 			shieldUpkeep: shieldUpkeep,
@@ -412,7 +444,7 @@ const createUserShipBuild = {
 			defenseId: defenseId,
 
 			// Fighter Bays
-			fighterBays: fighterBays,
+			fighterBays: Number.isFinite(fighterBays) ? fighterBays : 0,
 
 			// Logistical
 			shipIsCivilian: this.isShipCivilian(additionalData.builtInMods),
@@ -455,7 +487,8 @@ const createUserShipBuild = {
 		viewOffset,
 		width,
 		spriteName,
-		builtInMods,
+		builtInMods = [],
+		builtInWings = null,
 		hullSize,
 		weaponSlots,
 	}) {
@@ -467,8 +500,9 @@ const createUserShipBuild = {
 				viewOffset,
 				width,
 				spriteName,
+				builtInWings,
 			},
-			hullMods: { builtInMods },
+			hullMods: { builtInMods, installedHullMods: [] },
 			hullSize,
 			weaponSlots: this.weaponSlotIdStringEdit(weaponSlots),
 		};
@@ -517,6 +551,15 @@ const createUserShipBuild = {
 		return builtInMods?.some((hullmod) => hullmod.id === "civgrade")
 			? "civilian"
 			: "military";
+	},
+	correctShieldType(shieldType, phaseCost, phaseUpkeep) {
+		const hasNoCostOrNoUpkeep =
+			!Number.isFinite(phaseCost) || !Number.isFinite(phaseUpkeep);
+
+		if (shieldType === SHIELD_TYPE.PHASE && hasNoCostOrNoUpkeep)
+			return SHIELD_TYPE.NONE;
+
+		return shieldType;
 	},
 };
 const updateFighters = {
@@ -735,194 +778,84 @@ const updateFighters = {
 		}
 	},
 };
+
 // create new object with VISIBLE and DEFINED hulls. // D-mods are hidden!
-const createUsableHullMods = function (data) {
-	// Alphabetic Sorting
-	return data
-		.filter((hullmod) => hullmod.hidden !== "TRUE" && hullmod.id)
-		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-};
-// NOT USED BELOW THE LINE
-//--------------------
+const hullMods = {
+	createUsableHullMods(data) {
+		// Alphabetic Sorting
+		const filteredData = data
+			.filter((hullmod) => hullmod.id)
+			.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
-const overwriteWeaponTypeWithForcedOverwrite = async function () {
-	try {
-		const newArray = state.allWeapons.map(
-			(weapon) =>
-				(weapon.additionalWeaponData.type = weapon.additionalWeaponData
-					.mountTypeOverride
-					? weapon.additionalWeaponData.mountTypeOverride
-					: weapon.additionalWeaponData.type)
-		);
-		// console.log(newArray.filter((weapon) => weapon.additionalWeaponData.mountTypeOverride));
-	} catch (err) {
-		console.warn("overwriteWeaponTypeWithForcedOverwrite");
-	}
-};
-
-const hullModDataInjection = {
-	controller() {
-		// Ballistic Rangefinder /  Converted Hangar / Missile Autoloader / High Scatter Amplifier / High Resolution Sensors
-		//! smod text injection is missing AT LEAST for  // Converted Hangar
-		this.covertAndInjectMissingDescriptions();
-		this.convertAndInjectDataIntoAllUsableHulls();
-		this.updateUsableHullsDescriptionsWithInjectedData();
+		return this.updateMissingDescriptions(filteredData);
 	},
-	convertAndInjectDataIntoAllUsableHulls() {
-		const convertedData = Object.entries(this.data);
-		convertedData.forEach((e) => {
-			const [name, numberArray] = e;
-			this.injectDataIntoHullMod(state.usableHullMods, name, numberArray);
+	updateMissingDescriptions(data) {
+		return data.map((obj) => {
+			const newString = this.textInjectionData[obj.id];
+			if (!newString) return obj;
+			return { ...obj, desc: newString };
 		});
 	},
-	injectDataIntoHullMod: (hullMods, hullModName, regularValue) =>
-		hullMods.forEach((hullMod) =>
-			hullMod.name === hullModName
-				? (hullMod.importedValues = regularValue)
-				: ""
-		),
-	covertAndInjectMissingDescriptions() {
-		this.textInjectionData.forEach((e) => {
-			const [key] = Object.keys(e);
-			const [value] = Object.values(e);
-			this.injectTextIntoHullMod(state.usableHullMods, key, value);
-		});
+	textInjectionData: {
+		ballistic_rangefinder:
+			"If the largest Ballistic slot on the ship is large: increases the base range of small weapons in Ballistic slots by %s, and of medium weapons by %s, up to a maximum of %s range. Otherwise: increases the base range of small weapons in Ballistic slots by %s, up to %s maximum. Does not affect point-defense weapons or Ballistic weapons placed in Composite, Hybrid or Universal slots. Hybrid weapons in Ballistic slots receive double the bonus. Non-PD Hybrid weapons in ballistic slots, including large ones, will receive %s bonus range, subject to the maximum, in cases where other weapons of the same size would receive no bonus.",
+
+		converted_hangar:
+			"Converts the ship's standard shuttle hangar to house a fighter bay. The improvised flight deck, its crew, and the related machinery function at a pace below that of a dedicated carrier. Increases fighter refit time by %sx, and the fighter replacement rate both decays and recovers %sx more slowly. In addition, bombers returning to rearm (or fighters returning to repair) take %s% of their base time to relaunch, where it normally takes under a second. Increases the minimum crew by %s to account for pilots and fighter crews. Increases the ship's deployment points and supply cost to recover from deployment by %s for every %s ordnance points spent on fighters, or by at least %s point. This comes with a proportional increase in combat readiness lost per deployment.",
+
+		missile_autoloader:
+			"A combat-rated autoloader that provides a limited number of reloads to missile weapons installed in small missile mounts. Does not affect weapons that do not use ammo or already regenerate it, or weapons that are mounted in any other kind of weapon slot. The number of missiles reloaded is not affected by skills or hullmods that increase missile weapon ammo capacity. A partial reload is possible when running out of capacity. After a reload, the weapon requires an extra 5 seconds, in addition to its normal cooldown, before it can fire again.",
+
+		high_scatter_amp:
+			"Beam weapons deal %s more damage and deal hard flux to shields. Reduces the portion of the range of beam weapons that is above %s units by %s. The base range is affected. Interactions with other modifiers: The base range is reduced, thus percentage and multiplicative modifiers - such as from Integrated Targeting Unit, skills, or similar sources - apply to the reduced base value.",
+
+		hiressensors:
+			"Increases sensor strength by %s/%s/%s/%s points for frigates / destroyers / cruisers and capitals, respectively. Minimum CR of %s required to function.",
+
+		neural_interface: `Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply.`,
+
+		neural_integrator: `An augmented version of Neural Interface that works with automated ships by enabling direct control of all of the ship's systems via the link, instead of having the controlling consciousness aspect simply direct the bridge crew. Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply. Also increases the deployment cost and supply use by %s`,
 	},
-	injectTextIntoHullMod: (hullMods, hullModNameToEdit, stringToParse) =>
-		hullMods.forEach((hullMod) =>
-			hullMod.name === hullModNameToEdit ? (hullMod.desc = stringToParse) : ""
-		),
-	updateUsableHullsDescriptionsWithInjectedData() {
-		state.usableHullMods.forEach((hullMod) => {
-			hullMod.importedValues === undefined ? console.log(hullMod) : "";
-			if (hullMod.importedValues === undefined) return;
-			const replacePlaceholders = (desc, values) => {
-				values.forEach((value) => {
-					desc = desc.replace(
-						"%s",
-						`<span class="highlight-text">${value}</span>`
-					);
-				});
-				return desc;
+	injectHullModEffectValueData: (data, hullModsData = HULLMODS_DATA) => {
+		if (!Array.isArray(data)) {
+			throw new Error("Input must be an array");
+		}
+
+		return data.map(({ name, ...hullMod }) => {
+			const values = hullModsData[name];
+
+			if (!values) return { ...hullMod, name };
+
+			const [regularValues = {}, sModsValues = {}] = values;
+
+			return {
+				...hullMod,
+				name,
+				effectValues: { regularValues, sModsValues },
 			};
-			hullMod.desc = replacePlaceholders(
-				hullMod.desc,
-				hullMod.importedValues[0]
-			);
 		});
 	},
-	data: {
-		"Accelerated Shields": [["100%", "100%"], ["100%"]],
-		"Extended Shields": [[60], [60]],
-		"Hardened Shields": [["20%"], []],
-		"Stabilized Shields": [["50%"], ["10%"]],
-		"Shield Conversion - Front": [["100%"], ["5%"]],
-		"Shield Conversion - Omni": [["30%"], []],
-		"Shield Shunt": [["15%"], ["15%"]],
-		"Makeshift Shield Generator": [[90, "20%"], []],
-		"Flux Shunt": [["50%"], []],
-		"Automated Repair Unit": [["50%"], ["25%", "33%"]],
-		"Blast Doors": [["20%", "60%"], ["85%"]],
-		"Heavy Armor": [[150, 300, 400, 500], ["25%"]],
-		"Reinforced Bulkheads": [["40%"], []],
-		"Resistant Flux Conduits": [["50%", "25%"], ["10%"]],
-		"Armored Weapon Mounts": [["100%", "25%", "25%", "10%"], ["10%"]],
-		"Integrated Point Defense AI": [["50%"], []],
-		//
-		"Solar Shielding": [["75%", "10%"], ["100%"]],
-		"Advanced Optics": [[200, "30%"], []],
-		"Advanced Turret Gyros": [["75%"], ["25%", "5%"]],
-		"Ballistic Rangefinder": [[200, 100, 900, 100, 800, 100], []],
-		"Dedicated Targeting Core": [
-			["35%", "50%"],
-			["40%", "60%"],
-		],
-		"ECCM Package": [["50%", "25%", "50%", "25%"], []],
-		"Escort Package": [[1000, "25%", "10%", "20%", "doubled"], ["10%"]],
-		"Expanded Magazines": [["50%"], ["50%"]],
-		"Expanded Missile Racks": [["100%"], ["20%"]],
-		"Missile Autoloader": [[], []],
-		"High Scatter Amplifier": [["10%", 200, "50%"], ["5%"]],
-		"Integrated Targeting Unit": [["10%", "20%", "40%", "60%"], []],
-		"ECM Package": [["1%", "2%", "3%", "4%"], []],
-		"Missile Autoforge": [[], []],
-		"Energy Bolt Coherer": [[100, "50%"], []],
-		"Auxiliary Thrusters": [["50%"], [10]],
-		"Unstable Injector": [[25, 20, 15, 15, "15%", "25%"], []],
-		"Safety Overrides": [[50, 30, 20, 2, 3, 450], []],
-		"Nav Relay": [["2%", "3%", "4%", "5%"], []],
-		"Insulated Engine Assembly": [
-			["100%", "10%", "50%"],
-			["100%", "90%"],
-		],
-		"Converted Hangar": [
-			[1.5, 1.5, 40, 20, 1, 5, 1],
-			["10%", "25%"],
-		],
-		"Defensive Targeting Array": [["50%"], [100]],
-		"Expanded Deck Crew": [["15%", "25%", 20], []],
-		"Recovery Shuttles": [["75%"], ["95%"]],
-		"Converted Fighter Bay": [[50, "20%", "80%"], ["15%"]],
-		"B-Deck": [["40%", "100%"], []],
-		"Fighter Chassis Storage": [[], []],
-		"Flux Coil Adjunct": [
-			[600, 1200, 1800, 3000],
-			[200, 400, 600, 1000],
-		],
-		"Flux Distributor": [
-			[30, 60, 90, 150],
-			[10, 20, 30, 50],
-		],
-		"Hardened Subsystems": [["50%", "25%"], []],
-		"Neural Interface": [[50], []],
-		"Neural Integrator": [[50, "10%"], []],
-		"Operations Center": [["250%"], []],
-		"Militarized Subsystems": [[1, "100%"], []],
-		"Adaptive Phase Coils": [["50%", "50%", "75%"], []],
-		"Phase Anchor": [[0, "2x", "1x"], []],
-		"Phase Field": [["50%", 5, 5], []],
-		"Additional Berthing": [[30, 60, 100, 200, "30%", "50%"], []],
-		"Auxiliary Fuel Tanks": [[30, 60, 100, 200, "30%", "50%"], []],
-		"Expanded Cargo Holds": [[30, 60, 100, 200, "30%", "50%"], []],
-		"Augmented Drive Field": [[2], [1]],
-		"High Resolution Sensors": [
-			[50, 75, 100, 150, "10%"],
-			[1000, 1500, 2000, 2500],
-		],
-		"Efficiency Overhaul": [["20%", "50%"], ["10%"]],
-		"Surveying Equipment": [[5, 10, 20, 40, 5], ["100%"]],
-		"Shielded Cargo Holds": [[], []],
-		"Salvage Gantry": [["10%", "25%", "30%", "40%", "20%"], []],
-		"Civilian-grade Hull": [[100, 50], []],
-		"High Maintenance": [[100], []],
+	updateBuiltInHullMods: (userShipBuild, hullMods) => {
+		const builtInMods = userShipBuild.hullMods.builtInMods;
+
+		const newBuildInMods = builtInMods.map((hullModId) =>
+			hullMods.find(({ id }) => id === hullModId)
+		);
+		const newHullMods = {
+			...userShipBuild.hullMods,
+			builtInMods: newBuildInMods,
+		};
+		return { ...userShipBuild, hullMods: newHullMods };
+	},
+	addBuildInHullModsEffect: (data) => {
+		console.log("test");
+		console.log(data);
 	},
 
-	textInjectionData: [
-		{
-			"Ballistic Rangefinder":
-				"If the largest Ballistic slot on the ship is large: increases the base range of small weapons in Ballistic slots by %s, and of medium weapons by %s, up to a maximum of %s range. Otherwise: increases the base range of small weapons in Ballistic slots by %s, up to %s maximum. Does not affect point-defense weapons or Ballistic weapons placed in Composite, Hybrid or Universal slots. Hybrid weapons in Ballistic slots receive double the bonus. Non-PD Hybrid weapons in ballistic slots, including large ones, will receive %s bonus range, subject to the maximum, in cases where other weapons of the same size would receive no bonus.",
-		},
-		{
-			"Converted Hangar":
-				"Converts the ship's standard shuttle hangar to house a fighter bay. The improvised flight deck, its crew, and the related machinery function at a pace below that of a dedicated carrier. Increases fighter refit time by %sx, and the fighter replacement rate both decays and recovers %sx more slowly. In addition, bombers returning to rearm (or fighters returning to repair) take %s% of their base time to relaunch, where it normally takes under a second. Increases the minimum crew by %s to account for pilots and fighter crews. Increases the ship's deployment points and supply cost to recover from deployment by %s for every %s ordnance points spent on fighters, or by at least %s point. This comes with a proportional increase in combat readiness lost per deployment.",
-		},
-		{
-			"Missile Autoloader":
-				"A combat-rated autoloader that provides a limited number of reloads to missile weapons installed in small missile mounts. Does not affect weapons that do not use ammo or already regenerate it, or weapons that are mounted in any other kind of weapon slot. The number of missiles reloaded is not affected by skills or hullmods that increase missile weapon ammo capacity. A partial reload is possible when running out of capacity. After a reload, the weapon requires an extra 5 seconds, in addition to its normal cooldown, before it can fire again.",
-		},
-		{
-			"High Scatter Amplifier":
-				"Beam weapons deal %s more damage and deal hard flux to shields. Reduces the portion of the range of beam weapons that is above %s units by %s. The base range is affected. Interactions with other modifiers: The base range is reduced, thus percentage and multiplicative modifiers - such as from Integrated Targeting Unit, skills, or similar sources - apply to the reduced base value.",
-		},
-		{
-			"High Resolution Sensors":
-				"Increases sensor strength by %s/%s/%s/%s points for frigates / destroyers / cruisers and capitals, respectively. Minimum CR of %s required to function.",
-		},
-		{
-			"Neural Interface": `Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply.`,
-		},
-		{
-			"Neural Integrator": `An augmented version of Neural Interface that works with automated ships by enabling direct control of all of the ship's systems via the link, instead of having the controlling consciousness aspect simply direct the bridge crew. Links the flagship with another ship, allowing switching between ships without using a shuttle pod. Both ships must have a neural interface and not be commanded by officers or AI cores. The transfer is instant if the combined deployment points of the linked ships are %s or less. If the linked ship is destroyed or leaves the battlefield, the flagship will establish a neural link with another ship with a Neural Interface. If the flagship is destroyed or leaves the battlefield, command will have to be physically transferred to another ship with a Neural Interface before a new link can be established. Both linked ships benefit from your personal combat skills as if you had transferred command to them, regardless of which one you are controlling personally. As with "transfer command", some skill effects - such as those increasing ammo capacity or another fixed ship stat - do not apply. Also increases the deployment cost and supply use by %s`,
-		},
-	],
+	checkIfAutomatedShip: (data) => {
+		const { builtInMods } = data.hullMods;
+		const hullModId = "automated";
+		const isAutomated = builtInMods.some(({ id }) => id === hullModId);
+		return { ...data, isAutomated };
+	},
 };

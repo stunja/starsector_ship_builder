@@ -1,7 +1,9 @@
+import { HULLMOD_COST_KEYS } from "../helper/Properties";
+
 class TablePopUpSorter {
 	#isAscending;
 	#currentCategory;
-	// #currentArray;
+	#hullSize;
 
 	#SORT_TYPE = {
 		text: (textA, textB) =>
@@ -27,18 +29,24 @@ class TablePopUpSorter {
 		wing: (a, b) => this.#SORT_TYPE.number(a.num, b.num),
 		cost: (a, b) => this.#SORT_TYPE.number(a.opCost, b.opCost),
 	};
-	update([btn, tableType, currentArray]) {
-		// Input validation
-		if (!btn?.dataset?.category) {
-			throw new Error("Button must have a category in its dataset");
-		}
 
-		const { category } = btn.dataset;
+	#SORT_HULLMOD_TABLE = {
+		name: (a, b) => this.#SORT_TYPE.text(b.name, a.name),
+		type: (a, b) => this.#SORT_TYPE.text(a.uiTags, b.uiTags),
+		cost: (a, b) =>
+			this.#SORT_TYPE.number(a[this.#hullSize], b[this.#hullSize]),
+	};
+
+	update([category, tableType, currentArray, userShipBuild]) {
+		this.#hullSize = HULLMOD_COST_KEYS[userShipBuild?.hullSize];
+
 		// Use different data between Tables
 		const sortTableType =
 			tableType === "weaponPopUpTable"
 				? this.#SORT_WEAPON_TABLE
-				: this.#SORT_FIGHTER_TABLE;
+				: tableType === "fighterPopUpTable"
+				? this.#SORT_FIGHTER_TABLE
+				: this.#SORT_HULLMOD_TABLE;
 
 		// Toggle direction if clicking same category, otherwise default to ascending
 		this.#isAscending =
