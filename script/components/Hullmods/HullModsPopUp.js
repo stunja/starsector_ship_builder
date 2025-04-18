@@ -98,8 +98,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#shieldType = this.#userShipBuild.shieldType;
 		this.#shipIsCivilian = this.#userShipBuild.shipIsCivilian;
 
-		// console.log(this.#usableHullMods);
-		// console.log(this.#userState.usableHullMods);
+		console.log(this.#userShipBuild);
 	}
 
 	#update() {
@@ -115,8 +114,6 @@ export default class HullModsPopUp extends ViewModel {
 		});
 
 		this.#createHullModsArray();
-
-		console.log(this.#userShipBuild);
 	}
 	#render() {
 		this.#renderHullModsPopUp();

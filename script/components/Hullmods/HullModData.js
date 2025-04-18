@@ -98,6 +98,7 @@ export const HULLMODS = {
 			// However, ships of this design tend to carry extremely heavy armor.
 		},
 
+		//! TODO
 		//! I have no idea how to implement
 		// Heavy Ballistics Integration
 		hbi: {
@@ -109,7 +110,6 @@ export const HULLMODS = {
 			// Reduces the ordnance point cost of large ballistic weapons by 10.
 		},
 
-		//! Later
 		// Vast Hangar
 		vast_hangar: {
 			id: "vast_hangar",
@@ -189,6 +189,20 @@ export const HULLMODS = {
 
 			// Stabilizes the fleet's drive bubble, increasing the maximum burn of the fleet by 1. The effect of multiple stabilizers is cumulative.
 			// Increases the ship's sensor profile by 200.
+
+			hullModLogic: function (userShipBuild, hullMod) {
+				const { shipBurn, sensorProfile } = userShipBuild;
+
+				// Extract Values
+				const [increaseMaxBurnByNumber, increaseSensorProfileByNumber] =
+					hullMod.effectValues.regularValues;
+
+				return {
+					...userShipBuild,
+					shipBurn: shipBurn + increaseMaxBurnByNumber,
+					sensorProfile: sensorProfile + increaseSensorProfileByNumber,
+				};
+			},
 		},
 
 		// High Maintenance
@@ -228,6 +242,7 @@ export const HULLMODS = {
 			// The coherence field is unstable under combat conditions, with stresses on the hull resulting in spot failures that releases bursts of lethal radiation. Crew casualties in combat are increased by 50%.
 		},
 
+		// TODO
 		//! add filter
 		// Automated Ship
 		automated: {
@@ -259,6 +274,7 @@ export const HULLMODS = {
 			name: "Ground Support Package",
 			_whyNot: "Built-in only hullmod. Available on: Valkyrie, Colossus Mk.III",
 
+			// [IGNORE]
 			// Close support weapons and counter-measures for ground defenses.
 			// Increases the effective strength of planetary raids by 100, up to the total number of marines in the fleet.
 		},
@@ -280,6 +296,7 @@ export const HULLMODS = {
 			name: "Shielded Cargo Holds",
 			_whyNot: "Shielded Cargo Holds is a built-in hullmod.",
 
+			// [IGNORE]
 			// Commonly found on ships that can't always rely on shields to protect their cargo from cosmic radiation.
 			// Only a few tweaks are needed to have the shielding confound long-range cargo scans, reducing the probability of contraband being detected.
 		},
@@ -299,6 +316,7 @@ export const HULLMODS = {
 			// The higher the highest recovery bonus from a single ship in the fleet, the later the diminishing returns kick in.
 		},
 
+		// TODO
 		//! implement later
 		// Legion (XIV)
 		// Fourteenth Battlegroup
@@ -311,7 +329,8 @@ export const HULLMODS = {
 			// only a 8% reduction in speed and maneuverability. Exceptionally well-tuned energy systems increase
 			// flux throughput and capacity by 5% over standard examples of this hull.
 		},
-		//!
+
+		//! TODO
 		// Converted Cargo Bay
 		// Colossus Mk.III
 		test: {
@@ -324,6 +343,8 @@ export const HULLMODS = {
 			// The improvised manufactory that produces fighter chassis is unreliable, and most components have minor defects.
 			// Fighter speed reduced by 25%, and damage taken increased by 25%.
 		},
+
+		//! TODO
 		// Special Modifications
 		test: {
 			id: "test",
@@ -333,6 +354,8 @@ export const HULLMODS = {
 
 			// Crew casualties in combat are increased by 10%. The base flux dissipation rate is reduced by 5%, and the repair rate for disabled weapons and engines is reduced by 25%.
 		},
+
+		//! TODO
 		//! 0.98a
 		// Design Compromises
 		test: {
@@ -811,10 +834,9 @@ export const HULLMODS = {
 			name: "Blast Doors",
 			_whyNot: "hullmod that can be installed on any ship.",
 
-			// Installs additional hermetic and heavily reinforced doors at critical junctures throughout the ship.
 			// Increases hull integrity by 20%.
-			//
-			// IGNORE // Ship takes 60% fewer crew casualties from hull damage sustained in combat.
+			// [IGNORE]
+			// Ship takes 60% fewer crew casualties from hull damage sustained in combat.
 
 			hullModLogic: function (userShipBuild, hullMod) {
 				const { ordinancePoints, hitPoints, hullSize } = userShipBuild;
@@ -999,13 +1021,9 @@ export const HULLMODS = {
 					weaponSlots,
 					installedWeapons,
 				} = userShipBuild;
+
 				const { builtInMods } = hullMods;
-
 				const { id: currentId } = HULLMODS.BUILD_IN.vast_hangar;
-
-				const isVastHangarInstalled = builtInMods.some(
-					({ id }) => id === currentId
-				);
 
 				const [
 					_increasesFighterRefitTimeBy,
@@ -1013,6 +1031,11 @@ export const HULLMODS = {
 					_increaseCruiserSpeed,
 					increaseMinCrewReqByFlatNumber,
 				] = hullMod.effectValues.regularValues;
+
+				// VAST HANGAR BUILD IN LOGIC IS HERE
+				const isVastHangarInstalled = builtInMods.some(
+					({ id }) => id === currentId
+				);
 
 				// HORRENDOUS implementation but it works
 				//? there is a bug, where installed weapons don't clear out.
@@ -1033,22 +1056,30 @@ export const HULLMODS = {
 						: minCrew + increaseMinCrewReqByFlatNumber,
 
 					weaponSlots: [
-						...[...new Set(weaponSlots)], // filter duplicates
-						// ...createNewProps.map((arr) => arr.newWeaponSlots), // add new weaponSlots
+						...removeWeaponSlotsDuplicates(),
 						...additionalWeaponSlotsAndInstalledWeapons.newWeaponSlots, // add new weaponSlots
 					],
 
 					installedWeapons: [
-						...installedWeapons.filter(
-							(weapon) => weapon[0] && !weapon[0].includes("IWS")
-						),
-						// ...createNewInstalledWeapons(installedWeapons, slotsToCreate),
+						...originalInstalledWeapons(),
 						...toggleAdditionalInstalledWeapons(
 							installedWeapons,
 							additionalWeaponSlotsAndInstalledWeapons.newInstalledWeapons
 						),
 					],
 				};
+
+				// filter duplicates
+				function removeWeaponSlotsDuplicates() {
+					return [...new Set(weaponSlots)];
+				}
+
+				// filter the additional Installed Weapons
+				function originalInstalledWeapons() {
+					return installedWeapons.filter(
+						(weapon) => weapon[0] && !weapon[0].includes("IWS")
+					);
+				}
 			},
 		},
 		// Defensive Targeting Array
@@ -2756,7 +2787,6 @@ export const HULLMODS = {
 				const [frigateFlux, destroyerFlux, cruiserFlux, capitalFlux] =
 					hullMod.effectValues.regularValues;
 
-				console.log(userShipBuild);
 				return {
 					...userShipBuild,
 					ordinancePoints: HullModHelper.updateOrdinancePoints(
@@ -2906,4 +2936,5 @@ export const HULLMODS_DATA = {
 	"Civilian-grade Hull": [["100%", "50%"], []],
 	"Phase Field": [["50%", 5, 5], []],
 	"High Maintenance": [["100%"], []],
+	"Drive Field Stabilizer": [[1, 200], []],
 };
