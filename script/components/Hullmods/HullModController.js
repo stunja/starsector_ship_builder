@@ -1,6 +1,7 @@
 import ViewModel from "../../ViewModel";
 import ShipStats from "../ShipStats/ShipStats";
 import HullModsPopUp from "./HullModsPopUp";
+import FighterSlots from "../Fighter/FighterSlots";
 // View
 import InstalledHullMods from "../../allViews/HullMods/InstalledHullModsView";
 import HullModView from "../../allViews/HullMods/HullModView";
@@ -9,6 +10,7 @@ import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 import classNames from "../../helper/DomClassNames";
 import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import HullModHelper from "./HullModHelper";
+import { updateUserShipBuildWithHullModLogic } from "../../helper/helperFunction";
 
 const EVENT_LISTENER_TARGET = {
 	HULLMODS: `.${classNames.hullMods__button}`,
@@ -78,14 +80,21 @@ export default class HullModController extends ViewModel {
 		);
 
 		this.setUpdateUserShipBuild({
-			...userShipBuild,
-			hullMods: updatedHullMods,
+			...updateUserShipBuildWithHullModLogic(
+				{
+					...userShipBuild,
+					hullMods: updatedHullMods,
+				},
+				this._getBaseShipBuild()
+			),
 		});
 
-		// clear installed hullMods
-		this.updateUserShipBuildWithHullModLogic();
 		// Update shipStats to render new fields
 		new ShipStats(this.getState()).update();
+
+		// update fighterBays
+		new FighterSlots(this.getState()).update();
+
 		// Update the hullModController including render
 		this.update();
 	};

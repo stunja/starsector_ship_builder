@@ -809,12 +809,31 @@ export const HULLMODS = {
 		missleracks: {
 			id: "missleracks",
 			name: "Expanded Missile Racks",
-
+			reason: { isAlreadyBuildInReason: "Already Build-In" },
 			// [IGNORE ALL]
 			// Increases the ammo capacity of missile weapons by 100%.
+			filterReason: function (hullMod, userShipBuild) {
+				const { hullMods } = userShipBuild;
+				const { id: currentId, reason } = HULLMODS.WEAPONS.missleracks;
 
+				const { builtInMods } = hullMods;
+				const hasMissleRacksBuildIn = builtInMods.some(
+					({ id }) => id === currentId
+				);
+
+				if (hasMissleRacksBuildIn)
+					return [hullMod, reason.isAlreadyBuildInReason];
+
+				return null;
+			},
 			hullModLogic: function (userShipBuild, hullMod) {
-				const { ordinancePoints, hullSize } = userShipBuild;
+				const { ordinancePoints, hullSize, hullMods } = userShipBuild;
+				const { id: currentId } = HULLMODS.WEAPONS.missleracks;
+
+				const { builtInMods } = hullMods;
+				const isAlreadyBuildIn = builtInMods.some(({ id }) => id === currentId);
+
+				if (isAlreadyBuildIn) return userShipBuild;
 
 				return {
 					...userShipBuild,
