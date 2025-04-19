@@ -810,6 +810,7 @@ export const HULLMODS = {
 			id: "missleracks",
 			name: "Expanded Missile Racks",
 			reason: { isAlreadyBuildInReason: "Already Build-In" },
+
 			// [IGNORE ALL]
 			// Increases the ammo capacity of missile weapons by 100%.
 			filterReason: function (hullMod, userShipBuild) {
