@@ -11,6 +11,7 @@ const SPRITE_GROUP = {
 };
 const WEAPON_TYPE = {
 	DECORATIVE: "decorative",
+	SYSTEM: "system",
 };
 const PROPS = {
 	SIZE: {
@@ -90,10 +91,13 @@ class WeaponBackgroundSpriteView {
 		}
 
 		//? I dont remember why decorative is here
-		if (weaponType === WEAPON_TYPE.DECORATIVE) {
+		if (
+			weaponType === WEAPON_TYPE.DECORATIVE ||
+			weaponType === WEAPON_TYPE.SYSTEM
+		) {
 			return GENERIC_STRING.EMPTY;
 		}
-		//! Issue is here
+
 		console.warn(`Unknown weapon type: ${weaponType}`);
 		return GENERIC_STRING.EMPTY;
 	}
