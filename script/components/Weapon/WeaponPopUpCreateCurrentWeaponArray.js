@@ -1,5 +1,3 @@
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
-
 const SIZE = {
 	LARGE: "LARGE",
 	MEDIUM: "MEDIUM",
