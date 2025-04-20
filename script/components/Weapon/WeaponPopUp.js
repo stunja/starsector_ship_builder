@@ -84,7 +84,6 @@ export default class WeaponPopUp extends ViewModel {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new WeaponSlots(this.#state).update();
 
-		console.log("test");
 		// Remove WeaponPopUpContainer
 		WeaponPopUpContainerView._clearRender();
 	}
@@ -252,7 +251,7 @@ export default class WeaponPopUp extends ViewModel {
 		const burstSizeString =
 			stats.timing.burstSize && stats.timing.burstSize > 1
 				? `x${stats.ammo.burstSize}`
-				: "";
+				: GENERIC_STRING.EMPTY;
 		const weaponDescription = information.description.split(".");
 
 		const isWeaponBeam = stats.projectile.projectileOrBeam === "beam";
