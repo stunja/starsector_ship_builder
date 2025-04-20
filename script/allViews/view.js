@@ -1,6 +1,3 @@
-// import classNames from "../helper/DomClassNames.js";
-//
-
 export default class View {
 	constructor() {
 		this._targetMap = new Map();
@@ -40,43 +37,6 @@ export default class View {
         </li>`;
 	}
 
-	// Event Listener
-	// addClickHandler(target, callback) {
-	// 	// Create the event listener function
-	// 	const listener = function (e) {
-	// 		const btn = e.target.closest(target);
-	// 		if (!btn) return;
-	// 		e.preventDefault();
-	// 		callback(btn);
-	// 	};
-
-	// 	// If there's an existing listener for this target, remove it first
-	// 	this.removeClickHandler(target);
-
-	// 	// Store the new listener in the Map
-	// 	this._targetMap.set(target, listener);
-
-	// 	// Add the event listener
-	// 	this._localParentElement.addEventListener("click", listener);
-
-	// 	// Return the listener for potential external reference
-	// 	return listener;
-	// }
-
-	// removeClickHandler(target) {
-	// 	// Get the existing listener if any
-	// 	const existingListener = this._targetMap.get(target);
-
-	// 	if (existingListener) {
-	// 		// Remove the event listener
-	// 		this._localParentElement.removeEventListener("click", existingListener);
-	// 		// Remove from Map
-	// 		this._targetMap.delete(target);
-	// 		return true;
-	// 	}
-
-	// 	return false;
-	// }
 	addClickHandler(target, type, callback) {
 		// Create the event listener function
 		const listener = function (e) {

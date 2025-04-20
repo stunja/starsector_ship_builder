@@ -4,6 +4,10 @@ import TablePopUpSorter from "../TablePopUpSorter.js";
 // Helper
 import classNames from "../../helper/DomClassNames.js";
 import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
+import {
+	EVENT_LISTENER_TYPE,
+	GENERIC_STRING,
+} from "../../helper/MagicStrings.js";
 // Views
 import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpContainerView.js";
 import WeaponPopUpTableHeaderView from "../../allViews/WeaponPopUp/WeaponPopUpTableHeaderView.js";
@@ -14,10 +18,6 @@ import WeaponHoverContainerView from "../../allViews/WeaponPopUp/WeaponHoverCont
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
 	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
-};
-const EVENT_LISTENER_TYPE = {
-	CLICK: "click",
-	HOVER: "mouseover",
 };
 
 const SKIP_SORT_CATEGORY = {
@@ -84,6 +84,7 @@ export default class WeaponPopUp extends ViewModel {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new WeaponSlots(this.#state).update();
 
+		console.log("test");
 		// Remove WeaponPopUpContainer
 		WeaponPopUpContainerView._clearRender();
 	}
@@ -143,16 +144,16 @@ export default class WeaponPopUp extends ViewModel {
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
-		const installedWeapons = userShipBuild.installedWeapons;
+
+		const installedWeapons = this.#userShipBuild.installedWeapons;
 		let isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
-		//
+
 		const updatedInstalledWeapons = installedWeapons.map(
 			([slotId, currentWeapon]) => {
 				// If weapon already exists in slot, remove it
-				if (currentWeapon === weaponPopUpId) {
+				if (currentWeapon === weaponPopUpId && slotId === this.#weaponSlot.id) {
 					isWeaponPopUpOpen = !isWeaponPopUpOpen;
-					return [slotId, ""];
+					return [slotId, GENERIC_STRING.EMPTY];
 				}
 				// if weapon dont match, keep the original
 				if (slotId !== this.#weaponSlot.id) {
@@ -164,13 +165,15 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		this.setUpdateUserShipBuild({
-			...userShipBuild,
+			...this.#userShipBuild,
 			installedWeapons: updatedInstalledWeapons,
 		});
 
+		this.#userShipBuild = this.getUserShipBuild();
+
 		isWeaponPopUpOpen === true
-			? this.#addWeaponAndCloseWeaponPopUp()
-			: this.#removeActiveWeaponAndReRenderWeaponPopUp();
+			? this.#removeActiveWeaponAndReRenderWeaponPopUp()
+			: this.#addWeaponAndCloseWeaponPopUp();
 	};
 
 	// Hover
