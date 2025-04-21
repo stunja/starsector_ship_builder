@@ -113,9 +113,10 @@ export default class WeaponPopUp extends ViewModel {
 		if (SKIP_SORT_CATEGORY[category]) return;
 		// Sort the Table
 		this.#currentWeaponArray = TablePopUpSorter.update([
-			btn,
+			category,
 			TABLE_POPUP_TYPE,
 			this.#currentWeaponArray,
+			this.#userShipBuild,
 		]);
 		// Render Changes
 		this.#renderWeaponPopUpAndAddEventListeners();
