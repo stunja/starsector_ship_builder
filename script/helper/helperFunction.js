@@ -164,49 +164,7 @@ export const toggleAdditionalInstalledWeapons = function (
 		return true;
 	});
 };
-// export const createNewInstalledWeapons = function (
-// 	installedWeapons,
-// 	howManySlotsToCreate
-// ) {
-// 	const createNewProps = Array.from(
-// 		{
-// 			length: howManySlotsToCreate,
-// 		},
-// 		(_, i) => {
-// 			const currentWeaponId = `IWS-${i + 100}`;
-// 			return {
-// 				newWeaponSlots: {
-// 					id: currentWeaponId,
-// 					mount: WEAPON_SLOT.MOUNT.HIDDEN,
-// 					size: WEAPON_SLOT.SIZE.MEDIUM,
-// 					type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
-// 				},
-// 				newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
-// 			};
-// 		}
-// 	);
-// 	// Filter IWS weapons directly
-// 	const iwsWeapons = installedWeapons.filter(
-// 		(weapon) => weapon[0] && weapon[0].includes("IWS")
-// 	);
 
-// 	// Return early if no IWS weapons
-// 	if (iwsWeapons.length < 1) {
-// 		return createNewProps.map((arr) => arr.newInstalledWeapons);
-// 	}
-
-// 	// Remove duplicates
-// 	const seen = new Set();
-// 	return iwsWeapons.filter((item) => {
-// 		const id = item[0];
-// 		if (seen.has(id)) {
-// 			return false;
-// 		}
-// 		seen.add(id);
-// 		return true;
-// 	});
-// };
-///
 export const findHullModKeyName = function (obj, searchKey, matches = []) {
 	// Early return if obj is null or not an object
 	if (!obj || typeof obj !== "object") return matches;
@@ -225,6 +183,28 @@ export const findHullModKeyName = function (obj, searchKey, matches = []) {
 
 	return matches;
 };
+
+// Installed Weapons
+
+export const AddRemoveInstalledWeapon = function (
+	installedWeapons,
+	weaponPopUpId,
+	weaponSlotId
+) {
+	return installedWeapons.map(([slotId, currentWeapon]) => {
+		// If weapon already exists in slot, remove it
+		if (currentWeapon === weaponPopUpId) {
+			return [slotId, GENERIC_STRING.EMPTY];
+		}
+		// if weapon dont match, keep the original
+		if (slotId !== weaponSlotId) {
+			return [slotId, currentWeapon];
+		}
+		// Otherwise, add the new weapon
+		return [slotId, weaponPopUpId];
+	});
+};
+
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original

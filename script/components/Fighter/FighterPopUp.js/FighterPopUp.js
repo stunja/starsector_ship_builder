@@ -7,7 +7,10 @@ import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUp
 import FighterPopUpTableView from "../../../allViews/Fighters/FighterPopUpTableView";
 import FighterPopUpHoverView from "../../../allViews/Fighters/FighterPopUpHoverView";
 // Helper
-import { weaponSlotIdIntoWeaponSlotObject } from "../../../helper/helperFunction";
+import {
+	weaponSlotIdIntoWeaponSlotObject,
+	AddRemoveInstalledWeapon,
+} from "../../../helper/helperFunction";
 import classNames from "../../../helper/DomClassNames";
 
 const EVENT_LISTENER_TARGET = {
@@ -117,28 +120,18 @@ export default class FighterPopUp extends ViewModel {
 		const { weaponPopUpId } = btn.dataset;
 		const userShipBuild = this.getUserShipBuild();
 		const installedWeapons = userShipBuild.installedWeapons;
-		//
-		const updatedInstalledWeapons = installedWeapons.map(
-			([slotId, currentWeapon]) => {
-				// If weapon already exists in slot, remove it
-				if (currentWeapon === weaponPopUpId) {
-					this.#fighterPopUpOpen = true;
-					return [slotId, ""];
-				}
-				// if weapon dont match, keep the original
-				if (slotId !== this.#weaponSlot.id) {
-					return [slotId, currentWeapon];
-				}
-				// Otherwise, add the new weapon
-				return [slotId, weaponPopUpId];
-			}
-		);
 
+		console.log(installedWeapons, weaponPopUpId, this.#weaponSlot.id);
 		// update weapons
 		this.setUpdateUserShipBuild({
-			...userShipBuild,
-			installedWeapons: updatedInstalledWeapons,
+			...this.#userShipBuild,
+			installedWeapons: AddRemoveInstalledWeapon(
+				installedWeapons,
+				weaponPopUpId,
+				this.#weaponSlot.id
+			),
 		});
+
 		// assign new installedWeapons
 		this.#installedWeapons = installedWeapons;
 
@@ -185,10 +178,12 @@ export default class FighterPopUp extends ViewModel {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return;
 		// Sort the Table
+		console.log(category, TABLE_POPUP_TYPE, this.#currentFighterArray);
 		this.#currentFighterArray = TablePopUpSorter.update([
-			btn,
+			category,
 			TABLE_POPUP_TYPE,
 			this.#currentFighterArray,
+			this.#userShipBuild,
 		]);
 		// Render Changes
 		this.#renderFighterPopUp();

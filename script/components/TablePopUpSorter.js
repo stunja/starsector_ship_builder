@@ -3,6 +3,7 @@ import { HULLMOD_COST_KEYS } from "../helper/Properties";
 const SORT_TABLES = {
 	WEAPON_TABLE: "weaponPopUpTable",
 	FIGHTER_TABLE: "fighterPopUpTable",
+	HULLMOD_TABLE: "hullModPopUpTable",
 };
 
 class TablePopUpSorter {
@@ -45,12 +46,17 @@ class TablePopUpSorter {
 		this.#hullSize = HULLMOD_COST_KEYS[userShipBuild?.hullSize];
 
 		// Use different data between Tables
-		const sortTableType =
-			tableType === SORT_TABLES.WEAPON_TABLE
-				? this.#sortWeaponTable
-				: tableType === SORT_TABLES.WEAPON_TABLE
-				? this.#sortFighterTable
-				: this.#sortHullModTable;
+		const sortTableType = () => {
+			if (tableType === SORT_TABLES.WEAPON_TABLE) return this.#sortWeaponTable;
+
+			if (tableType === SORT_TABLES.FIGHTER_TABLE)
+				return this.#sortFighterTable;
+
+			if (tableType === SORT_TABLES.HULLMOD_TABLE)
+				return this.#sortHullModTable;
+
+			throw Error("Table Pop Up Sorter: Incorrect Sorter");
+		};
 
 		// Toggle direction if clicking same category, otherwise default to ascending
 		this.#isAscending =
@@ -58,18 +64,19 @@ class TablePopUpSorter {
 		this.#currentCategory = category;
 
 		// Check if sort configuration exists for category
-		if (!sortTableType[category]) {
+		if (!sortTableType()[category]) {
 			console.warn(`Unknown sort category: ${category}`);
 			return;
 		}
 
 		try {
 			// Try modern toSorted() first
-			currentArray = currentArray.toSorted(sortTableType[category]);
+			currentArray = currentArray.toSorted(sortTableType()[category]);
 		} catch (error) {
 			// Fallback for browsers that don't support toSorted()
-			currentArray = [...currentArray].sort(sortTableType[category]);
+			currentArray = [...currentArray].sort(sortTableType()[category]);
 		}
+
 		return currentArray;
 	}
 }

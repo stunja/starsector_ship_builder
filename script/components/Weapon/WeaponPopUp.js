@@ -3,7 +3,10 @@ import WeaponPopUpCreateCurrentWeaponArray from "./WeaponPopUpCreateCurrentWeapo
 import TablePopUpSorter from "../TablePopUpSorter.js";
 // Helper
 import classNames from "../../helper/DomClassNames.js";
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
+import {
+	weaponSlotIdIntoWeaponSlotObject,
+	AddRemoveInstalledWeapon,
+} from "../../helper/helperFunction.js";
 import {
 	EVENT_LISTENER_TYPE,
 	GENERIC_STRING,
@@ -148,25 +151,13 @@ export default class WeaponPopUp extends ViewModel {
 		const installedWeapons = this.#userShipBuild.installedWeapons;
 		let isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
 
-		const updatedInstalledWeapons = installedWeapons.map(
-			([slotId, currentWeapon]) => {
-				// If weapon already exists in slot, remove it
-				if (currentWeapon === weaponPopUpId && slotId === this.#weaponSlot.id) {
-					isWeaponPopUpOpen = !isWeaponPopUpOpen;
-					return [slotId, GENERIC_STRING.EMPTY];
-				}
-				// if weapon dont match, keep the original
-				if (slotId !== this.#weaponSlot.id) {
-					return [slotId, currentWeapon];
-				}
-				// Otherwise, add the new weapon
-				return [slotId, weaponPopUpId];
-			}
-		);
-
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,
-			installedWeapons: updatedInstalledWeapons,
+			installedWeapons: AddRemoveInstalledWeapon(
+				installedWeapons,
+				weaponPopUpId,
+				this.#weaponSlot.id
+			),
 		});
 
 		this.#userShipBuild = this.getUserShipBuild();
