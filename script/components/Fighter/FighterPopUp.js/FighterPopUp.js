@@ -121,7 +121,6 @@ export default class FighterPopUp extends ViewModel {
 		const userShipBuild = this.getUserShipBuild();
 		const installedWeapons = userShipBuild.installedWeapons;
 
-		console.log(installedWeapons, weaponPopUpId, this.#weaponSlot.id);
 		// update weapons
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,

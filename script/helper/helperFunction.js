@@ -185,7 +185,6 @@ export const findHullModKeyName = function (obj, searchKey, matches = []) {
 };
 
 // Installed Weapons
-
 export const AddRemoveInstalledWeapon = function (
 	installedWeapons,
 	weaponPopUpId,
@@ -203,6 +202,35 @@ export const AddRemoveInstalledWeapon = function (
 		// Otherwise, add the new weapon
 		return [slotId, weaponPopUpId];
 	});
+};
+// Put Installed Weapon On Top of An Array
+
+export const pushTargetWeaponObjectOnTop = function (
+	installedWeapon,
+	weaponArray
+) {
+	if (
+		installedWeapon &&
+		installedWeapon.length > 1 &&
+		installedWeapon[1] !== GENERIC_STRING.EMPTY
+	) {
+		const targetId = installedWeapon[1];
+
+		// Separate the target weapon and other weapons in one pass
+		const target = [];
+		const arrayWithoutTarget = [];
+
+		weaponArray.forEach((wpnObj) => {
+			if (wpnObj.id === targetId) {
+				target.push(wpnObj);
+			} else {
+				arrayWithoutTarget.push(wpnObj);
+			}
+		});
+
+		return [...target, ...arrayWithoutTarget];
+	}
+	return weaponArray;
 };
 
 /////

@@ -6,6 +6,7 @@ import classNames from "../../helper/DomClassNames.js";
 import {
 	weaponSlotIdIntoWeaponSlotObject,
 	AddRemoveInstalledWeapon,
+	pushTargetWeaponObjectOnTop,
 } from "../../helper/helperFunction.js";
 import {
 	EVENT_LISTENER_TYPE,
@@ -57,6 +58,11 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		this.#createCurrentWeaponArray();
+		// Pushes Installed Weapon to the top of the array
+		this.#currentWeaponArray = this.#assignGreenClassToCurrentWeaponArray(
+			this.#currentWeaponArray
+		);
+		// Render
 		this.#renderWeaponPopUpAndAddEventListeners();
 	};
 	//
@@ -115,12 +121,15 @@ export default class WeaponPopUp extends ViewModel {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return;
 		// Sort the Table
-		this.#currentWeaponArray = TablePopUpSorter.update([
+		const sorterArray = TablePopUpSorter.update([
 			category,
 			TABLE_POPUP_TYPE,
 			this.#currentWeaponArray,
 			this.#userShipBuild,
 		]);
+
+		this.#currentWeaponArray =
+			this.#assignGreenClassToCurrentWeaponArray(sorterArray);
 		// Render Changes
 		this.#renderWeaponPopUpAndAddEventListeners();
 	};
@@ -131,6 +140,14 @@ export default class WeaponPopUp extends ViewModel {
 				this.#weaponSlot,
 				this.#allWeapons
 			);
+	}
+	#assignGreenClassToCurrentWeaponArray(targetCurrentArray) {
+		const installedWeapon = this.#userShipBuild.installedWeapons.find(
+			([slotId, _wpnId]) => this.#weaponSlot.id === slotId
+		);
+
+		// pushTarget function
+		return pushTargetWeaponObjectOnTop(installedWeapon, targetCurrentArray);
 	}
 	// Renders After User Clicks on Weapon Button (Weapon Slot)
 	#weaponPopUpRender() {
