@@ -58,8 +58,8 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		this.#createCurrentWeaponArray();
-		// Pushes Installed Weapon to the top of the array
 
+		// Pushes Installed Weapon to the top of the array
 		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
 			this.#userShipBuild.installedWeapons,
 			this.#weaponSlot,
@@ -147,14 +147,7 @@ export default class WeaponPopUp extends ViewModel {
 				this.#allWeapons
 			);
 	}
-	// #assignGreenClassToCurrentWeaponArray(targetCurrentArray) {
-	// 	const installedWeapon = this.#userShipBuild.installedWeapons.find(
-	// 		([slotId, _wpnId]) => this.#weaponSlot.id === slotId
-	// 	);
 
-	// 	// pushTarget function
-	// 	return pushTargetWeaponObjectOnTop(installedWeapon, targetCurrentArray);
-	// }
 	// Renders After User Clicks on Weapon Button (Weapon Slot)
 	#weaponPopUpRender() {
 		//? Strange way to render, but it works.

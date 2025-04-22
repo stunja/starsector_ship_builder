@@ -10,6 +10,7 @@ import FighterPopUpHoverView from "../../../allViews/Fighters/FighterPopUpHoverV
 import {
 	weaponSlotIdIntoWeaponSlotObject,
 	AddRemoveInstalledWeapon,
+	pushTargetWeaponObjectOnTop,
 } from "../../../helper/helperFunction";
 import classNames from "../../../helper/DomClassNames";
 
@@ -43,7 +44,7 @@ export default class FighterPopUp extends ViewModel {
 	// Fighter Object which can be shown to user
 	#currentFighterArray;
 	#currentlyHoveredFighter;
-	#fighterPopUpOpen = false;
+	#fighterPopUpState = false;
 	constructor(model) {
 		super(model);
 	}
@@ -51,15 +52,10 @@ export default class FighterPopUp extends ViewModel {
 		this.#state = this.getState();
 		this.#getDataState = this.#state.dataState;
 
-		this.#currentFighterArray = this.#sortFighterArray(
-			this.#state.dataState.allFighters
-		);
-
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#installedWeapons = this.#userShipBuild.installedWeapons;
 		this.#weaponsSlots = this.#userShipBuild.weaponSlots;
 	}
-	#sortFighterArray = (arr) => arr.toSorted((a, b) => b.opCost - a.opCost);
 
 	update = (btn) => {
 		if (!btn) return;
@@ -71,9 +67,23 @@ export default class FighterPopUp extends ViewModel {
 			btn.dataset.fighterId
 		);
 
+		this.#createFighterWeaponArray();
+
+		// Pushes Installed Weapon to the top of the array
+		this.#currentFighterArray = pushTargetWeaponObjectOnTop(
+			this.#userShipBuild.installedWeapons,
+			this.#weaponSlot,
+			this.#currentFighterArray
+		);
+
 		this.#renderFighterPopUp();
 		this.#addEventListeners();
 	};
+
+	#createFighterWeaponArray = () =>
+		(this.#currentFighterArray = this.#state.dataState.allFighters.toSorted(
+			(a, b) => b.opCost - a.opCost
+		));
 	// render
 	#renderFighterPopUp() {
 		FighterPopUpContainerView.render(this.#state);
@@ -118,10 +128,10 @@ export default class FighterPopUp extends ViewModel {
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentFighterToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
-		const installedWeapons = userShipBuild.installedWeapons;
 
-		// update weapons
+		const installedWeapons = this.#userShipBuild.installedWeapons;
+		// let isFighterPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
+
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,
 			installedWeapons: AddRemoveInstalledWeapon(
@@ -131,12 +141,11 @@ export default class FighterPopUp extends ViewModel {
 			),
 		});
 
-		// assign new installedWeapons
-		this.#installedWeapons = installedWeapons;
+		this.#userShipBuild = this.getUserShipBuild();
 
-		this.#fighterPopUpOpen === true
-			? this.#addWeaponAndCloseWeaponPopUp()
-			: this.#removeActiveWeaponAndReRenderWeaponPopUp();
+		this.#fighterPopUpState = true
+			? this.#removeActiveWeaponAndReRenderWeaponPopUp()
+			: this.#addWeaponAndCloseWeaponPopUp();
 	};
 	#removeActiveWeaponAndReRenderWeaponPopUp() {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
@@ -177,13 +186,20 @@ export default class FighterPopUp extends ViewModel {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return;
 		// Sort the Table
-		console.log(category, TABLE_POPUP_TYPE, this.#currentFighterArray);
-		this.#currentFighterArray = TablePopUpSorter.update([
+
+		const sorterArray = TablePopUpSorter.update([
 			category,
 			TABLE_POPUP_TYPE,
 			this.#currentFighterArray,
 			this.#userShipBuild,
 		]);
+
+		this.#currentFighterArray = pushTargetWeaponObjectOnTop(
+			this.#userShipBuild.installedWeapons,
+			this.#weaponSlot,
+			sorterArray
+		);
+
 		// Render Changes
 		this.#renderFighterPopUp();
 		this.#addEventListeners();
