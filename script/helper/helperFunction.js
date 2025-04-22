@@ -206,9 +206,15 @@ export const AddRemoveInstalledWeapon = function (
 // Put Installed Weapon On Top of An Array
 
 export const pushTargetWeaponObjectOnTop = function (
-	installedWeapon,
+	installedWeapons,
+	weaponSlot,
 	weaponArray
 ) {
+	const installedWeapon = installedWeapons.find(
+		([slotId, _wpnId]) => weaponSlot.id === slotId
+	);
+
+	// if installed weaponId exists, put it on top
 	if (
 		installedWeapon &&
 		installedWeapon.length > 1 &&
@@ -230,6 +236,8 @@ export const pushTargetWeaponObjectOnTop = function (
 
 		return [...target, ...arrayWithoutTarget];
 	}
+
+	// no change
 	return weaponArray;
 };
 

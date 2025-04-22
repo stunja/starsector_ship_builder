@@ -59,7 +59,10 @@ export default class WeaponPopUp extends ViewModel {
 
 		this.#createCurrentWeaponArray();
 		// Pushes Installed Weapon to the top of the array
-		this.#currentWeaponArray = this.#assignGreenClassToCurrentWeaponArray(
+
+		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
+			this.#userShipBuild.installedWeapons,
+			this.#weaponSlot,
 			this.#currentWeaponArray
 		);
 		// Render
@@ -128,8 +131,11 @@ export default class WeaponPopUp extends ViewModel {
 			this.#userShipBuild,
 		]);
 
-		this.#currentWeaponArray =
-			this.#assignGreenClassToCurrentWeaponArray(sorterArray);
+		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
+			this.#userShipBuild.installedWeapons,
+			this.#weaponSlot,
+			sorterArray
+		);
 		// Render Changes
 		this.#renderWeaponPopUpAndAddEventListeners();
 	};
@@ -141,14 +147,14 @@ export default class WeaponPopUp extends ViewModel {
 				this.#allWeapons
 			);
 	}
-	#assignGreenClassToCurrentWeaponArray(targetCurrentArray) {
-		const installedWeapon = this.#userShipBuild.installedWeapons.find(
-			([slotId, _wpnId]) => this.#weaponSlot.id === slotId
-		);
+	// #assignGreenClassToCurrentWeaponArray(targetCurrentArray) {
+	// 	const installedWeapon = this.#userShipBuild.installedWeapons.find(
+	// 		([slotId, _wpnId]) => this.#weaponSlot.id === slotId
+	// 	);
 
-		// pushTarget function
-		return pushTargetWeaponObjectOnTop(installedWeapon, targetCurrentArray);
-	}
+	// 	// pushTarget function
+	// 	return pushTargetWeaponObjectOnTop(installedWeapon, targetCurrentArray);
+	// }
 	// Renders After User Clicks on Weapon Button (Weapon Slot)
 	#weaponPopUpRender() {
 		//? Strange way to render, but it works.
