@@ -190,17 +190,20 @@ export const AddRemoveInstalledWeapon = function (
 	weaponPopUpId,
 	weaponSlotId
 ) {
-	return installedWeapons.map(([slotId, currentWeapon]) => {
+	return installedWeapons.map(([installedSlotId, installedWeaponId]) => {
 		// If weapon already exists in slot, remove it
-		if (currentWeapon === weaponPopUpId) {
-			return [slotId, GENERIC_STRING.EMPTY];
+		if (
+			installedSlotId === weaponSlotId &&
+			installedWeaponId === weaponPopUpId
+		) {
+			return [installedSlotId, GENERIC_STRING.EMPTY];
 		}
 		// if weapon dont match, keep the original
-		if (slotId !== weaponSlotId) {
-			return [slotId, currentWeapon];
+		if (installedSlotId !== weaponSlotId) {
+			return [installedSlotId, installedWeaponId];
 		}
 		// Otherwise, add the new weapon
-		return [slotId, weaponPopUpId];
+		return [installedSlotId, weaponPopUpId];
 	});
 };
 // Put Installed Weapon On Top of An Array

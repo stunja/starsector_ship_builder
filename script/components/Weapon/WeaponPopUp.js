@@ -39,18 +39,25 @@ export default class WeaponPopUp extends ViewModel {
 	#state;
 	#allWeapons;
 	#userShipBuild;
-
+	#installedWeapons;
 	// Hover
 	#currentlyHoveredWeapon;
+	// UI
 	constructor(model) {
 		super(model);
-
+	}
+	#updateData() {
 		this.#state = this.getState();
 		this.#allWeapons = this.#state.dataState.allWeapons;
 		this.#userShipBuild = this.#state.userState.userShipBuild;
+		this.#installedWeapons = this.#userShipBuild.installedWeapons;
+
+		// this.#isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
 	}
 	update = (btn) => {
 		if (!btn) return;
+
+		this.#updateData();
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
 			this.getUserShipBuild().weaponSlots,
@@ -61,63 +68,22 @@ export default class WeaponPopUp extends ViewModel {
 
 		// Pushes Installed Weapon to the top of the array
 		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
-			this.#userShipBuild.installedWeapons,
+			this.#installedWeapons,
 			this.#weaponSlot,
 			this.#currentWeaponArray
 		);
+
 		// Render
-		this.#renderWeaponPopUpAndAddEventListeners();
-	};
-	//
-	#renderWeaponPopUpAndAddEventListeners() {
-		// Render Weapon PopUps
 		this.#weaponPopUpRender();
+		this.#addEventListeners();
+	};
 
-		// Listeners
-		this.#addWeaponPopUpEntryListener();
-		this.#addWeaponPopUpTableHeaderListener();
-
-		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
-			`.${classNames.tableContainer}`,
-			WeaponPopUpContainerView._clearRender
-		);
-	}
-	#removeActiveWeaponAndReRenderWeaponPopUp() {
+	#toggleWeaponAndClosePopUp() {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new WeaponSlots(this.#state).update();
 
 		// Remove WeaponPopUpContainer
 		WeaponPopUpContainerView._clearRender();
-
-		// Render Again
-		this.#renderWeaponPopUpAndAddEventListeners();
-	}
-	#addWeaponAndCloseWeaponPopUp() {
-		// Update WeaponSlots // Render // Listener // Arcs / Background
-		new WeaponSlots(this.#state).update();
-
-		// Remove WeaponPopUpContainer
-		WeaponPopUpContainerView._clearRender();
-	}
-	// WeaponPopUp Event Listeners
-	#addWeaponPopUpTableHeaderListener() {
-		WeaponPopUpTableHeaderView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#weaponTableSorter
-		);
-	}
-	#addWeaponPopUpEntryListener() {
-		WeaponPopUpTableView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#addCurrentWeaponToInstalledWeapons
-		);
-		WeaponPopUpTableView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
-			EVENT_LISTENER_TYPE.HOVER,
-			this.#showAdditionalInformationOnHover
-		);
 	}
 
 	#weaponTableSorter = (btn) => {
@@ -132,12 +98,13 @@ export default class WeaponPopUp extends ViewModel {
 		]);
 
 		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
-			this.#userShipBuild.installedWeapons,
+			this.#installedWeapons,
 			this.#weaponSlot,
 			sorterArray
 		);
 		// Render Changes
-		this.#renderWeaponPopUpAndAddEventListeners();
+		this.#weaponPopUpRender();
+		this.#addEventListeners();
 	};
 	// Creates currentArray based on Weapon Slot Type and Size.
 	#createCurrentWeaponArray() {
@@ -164,23 +131,17 @@ export default class WeaponPopUp extends ViewModel {
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
 
-		const installedWeapons = this.#userShipBuild.installedWeapons;
-		let isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
-
 		this.setUpdateUserShipBuild({
 			...this.#userShipBuild,
 			installedWeapons: AddRemoveInstalledWeapon(
-				installedWeapons,
+				this.#installedWeapons,
 				weaponPopUpId,
 				this.#weaponSlot.id
 			),
 		});
 
-		this.#userShipBuild = this.getUserShipBuild();
-
-		isWeaponPopUpOpen === true
-			? this.#removeActiveWeaponAndReRenderWeaponPopUp()
-			: this.#addWeaponAndCloseWeaponPopUp();
+		this.#updateData();
+		this.#toggleWeaponAndClosePopUp();
 	};
 
 	// Hover
@@ -342,4 +303,35 @@ export default class WeaponPopUp extends ViewModel {
 			},
 		};
 	};
+	// Event Listeners
+	#addEventListeners() {
+		this.#weaponPopUpEntryHandler();
+		this.#weaponPopUpTableHeaderHandler();
+		this.#closeWeaponPopUpHandler();
+	}
+	#weaponPopUpTableHeaderHandler() {
+		WeaponPopUpTableHeaderView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#weaponTableSorter
+		);
+	}
+	#weaponPopUpEntryHandler() {
+		WeaponPopUpTableView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#addCurrentWeaponToInstalledWeapons
+		);
+		WeaponPopUpTableView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.HOVER,
+			this.#showAdditionalInformationOnHover
+		);
+	}
+	#closeWeaponPopUpHandler() {
+		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
+			`.${classNames.tableContainer}`,
+			WeaponPopUpContainerView._clearRender
+		);
+	}
 }
