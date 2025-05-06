@@ -206,8 +206,8 @@ export const AddRemoveInstalledWeapon = function (
 		return [installedSlotId, weaponPopUpId];
 	});
 };
-// Put Installed Weapon On Top of An Array
 
+// Put Installed Weapon On Top of An Array
 export const pushTargetWeaponObjectOnTop = function (
 	installedWeapons,
 	weaponSlot,
@@ -244,6 +244,7 @@ export const pushTargetWeaponObjectOnTop = function (
 	return weaponArray;
 };
 
+//
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original

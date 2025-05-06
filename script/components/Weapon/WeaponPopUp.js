@@ -1,17 +1,25 @@
+// ViewModel
 import ViewModel from "../../ViewModel.js";
+import ShipStats from "../ShipStats/ShipStats";
+import HullModController from "../../components/Hullmods/HullModController.js";
+
+// Helper
 import WeaponPopUpCreateCurrentWeaponArray from "./WeaponPopUpCreateCurrentWeaponArray.js";
 import TablePopUpSorter from "../TablePopUpSorter.js";
-// Helper
 import classNames from "../../helper/DomClassNames.js";
+import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild.js";
+
 import {
 	weaponSlotIdIntoWeaponSlotObject,
 	AddRemoveInstalledWeapon,
 	pushTargetWeaponObjectOnTop,
 } from "../../helper/helperFunction.js";
+
 import {
 	EVENT_LISTENER_TYPE,
 	GENERIC_STRING,
 } from "../../helper/MagicStrings.js";
+
 // Views
 import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpContainerView.js";
 import WeaponPopUpTableHeaderView from "../../allViews/WeaponPopUp/WeaponPopUpTableHeaderView.js";
@@ -51,8 +59,12 @@ export default class WeaponPopUp extends ViewModel {
 		this.#allWeapons = this.#state.dataState.allWeapons;
 		this.#userShipBuild = this.#state.userState.userShipBuild;
 		this.#installedWeapons = this.#userShipBuild.installedWeapons;
-
-		// this.#isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
+	}
+	#updateOtherComponents() {
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
+		// Update Controller, to display installedHullMods
+		new HullModController(this.getState()).update();
 	}
 	update = (btn) => {
 		if (!btn) return;
@@ -131,17 +143,34 @@ export default class WeaponPopUp extends ViewModel {
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
 
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			installedWeapons: AddRemoveInstalledWeapon(
-				this.#installedWeapons,
-				weaponPopUpId,
-				this.#weaponSlot.id
-			),
-		});
+		new UpdateUserShipBuild(this.getState()).updateWeapons(
+			weaponPopUpId,
+			this.#weaponSlot.id
+		);
+
+		// const updateInstalledWeapons = AddRemoveInstalledWeapon(
+		// 	this.#installedWeapons,
+		// 	weaponPopUpId,
+		// 	this.#weaponSlot.id
+		// );
+		// const updateOpCost = updateOpCostFromWeaponsAndFighters(
+		// 	updateInstalledWeapons,
+		// 	this.#allWeapons
+		// );
+
+		// console.log(updateOpCost);
+		// console.log(ordinancePoints);
+		// console.log(ordinancePoints + updateOpCost);
+
+		// this.setUpdateUserShipBuild({
+		// 	...this.#userShipBuild,
+		// 	installedWeapons: updateInstalledWeapons,
+		// 	ordinancePoints: ordinancePoints + updateOpCost,
+		// });
 
 		this.#updateData();
 		this.#toggleWeaponAndClosePopUp();
+		this.#updateOtherComponents();
 	};
 
 	// Hover

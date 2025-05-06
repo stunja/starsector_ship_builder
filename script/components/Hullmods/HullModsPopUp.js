@@ -16,6 +16,7 @@ import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import { updateUserShipBuildWithHullModLogic } from "../../helper/helperFunction";
+import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
 import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
 
@@ -81,12 +82,12 @@ export default class HullModsPopUp extends ViewModel {
 
 		new ScrollPosition().clear(classNames.tableContainer);
 
-		this.#processData();
+		this.#updateData();
 		this.#createFilterCategories();
 		this.#update();
 		this.#render();
 	}
-	#processData() {
+	#updateData() {
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#_baseUserShipBuild = this._getBaseShipBuild();
 		this.#userState = this.getUserState();
@@ -98,10 +99,23 @@ export default class HullModsPopUp extends ViewModel {
 		this.#shieldType = this.#userShipBuild.shieldType;
 		this.#shipIsCivilian = this.#userShipBuild.shipIsCivilian;
 	}
+	#updateOtherComponents() {
+		// Scroll to position user previously was, to prevent annoying jumps
+		new ScrollPosition().load(classNames.tableContainer);
 
+		// keep the order
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
+
+		// Update Controller, to display installedHullMods
+		new HullModController(this.getState()).update();
+
+		// Update Fighter Slots (in case change in amount fighter Bays)
+		new FighterSlots(this.getState()).update();
+	}
 	#update() {
 		// Not a correct implementation, but it works
-		this.#processData();
+		this.#updateData();
 
 		//! not sure if this is needed
 		this.setUpdateUserShipBuild({
@@ -273,29 +287,14 @@ export default class HullModsPopUp extends ViewModel {
 		}
 
 		const { hullmodId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
 
-		const updatedHullMods = HullModHelper.updateInstalledHullMod(
+		new UpdateUserShipBuild(this.getState()).updateHullMods(
 			hullmodId,
-			userShipBuild,
 			this.#usableHullMods
 		);
 
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			hullMods: updatedHullMods,
-		});
-
 		// OverWrite Sort
 		this.#sortByInstalledCategory = true;
-
-		// Fetch fresh data and updateShipBuild with New Logic
-		this.setUpdateUserShipBuild({
-			...updateUserShipBuildWithHullModLogic(
-				this.getUserShipBuild(),
-				this._getBaseShipBuild()
-			),
-		});
 
 		// Update all values including [red] and [green] array
 		// has dublication with [updateUserShipBuildWithHullModLogic] but without, it overwrites with old parameneters
@@ -311,22 +310,12 @@ export default class HullModsPopUp extends ViewModel {
 
 		// Render & EventListeners
 		this.#render();
-
-		// Scroll to position user previously was, to prevent annoying jumps
-		new ScrollPosition().load(classNames.tableContainer);
-
-		// keep the order
-		// Update shipStats to render new fields
-		new ShipStats(this.getState()).update();
-		// Update Controller, to display installedHullMods
-		new HullModController(this.getState()).update();
-		// Update Fighter Slots (in case change in amount fighter Bays)
-		new FighterSlots(this.getState()).update();
+		this.#updateOtherComponents();
 	};
 
 	// Turn HullMod Entry to Active => different Color
 	#assignActiveClasses() {
-		this.#processData();
+		this.#updateData();
 
 		const hullMods = this.#shipHullMods;
 		const installedHullMods = hullMods.installedHullMods;
