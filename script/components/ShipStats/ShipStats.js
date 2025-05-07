@@ -13,20 +13,19 @@ export default class ShipStats extends ViewModel {
 	constructor(model) {
 		super(model);
 
-		this.#getState = this.getState();
 		this.#userShipBuild = this.getUserShipBuild();
 	}
 	update() {
 		this.#render();
 	}
 	#render() {
-		StatsContainerView.render(this.#getState);
+		StatsContainerView.render(this.getState());
 
 		OrdinancePointsView.render(this.#userShipBuild);
 
 		SpeedArmorHullView.render(this.#userShipBuild);
 
-		new CapacitorsAndVents(this.#getState).update();
+		new CapacitorsAndVents(this.getState()).update();
 
 		ShieldOrPhaseView.render(this.#userShipBuild);
 

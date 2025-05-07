@@ -1,5 +1,6 @@
 // ViewModel
 import ViewModel from "../ViewModel";
+import CapacitorsAndVents from "../components/ShipStats/CapacitorsAndVents";
 
 // Components
 import { HULLMODS } from "../components/Hullmods/HullModData";
@@ -24,25 +25,41 @@ export default class UpdateUserShipBuild extends ViewModel {
 	constructor(model) {
 		super(model);
 
-		const currentState = this.getState();
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#baseUserShipBuild = this._getBaseShipBuild();
 
+		const currentState = this.getState();
 		this.#allWeapons = currentState.dataState.allWeapons;
 	}
 	#update(currentUserShipBuild) {
-		const shipBuildWithHullModEffects =
-			this.#injectHullModEffects(currentUserShipBuild);
+		const updateCapacitorsAndVents =
+			this.#updateCapacitorsAndVents(currentUserShipBuild);
+
+		const shipBuildWithHullModEffects = this.#injectHullModEffects(
+			updateCapacitorsAndVents
+		);
 
 		const shipBuildWithWeaponCost = this.#injectWeaponsCost(
 			shipBuildWithHullModEffects
 		);
-		console.log(shipBuildWithWeaponCost);
+
 		this.setUpdateUserShipBuild({
 			...shipBuildWithWeaponCost,
 		});
+
+		console.log(shipBuildWithWeaponCost);
 	}
 
+	updateCapacitors(newCapacitors) {
+		const userShipBuild = this.#userShipBuild;
+
+		const newUserShipBuild = {
+			...userShipBuild,
+			capacitors: newCapacitors,
+		};
+
+		this.#update(newUserShipBuild);
+	}
 	updateHullMods(hullmodId, usableHullMods) {
 		const userShipBuild = this.#userShipBuild;
 		const newHullMods = HullModHelper.updateInstalledHullMod(
@@ -73,6 +90,48 @@ export default class UpdateUserShipBuild extends ViewModel {
 
 		this.#update(newUserShipBuild);
 	}
+	#updateCapacitorsAndVents(currentUserShipBuild) {
+		// const currentUserShipBuild = importedUserShipBuild
+		// 	? importedUserShipBuild
+		// 	: this.getUserShipBuild();
+		// const {
+		// 	currentFluxCapacity,
+		// 	currentFluxDissipation,
+		// 	currentOrdinancePoints,
+		// } = this.#userShipBuild;
+
+		const {
+			fluxCapacityPerSingleActiveCapacitor,
+			capacitors,
+			capacitorsOrdinanceCost,
+			vents,
+			fluxDissipationPerSingleActiveVent,
+			fluxCapacity,
+			fluxDissipation,
+			ordinancePoints,
+		} = currentUserShipBuild;
+
+		// Update Capacity
+		const updateFluxCapacity =
+			fluxCapacity + fluxCapacityPerSingleActiveCapacitor * capacitors;
+
+		// Update Dissipation
+		const updateFluxDissipation =
+			fluxDissipation + fluxDissipationPerSingleActiveVent * vents;
+
+		// Ordinance Cost
+		const updateOrdinancePoints =
+			ordinancePoints + (capacitors + vents) * capacitorsOrdinanceCost;
+
+		const newUserShipBuild = {
+			...currentUserShipBuild,
+			ordinancePoints: updateOrdinancePoints,
+			fluxCapacity: updateFluxCapacity,
+			fluxDissipation: updateFluxDissipation,
+		};
+
+		return newUserShipBuild;
+	}
 	#injectHullModEffects(currentUserShipBuild) {
 		return this.#updateUserShipBuildWithHullModLogic(
 			currentUserShipBuild,
@@ -84,12 +143,10 @@ export default class UpdateUserShipBuild extends ViewModel {
 
 		const updateOpCost = this.#updateOpCost(installedWeapons);
 
-		const newUserShipBuild = {
+		return {
 			...userShipBuild,
 			ordinancePoints: ordinancePoints + updateOpCost,
 		};
-
-		return newUserShipBuild;
 	}
 
 	#updateUserShipBuildWithHullModLogic(userShipBuild, baseUserShipBuild) {
@@ -137,6 +194,7 @@ export default class UpdateUserShipBuild extends ViewModel {
 	}
 
 	// remove duplicateIWS
+	//! idiotic implementation
 	#updateInstalledWeapons(installedHullMods, installedWeapons) {
 		const targetClass = "converted_hangar";
 		// Converted Hangar
