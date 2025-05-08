@@ -9,9 +9,11 @@ import CapacitorsAndVents from "./CapacitorsAndVents.js";
 
 export default class ShipStats extends ViewModel {
 	#userShipBuild;
+	#state;
 	constructor(model) {
 		super(model);
 
+		this.#state = this.getState();
 		this.#userShipBuild = this.getUserShipBuild();
 	}
 	update() {
@@ -24,7 +26,7 @@ export default class ShipStats extends ViewModel {
 
 		SpeedArmorHullView.render(this.#userShipBuild);
 
-		new CapacitorsAndVents(this.getState()).update();
+		new CapacitorsAndVents(this.#state).update();
 
 		ShieldOrPhaseView.render(this.#userShipBuild);
 

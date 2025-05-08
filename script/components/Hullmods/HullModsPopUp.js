@@ -117,14 +117,6 @@ export default class HullModsPopUp extends ViewModel {
 		// Not a correct implementation, but it works
 		this.#updateData();
 
-		//! not sure if this is needed
-		this.setUpdateUserShipBuild({
-			...updateUserShipBuildWithHullModLogic(
-				this.getUserShipBuild(),
-				this._getBaseShipBuild()
-			),
-		});
-
 		this.#createHullModsArray();
 	}
 	#render() {
