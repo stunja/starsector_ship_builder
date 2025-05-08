@@ -7,6 +7,14 @@ import {
 	WEAPON_SLOT,
 } from "../helper/Properties";
 import { GENERIC_STRING } from "../helper/MagicStrings";
+
+const HULLMODS_TO_HIDE = {
+	// these hullMods where remove from the game, for some reason.
+
+	pdintegration: "pdintegration", // #Point Defense Integration
+	assault_package: "assault_package", // Assault Package
+	missile_autoloader: "missile_autoloader", // Missile Autoloader
+};
 //
 export const renameKeysFromCSVdata = function (obj) {
 	const renameObj = {};
@@ -242,6 +250,17 @@ export const pushTargetWeaponObjectOnTop = function (
 
 	// no change
 	return weaponArray;
+};
+
+// Removes HullMods with [hidden] and [special] rules
+export const createUsableHullMods = function (hullMods) {
+	return hullMods.filter(
+		(hullMod) =>
+			// HIDDEN ARE TRUE => HIDE
+			hullMod.hidden !== GENERIC_STRING.TRUE &&
+			// special hide rule
+			hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
+	);
 };
 
 //

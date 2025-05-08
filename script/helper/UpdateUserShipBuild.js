@@ -149,7 +149,7 @@ export default class UpdateUserShipBuild extends ViewModel {
 		};
 	}
 
-	#updateUserShipBuildWithHullModLogic(userShipBuild, baseUserShipBuild) {
+	#updateUserShipBuildWithHullModLogic(userShipBuild) {
 		const { installedHullMods, builtInMods } = userShipBuild.hullMods;
 
 		// Apply each hull mod effect sequentially

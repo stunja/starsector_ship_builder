@@ -10,7 +10,8 @@ import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 import classNames from "../../helper/DomClassNames";
 import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import HullModHelper from "./HullModHelper";
-import { updateUserShipBuildWithHullModLogic } from "../../helper/helperFunction";
+import { createUsableHullMods } from "../../helper/helperFunction";
+import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
 const EVENT_LISTENER_TARGET = {
 	HULLMODS: `.${classNames.hullMods__button}`,
@@ -71,29 +72,19 @@ export default class HullModController extends ViewModel {
 			return;
 		}
 		const { hullmodId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
+		const currentModel = this.getState();
+		const usableHullMods = currentModel.userState.usableHullMods;
 
-		const updatedHullMods = HullModHelper.updateInstalledHullMod(
+		new UpdateUserShipBuild(currentModel).updateHullMods(
 			hullmodId,
-			userShipBuild,
-			this.#allHullMods
+			createUsableHullMods(usableHullMods)
 		);
 
-		this.setUpdateUserShipBuild({
-			...updateUserShipBuildWithHullModLogic(
-				{
-					...userShipBuild,
-					hullMods: updatedHullMods,
-				},
-				this._getBaseShipBuild()
-			),
-		});
-
 		// Update shipStats to render new fields
-		new ShipStats(this.getState()).update();
+		new ShipStats(currentModel).update();
 
 		// update fighterBays
-		new FighterSlots(this.getState()).update();
+		new FighterSlots(currentModel).update();
 
 		// Update the hullModController including render
 		this.update();

@@ -68,8 +68,6 @@ export default class CapacitorsAndVents extends ViewModel {
 		this.#processData();
 		this.#capacitorHandler();
 		this.#ventsHandler();
-
-		console.log(this.#userShipBuild.ordinancePoints);
 	}
 	#updateRender() {
 		OrdinancePointsView.render(this.#userShipBuild);

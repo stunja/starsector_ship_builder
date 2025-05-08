@@ -15,7 +15,10 @@ import HullModFilter from "./HullModFilter";
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import { updateUserShipBuildWithHullModLogic } from "../../helper/helperFunction";
+import {
+	updateUserShipBuildWithHullModLogic,
+	createUsableHullMods,
+} from "../../helper/helperFunction";
 import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
 import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
@@ -92,7 +95,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#_baseUserShipBuild = this._getBaseShipBuild();
 		this.#userState = this.getUserState();
 
-		this.#usableHullMods = this.#filterUsableHullModArray();
+		this.#usableHullMods = createUsableHullMods(this.#userState.usableHullMods);
 		this.#shipHullMods = this.#userShipBuild.hullMods;
 
 		this.#builtInMods = this.#userShipBuild.hullMods.builtInMods;
@@ -162,16 +165,6 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#createRedHullMods();
 	}
-	// Removes HullMods with [hidden] and [special] rules
-	#filterUsableHullModArray = () => {
-		return this.#userState.usableHullMods.filter(
-			(hullMod) =>
-				// HIDDEN ARE TRUE => HIDE
-				hullMod.hidden !== GENERIC_STRING.TRUE &&
-				// special hide rule
-				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
-		);
-	};
 
 	// Available HullMods [Green]
 	#createGreenHullMods = () => {
