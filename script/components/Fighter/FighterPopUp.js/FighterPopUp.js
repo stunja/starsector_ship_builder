@@ -1,6 +1,8 @@
 import ViewModel from "../../../ViewModel";
 import TablePopUpSorter from "../../TablePopUpSorter";
 import FighterSlots from "../FighterSlots";
+import ShipStats from "../../ShipStats/ShipStats";
+import HullModController from "../../Hullmods/HullModController";
 // View
 import FighterPopUpContainerView from "../../../allViews/Fighters/FighterPopUpContainerView";
 import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUpTableHeaderView";
@@ -12,7 +14,9 @@ import {
 	AddRemoveInstalledWeapon,
 	pushTargetWeaponObjectOnTop,
 } from "../../../helper/helperFunction";
+
 import classNames from "../../../helper/DomClassNames";
+import UpdateUserShipBuild from "../../../helper/UpdateUserShipBuild";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
@@ -56,7 +60,13 @@ export default class FighterPopUp extends ViewModel {
 		this.#installedWeapons = this.#userShipBuild.installedWeapons;
 		this.#weaponsSlots = this.#userShipBuild.weaponSlots;
 	}
+	#updateOtherComponents() {
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
 
+		// Update Controller, to display installedHullMods
+		new HullModController(this.getState()).update();
+	}
 	update = (btn) => {
 		if (!btn) return;
 
@@ -89,19 +99,14 @@ export default class FighterPopUp extends ViewModel {
 	#addCurrentFighterToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
 
-		const installedWeapons = this.#userShipBuild.installedWeapons;
-
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			installedWeapons: AddRemoveInstalledWeapon(
-				installedWeapons,
-				weaponPopUpId,
-				this.#weaponSlot.id
-			),
-		});
+		new UpdateUserShipBuild(this.getState()).updateWeapons(
+			weaponPopUpId,
+			this.#weaponSlot.id
+		);
 
 		this.#updateData();
 		this.#toggleWeaponAndClosePopUp();
+		this.#updateOtherComponents();
 	};
 
 	#toggleWeaponAndClosePopUp() {

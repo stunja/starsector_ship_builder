@@ -148,26 +148,6 @@ export default class WeaponPopUp extends ViewModel {
 			this.#weaponSlot.id
 		);
 
-		// const updateInstalledWeapons = AddRemoveInstalledWeapon(
-		// 	this.#installedWeapons,
-		// 	weaponPopUpId,
-		// 	this.#weaponSlot.id
-		// );
-		// const updateOpCost = updateOpCostFromWeaponsAndFighters(
-		// 	updateInstalledWeapons,
-		// 	this.#allWeapons
-		// );
-
-		// console.log(updateOpCost);
-		// console.log(ordinancePoints);
-		// console.log(ordinancePoints + updateOpCost);
-
-		// this.setUpdateUserShipBuild({
-		// 	...this.#userShipBuild,
-		// 	installedWeapons: updateInstalledWeapons,
-		// 	ordinancePoints: ordinancePoints + updateOpCost,
-		// });
-
 		this.#updateData();
 		this.#toggleWeaponAndClosePopUp();
 		this.#updateOtherComponents();

@@ -27,9 +27,6 @@ export default class UpdateUserShipBuild extends ViewModel {
 
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#baseUserShipBuild = this._getBaseShipBuild();
-
-		const currentState = this.getState();
-		this.#allWeapons = currentState.dataState.allWeapons;
 	}
 	#update(currentUserShipBuild) {
 		const updateCapacitorsAndVents = this.#updateCapacitorsAndVents(
@@ -238,13 +235,17 @@ export default class UpdateUserShipBuild extends ViewModel {
 
 	// Increase OP cost from Weapons and Fighter
 	#updateOpCost(installedWeapon) {
+		const { allWeapons, allFighters } = this.getState().dataState;
 		const weaponIdArray = installedWeapon
 			.filter(([_, weaponId]) => weaponId)
 			.map((pair) => pair[1]);
 
 		const findOpValue = weaponIdArray.map((singleWeaponId) => {
-			const { oPs } = this.#allWeapons.find(({ id }) => id === singleWeaponId);
-			return oPs;
+			const { oPs, opCost } = [...allWeapons, ...allFighters].find(
+				({ id }) => id === singleWeaponId
+			);
+
+			return oPs || opCost;
 		});
 		if (!findOpValue || findOpValue.length < 1) return 0;
 		const sumArrayIntoASingleValue = findOpValue.reduce(
