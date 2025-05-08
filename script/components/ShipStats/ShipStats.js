@@ -8,7 +8,6 @@ import StatsContainerView from "../../allViews/Stats/StatsContainerView.js";
 import CapacitorsAndVents from "./CapacitorsAndVents.js";
 
 export default class ShipStats extends ViewModel {
-	#getState;
 	#userShipBuild;
 	constructor(model) {
 		super(model);

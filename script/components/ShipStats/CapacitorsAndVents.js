@@ -66,46 +66,15 @@ export default class CapacitorsAndVents extends ViewModel {
 		this.#processData();
 		this.#capacitorHandler();
 		this.#ventsHandler();
-
-		// this.#updateValues();
+	}
+	#updateRender() {
+		OrdinancePointsView.render(this.#userShipBuild);
+		ShieldOrPhaseView.render(this.#userShipBuild);
 	}
 	#processData() {
 		this.#userShipBuild = this.getUserShipBuild();
 	}
-	#updateValues() {
-		// this.#userShipBuild = this.getUserShipBuild();
-		// const {
-		// 	fluxCapacityPerSingleActiveCapacitor,
-		// 	capacitors,
-		// 	capacitorsOrdinanceCost,
-		// 	vents,
-		// 	fluxDissipationPerSingleActiveVent,
-		// } = this.#userShipBuild;
-		// // Update Capacity
-		// const updateFluxCapacity =
-		// 	this.#currentFluxCapacity +
-		// 	fluxCapacityPerSingleActiveCapacitor * capacitors;
-		// // Update Dissipation
-		// const updateFluxDissipation =
-		// 	this.#currentFluxDissipation + fluxDissipationPerSingleActiveVent * vents;
-		// // Ordinance Cost
-		// const updateOrdinancePoints =
-		// 	this.#currentOrdinancePoints +
-		// 	(capacitors + vents) * capacitorsOrdinanceCost;
-		// this.setUpdateUserShipBuild({
-		// 	...this.#userShipBuild,
-		// 	ordinancePoints: updateOrdinancePoints,
-		// 	fluxCapacity: updateFluxCapacity,
-		// 	fluxDissipation: updateFluxDissipation,
-		// });
-		// new UpdateUserShipBuild(this.getState()).updateCapacitorsAndVents();
-		// this.#userShipBuild = this.getUserShipBuild();
-		// console.log(this.#userShipBuild);
-		// OrdinancePointsView.render(this.#userShipBuild);
-		// ShieldOrPhaseView.render(this.#userShipBuild);
-		// this.#capacitorHandler();
-		// this.#ventsHandler();
-	}
+
 	#capacitorHandler() {
 		CapacitorsView.render(this.#userShipBuild);
 
@@ -141,35 +110,28 @@ export default class CapacitorsAndVents extends ViewModel {
 			capacitors,
 			maxCapacitors
 		);
-
-		// this.setUpdateUserShipBuild({
-		// 	...this.#userShipBuild,
-		// 	capacitors: this.#buttonControls(buttonValue, capacitors, maxCapacitors),
-		// });
-
 		new UpdateUserShipBuild(this.getState()).updateCapacitors(
 			newCapacitorsValue
 		);
 
-		// console.log(this.getState().userState.userShipBuild);
 		this.#userShipBuild = this.getUserShipBuild();
 
-		// OrdinancePointsView.render(this.#userShipBuild);
-		// ShieldOrPhaseView.render(this.#userShipBuild);
+		this.#updateRender();
 
-		// this.#capacitorHandler();
-		// this.update();
+		this.#capacitorHandler();
 	}
 
 	#changeVentsValue(buttonValue) {
 		const { vents, maxVents } = this.#userShipBuild;
 
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			vents: this.#buttonControls(buttonValue, vents, maxVents),
-		});
+		const newVentsValue = this.#buttonControls(buttonValue, vents, maxVents);
+		new UpdateUserShipBuild(this.getState()).updateVents(newVentsValue);
 
-		this.#updateValues();
+		this.#userShipBuild = this.getUserShipBuild();
+
+		this.#updateRender();
+
+		this.#ventsHandler();
 	}
 
 	#buttonControls = (buttonValue, target, maxTarget) => {
