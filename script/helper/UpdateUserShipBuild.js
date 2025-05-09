@@ -35,7 +35,8 @@ export default class UpdateUserShipBuild extends ViewModel {
 		);
 
 		const shipBuildWithHullModEffects = this.#injectHullModEffects(
-			updateCapacitorsAndVents
+			updateCapacitorsAndVents,
+			this.#baseUserShipBuild
 		);
 
 		const shipBuildWithWeaponCost = this.#injectWeaponsCost(
@@ -129,12 +130,6 @@ export default class UpdateUserShipBuild extends ViewModel {
 
 		return newUserShipBuild;
 	}
-	#injectHullModEffects(currentUserShipBuild) {
-		return this.#updateUserShipBuildWithHullModLogic(
-			currentUserShipBuild,
-			this.#baseUserShipBuild
-		);
-	}
 	#injectWeaponsCost(userShipBuild) {
 		const { installedWeapons, ordinancePoints } = userShipBuild;
 
@@ -146,14 +141,23 @@ export default class UpdateUserShipBuild extends ViewModel {
 		};
 	}
 
-	#updateUserShipBuildWithHullModLogic(userShipBuild) {
+	#injectHullModEffects(userShipBuild, baseUserShipBuild) {
+		const { installedWeapons } = userShipBuild;
 		const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+		const { weaponSlots: baseWeaponSlots } = baseUserShipBuild;
+
+		let currentUserShipBuild = this.#updateInstalledWeaponsAndSlots(
+			installedHullMods,
+			installedWeapons,
+			userShipBuild,
+			baseWeaponSlots
+		);
 
 		// Apply each hull mod effect sequentially
 		const allHullMods = [...builtInMods, ...installedHullMods];
 
 		if (!allHullMods.length) {
-			return userShipBuild;
+			return currentUserShipBuild;
 		}
 
 		for (const hullMod of allHullMods) {
@@ -165,59 +169,22 @@ export default class UpdateUserShipBuild extends ViewModel {
 			}
 
 			if (hullModObject.hullModLogic) {
-				userShipBuild = hullModObject.hullModLogic(userShipBuild, hullMod);
+				currentUserShipBuild = hullModObject.hullModLogic(
+					currentUserShipBuild,
+					hullMod
+				);
 			}
 		}
-
-		return userShipBuild;
+		return currentUserShipBuild;
 	}
-	// #updateUserShipBuildWithHullModLogic(userShipBuild, baseUserShipBuild) {
-	// 	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
-	// 	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
-
-	// 	const newInstalledWeapons = this.#updateInstalledWeapons(
-	// 		installedHullMods,
-	// 		installedWeapons
-	// 	);
-
-	// 	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
-	// 	let currentShipBuild = {
-	// 		...baseUserShipBuild,
-	// 		hullMods,
-	// 		installedWeapons: newInstalledWeapons || installedWeapons,
-	// 		capacitors,
-	// 		vents,
-	// 	};
-
-	// 	// Apply each hull mod effect sequentially
-	// 	const allHullMods = [...builtInMods, ...installedHullMods];
-
-	// 	if (!allHullMods.length) {
-	// 		return currentShipBuild;
-	// 	}
-
-	// 	for (const hullMod of allHullMods) {
-	// 		const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
-
-	// 		if (!hullModObject) {
-	// 			console.warn(`Hull mod not found: ${hullMod.id}`);
-	// 			continue;
-	// 		}
-
-	// 		if (hullModObject.hullModLogic) {
-	// 			currentShipBuild = hullModObject.hullModLogic(
-	// 				currentShipBuild,
-	// 				hullMod
-	// 			);
-	// 		}
-	// 	}
-
-	// 	return currentShipBuild;
-	// }
 
 	// remove duplicateIWS
-	//! idiotic implementation
-	#updateInstalledWeapons(installedHullMods, installedWeapons) {
+	#updateInstalledWeaponsAndSlots(
+		installedHullMods,
+		installedWeapons,
+		userShipBuild,
+		baseWeaponSlots
+	) {
 		const targetClass = "converted_hangar";
 		// Converted Hangar
 		const isHangarExpansionPresent = installedHullMods.some(
@@ -226,11 +193,21 @@ export default class UpdateUserShipBuild extends ViewModel {
 
 		// exit if no additional installedWeapons are needed
 		if (!isHangarExpansionPresent) {
-			return installedWeapons.filter(
+			const updateInstalledWeapons = installedWeapons.filter(
 				([weaponSlotId, _weaponId]) =>
 					weaponSlotId && !weaponSlotId.includes("IWS")
 			);
+			return {
+				...userShipBuild,
+				installedWeapons: updateInstalledWeapons,
+				weaponSlots: baseWeaponSlots,
+			};
 		}
+
+		return {
+			...userShipBuild,
+			weaponSlots: baseWeaponSlots,
+		};
 	}
 
 	// Increase OP cost from Weapons and Fighter

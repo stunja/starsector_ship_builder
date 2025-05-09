@@ -49,7 +49,6 @@ class FightersView extends View {
 	#fighterSlotsMarkup() {
 		const fighterSlots = this.#createFighterSlotsArray();
 		if (fighterSlots.length === 0) return STRING.EMPTY;
-
 		//prettier-ignore
 		return fighterSlots
 			.map(
@@ -70,10 +69,11 @@ class FightersView extends View {
 			.join(GENERIC_STRING.EMPTY);
 	}
 
-	#createFighterSlotsArray = () =>
-		this.#weaponSlots.filter(
+	#createFighterSlotsArray = () => {
+		return this.#weaponSlots.filter(
 			(fighterObject) => fighterObject.type === WEAPON_SLOT.TYPE.LAUNCH_BAY
 		);
+	};
 
 	#findCurrentFighter = (weaponSlot) => {
 		if (!weaponSlot) {
@@ -83,7 +83,6 @@ class FightersView extends View {
 		const currentInstalledWeapon = this.#installedWeapons.find(
 			([slotId, _weaponId]) => slotId === weaponSlot.id
 		);
-
 		if (!currentInstalledWeapon) {
 			throw new Error(`No weapon found for fighter slot ID: ${weaponSlot.id}`);
 		}
