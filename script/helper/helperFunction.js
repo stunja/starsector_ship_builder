@@ -60,65 +60,65 @@ export const extractDataFromObject = (propertiesToExtract, data) =>
 		{}
 	);
 
-export const updateUserShipBuildWithHullModLogic = function (
-	userShipBuild,
-	baseUserShipBuild
-) {
-	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
-	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
+// export const updateUserShipBuildWithHullModLogic = function (
+// 	userShipBuild,
+// 	baseUserShipBuild
+// ) {
+// 	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
+// 	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
 
-	const newInstalledWeapons = updateInstalledWeapons(
-		installedHullMods,
-		installedWeapons
-	);
+// 	const newInstalledWeapons = updateInstalledWeapons(
+// 		installedHullMods,
+// 		installedWeapons
+// 	);
 
-	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
-	let currentShipBuild = {
-		...baseUserShipBuild,
-		hullMods,
-		installedWeapons: newInstalledWeapons || installedWeapons,
-		capacitors,
-		vents,
-	};
+// 	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
+// 	let currentShipBuild = {
+// 		...baseUserShipBuild,
+// 		hullMods,
+// 		installedWeapons: newInstalledWeapons || installedWeapons,
+// 		capacitors,
+// 		vents,
+// 	};
 
-	// Apply each hull mod effect sequentially
-	const allHullMods = [...builtInMods, ...installedHullMods];
+// 	// Apply each hull mod effect sequentially
+// 	const allHullMods = [...builtInMods, ...installedHullMods];
 
-	if (!allHullMods.length) {
-		return currentShipBuild;
-	}
+// 	if (!allHullMods.length) {
+// 		return currentShipBuild;
+// 	}
 
-	for (const hullMod of allHullMods) {
-		const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
+// 	for (const hullMod of allHullMods) {
+// 		const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
 
-		if (!hullModObject) {
-			console.warn(`Hull mod not found: ${hullMod.id}`);
-			continue;
-		}
+// 		if (!hullModObject) {
+// 			console.warn(`Hull mod not found: ${hullMod.id}`);
+// 			continue;
+// 		}
 
-		if (hullModObject.hullModLogic) {
-			currentShipBuild = hullModObject.hullModLogic(currentShipBuild, hullMod);
-		}
-	}
+// 		if (hullModObject.hullModLogic) {
+// 			currentShipBuild = hullModObject.hullModLogic(currentShipBuild, hullMod);
+// 		}
+// 	}
 
-	return currentShipBuild;
-};
+// 	return currentShipBuild;
+// };
 // remove duplicateIWS
-const updateInstalledWeapons = (installedHullMods, installedWeapons) => {
-	const targetClass = "converted_hangar";
-	// Converted Hangar
-	const isHangarExpansionPresent = installedHullMods.some(
-		({ id }) => id === targetClass
-	);
+// const updateInstalledWeapons = (installedHullMods, installedWeapons) => {
+// 	const targetClass = "converted_hangar";
+// 	// Converted Hangar
+// 	const isHangarExpansionPresent = installedHullMods.some(
+// 		({ id }) => id === targetClass
+// 	);
 
-	// exit if no additional installedWeapons are needed
-	if (!isHangarExpansionPresent) {
-		return installedWeapons.filter(
-			([weaponSlotId, _weaponId]) =>
-				weaponSlotId && !weaponSlotId.includes("IWS")
-		);
-	}
-};
+// 	// exit if no additional installedWeapons are needed
+// 	if (!isHangarExpansionPresent) {
+// 		return installedWeapons.filter(
+// 			([weaponSlotId, _weaponId]) =>
+// 				weaponSlotId && !weaponSlotId.includes("IWS")
+// 		);
+// 	}
+// };
 // IWS weapons are speciaal installedWeapons added by a HULLMOD
 export const createNewWeaponSlotsAndInstalledWeapons = function (
 	howManySlotsToCreate

@@ -28,9 +28,22 @@ export default class UpdateUserShipBuild extends ViewModel {
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#baseUserShipBuild = this._getBaseShipBuild();
 	}
+	#resetUserShipBuild(currentUserShipBuild) {
+		const { installedWeapons, hullMods, capacitors, vents } =
+			currentUserShipBuild;
+
+		return {
+			...this.#baseUserShipBuild,
+			installedWeapons,
+			hullMods,
+			capacitors,
+			vents,
+		};
+	}
 	#update(currentUserShipBuild) {
+		const resetMostProperties = this.#resetUserShipBuild(currentUserShipBuild);
 		const updateCapacitorsAndVents = this.#updateCapacitorsAndVents(
-			currentUserShipBuild,
+			resetMostProperties,
 			this.#baseUserShipBuild
 		);
 
@@ -81,6 +94,7 @@ export default class UpdateUserShipBuild extends ViewModel {
 	}
 	updateWeapons(weaponPopUpId, weaponSlotId) {
 		const userShipBuild = this.#userShipBuild;
+
 		const updateInstalledWeapons = AddRemoveInstalledWeapon(
 			userShipBuild.installedWeapons,
 			weaponPopUpId,

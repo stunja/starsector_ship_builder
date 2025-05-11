@@ -15,10 +15,7 @@ import HullModFilter from "./HullModFilter";
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import {
-	updateUserShipBuildWithHullModLogic,
-	createUsableHullMods,
-} from "../../helper/helperFunction";
+import { createUsableHullMods } from "../../helper/helperFunction";
 import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
 import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
