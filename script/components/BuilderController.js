@@ -12,49 +12,30 @@ import ShipArea from "./ShipArea/ShipArea.js";
 import BuilderButtons from "./BuilderButtons.js";
 
 export default class BuilderController extends ViewModel {
-	#search;
-	#shipStats;
-	#shipInfo;
-	#hullModController;
-	#additionalInfo;
-	#fighters;
-	#shipArea;
-	#builderButtons;
-
 	constructor(model) {
 		super(model);
-
-		this.#search = new Search(model);
-		this.#shipStats = new ShipStats(model);
-		this.#shipInfo = new ShipInfo(model);
-		this.#hullModController = new HullModController(model);
-		this.#additionalInfo = new AdditionalInfo(model);
-		this.#fighters = new FighterSlots(model);
-		this.#shipArea = new ShipArea(model);
-		this.#builderButtons = new BuilderButtons(model);
 
 		this.init();
 	}
 	init() {
+		const model = this.getState();
 		// Builder
-		this.#builderRender();
-		this.#search.update();
+		BuilderView.render(model);
+
+		new Search(model).update();
 		// Right View
-		this.#shipStats.update();
+		new ShipStats(model).update();
 		// HullMods
-		this.#hullModController.update();
+		new HullModController(model).update();
 		// Left View
-		this.#shipInfo.update();
-		this.#fighters.update();
-		this.#builderButtons.update();
+		new ShipInfo(model).update();
+		new FighterSlots(model).update();
+		new BuilderButtons(model).update();
 		// Center View
-		this.#additionalInfo.update();
+		new AdditionalInfo(model).update();
 		// Main Work Area
-		this.#shipArea.update();
+		new ShipArea(model).update();
 
 		// searchView.addSearchHandler(findCreateDisplayCurrentShip);
-	}
-	#builderRender() {
-		BuilderView.render(this.getState());
 	}
 }

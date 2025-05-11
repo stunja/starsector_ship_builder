@@ -1,9 +1,19 @@
-import ViewModel from "../ViewModel";
+// View
 import BuilderButtonsView from "../allViews/BuilderButtonsView";
+// ViewModel
+import ViewModel from "../ViewModel";
+// Helper
 import classNames from "../helper/DomClassNames";
+import UpdateUserShipBuild from "../helper/UpdateUserShipBuild";
+import BuilderController from "./BuilderController";
 
 const EVENT_LISTENER_TARGET = {
 	BUILDER_BUTTON: `.${classNames.builderButton}`,
+};
+
+const BUTTON_TYPE = {
+	STRIP: "strip",
+	SAVE: "save",
 };
 export default class BuilderButtons extends ViewModel {
 	constructor(model) {
@@ -17,10 +27,21 @@ export default class BuilderButtons extends ViewModel {
 		BuilderButtonsView.addClickHandler(
 			EVENT_LISTENER_TARGET.BUILDER_BUTTON,
 			"click",
-			this.test
+			this.#buttonLogic
 		);
 	}
-	test(btn) {
-		console.log(btn);
-	}
+	#buttonLogic = (btn) => {
+		// keep arrow function
+		const { builderButtonType } = btn.dataset;
+		const model = this.getState();
+
+		if (builderButtonType === BUTTON_TYPE.STRIP) {
+			new UpdateUserShipBuild(model).clearUserShipBuild();
+			new BuilderController(model).init();
+		}
+
+		if (builderButtonType === BUTTON_TYPE.SAVE) {
+			console.log("save");
+		}
+	};
 }

@@ -20,8 +20,6 @@ export default class UpdateUserShipBuild extends ViewModel {
 	#userShipBuild;
 	#baseUserShipBuild;
 	//
-	#allWeapons;
-	//
 	constructor(model) {
 		super(model);
 
@@ -107,6 +105,11 @@ export default class UpdateUserShipBuild extends ViewModel {
 		};
 
 		this.#update(newUserShipBuild);
+	}
+	clearUserShipBuild() {
+		this.setUpdateUserShipBuild({
+			...this.#baseUserShipBuild,
+		});
 	}
 	#updateCapacitorsAndVents(currentUserShipBuild, baseUserShipBuild) {
 		const {
