@@ -5,11 +5,18 @@ class ShipInfoContainerView extends View {
 	_localParent = `.${classNames.shipInfoContainer}`;
 
 	generateMarkup() {
-		const data = this._data;
+		this.#processData(this._data);
 
-		const markup = `${this.#infoMarkup()}`;
+		const markup = this.#infoMarkup();
 
 		return markup;
+	}
+	#processData(data) {
+		const { dataState, userState } = data;
+		const { allDescriptions } = dataState;
+		const { _currentShip } = userState;
+		console.log(_currentShip);
+		console.log(allDescriptions);
 	}
 	#infoMarkup() {
 		//! NEXT FEATURE
