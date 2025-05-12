@@ -249,6 +249,11 @@ const classNames = {
 	builderButton: "builder-button",
 	// HullMod Filter
 	hullModsFilterActive: "hullMods__filter--active",
+
+	// Ship Name
+	// ship-info-container (target)
+	shipInfoTitle: "ship-info__title",
+	shipInfoDetails: "ship-info__details",
 };
 
 export default classNames;

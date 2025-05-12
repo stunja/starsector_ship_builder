@@ -1,27 +1,35 @@
-import classNames from "../../helper/DomClassNames";
+// View
 import View from "../view";
+// Helper
+import classNames from "../../helper/DomClassNames";
 
 class ShipInfoContainerView extends View {
 	_localParent = `.${classNames.shipInfoContainer}`;
 
 	generateMarkup() {
-		this.#processData(this._data);
-
-		const markup = this.#infoMarkup();
+		const markup = this.#infoMarkup(this._data);
 
 		return markup;
 	}
-	#processData(data) {
-		const { dataState, userState } = data;
-		const { allDescriptions } = dataState;
-		const { _currentShip } = userState;
-		console.log(_currentShip);
-		console.log(allDescriptions);
-	}
-	#infoMarkup() {
-		//! NEXT FEATURE
-		// console.log(currentShip);
-		return `<p>Ship Name</p>`;
+	#infoMarkup(data) {
+		const { _currentShip, userShipBuild } = data.userState;
+		const { name, designation, techManufacturer } = _currentShip;
+		const { hullSize } = userShipBuild;
+
+		const hullSizeString = () => hullSize.toLowerCase().replace("_", " ");
+
+		return `
+				<div>
+					<h5 class="${classNames.shipInfoTitle}">
+						${name}
+					</h5>
+					<div class="${classNames.shipInfoDetails}">
+						<div class="${classNames.dFlex}">
+							<p>${techManufacturer}</p>-<p>${hullSizeString()}</p>
+						</div>
+						<p>[${designation}]</p>
+					</div>
+				</div>`;
 	}
 }
 export default new ShipInfoContainerView();
