@@ -24,10 +24,9 @@ class ShipInfoContainerView extends View {
 						${name}
 					</h5>
 					<div class="${classNames.shipInfoDetails}">
-						<div class="${classNames.dFlex}">
-							<p>${techManufacturer}</p>-<p>${hullSizeString()}</p>
-						</div>
-						<p>[${designation}]</p>
+						<p>${hullSizeString()}</p>
+						<p>${designation}</p>
+						<p>${techManufacturer}</p>
 					</div>
 				</div>`;
 	}
