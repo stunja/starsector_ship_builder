@@ -5,47 +5,68 @@ import WeaponBackgroundSpriteView from "./WeaponBackgroundSpriteView.js";
 import classNames from "../../helper/DomClassNames.js";
 import URL from "../../helper/url.js";
 import altTextLib from "../../helper/altTextLib.js";
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 
 // Old implementation
 // I need to change the name
 class WeaponSpriteView {
-	renderElement([weaponObject, weaponSlot]) {
+	async renderElement([weaponObject, weaponSlot]) {
+		const spriteMarkup = await this.#weaponSpriteMarkupAsync(weaponObject);
+
 		const markup = `
 				<div class="${classNames.weaponSpriteParent}">
 					${this.#weaponBackgroundSpriteMarkup(weaponSlot, weaponObject)}
-					${this.#weaponSpriteMarkup(weaponObject)}
+					${spriteMarkup}
 				</div>
 				${WeaponArcView.renderElement(weaponSlot)}`;
 		return markup;
 	}
+
 	#weaponBackgroundSpriteMarkup = (wpnSlot, wpnObject) => {
-		return `${WeaponBackgroundSpriteView.renderElement(
+		const markup = `${WeaponBackgroundSpriteView.renderElement(
 			this.#weaponType(wpnSlot, wpnObject),
 			this.#weaponSize(wpnSlot, wpnObject)
 		)}`;
+
+		return markup;
 	};
 
-	#weaponSpriteMarkup = (wpnObject) => {
-		if (!wpnObject) return "";
+	async #weaponSpriteMarkupAsync(wpnObject) {
+		if (!wpnObject) return Promise.resolve(GENERIC_STRING.EMPTY);
 
-		const turretSprite = wpnObject.additionalData.turretSprite;
-		const turretGunSprite = wpnObject.additionalData.turretGunSprite;
+		const loadImage = (src) => {
+			return new Promise((resolve, reject) => {
+				const img = new Image();
+				img.src = `/${URL.DATA}/${src}`;
+				img.onload = () => resolve(img);
+				img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+			});
+		};
 
-		return `
-				<div class="${classNames.weaponSprite}">
-					<img src="/${URL.DATA}/${turretSprite}" alt="${
-			altTextLib.weaponBaseSprite
-		}" class="${classNames.weaponSpriteBase}"
-					/>
-					${this.#gunSpriteMarkUp(turretGunSprite)}
-				</div>
-				`;
-	};
+		const { turretSprite, turretGunSprite } = wpnObject.additionalData;
 
-	#gunSpriteMarkUp = (turretGunSprite) =>
-		turretGunSprite
-			? `<img src="/${URL.DATA}/${turretGunSprite}" alt="${altTextLib.turrentGunSprite}" class="${classNames.weaponSpriteGun}" />`
-			: "";
+		const promises = [
+			loadImage(turretSprite),
+			turretGunSprite ? loadImage(turretGunSprite) : Promise.resolve(null),
+		];
+
+		return Promise.all(promises).then(([turretImg, gunImg]) => {
+			const turretHTML = turretImg
+				? `<img src="${turretImg.src}" alt="${altTextLib.weaponBaseSprite}" class="${classNames.weaponSpriteBase}" />`
+				: GENERIC_STRING.EMPTY;
+
+			const gunHTML = gunImg
+				? `<img src="${gunImg.src}" alt="${altTextLib.turrentGunSprite}" class="${classNames.weaponSpriteGun}" />`
+				: GENERIC_STRING.EMPTY;
+
+			return `
+			<div class="${classNames.weaponSprite}">
+				${turretHTML}
+				${gunHTML}
+			</div>
+		`;
+		});
+	}
 
 	#weaponType = (weaponSlot, weaponObject) =>
 		weaponSlot

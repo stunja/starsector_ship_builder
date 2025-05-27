@@ -11,18 +11,23 @@ class WeaponSlotsView extends View {
 	_localParent = `.${classNames.weaponSlots}`;
 	#allWeapons;
 
-	generateMarkup() {
+	async generateMarkup() {
 		const [userShipBuild, allWeapons] = this._data;
 		this.#allWeapons = allWeapons;
 
 		const installedWeapons = userShipBuild.installedWeapons.filter(
 			([_slotId, weaponId]) => weaponId !== GENERIC_STRING.EMPTY
 		);
-		const markup = userShipBuild.weaponSlots
-			.map((slot) => this.#weaponSlotMarkUp(slot, installedWeapons))
-			.join(GENERIC_STRING.EMPTY);
 
-		return markup;
+		const markupArray = await Promise.all(
+			userShipBuild.weaponSlots.map((slot) =>
+				this.#weaponSlotMarkUp(slot, installedWeapons)
+			)
+		);
+
+		const test = markupArray.join(GENERIC_STRING.EMPTY);
+		console.log(test);
+		return test;
 	}
 
 	#weaponSlotMatchesInstalledWeapon = (currentWeaponSlot, installedWeapons) =>
@@ -46,7 +51,8 @@ class WeaponSlotsView extends View {
 			return GENERIC_STRING.EMPTY;
 		}
 	};
-	#weaponSlotMarkUp(weaponSlot, installedWeapons) {
+
+	async #weaponSlotMarkUp(weaponSlot, installedWeapons) {
 		if (weaponSlot.mount.toLowerCase() === GENERIC_STRING.HIDDEN) return;
 
 		const weaponSize = weaponSlot.size.toLowerCase();
@@ -57,12 +63,17 @@ class WeaponSlotsView extends View {
 			installedWeapons
 		);
 
+		const imgSprite = await WeaponSpriteView.renderElement([
+			weaponObject,
+			weaponSlot,
+		]);
+
 		// prettier-ignore
 		const markup = `
 				<button class="${classNames.weaponSlot} ${classNames.weaponSize}--${weaponSize} ${classNames.weaponType}--${weaponType}" 
 					${DataSet.dataWeaponSlotId}="${weaponSlot.id}"
 				>
-					${WeaponSpriteView.renderElement([weaponObject, weaponSlot])}
+					${imgSprite}
 				</button>`;
 		return markup;
 	}

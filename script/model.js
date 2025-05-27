@@ -4,6 +4,7 @@ import {
 	convertStringsIntoNumbersCSVdata,
 	extractDataFromObject,
 } from "./helper/helperFunction.js";
+import { GENERIC_STRING } from "./helper/MagicStrings.js";
 import URL from "./helper/url.js";
 import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import Papa from "papaparse";
@@ -203,7 +204,7 @@ const jsonFetcher = {
 };
 const findCurrentShip = function (allShips) {
 	const [currentShip] = allShips.filter((ship) =>
-		ship.id === shipNameDev ? ship.id : ""
+		ship.id === shipNameDev ? ship.id : GENERIC_STRING.EMPTY
 	);
 	return currentShip;
 };
@@ -249,7 +250,7 @@ const additionalWeaponData = {
 	cleanWeaponData(dirtyData) {
 		const cleaningSteps = [
 			// Remove comments
-			(data) => data.replace(/#.*$/gm, ""),
+			(data) => data.replace(/#.*$/gm, GENERIC_STRING.EMPTY),
 			// Fix trailing commas
 			(data) => data.replace(/,(\s*[}\]])/g, "$1"),
 			// Quote unquoted keys
@@ -321,8 +322,8 @@ const additionalWeaponData = {
 					descriptionObject.text3 +
 					descriptionObject.text4
 				)
-					.replaceAll("\r", "")
-					.replaceAll("\n", "");
+					.replaceAll("\r", GENERIC_STRING.EMPTY)
+					.replaceAll("\n", GENERIC_STRING.EMPTY);
 			};
 
 			return {
@@ -537,7 +538,7 @@ const createUserShipBuild = {
 	injectCurrentShipSlotsIntoWeapons(weaponSlotInput) {
 		return this.weaponSlotIdStringEdit(weaponSlotInput).map((wpn) => [
 			wpn.id,
-			"",
+			GENERIC_STRING.EMPTY,
 		]);
 	},
 	// Just replaces empty string with dash. it works
@@ -709,8 +710,8 @@ const updateFighters = {
 					descriptionObject.text3 +
 					descriptionObject.text4
 				)
-					.replaceAll("\r", "")
-					.replaceAll("\n", "");
+					.replaceAll("\r", GENERIC_STRING.EMPTY)
+					.replaceAll("\n", GENERIC_STRING.EMPTY);
 			};
 
 			return {
@@ -743,7 +744,7 @@ const updateFighters = {
 			lux_Fighter: URL.DATA_VARIANTS_REMNANT,
 		};
 		const cleanToJson = (fileContent) => {
-			fileContent = fileContent.replace(/#.*$/gm, ""); // Remove inline comments
+			fileContent = fileContent.replace(/#.*$/gm, GENERIC_STRING.EMPTY); // Remove inline comments
 			fileContent = fileContent.replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas
 			fileContent = fileContent.replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":'); // Add quotes around keys
 

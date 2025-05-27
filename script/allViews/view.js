@@ -25,6 +25,22 @@ export default class View {
 		this._clearRender();
 		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
 	}
+	// async render
+	async renderAsync(data) {
+		if (!data) return this.#renderError("no data");
+
+		if (!this._localParent)
+			console.warn("Issue with parent element", this._localParent);
+
+		this._localParentElement = document.querySelector(this._localParent);
+
+		this._data = data;
+		const markup = await this.generateMarkup();
+
+		this._clearRender();
+		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
+	}
+	//
 	#renderError(reason) {
 		// TO DO
 		console.error("Render Error", reason);

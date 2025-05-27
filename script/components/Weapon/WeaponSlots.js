@@ -21,9 +21,9 @@ export default class WeaponSlots extends ViewModel {
 
 		this.#weaponPopUp = new WeaponPopUp(model);
 	}
-	update() {
+	async update() {
 		// Render
-		this.#weaponSlotsRender();
+		await this.#weaponSlotsRender();
 		// Add Listener
 		this.#addWeaponPopUpListener();
 		// Repostion WeaponSlots
@@ -35,11 +35,13 @@ export default class WeaponSlots extends ViewModel {
 		this.#renderWeaponSpritesFromInstalledWeapons();
 	}
 
-	#weaponSlotsRender() {
-		WeaponSlotsView.render([
+	async #weaponSlotsRender() {
+		const markup = await WeaponSlotsView.renderAsync([
 			this.getUserShipBuild(),
 			this.getDataState().allWeapons,
 		]);
+		console.log(markup);
+		return markup;
 	}
 	#addWeaponPopUpListener() {
 		const target = `.${classNames.weaponSlot}`;

@@ -86,10 +86,12 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		// Render
-		this.#weaponPopUpRender();
-		this.#addEventListeners();
+		this.#renderAndListeners();
 	};
-
+	async #renderAndListeners() {
+		await this.#weaponPopUpRender();
+		this.#addEventListeners();
+	}
 	#toggleWeaponAndClosePopUp() {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new WeaponSlots(this.#state).update();
@@ -128,12 +130,13 @@ export default class WeaponPopUp extends ViewModel {
 	}
 
 	// Renders After User Clicks on Weapon Button (Weapon Slot)
-	#weaponPopUpRender() {
+	async #weaponPopUpRender() {
 		//? Strange way to render, but it works.
 		//? first draw "empty" container then target it with other renders
 		WeaponPopUpContainerView.render(this.#userShipBuild);
 		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
-		WeaponPopUpTableView.render([
+
+		await WeaponPopUpTableView.renderAsync([
 			this.#userShipBuild,
 			this.#currentWeaponArray,
 			this.#weaponSlot,
