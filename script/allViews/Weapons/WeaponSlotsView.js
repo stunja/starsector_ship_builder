@@ -25,9 +25,7 @@ class WeaponSlotsView extends View {
 			)
 		);
 
-		const test = markupArray.join(GENERIC_STRING.EMPTY);
-		console.log(test);
-		return test;
+		return markupArray.join(GENERIC_STRING.EMPTY);
 	}
 
 	#weaponSlotMatchesInstalledWeapon = (currentWeaponSlot, installedWeapons) =>

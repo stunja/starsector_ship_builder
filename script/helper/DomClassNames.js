@@ -254,6 +254,10 @@ const classNames = {
 	// ship-info-container (target)
 	shipInfoTitle: "ship-info__title",
 	shipInfoDetails: "ship-info__details",
+
+	// Spinner
+	spinner: "spinner",
+	tableSpinner: "table-spinner",
 };
 
 export default classNames;

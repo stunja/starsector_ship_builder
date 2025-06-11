@@ -1,3 +1,5 @@
+import classNames from "../helper/DomClassNames";
+
 export default class View {
 	constructor() {
 		this._targetMap = new Map();
@@ -39,6 +41,24 @@ export default class View {
 
 		this._clearRender();
 		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
+	}
+	addSpinner() {
+		const markup = `<div class="${classNames.tableSpinner} ${classNames.spinner}"></div>`;
+
+		const targetClass = this._localParentElement.querySelector(
+			`.${classNames.tableContainer}`
+		);
+
+		targetClass.insertAdjacentHTML("afterbegin", markup);
+	}
+	removeSpinner() {
+		const spinnerElement = this._localParentElement.querySelector(
+			`.${classNames.spinner}`
+		);
+
+		if (!spinnerElement) return;
+
+		spinnerElement.remove();
 	}
 	//
 	#renderError(reason) {

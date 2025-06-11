@@ -40,7 +40,6 @@ export default class WeaponSlots extends ViewModel {
 			this.getUserShipBuild(),
 			this.getDataState().allWeapons,
 		]);
-		console.log(markup);
 		return markup;
 	}
 	#addWeaponPopUpListener() {

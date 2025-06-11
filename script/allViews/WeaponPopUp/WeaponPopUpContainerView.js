@@ -6,6 +6,7 @@ import View from "../view.js";
 class WeaponPopUpView extends View {
 	_localParent = `.${classNames.weaponPopUp}`;
 
+	//
 	generateMarkup() {
 		const markup = `
 				<div class="${classNames.tableContainer}">

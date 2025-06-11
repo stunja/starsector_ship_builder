@@ -134,13 +134,24 @@ export default class WeaponPopUp extends ViewModel {
 		//? Strange way to render, but it works.
 		//? first draw "empty" container then target it with other renders
 		WeaponPopUpContainerView.render(this.#userShipBuild);
-		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
+
+		// Start delayed spinner logic
+		let spinnerTimeout = setTimeout(() => {
+			WeaponPopUpContainerView.addSpinner();
+		}, 1000);
 
 		await WeaponPopUpTableView.renderAsync([
 			this.#userShipBuild,
 			this.#currentWeaponArray,
 			this.#weaponSlot,
 		]);
+
+		// Cancel spinner logic (if it hasn't shown yet)
+		clearTimeout(spinnerTimeout);
+
+		WeaponPopUpContainerView.removeSpinner();
+
+		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
 	}
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
