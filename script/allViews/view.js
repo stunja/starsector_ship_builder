@@ -43,7 +43,11 @@ export default class View {
 		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
 	}
 	addSpinner() {
-		const markup = `<div class="${classNames.tableSpinner} ${classNames.spinner}"></div>`;
+		const markup = `
+						<div class="${classNames.tableSpinner}">
+							<div class="${classNames.spinner}"></div>
+						</div>
+		`;
 
 		const targetClass = this._localParentElement.querySelector(
 			`.${classNames.tableContainer}`

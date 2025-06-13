@@ -116,9 +116,9 @@ export default class WeaponPopUp extends ViewModel {
 			this.#weaponSlot,
 			sorterArray
 		);
+
 		// Render Changes
-		this.#weaponPopUpRender();
-		this.#addEventListeners();
+		this.#renderAndListeners();
 	};
 	// Creates currentArray based on Weapon Slot Type and Size.
 	#createCurrentWeaponArray() {
@@ -138,7 +138,7 @@ export default class WeaponPopUp extends ViewModel {
 		// Start delayed spinner logic
 		let spinnerTimeout = setTimeout(() => {
 			WeaponPopUpContainerView.addSpinner();
-		}, 1000);
+		}, 500);
 
 		await WeaponPopUpTableView.renderAsync([
 			this.#userShipBuild,
@@ -332,6 +332,7 @@ export default class WeaponPopUp extends ViewModel {
 		this.#weaponPopUpTableHeaderHandler();
 		this.#closeWeaponPopUpHandler();
 	}
+	// handler for table header
 	#weaponPopUpTableHeaderHandler() {
 		WeaponPopUpTableHeaderView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
@@ -339,6 +340,7 @@ export default class WeaponPopUp extends ViewModel {
 			this.#weaponTableSorter
 		);
 	}
+	// If user clicks on entries
 	#weaponPopUpEntryHandler() {
 		WeaponPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
@@ -351,6 +353,7 @@ export default class WeaponPopUp extends ViewModel {
 			this.#showAdditionalInformationOnHover
 		);
 	}
+	// Close If user clicks outside of container
 	#closeWeaponPopUpHandler() {
 		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
 			`.${classNames.tableContainer}`,

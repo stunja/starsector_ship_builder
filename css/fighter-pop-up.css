@@ -25,6 +25,9 @@
 		display: flex;
 		flex-direction: column;
 	}
+	.table-container {
+		animation: fadeIn 0.2s ease-in forwards;
+	}
 }
 
 /* Fighter Sprites */

@@ -30,6 +30,12 @@
 			transition: all 0.5s;
 		}
 	}
+
+	.table-container {
+		animation: fadeIn 0.2s ease-in forwards;
+
+		position: relative;
+	}
 }
 
 .table-container {
@@ -38,8 +44,6 @@
 	/* height: 60rem; */
 	height: 100%;
 	overflow-y: scroll;
-
-	animation: fadeIn 0.25s ease-in forwards;
 
 	.table-entries {
 		display: grid;
