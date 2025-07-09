@@ -28,15 +28,15 @@ const PROPS = {
 // Three sizes
 // if size large, for example three rectangles inside of each others
 const SIZE_CONFIG = {
-	small: [{ size: PROPS.SIZE.SMALL, opacity: PROPS.SIZE.FULL }],
+	small: [{ size: PROPS.SIZE.SMALL, opacity: PROPS.OPACITY.FULL }],
 	medium: [
-		{ size: PROPS.SIZE.SMALL, opacity: PROPS.SIZE.MEDIUM },
-		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.SIZE.FULL },
+		{ size: PROPS.SIZE.SMALL, opacity: PROPS.OPACITY.MEDIUM },
+		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.OPACITY.FULL },
 	],
 	large: [
-		{ size: PROPS.SIZE.SMALL, opacity: PROPS.SIZE.LIGHT },
-		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.SIZE.MEDIUM },
-		{ size: PROPS.SIZE.LARGE, opacity: PROPS.SIZE.FULL },
+		{ size: PROPS.SIZE.SMALL, opacity: PROPS.OPACITY.LIGHT },
+		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.OPACITY.MEDIUM },
+		{ size: PROPS.SIZE.LARGE, opacity: PROPS.OPACITY.FULL },
 	],
 };
 
@@ -54,8 +54,8 @@ class WeaponBackgroundSpriteView {
 		// type is for color / shape
 		// oppacity for oppacity. Strong in the outer edges and weak in smallest sprite
 		return `<div class="${classNames.weaponBackgroundSprite} 
-					${classNames.weaponBackgroundSpriteSize}--${size} 
-					${classNames.weaponBackgroundSpriteType}--${type} 
+					${classNames.weaponBackgroundSpriteSize}--${size}
+					${classNames.weaponBackgroundSpriteType}--${type}
 					${classNames.weaponBackgroundSpriteOppacity}--${opacity}">
 				</div>`;
 	}
@@ -71,7 +71,7 @@ class WeaponBackgroundSpriteView {
 			.map(({ size, opacity }) =>
 				this.#initialMarkup(size, weaponType, opacity)
 			)
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 	}
 
 	#getDualSpriteMarkup(weaponSize, weaponType) {
