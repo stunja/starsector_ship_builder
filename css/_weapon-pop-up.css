@@ -32,7 +32,8 @@
 	}
 
 	.table-container {
-		animation: fadeIn 0.2s ease-in forwards;
+		/* animation: fadeIn 0.2s ease-in forwards; */
+		animation: fadeIn 0.15s ease-in forwards;
 
 		position: relative;
 	}

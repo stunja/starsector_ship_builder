@@ -13,7 +13,7 @@ class WeaponPopUpTableView extends View {
 	#weaponSlot;
 	#installedWeapons;
 
-	async generateMarkup() {
+	generateMarkup() {
 		this.#processData(this._data);
 
 		const markup = this.#tableBodyRender();
@@ -33,6 +33,7 @@ class WeaponPopUpTableView extends View {
 				crrWpn,
 				this.#weaponSlot,
 			]);
+
 			return `
 			<ul class="${classNames.tableEntries}${this.#assignActiveClass(crrWpn)}"  
 				${DataSet.dataWeaponPopUpId}="${crrWpn.id}">

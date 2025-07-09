@@ -38,6 +38,7 @@ const SKIP_SORT_CATEGORY = {
 };
 
 const TABLE_POPUP_TYPE = "weaponPopUpTable";
+const spinnerDelayMs = 0.5;
 
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
@@ -88,10 +89,12 @@ export default class WeaponPopUp extends ViewModel {
 		// Render
 		this.#renderAndListeners();
 	};
+
 	async #renderAndListeners() {
 		await this.#weaponPopUpRender();
 		this.#addEventListeners();
 	}
+
 	#toggleWeaponAndClosePopUp() {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new WeaponSlots(this.#state).update();
@@ -120,6 +123,7 @@ export default class WeaponPopUp extends ViewModel {
 		// Render Changes
 		this.#renderAndListeners();
 	};
+
 	// Creates currentArray based on Weapon Slot Type and Size.
 	#createCurrentWeaponArray() {
 		this.#currentWeaponArray =
@@ -138,7 +142,7 @@ export default class WeaponPopUp extends ViewModel {
 		// Start delayed spinner logic
 		let spinnerTimeout = setTimeout(() => {
 			WeaponPopUpContainerView.addSpinner();
-		}, 500);
+		}, spinnerDelayMs * 100);
 
 		await WeaponPopUpTableView.renderAsync([
 			this.#userShipBuild,
@@ -170,6 +174,7 @@ export default class WeaponPopUp extends ViewModel {
 	// Hover
 	#showAdditionalInformationOnHover = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
+
 		if (this.#currentlyHoveredWeapon === weaponPopUpId) return; // guard from mouseover event
 		this.#currentlyHoveredWeapon = weaponPopUpId;
 
@@ -179,7 +184,7 @@ export default class WeaponPopUp extends ViewModel {
 		);
 		// Render Hover Container
 		// strange implementation, I need wpnOb+wpnSlot for icon render
-		WeaponHoverContainerView.render([
+		WeaponHoverContainerView.renderAsync([
 			this.#weaponObjectData(hoveredWeaponObject),
 			hoveredWeaponObject,
 			this.#weaponSlot,
