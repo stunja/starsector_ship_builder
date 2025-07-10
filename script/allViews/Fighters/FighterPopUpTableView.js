@@ -4,6 +4,7 @@ import FighterSprite from "./FighterSprite.js";
 // Helper
 import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 
 class FighterPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
@@ -21,15 +22,16 @@ class FighterPopUpTableView extends View {
 	}
 	generateMarkup() {
 		this.#processData(this._data);
-		const markup = `${this.#tableBodyRender()}`;
 
-		return markup;
+		return this.#tableBodyRender();
 	}
 
 	// FighterObject.num is number if fighters in wing
 	// fighterObject.number is something else.
 	#numberOfFightersInAWing = (crrWpn) => crrWpn.num;
+
 	#fighterRoleString = (crrWpn) => crrWpn.role.toLowerCase();
+
 	// Active class Not working 15/12
 	#assignActiveClass = (crrWpn, installedWeapons, weaponSlot) => {
 		if (!crrWpn) return;
@@ -39,36 +41,55 @@ class FighterPopUpTableView extends View {
 		);
 
 		// empty space so they are not joined classes
-		return isActiveClass ? ` ${classNames.weaponPopUpActive}` : "";
+		return isActiveClass
+			? ` ${classNames.weaponPopUpActive}`
+			: GENERIC_STRING.EMPTY;
 	};
-	#tableBodyRender() {
-		const entryMarkup = (crrFighter) => `
+
+	async #tableBodyRender() {
+		const entryMarkup = async (crrFighter) => {
+			const imgSprite = await FighterSprite.renderElement(crrFighter);
+			// FighterSprite.renderElement(crrFighter)
+			return `
 			<ul class="${classNames.tableEntries}${this.#assignActiveClass(
-			crrFighter,
-			this.#installedWeapons,
-			this.#weaponSlot
-		)}"  
-				${DataSet.dataWeaponPopUpId}="${crrFighter.id}">
+				crrFighter,
+				this.#installedWeapons,
+				this.#weaponSlot
+			)}" ${DataSet.dataWeaponPopUpId}="${crrFighter.id}">
 
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${FighterSprite.renderElement(crrFighter)}
+					${imgSprite}
 				</li>
-				<li class="${classNames.tableEntry} ${classNames.tableName}">${
-			crrFighter.additionalData.name
-		}</li>
+
+				<li class="${classNames.tableEntry} ${classNames.tableName}">
+					${crrFighter.additionalData.name}
+				</li>
+
 				<li class="${classNames.tableEntry}">
 					${this.#fighterRoleString(crrFighter)}
 				</li>
+
 				<li class="${classNames.tableEntry}">
 					${this.#numberOfFightersInAWing(crrFighter)}
 				</li>
+				
 				<li class="${classNames.tableEntry}">${crrFighter.range}</li>
 				<li class="${classNames.tableEntry}">${crrFighter.opCost}</li>
 			</ul>
 			`;
-		return this.#currentFighterArray
-			.map((crrWpn) => entryMarkup(crrWpn))
-			.join("");
+		};
+
+		// return this.#currentFighterArray
+		// 	.map((crrWpn) => entryMarkup(crrWpn))
+		// 	.join(GENERIC_STRING.EMPTY);
+
+		const markupArray = await Promise.all(
+			this.#currentFighterArray.map((currentWeapon) =>
+				entryMarkup(currentWeapon)
+			)
+		);
+
+		return markupArray.join(GENERIC_STRING.EMPTY);
 	}
 }
 export default new FighterPopUpTableView();

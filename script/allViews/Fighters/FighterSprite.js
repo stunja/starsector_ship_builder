@@ -1,6 +1,7 @@
 // Helper Functions
 import classNames from "../../helper/DomClassNames";
 import URL from "../../helper/url";
+import { GENERIC_STRING } from "../../helper/MagicStrings";
 
 class FighterSprite {
 	#maxFighters;
@@ -14,7 +15,7 @@ class FighterSprite {
 		this.#currentWeaponSprite = crrFighter.additionalData.spriteName;
 		this.#spriteLocation = `./${URL.DATA}/${this.#currentWeaponSprite}`;
 	}
-	renderElement(crrFighter) {
+	async renderElement(crrFighter) {
 		this.#processData(crrFighter);
 
 		const markup = `
@@ -30,15 +31,18 @@ class FighterSprite {
 		// Draw sprites equal to number of fighters
 		return Array.from({ length: this.#maxFighters }, (_, i) =>
 			this.#fighterSpriteMarkUp(i + 1)
-		).join("");
+		).join(GENERIC_STRING.EMPTY);
 	}
 	// Draw the sprite | Sprites can be drawn up to 6 in the same component
 	// I then use CSS to position them correctly.
-	#fighterSpriteMarkUp = (fighterNumber) =>
-		`<img src="${this.#spriteLocation}" alt="fighter sprite" 
-            class="${classNames.fighterSprite} ${
-			classNames.fighterSprite
-		}--${fighterNumber} ${classNames.fighterSpritesMax}--${this.#maxFighters}" 
+	//! Fighter Sprite has no name
+	#fighterSpriteMarkUp = (fighterNumber) => {
+		return `
+		<img src="${this.#spriteLocation}" alt="fighter sprite" 
+            class="${classNames.fighterSprite} 
+			${classNames.fighterSprite}--${fighterNumber} 
+			${classNames.fighterSpritesMax}--${this.#maxFighters}"
         />`;
+	};
 }
 export default new FighterSprite();

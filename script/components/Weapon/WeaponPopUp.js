@@ -20,6 +20,8 @@ import {
 	GENERIC_STRING,
 } from "../../helper/MagicStrings.js";
 
+import UI_CONFIG from "../../helper/UI_CONFIG.js";
+
 // Views
 import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpContainerView.js";
 import WeaponPopUpTableHeaderView from "../../allViews/WeaponPopUp/WeaponPopUpTableHeaderView.js";
@@ -38,7 +40,8 @@ const SKIP_SORT_CATEGORY = {
 };
 
 const TABLE_POPUP_TYPE = "weaponPopUpTable";
-const spinnerDelayMs = 0.5;
+// const spinnerDelayMs = 0.5;
+// const spinnerDelayMs = UI_CONFIG.spinnerDelayMs;
 
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
@@ -142,7 +145,7 @@ export default class WeaponPopUp extends ViewModel {
 		// Start delayed spinner logic
 		let spinnerTimeout = setTimeout(() => {
 			WeaponPopUpContainerView.addSpinner();
-		}, spinnerDelayMs * 100);
+		}, UI_CONFIG.spinnerDelayMs);
 
 		await WeaponPopUpTableView.renderAsync([
 			this.#userShipBuild,

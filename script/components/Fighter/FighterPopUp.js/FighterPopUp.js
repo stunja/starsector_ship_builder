@@ -18,6 +18,9 @@ import {
 import classNames from "../../../helper/DomClassNames";
 import UpdateUserShipBuild from "../../../helper/UpdateUserShipBuild";
 
+import UI_CONFIG from "../../../helper/UI_CONFIG";
+
+//
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
 	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
@@ -86,9 +89,13 @@ export default class FighterPopUp extends ViewModel {
 			this.#currentFighterArray
 		);
 
-		this.#renderFighterPopUp();
-		this.#addEventListeners();
+		this.#renderAndListeners();
 	};
+
+	async #renderAndListeners() {
+		await this.#renderFighterPopUp();
+		this.#addEventListeners();
+	}
 
 	#createFighterWeaponArray = () =>
 		(this.#currentFighterArray = this.#state.dataState.allFighters.toSorted(
@@ -136,8 +143,7 @@ export default class FighterPopUp extends ViewModel {
 		);
 
 		// Render Changes
-		this.#renderFighterPopUp();
-		this.#addEventListeners();
+		this.#renderAndListeners();
 	};
 	// Hover
 	#showAdditionalInformationOnHover = (btn) => {
@@ -159,15 +165,26 @@ export default class FighterPopUp extends ViewModel {
 
 	/////
 	// render
-	#renderFighterPopUp() {
+	async #renderFighterPopUp() {
 		FighterPopUpContainerView.render(this.#state);
-		FighterPopUpTableHeaderView.render(this.#state);
 
-		FighterPopUpTableView.render([
+		// Start delayed spinner logic
+		let spinnerTimeout = setTimeout(() => {
+			WeaponPopUpContainerView.addSpinner();
+		}, UI_CONFIG.spinnerDelayMs);
+
+		await FighterPopUpTableView.renderAsync([
 			this.#installedWeapons,
 			this.#currentFighterArray,
 			this.#weaponSlot,
 		]);
+
+		// Cancel spinner logic (if it hasn't shown yet)
+		clearTimeout(spinnerTimeout);
+
+		FighterPopUpContainerView.removeSpinner();
+
+		FighterPopUpTableHeaderView.render(this.#state);
 	}
 
 	// WeaponPopUp Event Listeners
