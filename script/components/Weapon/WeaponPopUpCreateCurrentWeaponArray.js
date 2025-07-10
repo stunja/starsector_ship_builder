@@ -23,7 +23,7 @@ class WeaponPopUpCreateCurrentWeaponArray {
 	// There are special rules what is allowed where.
 	// TLDR Size is allowed L-[3,2], M-[2,1], S-[1].
 	// Types are special, and you need to check rules. I took them from WIKIA, could be wrong??
-
+	//! what does weapon.type === mountTypeOverride do?
 	#FILTER_DEFINITIONS = {
 		size: {
 			[SIZE.LARGE]: (weapon) => {
@@ -34,7 +34,8 @@ class WeaponPopUpCreateCurrentWeaponArray {
 				const { size, mountTypeOverride } = weapon.additionalData;
 				return (
 					size === SIZE.MEDIUM ||
-					(size === SIZE.SMALL && weapon.type === mountTypeOverride)
+					size === SIZE.SMALL ||
+					weapon.type === mountTypeOverride
 				);
 			},
 			[SIZE.SMALL]: (weapon) => weapon.additionalData.size === SIZE.SMALL,

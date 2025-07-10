@@ -10,37 +10,3 @@
 		transform: rotate(-45deg);
 	}
 }
-
-/* ! I need to change the class itself */
-/* &.weapon--active,
-	&.fighter--active {
-		font-size: 1.2rem;
-		background-color: rgba(0, 126, 25, 0.5);
-
-		.fighter__icon {
-			padding: 0rem;
-		}
-		.weapon__icon {
-			padding: 3.6rem 0.6rem;
-		}
-	} */
-
-/*******************************************************************/
-/*  WEAPON SPRITE  */
-/*******************************************************************/
-/* .weapon__icon { */
-/* padding: 2.8rem 0.6rem; */
-/* width: 6rem; */
-/* img {
-			max-height: 4rem;
-		}
-
-		.weapon-sprite--gun,
-		.weapon-sprite--base {
-			position: absolute;
-			top: 55%;
-			left: 50%;
-
-			transform: translate(-50%, -50%);
-		}
-	} */
