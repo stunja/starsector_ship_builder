@@ -34,7 +34,7 @@ export default class FighterSlots extends ViewModel {
 		this.#fighterSlotsOpenPopUpEventListener();
 	}
 	#fighterSlotsRender() {
-		FightersView.render([this.#userShipBuild, this.#allFighters]);
+		return FightersView.render([this.#userShipBuild, this.#allFighters]);
 	}
 	#fighterSlotsOpenPopUpEventListener() {
 		FightersView.addClickHandler(

@@ -9,13 +9,11 @@ class FighterSprite {
 	#spriteLocation;
 
 	#processData(crrFighter) {
-		// console.log(crrFighter);
 		this.#maxFighters = crrFighter.num;
-		// console.log(crrFighter.additionalData.spriteName);
 		this.#currentWeaponSprite = crrFighter.additionalData.spriteName;
 		this.#spriteLocation = `./${URL.DATA}/${this.#currentWeaponSprite}`;
 	}
-	async renderElement(crrFighter) {
+	renderElement(crrFighter) {
 		this.#processData(crrFighter);
 
 		const markup = `
@@ -24,6 +22,7 @@ class FighterSprite {
                             ${this.#fighterSpritesRender()}
 						</div>
 					</div>`;
+
 		return markup;
 	}
 
@@ -33,6 +32,7 @@ class FighterSprite {
 			this.#fighterSpriteMarkUp(i + 1)
 		).join(GENERIC_STRING.EMPTY);
 	}
+
 	// Draw the sprite | Sprites can be drawn up to 6 in the same component
 	// I then use CSS to position them correctly.
 	//! Fighter Sprite has no name

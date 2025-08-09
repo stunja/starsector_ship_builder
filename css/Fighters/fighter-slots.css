@@ -36,4 +36,14 @@
 		background-image: radial-gradient(rgba(0, 0, 0, 1), rgb(31, 58, 65, 0.75));
 	}
 	/* ..fighter-sprite-container */
+
+	.fighter-sprite-cost {
+		position: absolute;
+		top: 0.2rem;
+		right: 1rem;
+		font-size: 1.2rem;
+		font-weight: 700;
+		text-align: right;
+		color: var(--secondary-color);
+	}
 }

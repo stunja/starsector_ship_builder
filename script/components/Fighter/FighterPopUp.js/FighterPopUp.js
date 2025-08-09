@@ -48,10 +48,11 @@ export default class FighterPopUp extends ViewModel {
 
 	#getDataState;
 	#weaponSlot;
+
 	// Fighter Object which can be shown to user
 	#currentFighterArray;
 	#currentlyHoveredFighter;
-	//
+
 	constructor(model) {
 		super(model);
 	}
@@ -67,6 +68,7 @@ export default class FighterPopUp extends ViewModel {
 		// Update shipStats to render new fields
 		new ShipStats(this.getState()).update();
 
+		//! Why is this here?
 		// Update Controller, to display installedHullMods
 		new HullModController(this.getState()).update();
 	}
@@ -119,7 +121,6 @@ export default class FighterPopUp extends ViewModel {
 	#toggleWeaponAndClosePopUp() {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new FighterSlots(this.#state).update();
-
 		// Remove WeaponPopUpContainer
 		FighterPopUpContainerView._clearRender();
 	}

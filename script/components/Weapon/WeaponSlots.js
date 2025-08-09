@@ -36,11 +36,10 @@ export default class WeaponSlots extends ViewModel {
 	}
 
 	async #weaponSlotsRender() {
-		const markup = await WeaponSlotsView.renderAsync([
+		return await WeaponSlotsView.renderAsync([
 			this.getUserShipBuild(),
 			this.getDataState().allWeapons,
 		]);
-		return markup;
 	}
 	#addWeaponPopUpListener() {
 		const target = `.${classNames.weaponSlot}`;

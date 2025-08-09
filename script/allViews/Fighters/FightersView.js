@@ -29,17 +29,19 @@ class FightersView extends View {
 	generateMarkup() {
 		this.#processData(this._data);
 
-		const markup = `${this.#fighterContainerMarkup()}`;
+		const markup = this.#fighterContainerMarkup();
 		return markup;
 	}
 	#fighterContainerMarkup() {
+		const markup = this.#fighterSlotsMarkup();
+
 		return `
 	        <ul class="${classNames.fighterSlotsContainer}">
 	          <li class="${classNames.fighterSlotsContainerHeader}">
                 <h5>${STRING.HEADER}</h5>
               </li>
 	          <li class="${classNames.fighterSlots}">
-	            ${this.#fighterSlotsMarkup()}
+	            ${markup}
 	          </li>
 			  <div class="${classNames.fighterPopUp}"></div>
 	        </ul>
@@ -49,25 +51,66 @@ class FightersView extends View {
 	#fighterSlotsMarkup() {
 		const fighterSlots = this.#createFighterSlotsArray();
 		if (fighterSlots.length === 0) return STRING.EMPTY;
-		//prettier-ignore
+
 		return fighterSlots
-			.map(
-				(fighterSlot) => {
-					const currentFighter = this.#findCurrentFighter(fighterSlot);
-					
-				return	`
+			.map((fighterSlot) => {
+				const currentFighter = this.#findCurrentFighter(fighterSlot);
+				console.log(currentFighter);
+
+				const displayFighter = currentFighter
+					? FighterSprite.renderElement(currentFighter)
+					: GENERIC_STRING.EMPTY;
+
+				return `
+					<div class="${classNames.weaponSpriteParent}">
 		                <div class="${classNames.fighterSlotContainer}">
 		                    <figure class="${classNames.fighterSlot}"
-		                        ${DataSet.dataFighterId}="${fighterSlot.id}"
+		                    ${DataSet.dataFighterId}="${fighterSlot.id}"
 		                    >
-								${currentFighter ? FighterSprite.renderElement(currentFighter) : GENERIC_STRING.EMPTY}
+								${displayFighter}
 		                    </figure>
-		                </div>
-		            `
-				}
-			)
+						</div>
+						${this.#fighterCostMarkup(currentFighter)}
+					</div>
+		            `;
+			})
 			.join(GENERIC_STRING.EMPTY);
+
+		// const markupTest = (fighterSlot,currentFighter) => {
+
+		// 	const displayFighter = currentFighter
+		// 		? FighterSprite.renderElement(currentFighter)
+		// 		: GENERIC_STRING.EMPTY;
+
+		// 		return `<div class="${classNames.fighterSlotContainer}">
+		//                     <figure class="${classNames.fighterSlot}"
+		//                     ${DataSet.dataFighterId}="${fighterSlot.id}"
+		//                     >
+		// 						${displayFighter}
+		//                     </figure>
+		//                 </div>`
+		// 		}
+
+		// const test = fighterSlots
+		// 	.map((fighterSlot) => {
+		// 		const currentFighter = await this.#findCurrentFighter(fighterSlot);
+		// 		return markupTest(fighterSlot, currentFighter);
+		// 	})
+		// 	.join(GENERIC_STRING.EMPTY);
+
+		// console.log(test);
+		// return test;
 	}
+	// <div class="${classNames.weaponSpriteParent}">
+	// 	<div class="${classNames.fighterSpriteContainer}">
+	//          ${this.#fighterArrayMarkup(currentFighterObject)}
+	// 	</div>
+	// 	${this.#fighterCostMarkup(currentFighterObject)}
+	// </div>
+	#fighterCostMarkup = (currentFighterObject) => {
+		const opCost = currentFighterObject.opCost ?? "";
+		return `<p class="${classNames.fighterSpriteCost}">${opCost}</p>`;
+	};
 
 	#createFighterSlotsArray = () => {
 		return this.#weaponSlots.filter(
@@ -83,9 +126,11 @@ class FightersView extends View {
 		const currentInstalledWeapon = this.#installedWeapons.find(
 			([slotId, _weaponId]) => slotId === weaponSlot.id
 		);
+
 		if (!currentInstalledWeapon) {
 			throw new Error(`No weapon found for fighter slot ID: ${weaponSlot.id}`);
 		}
+
 		const [_, currentWeaponId] = currentInstalledWeapon;
 
 		// If weaponId is empty just return empty string
