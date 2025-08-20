@@ -55,11 +55,14 @@ class FightersView extends View {
 		return fighterSlots
 			.map((fighterSlot) => {
 				const currentFighter = this.#findCurrentFighter(fighterSlot);
+
 				console.log(currentFighter);
 
 				const displayFighter = currentFighter
 					? FighterSprite.renderElement(currentFighter)
 					: GENERIC_STRING.EMPTY;
+
+				console.log(displayFighter);
 
 				return `
 					<div class="${classNames.weaponSpriteParent}">
@@ -101,12 +104,7 @@ class FightersView extends View {
 		// console.log(test);
 		// return test;
 	}
-	// <div class="${classNames.weaponSpriteParent}">
-	// 	<div class="${classNames.fighterSpriteContainer}">
-	//          ${this.#fighterArrayMarkup(currentFighterObject)}
-	// 	</div>
-	// 	${this.#fighterCostMarkup(currentFighterObject)}
-	// </div>
+
 	#fighterCostMarkup = (currentFighterObject) => {
 		const opCost = currentFighterObject.opCost ?? "";
 		return `<p class="${classNames.fighterSpriteCost}">${opCost}</p>`;

@@ -171,7 +171,7 @@ export default class FighterPopUp extends ViewModel {
 
 		// Start delayed spinner logic
 		let spinnerTimeout = setTimeout(() => {
-			WeaponPopUpContainerView.addSpinner();
+			FighterPopUpContainerView.addSpinner();
 		}, UI_CONFIG.spinnerDelayMs);
 
 		await FighterPopUpTableView.renderAsync([

@@ -4,45 +4,49 @@ import URL from "../../helper/url";
 import { GENERIC_STRING } from "../../helper/MagicStrings";
 
 class FighterSprite {
-	#maxFighters;
-	#currentWeaponSprite;
-	#spriteLocation;
-
-	#processData(crrFighter) {
-		this.#maxFighters = crrFighter.num;
-		this.#currentWeaponSprite = crrFighter.additionalData.spriteName;
-		this.#spriteLocation = `./${URL.DATA}/${this.#currentWeaponSprite}`;
-	}
-	renderElement(crrFighter) {
-		this.#processData(crrFighter);
-
+	async renderElement(crrFighter) {
+		const renderFighterSpriteAsync = await this.#fighterSpriteMarkUpAsync(
+			crrFighter
+		);
 		const markup = `
                     <div class="${classNames.weaponSpriteParent}">
 						<div class="${classNames.fighterSpriteContainer}">
-                            ${this.#fighterSpritesRender()}
+                            ${renderFighterSpriteAsync}
 						</div>
 					</div>`;
 
 		return markup;
 	}
 
-	#fighterSpritesRender() {
-		// Draw sprites equal to number of fighters
-		return Array.from({ length: this.#maxFighters }, (_, i) =>
-			this.#fighterSpriteMarkUp(i + 1)
-		).join(GENERIC_STRING.EMPTY);
-	}
+	// Draw sprites equal to number of fighters
+	async #fighterSpriteMarkUpAsync(crrFighter) {
+		if (!crrFighter) return Promise.resolve(GENERIC_STRING.EMPTY);
+		const numberOfFighters = crrFighter.num;
 
-	// Draw the sprite | Sprites can be drawn up to 6 in the same component
-	// I then use CSS to position them correctly.
-	//! Fighter Sprite has no name
-	#fighterSpriteMarkUp = (fighterNumber) => {
-		return `
-		<img src="${this.#spriteLocation}" alt="fighter sprite" 
-            class="${classNames.fighterSprite} 
-			${classNames.fighterSprite}--${fighterNumber} 
-			${classNames.fighterSpritesMax}--${this.#maxFighters}"
-        />`;
-	};
+		const loadImage = (src) => {
+			return new Promise((resolve, reject) => {
+				const img = new Image();
+				console.log(src.additionalData);
+				img.src = `/${URL.DATA}/${src}`;
+				img.onload = () => resolve(img);
+				img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+			});
+		};
+
+		const { spriteName } = crrFighter.additionalData;
+
+		return Promise.resolve(loadImage(spriteName)).then((fighter) => {
+			const joinedSprites = Array.from({ length: numberOfFighters }, (_, i) => {
+				return `
+								<img src="${fighter.src}" alt="fighter sprite"
+								class="${classNames.fighterSprite}
+								${classNames.fighterSprite}--${i + 1}
+								${classNames.fighterSpritesMax}--${numberOfFighters}"/>
+							`;
+			});
+
+			return joinedSprites.join(GENERIC_STRING.EMPTY);
+		});
+	}
 }
 export default new FighterSprite();

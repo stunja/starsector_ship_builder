@@ -49,7 +49,7 @@ class FighterPopUpTableView extends View {
 	async #tableBodyRender() {
 		const entryMarkup = async (crrFighter) => {
 			const imgSprite = await FighterSprite.renderElement(crrFighter);
-			// FighterSprite.renderElement(crrFighter)
+
 			return `
 			<ul class="${classNames.tableEntries}${this.#assignActiveClass(
 				crrFighter,
@@ -78,10 +78,6 @@ class FighterPopUpTableView extends View {
 			</ul>
 			`;
 		};
-
-		// return this.#currentFighterArray
-		// 	.map((crrWpn) => entryMarkup(crrWpn))
-		// 	.join(GENERIC_STRING.EMPTY);
 
 		const markupArray = await Promise.all(
 			this.#currentFighterArray.map((currentWeapon) =>

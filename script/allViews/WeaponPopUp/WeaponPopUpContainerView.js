@@ -1,12 +1,10 @@
 import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
 // View
 import View from "../view.js";
 
 class WeaponPopUpView extends View {
 	_localParent = `.${classNames.weaponPopUp}`;
 
-	//
 	generateMarkup() {
 		const markup = `
 				<div class="${classNames.tableContainer}">
