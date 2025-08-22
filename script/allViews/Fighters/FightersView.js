@@ -1,15 +1,18 @@
 import classNames from "../../helper/DomClassNames";
 import DataSet from "../../helper/DataSet";
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
-import { GENERIC_STRING } from "../../helper/MagicStrings";
+import {
+	toggleAdditionalInstalledWeapons,
+	weaponSlotIdIntoWeaponSlotObject,
+} from "../../helper/helperFunction";
 import { WEAPON_SLOT } from "../../helper/Properties";
+// Helper
+import { GENERIC_STRING } from "../../helper/MagicStrings";
 // View
 import View from "../view";
 import FighterSprite from "./FighterSprite";
 
 const STRING = {
 	HEADER: "Fighter Bays",
-	EMPTY: "",
 };
 
 class FightersView extends View {
@@ -32,8 +35,8 @@ class FightersView extends View {
 		const markup = this.#fighterContainerMarkup();
 		return markup;
 	}
-	#fighterContainerMarkup() {
-		const markup = this.#fighterSlotsMarkup();
+	async #fighterContainerMarkup() {
+		const markup = await this.#fighterSlotsMarkup();
 
 		return `
 	        <ul class="${classNames.fighterSlotsContainer}">
@@ -48,65 +51,36 @@ class FightersView extends View {
 	`;
 	}
 
-	#fighterSlotsMarkup() {
+	async #fighterSlotsMarkup() {
 		const fighterSlots = this.#createFighterSlotsArray();
-		if (fighterSlots.length === 0) return STRING.EMPTY;
+		if (fighterSlots.length === 0) return GENERIC_STRING.EMPTY;
 
-		return fighterSlots
-			.map((fighterSlot) => {
+		const results = await Promise.all(
+			fighterSlots.map(async (fighterSlot) => {
 				const currentFighter = this.#findCurrentFighter(fighterSlot);
 
-				console.log(currentFighter);
-
-				const displayFighter = currentFighter
-					? FighterSprite.renderElement(currentFighter)
+				const crrFg = currentFighter
+					? await FighterSprite.renderElement(currentFighter)
 					: GENERIC_STRING.EMPTY;
 
-				console.log(displayFighter);
-
 				return `
-					<div class="${classNames.weaponSpriteParent}">
-		                <div class="${classNames.fighterSlotContainer}">
-		                    <figure class="${classNames.fighterSlot}"
-		                    ${DataSet.dataFighterId}="${fighterSlot.id}"
-		                    >
-								${displayFighter}
-		                    </figure>
+						<div class="${classNames.weaponSpriteParent}">
+						<div class="${classNames.fighterSlotContainer}">
+							<figure class="${classNames.fighterSlot}"
+								${DataSet.dataFighterId}="${fighterSlot.id}">
+								${crrFg}
+							</figure>
 						</div>
-						${this.#fighterCostMarkup(currentFighter)}
-					</div>
-		            `;
+							${this.#fighterCostMarkup(currentFighter)}
+						</div>
+      					`;
 			})
-			.join(GENERIC_STRING.EMPTY);
+		);
 
-		// const markupTest = (fighterSlot,currentFighter) => {
-
-		// 	const displayFighter = currentFighter
-		// 		? FighterSprite.renderElement(currentFighter)
-		// 		: GENERIC_STRING.EMPTY;
-
-		// 		return `<div class="${classNames.fighterSlotContainer}">
-		//                     <figure class="${classNames.fighterSlot}"
-		//                     ${DataSet.dataFighterId}="${fighterSlot.id}"
-		//                     >
-		// 						${displayFighter}
-		//                     </figure>
-		//                 </div>`
-		// 		}
-
-		// const test = fighterSlots
-		// 	.map((fighterSlot) => {
-		// 		const currentFighter = await this.#findCurrentFighter(fighterSlot);
-		// 		return markupTest(fighterSlot, currentFighter);
-		// 	})
-		// 	.join(GENERIC_STRING.EMPTY);
-
-		// console.log(test);
-		// return test;
+		return results.join(GENERIC_STRING.EMPTY); // return as a single markup string
 	}
-
 	#fighterCostMarkup = (currentFighterObject) => {
-		const opCost = currentFighterObject.opCost ?? "";
+		const opCost = currentFighterObject.opCost ?? GENERIC_STRING.EMPTY;
 		return `<p class="${classNames.fighterSpriteCost}">${opCost}</p>`;
 	};
 
@@ -133,7 +107,7 @@ class FightersView extends View {
 
 		// If weaponId is empty just return empty string
 		// If weaponSlots are actually empty
-		if (currentWeaponId === STRING.EMPTY) return STRING.EMPTY;
+		if (currentWeaponId === GENERIC_STRING.EMPTY) return GENERIC_STRING.EMPTY;
 
 		const currentFighterObject = weaponSlotIdIntoWeaponSlotObject(
 			this.#allFighters,

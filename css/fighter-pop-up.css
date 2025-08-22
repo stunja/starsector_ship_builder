@@ -27,6 +27,7 @@
 	}
 	.table-container {
 		animation: fadeIn 0.2s ease-in forwards;
+		position: relative;
 	}
 }
 

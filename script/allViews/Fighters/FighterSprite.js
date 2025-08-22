@@ -26,7 +26,6 @@ class FighterSprite {
 		const loadImage = (src) => {
 			return new Promise((resolve, reject) => {
 				const img = new Image();
-				console.log(src.additionalData);
 				img.src = `/${URL.DATA}/${src}`;
 				img.onload = () => resolve(img);
 				img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
