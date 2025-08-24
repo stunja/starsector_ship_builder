@@ -3,6 +3,7 @@ import classNames from "../../helper/DomClassNames.js";
 import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
 // View
 import URL from "../../helper/url.js";
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 
 const ALT_TEXT = {
 	WEAPON_DAMAGE_TYPE: "weapon damage type",
@@ -113,7 +114,10 @@ class FighterPopUpHoverView extends View {
 		return `
 			${this.#contentMarkup("Weapon Name", this.#name + " - " + this.#displayName)}
 			${this.#contentMarkup("Design Type", this.#techManufacturer)}
-			${this.#contentMarkup("", this.#descriptionShrink(this.#description))}
+			${this.#contentMarkup(
+				GENERIC_STRING.EMPTY,
+				this.#descriptionShrink(this.#description)
+			)}
 			`;
 	}
 
@@ -137,7 +141,7 @@ class FighterPopUpHoverView extends View {
 						${this.#shieldType !== "NONE"
 						? `${this.#contentMarkup("Shield Type", this.#shieldType)}
 							${this.#contentMarkup("Shield Arc", this.#shieldArc)}`
-						: ""
+						: GENERIC_STRING.EMPTY
 						}
 						${this.#contentMarkup("Top speed", this.#maxSpeed)}
 						${this.#contentMarkup("System",this.#fighterSystemMarkup(this.#systemId, this.#allWeaponSystems))}
@@ -151,7 +155,7 @@ class FighterPopUpHoverView extends View {
 	#contentMarkup = (str, data) => {
 		return `
 				<li>
-					${str !== "" ? `<p>${str}</p>` : ""}
+					${str !== GENERIC_STRING.EMPTY ? `<p>${str}</p>` : GENERIC_STRING.EMPTY}
 					<strong><p>${data}</p></strong>
 				</li>`;
 	};
@@ -174,7 +178,8 @@ class FighterPopUpHoverView extends View {
 
 	// Find weapon or system name by ID
 	#fighterSystemMarkup(systemId, allWeaponSystems) {
-		if (!systemId || systemId === "") return EMPTY_PROP_STRING;
+		if (!systemId || systemId === GENERIC_STRING.EMPTY)
+			return EMPTY_PROP_STRING;
 
 		// Replace Old launcer with new, because old is not even a system for some reason.
 		const checkSystemId =
@@ -198,7 +203,7 @@ class FighterPopUpHoverView extends View {
 				const finalString = extractedHullMod?.name || EMPTY_PROP_STRING;
 				return this.#createParagraph(finalString, true);
 			})
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 	}
 	#fighterWeaponsMarkUp(weaponGroups, allWeapons, allWeaponSystems) {
 		const fighterWeapons = weaponGroups.flatMap((obj) =>
@@ -222,7 +227,7 @@ class FighterPopUpHoverView extends View {
 					? keyProperName.name
 					: allWeaponSystems.find((wpnSys) => wpnSys.id === key).name;
 				// If Number of dublicates is larger than one (1) use special string, otherwise, hide
-				const valueString = value > 1 ? `${value}x : ` : "";
+				const valueString = value > 1 ? `${value}x : ` : GENERIC_STRING.EMPTY;
 
 				// Join Strings
 				return this.#createParagraph(
@@ -230,7 +235,7 @@ class FighterPopUpHoverView extends View {
 					true
 				);
 			})
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 	}
 }
 export default new FighterPopUpHoverView();

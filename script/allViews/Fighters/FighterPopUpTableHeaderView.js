@@ -2,9 +2,10 @@ import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
 // View
 import View from "../view.js";
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 
 const CATEGORIES = {
-	icon: "",
+	icon: GENERIC_STRING.EMPTY,
 	name: "Name",
 	role: "Role",
 	wing: "Wing",
@@ -22,7 +23,7 @@ class FighterPopUpTableHeaderView extends View {
 							${value}
 						</li>`;
 			})
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 		return markup;
 	}
 }

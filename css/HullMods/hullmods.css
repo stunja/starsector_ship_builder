@@ -9,7 +9,9 @@
 
 	.hullmods__header {
 		text-align: right;
+		font-size: 1.6rem;
 	}
+
 	.hullmods__container,
 	.build-in-hullmods,
 	.installed-hullmods {
@@ -17,6 +19,7 @@
 		flex-direction: column;
 		gap: 1.6rem;
 	}
+
 	.hullmods__container {
 		display: flex;
 		flex-direction: column;
@@ -27,11 +30,11 @@
 		flex-direction: column;
 		margin-left: auto;
 
-		background-color: rgba(0, 0, 0, 0.25);
-		border: 1px solid rgba(0, 0, 0, 0.5);
+		/* background-color: rgba(0, 0, 0, 0.25); */
+		/* border: 0.1rem solid rgba(0, 0, 0, 0.5); */
 
-		padding: 1.6rem;
-		gap: 1.6rem;
+		/* padding: 1.6rem;
+		gap: 1.6rem; */
 
 		.hullmod {
 			/* width: max-content; */
@@ -40,8 +43,34 @@
 			/* padding: 1.4rem 1.4rem 1.4rem 2.4rem; */
 		}
 	}
-	.hullMod__cost {
-		font-weight: 800;
-		font-size: 1.8rem;
+	.installed-hullmods {
+		max-height: 14rem;
+
+		overflow-y: auto; /* Enables scrolling when content overflows */
+		scrollbar-color: var(--main-darker-color) #000000; /* Thumb color, Track color */
+		scrollbar-gutter: stable; /* Reserve space for scrollbar */
+
+		padding-right: 1rem;
+	}
+	.hullmod {
+		border: 0.3rem solid transparent;
+
+		h5 {
+			font-size: 1.2rem;
+		}
+		img {
+			height: 3rem;
+			width: 3rem;
+		}
+
+		.hullMod__cost {
+			font-weight: 800;
+			font-size: 1.6rem;
+		}
+	}
+	.hullmod:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+		border: 0.3rem solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.3rem;
 	}
 }

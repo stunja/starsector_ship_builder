@@ -19,6 +19,13 @@ font-size
 		font-size: 62.5%;
 	}
 }
+
+/* if screen is too small, in vertical height */
+@media screen and (min-width: 87.5em) and (min-height: 40em) {
+	html {
+		font-size: 50%;
+	}
+}
 @media screen and (max-width: 87.5em) {
 	html {
 		font-size: 56.25%;
