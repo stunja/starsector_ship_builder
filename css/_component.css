@@ -39,7 +39,9 @@ button:hover {
 	justify-content: center;
 	align-items: center;
 	font-weight: 900;
-	border-radius: 50%;
+	/* border-radius: 50%; */
+	border-radius: 25%;
+
 	padding: 0;
 	height: 3rem;
 	width: 3rem;
