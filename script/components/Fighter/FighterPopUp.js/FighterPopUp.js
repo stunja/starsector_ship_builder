@@ -13,6 +13,7 @@ import {
 	weaponSlotIdIntoWeaponSlotObject,
 	AddRemoveInstalledWeapon,
 	pushTargetWeaponObjectOnTop,
+	toggleAsyncSpinner,
 } from "../../../helper/helperFunction";
 
 import classNames from "../../../helper/DomClassNames";
@@ -169,21 +170,15 @@ export default class FighterPopUp extends ViewModel {
 	async #renderFighterPopUp() {
 		FighterPopUpContainerView.render(this.#state);
 
-		// Start delayed spinner logic
-		let spinnerTimeout = setTimeout(() => {
-			FighterPopUpContainerView.addSpinner();
-		}, UI_CONFIG.spinnerDelayMs);
-
-		await FighterPopUpTableView.renderAsync([
-			this.#installedWeapons,
-			this.#currentFighterArray,
-			this.#weaponSlot,
-		]);
-
-		// Cancel spinner logic (if it hasn't shown yet)
-		clearTimeout(spinnerTimeout);
-
-		FighterPopUpContainerView.removeSpinner();
+		await toggleAsyncSpinner(
+			() =>
+				FighterPopUpTableView.renderAsync([
+					this.#installedWeapons,
+					this.#currentFighterArray,
+					this.#weaponSlot,
+				]),
+			FighterPopUpContainerView
+		);
 
 		FighterPopUpTableHeaderView.render(this.#state);
 	}

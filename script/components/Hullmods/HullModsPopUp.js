@@ -18,6 +18,8 @@ import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
 import { createUsableHullMods } from "../../helper/helperFunction";
 import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
+import UI_CONFIG from "../../helper/UI_CONFIG";
+
 import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
 
 import { ScrollPosition } from "../../helper/ScrollPosition";
@@ -119,8 +121,8 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#createHullModsArray();
 	}
-	#render() {
-		this.#renderHullModsPopUp();
+	async #render() {
+		await this.#renderHullModsPopUp();
 
 		this.#eventListeners();
 
@@ -129,15 +131,26 @@ export default class HullModsPopUp extends ViewModel {
 		new ScrollPosition().save(classNames.tableContainer);
 	}
 
-	#renderHullModsPopUp() {
+	async #renderHullModsPopUp() {
 		// Container
 		HullModsPopUpView.render(this.#greenHullMods);
 
+		// Start delayed spinner logic
+		let spinnerTimeout = setTimeout(() => {
+			HullModsPopUpView.addSpinner();
+		}, UI_CONFIG.spinnerDelayMs);
+
 		// Filter
-		HullModsPopUpFilterView.render([
+		await HullModsPopUpFilterView.renderAsync([
 			this.#filterCategories,
 			this.#currentFilter,
 		]);
+
+		// Cancel spinner logic (if it hasn't shown yet)
+		clearTimeout(spinnerTimeout);
+
+		HullModsPopUpView.removeSpinner();
+
 		// Header
 		HullModsPopUpHeaderView.render(this.#greenHullMods);
 

@@ -7,6 +7,7 @@ import {
 	WEAPON_SLOT,
 } from "../helper/Properties";
 import { GENERIC_STRING } from "../helper/MagicStrings";
+import UI_CONFIG from "./UI_CONFIG";
 
 const HULLMODS_TO_HIDE = {
 	// these hullMods where remove from the game, for some reason.
@@ -60,65 +61,6 @@ export const extractDataFromObject = (propertiesToExtract, data) =>
 		{}
 	);
 
-// export const updateUserShipBuildWithHullModLogic = function (
-// 	userShipBuild,
-// 	baseUserShipBuild
-// ) {
-// 	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
-// 	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
-
-// 	const newInstalledWeapons = updateInstalledWeapons(
-// 		installedHullMods,
-// 		installedWeapons
-// 	);
-
-// 	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
-// 	let currentShipBuild = {
-// 		...baseUserShipBuild,
-// 		hullMods,
-// 		installedWeapons: newInstalledWeapons || installedWeapons,
-// 		capacitors,
-// 		vents,
-// 	};
-
-// 	// Apply each hull mod effect sequentially
-// 	const allHullMods = [...builtInMods, ...installedHullMods];
-
-// 	if (!allHullMods.length) {
-// 		return currentShipBuild;
-// 	}
-
-// 	for (const hullMod of allHullMods) {
-// 		const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
-
-// 		if (!hullModObject) {
-// 			console.warn(`Hull mod not found: ${hullMod.id}`);
-// 			continue;
-// 		}
-
-// 		if (hullModObject.hullModLogic) {
-// 			currentShipBuild = hullModObject.hullModLogic(currentShipBuild, hullMod);
-// 		}
-// 	}
-
-// 	return currentShipBuild;
-// };
-// remove duplicateIWS
-// const updateInstalledWeapons = (installedHullMods, installedWeapons) => {
-// 	const targetClass = "converted_hangar";
-// 	// Converted Hangar
-// 	const isHangarExpansionPresent = installedHullMods.some(
-// 		({ id }) => id === targetClass
-// 	);
-
-// 	// exit if no additional installedWeapons are needed
-// 	if (!isHangarExpansionPresent) {
-// 		return installedWeapons.filter(
-// 			([weaponSlotId, _weaponId]) =>
-// 				weaponSlotId && !weaponSlotId.includes("IWS")
-// 		);
-// 	}
-// };
 // IWS weapons are speciaal installedWeapons added by a HULLMOD
 export const createNewWeaponSlotsAndInstalledWeapons = function (
 	howManySlotsToCreate
@@ -173,6 +115,7 @@ export const toggleAdditionalInstalledWeapons = function (
 	});
 };
 
+// Model function to find HullMod keys
 export const findHullModKeyName = function (obj, searchKey, matches = []) {
 	// Early return if obj is null or not an object
 	if (!obj || typeof obj !== "object") return matches;
@@ -263,7 +206,25 @@ export const createUsableHullMods = function (hullMods) {
 	);
 };
 
-//
+// Add Remove Spinner for async loading, (found in) Fighter / Weapon and HullMods
+
+export async function toggleAsyncSpinner(
+	asyncOperations,
+	view,
+	args = [],
+	delayMs = UI_CONFIG.spinnerDelayMs
+) {
+	let spinnerTimeout = setTimeout(() => {
+		view.addSpinner();
+	}, delayMs);
+
+	try {
+		return await asyncOperations(...args);
+	} finally {
+		clearTimeout(spinnerTimeout);
+		view.removeSpinner();
+	}
+}
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original
