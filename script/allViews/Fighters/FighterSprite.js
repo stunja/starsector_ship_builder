@@ -2,6 +2,7 @@
 import classNames from "../../helper/DomClassNames";
 import URL from "../../helper/url";
 import { GENERIC_STRING } from "../../helper/MagicStrings";
+import { imageLoader } from "../../helper/helperFunction";
 
 class FighterSprite {
 	async renderElement(crrFighter) {
@@ -23,18 +24,9 @@ class FighterSprite {
 		if (!crrFighter) return Promise.resolve(GENERIC_STRING.EMPTY);
 		const numberOfFighters = crrFighter.num;
 
-		const loadImage = (src) => {
-			return new Promise((resolve, reject) => {
-				const img = new Image();
-				img.src = `/${URL.DATA}/${src}`;
-				img.onload = () => resolve(img);
-				img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-			});
-		};
-
 		const { spriteName } = crrFighter.additionalData;
 
-		return Promise.resolve(loadImage(spriteName)).then((fighter) => {
+		return Promise.resolve(imageLoader(spriteName)).then((fighter) => {
 			const joinedSprites = Array.from({ length: numberOfFighters }, (_, i) => {
 				return `
 								<img src="${fighter.src}" alt="fighter sprite"

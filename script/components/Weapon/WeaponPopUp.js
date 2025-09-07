@@ -13,6 +13,7 @@ import {
 	weaponSlotIdIntoWeaponSlotObject,
 	AddRemoveInstalledWeapon,
 	pushTargetWeaponObjectOnTop,
+	toggleAsyncSpinner,
 } from "../../helper/helperFunction.js";
 
 import {
@@ -142,21 +143,15 @@ export default class WeaponPopUp extends ViewModel {
 		//? first draw "empty" container then target it with other renders
 		WeaponPopUpContainerView.render(this.#userShipBuild);
 
-		// Start delayed spinner logic
-		let spinnerTimeout = setTimeout(() => {
-			WeaponPopUpContainerView.addSpinner();
-		}, UI_CONFIG.spinnerDelayMs);
-
-		await WeaponPopUpTableView.renderAsync([
-			this.#userShipBuild,
-			this.#currentWeaponArray,
-			this.#weaponSlot,
-		]);
-
-		// Cancel spinner logic (if it hasn't shown yet)
-		clearTimeout(spinnerTimeout);
-
-		WeaponPopUpContainerView.removeSpinner();
+		await toggleAsyncSpinner(
+			() =>
+				WeaponPopUpTableView.renderAsync([
+					this.#userShipBuild,
+					this.#currentWeaponArray,
+					this.#weaponSlot,
+				]),
+			WeaponPopUpContainerView
+		);
 
 		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
 	}

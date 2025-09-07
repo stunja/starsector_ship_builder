@@ -23,6 +23,7 @@ import UI_CONFIG from "../../helper/UI_CONFIG";
 import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
 
 import { ScrollPosition } from "../../helper/ScrollPosition";
+import { toggleAsyncSpinner } from "../../helper/helperFunction";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
@@ -135,31 +136,24 @@ export default class HullModsPopUp extends ViewModel {
 		// Container
 		HullModsPopUpView.render(this.#greenHullMods);
 
-		// Start delayed spinner logic
-		let spinnerTimeout = setTimeout(() => {
-			HullModsPopUpView.addSpinner();
-		}, UI_CONFIG.spinnerDelayMs);
-
 		// Filter
 		await HullModsPopUpFilterView.renderAsync([
 			this.#filterCategories,
 			this.#currentFilter,
 		]);
 
-		// Cancel spinner logic (if it hasn't shown yet)
-		clearTimeout(spinnerTimeout);
-
-		HullModsPopUpView.removeSpinner();
+		await toggleAsyncSpinner(
+			() =>
+				HullModsPopUpTableView.renderAsync([
+					this.#greenHullMods,
+					this.#currentUnavailableHullMods,
+					this.#userShipBuild,
+				]),
+			HullModsPopUpView
+		);
 
 		// Header
 		HullModsPopUpHeaderView.render(this.#greenHullMods);
-
-		// Table
-		HullModsPopUpTableView.render([
-			this.#greenHullMods,
-			this.#currentUnavailableHullMods,
-			this.#userShipBuild,
-		]);
 	}
 	#eventListeners() {
 		this.#addWeaponPopUpTableHeaderListener();

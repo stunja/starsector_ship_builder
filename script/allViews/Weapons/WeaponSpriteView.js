@@ -6,6 +6,7 @@ import classNames from "../../helper/DomClassNames.js";
 import URL from "../../helper/url.js";
 import altTextLib from "../../helper/altTextLib.js";
 import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import { imageLoader } from "../../helper/helperFunction.js";
 
 // Old implementation
 // I need to change the name
@@ -34,20 +35,11 @@ class WeaponSpriteView {
 	async #weaponSpriteMarkupAsync(wpnObject) {
 		if (!wpnObject) return Promise.resolve(GENERIC_STRING.EMPTY);
 
-		const loadImage = (src) => {
-			return new Promise((resolve, reject) => {
-				const img = new Image();
-				img.src = `/${URL.DATA}/${src}`;
-				img.onload = () => resolve(img);
-				img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-			});
-		};
-
 		const { turretSprite, turretGunSprite } = wpnObject.additionalData;
 
 		const promises = [
-			loadImage(turretSprite),
-			turretGunSprite ? loadImage(turretGunSprite) : Promise.resolve(null),
+			imageLoader(turretSprite),
+			turretGunSprite ? imageLoader(turretGunSprite) : Promise.resolve(null),
 		];
 
 		return Promise.all(promises).then(([turretImg, gunImg]) => {

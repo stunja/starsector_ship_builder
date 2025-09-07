@@ -18,10 +18,11 @@ class HullModsPopUpTableView extends View {
 	#unAvailableMods;
 	#userShipBuild;
 	#hullSize;
-	generateMarkup() {
+	async generateMarkup() {
 		this.#processData(this._data);
+
 		const markup = `
-			${this.#greenArrayRender()}
+			${await this.#greenArrayRender()}
 			${this.#redArrayRender()}
 		`;
 		return markup;
@@ -42,9 +43,6 @@ class HullModsPopUpTableView extends View {
 			.split(GENERIC_STRING.COMMA)
 			.map((str) => `<p>${str}</p>`)
 			.join(GENERIC_STRING.EMPTY);
-
-	#hullModIcon = (crrHullMod) => `
-			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
 
 	#hullModDescription(currentHullMod) {
 		const regularValues = currentHullMod.effectValues.regularValues;
@@ -83,7 +81,7 @@ class HullModsPopUpTableView extends View {
 				</li>`;
 	};
 
-	#singleEntryMarkup(crrHullMod, arrayType) {
+	#singleHullModEntry(crrHullMod, arrayType) {
 		const [currentHullMod, reason] = crrHullMod;
 
 		const availableOrUnavailableArray =
@@ -91,12 +89,14 @@ class HullModsPopUpTableView extends View {
 				? classNames.tableEntryAvailable
 				: classNames.tableEntryUnavailable;
 
+		const hullModIcon = `<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
+
 		return `
 			<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}" 
 				${DataSet.dataHullModId}="${currentHullMod.id}"
 			>
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${this.#hullModIcon(currentHullMod)}
+					${hullModIcon}
 				</li>
 				<li class="${classNames.tableEntry} ${classNames.tableName}">
 					<p>${currentHullMod.name}</p>
@@ -108,20 +108,20 @@ class HullModsPopUpTableView extends View {
 			</ul>`;
 	}
 
-	#greenArrayRender() {
+	async #greenArrayRender() {
 		const arrayType = HULLMOD_ARRAY_TYPE.AVAILABLE;
 
 		// wrap in an array, so mods looks like
 		return this.#availableHullMods
-			.map((hullMod) => this.#singleEntryMarkup([hullMod], arrayType))
+			.map((hullMod) => this.#singleHullModEntry([hullMod], arrayType))
 			.join(GENERIC_STRING.EMPTY);
 	}
 
-	#redArrayRender() {
+	async #redArrayRender() {
 		const arrayType = HULLMOD_ARRAY_TYPE.UNAVAILABLE;
 
 		return this.#unAvailableMods
-			.map((hullMod) => this.#singleEntryMarkup(hullMod, arrayType))
+			.map((hullMod) => this.#singleHullModEntry(hullMod, arrayType))
 			.join(GENERIC_STRING.EMPTY);
 	}
 }

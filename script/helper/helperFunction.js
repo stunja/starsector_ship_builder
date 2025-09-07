@@ -8,6 +8,7 @@ import {
 } from "../helper/Properties";
 import { GENERIC_STRING } from "../helper/MagicStrings";
 import UI_CONFIG from "./UI_CONFIG";
+import URL from "./url";
 
 const HULLMODS_TO_HIDE = {
 	// these hullMods where remove from the game, for some reason.
@@ -225,6 +226,16 @@ export async function toggleAsyncSpinner(
 		view.removeSpinner();
 	}
 }
+// Image Loader
+
+export const imageLoader = async function (src) {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.src = `/${URL.DATA}/${src}`;
+		img.onload = () => resolve(img);
+		img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+	});
+};
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original
