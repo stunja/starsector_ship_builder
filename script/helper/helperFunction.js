@@ -227,7 +227,6 @@ export async function toggleAsyncSpinner(
 	}
 }
 // Image Loader
-
 export const imageLoader = async function (src) {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
