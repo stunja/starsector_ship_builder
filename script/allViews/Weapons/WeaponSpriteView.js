@@ -33,16 +33,18 @@ class WeaponSpriteView {
 	};
 
 	async #weaponSpriteMarkupAsync(wpnObject) {
-		if (!wpnObject) return Promise.resolve(GENERIC_STRING.EMPTY);
+		if (!wpnObject) return GENERIC_STRING.EMPTY;
 
 		const { turretSprite, turretGunSprite } = wpnObject.additionalData;
 
-		const promises = [
-			imageLoader(turretSprite),
-			turretGunSprite ? imageLoader(turretGunSprite) : Promise.resolve(null),
-		];
+		try {
+			const promises = [
+				imageLoader(turretSprite),
+				turretGunSprite ? imageLoader(turretGunSprite) : null,
+			];
 
-		return Promise.all(promises).then(([turretImg, gunImg]) => {
+			const [turretImg, gunImg] = await Promise.all(promises);
+
 			const turretHTML = turretImg
 				? `<img src="${turretImg.src}" alt="${altTextLib.weaponBaseSprite}" class="${classNames.weaponSpriteBase}" />`
 				: GENERIC_STRING.EMPTY;
@@ -52,14 +54,16 @@ class WeaponSpriteView {
 				: GENERIC_STRING.EMPTY;
 
 			return `
-			<div class="${classNames.weaponSprite}">
-				${turretHTML}
-				${gunHTML}
-			</div>
-		`;
-		});
+            <div class="${classNames.weaponSprite}">
+                ${turretHTML}
+                ${gunHTML}
+            </div>
+        `;
+		} catch (error) {
+			console.error("Failed to load weapon sprites:", error);
+			return GENERIC_STRING.EMPTY;
+		}
 	}
-
 	#weaponType = (weaponSlot, weaponObject) =>
 		weaponSlot
 			? weaponSlot.type.toLowerCase()

@@ -5,6 +5,7 @@ import URL from "../../helper/url.js";
 import View from "../view.js";
 import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 import HullModHelper from "../../components/Hullmods/HullModHelper.js";
+import { imageLoader } from "../../helper/helperFunction.js";
 // Helper
 
 const HULLMOD_ARRAY_TYPE = {
@@ -21,12 +22,6 @@ class HullModsPopUpTableView extends View {
 	async generateMarkup() {
 		this.#processData(this._data);
 
-		// const markup = `
-		// 	${await this.#greenArrayRender()}
-		// 	${this.#redArrayRender()}
-		// `;
-		// return markup;
-
 		const markup = this.#tableBodyRender();
 		return markup;
 	}
@@ -41,35 +36,7 @@ class HullModsPopUpTableView extends View {
 		this.#hullSize = this.#userShipBuild.hullSize;
 	}
 
-	// #singleHullModEntry(crrHullMod, arrayType) {
-	// 	const [currentHullMod, reason] = crrHullMod;
-
-	// 	const availableOrUnavailableArray =
-	// 		arrayType === HULLMOD_ARRAY_TYPE.AVAILABLE
-	// 			? classNames.tableEntryAvailable
-	// 			: classNames.tableEntryUnavailable;
-
-	// 	const hullModIcon = `<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
-
-	// 	return `
-	// 		<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}"
-	// 			${DataSet.dataHullModId}="${currentHullMod.id}"
-	// 		>
-	// 			<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-	// 				${hullModIcon}
-	// 			</li>
-	// 			<li class="${classNames.tableEntry} ${classNames.tableName}">
-	// 				<p>${currentHullMod.name}</p>
-	// 			</li>
-	// 			${this.#hullModDescription(currentHullMod)}
-	// 			${this.#typeMarkup(currentHullMod)}
-	// 			${this.#opCostMarkup(currentHullMod)}
-	// 			${this.#reasonMarkup(reason)}
-	// 		</ul>`;
-	// }
 	async #tableBodyRender() {
-		// const availableOrUnavailableArray = "";
-
 		const entryMarkup = async (currentHullMod, arrayType) => {
 			const availableOrUnavailableArray =
 				arrayType === HULLMOD_ARRAY_TYPE.AVAILABLE
@@ -82,15 +49,12 @@ class HullModsPopUpTableView extends View {
 			if (Array.isArray(currentHullMod)) {
 				[currentHullMod, reason] = currentHullMod;
 			}
-			// const [currentHullMod, reason] = crrHullMod;
 
-			// const hullModSprite = await WeaponSpriteView.renderElement([
-			// 	crrWpn,
-			// 	this.#weaponSlot,
-			// ]);
-			// const hullModSprite = "";
-			const hullModSprite = `<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
+			const hullModSprite = await imageLoader(currentHullMod.sprite);
+			hullModSprite.alt = `Image of a ${currentHullMod.name}`;
+			// const hullModIcon = `<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
 
+			console.log(hullModSprite);
 			return `
 			<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}" 
 				${DataSet.dataHullModId}="${currentHullMod.id}"
@@ -129,7 +93,6 @@ class HullModsPopUpTableView extends View {
 	}
 
 	#hullModDescription(currentHullMod) {
-		console.log(currentHullMod);
 		const regularValues = currentHullMod.effectValues.regularValues;
 		const description = currentHullMod.desc;
 		const currentNumber = regularValues.slice();

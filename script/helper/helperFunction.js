@@ -235,6 +235,7 @@ export const imageLoader = async function (src) {
 		img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
 	});
 };
+
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original
