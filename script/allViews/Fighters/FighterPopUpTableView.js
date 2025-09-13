@@ -47,41 +47,41 @@ class FighterPopUpTableView extends View {
 	};
 
 	async #tableBodyRender() {
-		const entryMarkup = async (crrFighter) => {
-			const imgSprite = await FighterSprite.renderElement(crrFighter);
+		const entryMarkup = async (currentFighter) => {
+			const imgSprite = await FighterSprite.renderElement(currentFighter);
 
 			return `
 			<ul class="${classNames.tableEntries}${this.#assignActiveClass(
-				crrFighter,
+				currentFighter,
 				this.#installedWeapons,
 				this.#weaponSlot
-			)}" ${DataSet.dataWeaponPopUpId}="${crrFighter.id}">
+			)}" ${DataSet.dataWeaponPopUpId}="${currentFighter.id}">
 
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
 					${imgSprite}
 				</li>
 
 				<li class="${classNames.tableEntry} ${classNames.tableName}">
-					${crrFighter.additionalData.name}
+					${currentFighter.additionalData.name}
 				</li>
 
 				<li class="${classNames.tableEntry}">
-					${this.#fighterRoleString(crrFighter)}
+					${this.#fighterRoleString(currentFighter)}
 				</li>
 
 				<li class="${classNames.tableEntry}">
-					${this.#numberOfFightersInAWing(crrFighter)}
+					${this.#numberOfFightersInAWing(currentFighter)}
 				</li>
 				
-				<li class="${classNames.tableEntry}">${crrFighter.range}</li>
-				<li class="${classNames.tableEntry}">${crrFighter.opCost}</li>
+				<li class="${classNames.tableEntry}">${currentFighter.range}</li>
+				<li class="${classNames.tableEntry}">${currentFighter.opCost}</li>
 			</ul>
 			`;
 		};
 
 		const markupArray = await Promise.all(
-			this.#currentFighterArray.map((currentWeapon) =>
-				entryMarkup(currentWeapon)
+			this.#currentFighterArray.map((currentFighter) =>
+				entryMarkup(currentFighter)
 			)
 		);
 

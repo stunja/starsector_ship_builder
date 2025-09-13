@@ -1,12 +1,14 @@
+// View
+import View from "../view.js";
+import HullModSprite from "./HullModSprite.js";
+//
+// Helper
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import { imageLoader } from "../../helper/helperFunction.js";
+import HullModHelper from "../../components/Hullmods/HullModHelper.js";
 import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
 import URL from "../../helper/url.js";
-// View
-import View from "../view.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
-import HullModHelper from "../../components/Hullmods/HullModHelper.js";
-import { imageLoader } from "../../helper/helperFunction.js";
-// Helper
 
 const HULLMOD_ARRAY_TYPE = {
 	AVAILABLE: "AVAILABLE",
@@ -35,6 +37,7 @@ class HullModsPopUpTableView extends View {
 
 		this.#hullSize = this.#userShipBuild.hullSize;
 	}
+	// const hullModIcon = `<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
 
 	async #tableBodyRender() {
 		const entryMarkup = async (currentHullMod, arrayType) => {
@@ -49,28 +52,29 @@ class HullModsPopUpTableView extends View {
 			if (Array.isArray(currentHullMod)) {
 				[currentHullMod, reason] = currentHullMod;
 			}
+			try {
+				const imgSprite = await HullModSprite.renderElement(currentHullMod);
 
-			const hullModSprite = await imageLoader(currentHullMod.sprite);
-			hullModSprite.alt = `Image of a ${currentHullMod.name}`;
-			// const hullModIcon = `<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
-
-			console.log(hullModSprite);
-			return `
-			<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}" 
-				${DataSet.dataHullModId}="${currentHullMod.id}"
-			>
-				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${hullModSprite}
-				</li>
-				<li class="${classNames.tableEntry} ${classNames.tableName}">
-					<p>${currentHullMod.name}</p>
-				</li>
-				${this.#hullModDescription(currentHullMod)}
-				${this.#typeMarkup(currentHullMod)}
-				${this.#opCostMarkup(currentHullMod)}
-				${this.#reasonMarkup(reason)}
-			</ul>
-			`;
+				return `
+						<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}" 
+							${DataSet.dataHullModId}="${currentHullMod.id}"
+						>
+							<li class="${classNames.tableEntry} ${classNames.tableIcon}">
+								${imgSprite}
+							</li>
+							<li class="${classNames.tableEntry} ${classNames.tableName}">
+								<p>${currentHullMod.name}</p>
+							</li>
+							${this.#hullModDescription(currentHullMod)}
+							${this.#typeMarkup(currentHullMod)}
+							${this.#opCostMarkup(currentHullMod)}
+							${this.#reasonMarkup(reason)}
+						</ul>
+						`;
+			} catch (error) {
+				console.error("Failed to load hullMod sprites:", error);
+				return GENERIC_STRING.EMPTY;
+			}
 		};
 
 		const markupArray = await Promise.all([
