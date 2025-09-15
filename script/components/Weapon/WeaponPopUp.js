@@ -95,7 +95,13 @@ export default class WeaponPopUp extends ViewModel {
 	};
 
 	async #renderAndListeners() {
-		await this.#weaponPopUpRender();
+		//? Strange way to render, but it works.
+		//? first draw "empty" container then target it with other renders
+
+		WeaponPopUpContainerView.render(this.#userShipBuild);
+		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
+
+		await this.#tableRenderAndSpinner();
 		this.#addEventListeners();
 	}
 
@@ -125,7 +131,8 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		// Render Changes
-		this.#renderAndListeners();
+		this.#tableRenderAndSpinner();
+		this.#addEventListeners();
 	};
 
 	// Creates currentArray based on Weapon Slot Type and Size.
@@ -137,13 +144,8 @@ export default class WeaponPopUp extends ViewModel {
 			);
 	}
 
-	// Renders After User Clicks on Weapon Button (Weapon Slot)
-	async #weaponPopUpRender() {
-		//? Strange way to render, but it works.
-		//? first draw "empty" container then target it with other renders
-		WeaponPopUpContainerView.render(this.#userShipBuild);
-
-		await toggleAsyncSpinner(
+	async #tableRenderAndSpinner() {
+		return await toggleAsyncSpinner(
 			() =>
 				WeaponPopUpTableView.renderAsync([
 					this.#userShipBuild,
@@ -152,8 +154,6 @@ export default class WeaponPopUp extends ViewModel {
 				]),
 			WeaponPopUpContainerView
 		);
-
-		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
 	}
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentWeaponToInstalledWeapons = (btn) => {

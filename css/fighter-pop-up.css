@@ -26,7 +26,7 @@
 		flex-direction: column;
 	}
 	.table-container {
-		animation: fadeIn 0.2s ease-in forwards;
+		animation: fadeIn 0.25s ease-in forwards;
 		position: relative;
 	}
 }

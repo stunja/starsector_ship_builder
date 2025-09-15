@@ -15,6 +15,11 @@
 		position: relative;
 	}
 
+	.table-body {
+		animation: fadeIn 0.5s ease-in forwards;
+		position: relative;
+	}
+
 	.table-header,
 	.table-body .table-entries {
 		/* grid-template-columns: 8rem 12rem 1fr 12rem 6rem; */

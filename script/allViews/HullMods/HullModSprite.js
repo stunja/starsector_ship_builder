@@ -2,6 +2,7 @@
 import { GENERIC_STRING } from "../../helper/MagicStrings";
 import { imageLoader } from "../../helper/helperFunction";
 
+//? this type of implementation is necessary. Otherwise incorrectly imports as an image.
 class HullModSprite {
 	async renderElement(currentHullMod) {
 		const markup = await this.#hullModSrpiteMarkup(currentHullMod);

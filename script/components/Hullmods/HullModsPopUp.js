@@ -122,45 +122,6 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#createHullModsArray();
 	}
-	async #render() {
-		await this.#renderHullModsPopUp();
-
-		this.#eventListeners();
-
-		this.#assignActiveClasses();
-
-		new ScrollPosition().save(classNames.tableContainer);
-	}
-
-	async #renderHullModsPopUp() {
-		// Container
-		HullModsPopUpView.render(this.#greenHullMods);
-
-		// Filter
-		await HullModsPopUpFilterView.renderAsync([
-			this.#filterCategories,
-			this.#currentFilter,
-		]);
-
-		await toggleAsyncSpinner(
-			() =>
-				HullModsPopUpTableView.renderAsync([
-					this.#greenHullMods,
-					this.#currentUnavailableHullMods,
-					this.#userShipBuild,
-				]),
-			HullModsPopUpView
-		);
-
-		// Header
-		HullModsPopUpHeaderView.render(this.#greenHullMods);
-	}
-	#eventListeners() {
-		this.#addWeaponPopUpTableHeaderListener();
-		this.#addWeaponPopUpEntryListener();
-		this.#addFilterListener();
-		this.#closePopUp();
-	}
 
 	#createHullModsArray() {
 		this.#createGreenHullMods();
@@ -183,45 +144,14 @@ export default class HullModsPopUp extends ViewModel {
 		);
 	};
 
-	// WeaponPopUp Event Listeners
-	#addFilterListener() {
-		HullModsPopUpFilterView.addClickHandler(
-			EVENT_LISTENER_TARGET.FILTER_BUTTON,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#filterTable
-		);
-	}
-	#addWeaponPopUpTableHeaderListener() {
-		HullModsPopUpHeaderView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#popUpSorter
-		);
-	}
-	#addWeaponPopUpEntryListener() {
-		HullModsPopUpTableView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#toggleHullMod
-		);
-	}
-	// Close if clicked outside
-	#closePopUp() {
-		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
-			CLASSES.TABLE_CONTAINER,
-			HullModsPopUpView._clearRender
-		);
-	}
 	// TablePopUpSorter
 	#popUpSorter = (btn) => {
 		const { category } = btn.dataset;
 
 		if (SKIP_SORT_CATEGORY[category]) return this.#installedSpecialSorter();
 
-		this.#regularSorter(category);
-	};
+		// this.#regularSorter(category);
 
-	#regularSorter(category) {
 		this.#greenHullMods = TablePopUpSorter.update([
 			category,
 			POPUP_TABLE_TYPE.HULLMOD,
@@ -235,7 +165,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#updateGreenAndRedHullMods();
 		// Render
 		this.#render();
-	}
+	};
 
 	// Special sorter for installed category
 	#installedSpecialSorter() {
@@ -406,4 +336,81 @@ export default class HullModsPopUp extends ViewModel {
 			)
 		);
 	};
+
+	// Renders
+	async #render() {
+		await this.#renderHullModsPopUp();
+		// await this.#renderAndListeners();
+
+		this.#eventListeners();
+
+		this.#assignActiveClasses();
+
+		new ScrollPosition().save(classNames.tableContainer);
+	}
+
+	// Event Listeners
+	async #renderHullModsPopUp() {
+		// Container
+		HullModsPopUpView.render(this.#greenHullMods);
+
+		// Filter
+		await HullModsPopUpFilterView.renderAsync([
+			this.#filterCategories,
+			this.#currentFilter,
+		]);
+
+		await this.#tableRenderAndSpinner();
+
+		// Header
+		HullModsPopUpHeaderView.render(this.#greenHullMods);
+	}
+
+	// Only table and spinner
+	async #tableRenderAndSpinner() {
+		return await toggleAsyncSpinner(
+			() =>
+				HullModsPopUpTableView.renderAsync([
+					this.#greenHullMods,
+					this.#currentUnavailableHullMods,
+					this.#userShipBuild,
+				]),
+			HullModsPopUpView
+		);
+	}
+	#eventListeners() {
+		this.#addWeaponPopUpTableHeaderListener();
+		this.#addWeaponPopUpEntryListener();
+		this.#addFilterListener();
+		this.#closePopUp();
+	}
+	// WeaponPopUp Event Listeners
+	#addFilterListener() {
+		HullModsPopUpFilterView.addClickHandler(
+			EVENT_LISTENER_TARGET.FILTER_BUTTON,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#filterTable
+		);
+	}
+	#addWeaponPopUpTableHeaderListener() {
+		HullModsPopUpHeaderView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#popUpSorter
+		);
+	}
+	#addWeaponPopUpEntryListener() {
+		HullModsPopUpTableView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#toggleHullMod
+		);
+	}
+	// Close if clicked outside
+	#closePopUp() {
+		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
+			CLASSES.TABLE_CONTAINER,
+			HullModsPopUpView._clearRender
+		);
+	}
 }

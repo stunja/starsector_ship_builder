@@ -95,11 +95,6 @@ export default class FighterPopUp extends ViewModel {
 		this.#renderAndListeners();
 	};
 
-	async #renderAndListeners() {
-		await this.#renderFighterPopUp();
-		this.#addEventListeners();
-	}
-
 	#createFighterWeaponArray = () =>
 		(this.#currentFighterArray = this.#state.dataState.allFighters.toSorted(
 			(a, b) => b.opCost - a.opCost
@@ -145,7 +140,8 @@ export default class FighterPopUp extends ViewModel {
 		);
 
 		// Render Changes
-		this.#renderAndListeners();
+		this.#tableRenderAndSpinner();
+		this.#addEventListeners();
 	};
 	// Hover
 	#showAdditionalInformationOnHover = (btn) => {
@@ -166,11 +162,18 @@ export default class FighterPopUp extends ViewModel {
 	};
 
 	/////
-	// render
-	async #renderFighterPopUp() {
+	// Combined function
+	async #renderAndListeners() {
 		FighterPopUpContainerView.render(this.#state);
+		FighterPopUpTableHeaderView.render(this.#state);
 
-		await toggleAsyncSpinner(
+		await this.#tableRenderAndSpinner();
+		this.#addEventListeners();
+	}
+
+	// Only table and spinner
+	async #tableRenderAndSpinner() {
+		return await toggleAsyncSpinner(
 			() =>
 				FighterPopUpTableView.renderAsync([
 					this.#installedWeapons,
@@ -179,10 +182,7 @@ export default class FighterPopUp extends ViewModel {
 				]),
 			FighterPopUpContainerView
 		);
-
-		FighterPopUpTableHeaderView.render(this.#state);
 	}
-
 	// WeaponPopUp Event Listeners
 	#addEventListeners() {
 		// Listeners
