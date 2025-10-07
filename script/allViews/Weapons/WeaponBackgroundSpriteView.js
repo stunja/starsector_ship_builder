@@ -42,10 +42,14 @@ const SIZE_CONFIG = {
 
 // Old implementation
 class WeaponBackgroundSpriteView {
-	renderElement(weaponType, weaponSize) {
+	renderElement(weaponObject, weaponSlot, backgroundSpriteEqualToWeaponSize) {
 		return `
 		<div class="${classNames.weaponBackgroundSpriteParent}">
-			${this.#generateFinalMarkup(weaponType, weaponSize)}
+			${this.#generateFinalMarkup(
+				weaponObject,
+				weaponSlot,
+				backgroundSpriteEqualToWeaponSize
+			)}
 		</div>`;
 	}
 
@@ -59,6 +63,19 @@ class WeaponBackgroundSpriteView {
 					${classNames.weaponBackgroundSpriteOppacity}--${opacity}">
 				</div>`;
 	}
+
+	#weaponType = (weaponObject, weaponSlot) => {
+		const isWeaponPresent = weaponObject.additionalData?.type.toLowerCase();
+		const weaponType = weaponSlot.type.toLowerCase();
+
+		return weaponSlot ? weaponType : isWeaponPresent;
+	};
+	#weaponSize = (weaponObject, weaponSlot) => {
+		const isWeaponPresent = weaponObject.additionalData?.size.toLowerCase();
+		const weaponSlotSize = weaponSlot.size.toLowerCase();
+
+		return isWeaponPresent ? isWeaponPresent : weaponSlotSize;
+	};
 
 	#getStandardWeaponMarkup(weaponSize, weaponType) {
 		const config = SIZE_CONFIG[weaponSize];
@@ -81,13 +98,24 @@ class WeaponBackgroundSpriteView {
 			.join(GENERIC_STRING.EMPTY);
 	}
 
-	#generateFinalMarkup(weaponType, weaponSize) {
+	#generateFinalMarkup(
+		weaponObject,
+		weaponSlot,
+		backgroundSpriteEqualToWeaponSize
+	) {
+		const weaponType = this.#weaponType(weaponObject, weaponSlot);
+		const weaponSize = () => {
+			return backgroundSpriteEqualToWeaponSize
+				? this.#weaponSize(weaponObject, weaponSlot)
+				: weaponSlot.size.toLowerCase();
+		};
+
 		if (SPRITE_GROUP.STANDARD_WEAPONS.includes(weaponType)) {
-			return this.#getStandardWeaponMarkup(weaponSize, weaponType);
+			return this.#getStandardWeaponMarkup(weaponSize(), weaponType);
 		}
 
 		if (SPRITE_GROUP.DUAL_SPRITE_WEAPONS.includes(weaponType)) {
-			return this.#getDualSpriteMarkup(weaponSize, weaponType);
+			return this.#getDualSpriteMarkup(weaponSize(), weaponType);
 		}
 
 		//? I dont remember why decorative is here

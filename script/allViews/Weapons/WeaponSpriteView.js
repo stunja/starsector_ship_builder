@@ -11,26 +11,25 @@ import { imageLoader } from "../../helper/helperFunction.js";
 // Old implementation
 // I need to change the name
 class WeaponSpriteView {
-	async renderElement([weaponObject, weaponSlot]) {
+	async renderElement([
+		weaponObject,
+		weaponSlot,
+		backgroundSpriteEqualToWeaponSize,
+	]) {
 		const spriteMarkup = await this.#weaponSpriteMarkupAsync(weaponObject);
 
 		const markup = `
 				<div class="${classNames.weaponSpriteParent}">
-					${this.#weaponBackgroundSpriteMarkup(weaponSlot, weaponObject)}
+					${WeaponBackgroundSpriteView.renderElement(
+						weaponObject,
+						weaponSlot,
+						backgroundSpriteEqualToWeaponSize
+					)}
 					${spriteMarkup}
 				</div>
 				${WeaponArcView.renderElement(weaponSlot)}`;
 		return markup;
 	}
-
-	#weaponBackgroundSpriteMarkup = (wpnSlot, wpnObject) => {
-		const markup = `${WeaponBackgroundSpriteView.renderElement(
-			this.#weaponType(wpnSlot, wpnObject),
-			this.#weaponSize(wpnSlot, wpnObject)
-		)}`;
-
-		return markup;
-	};
 
 	async #weaponSpriteMarkupAsync(wpnObject) {
 		if (!wpnObject) return GENERIC_STRING.EMPTY;
@@ -64,14 +63,5 @@ class WeaponSpriteView {
 			return GENERIC_STRING.EMPTY;
 		}
 	}
-	#weaponType = (weaponSlot, weaponObject) =>
-		weaponSlot
-			? weaponSlot.type.toLowerCase()
-			: weaponObject.additionalData.type.toLowerCase();
-
-	#weaponSize = (weaponSlot, weaponObject) =>
-		weaponSlot
-			? weaponSlot.size.toLowerCase()
-			: weaponObject.additionalData.size.toLowerCase();
 }
 export default new WeaponSpriteView();

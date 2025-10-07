@@ -29,9 +29,12 @@ class WeaponPopUpTableView extends View {
 
 	async #tableBodyRender() {
 		const entryMarkup = async (crrWpn) => {
+			const keepBackgroundSpriteEqualToSizeOfWeaponObject = true;
+
 			const imgSprite = await WeaponSpriteView.renderElement([
 				crrWpn,
 				this.#weaponSlot,
+				keepBackgroundSpriteEqualToSizeOfWeaponObject,
 			]);
 
 			return `

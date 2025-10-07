@@ -28,12 +28,15 @@ class WeaponSlotsView extends View {
 		return markupArray.join(GENERIC_STRING.EMPTY);
 	}
 
-	#weaponSlotMatchesInstalledWeapon = (currentWeaponSlot, installedWeapons) =>
-		installedWeapons.find(([slot, _wpn]) => slot === currentWeaponSlot.id);
+	#weaponSlotMatchInstalledWeapon = (currentWeaponSlot, installedWeapons) => {
+		return installedWeapons.find(
+			([slot, _wpn]) => slot === currentWeaponSlot.id
+		);
+	};
 
 	#addWeaponSpriteToWeaponSlot = (currentWeaponSlot, installedWeapons) => {
 		try {
-			const currentInstalledWeapon = this.#weaponSlotMatchesInstalledWeapon(
+			const currentInstalledWeapon = this.#weaponSlotMatchInstalledWeapon(
 				currentWeaponSlot,
 				installedWeapons
 			);
@@ -65,7 +68,6 @@ class WeaponSlotsView extends View {
 			weaponObject,
 			weaponSlot,
 		]);
-
 		// prettier-ignore
 		const markup = `
 				<button class="${classNames.weaponSlot} ${classNames.weaponSize}--${weaponSize} ${classNames.weaponType}--${weaponType}" 
