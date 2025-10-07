@@ -1,9 +1,28 @@
+// ViewModel
 import ViewModel from "../../ViewModel.js";
+import ShipStats from "../ShipStats/ShipStats";
+import HullModController from "../../components/Hullmods/HullModController.js";
+
+// Helper
 import WeaponPopUpCreateCurrentWeaponArray from "./WeaponPopUpCreateCurrentWeaponArray.js";
 import TablePopUpSorter from "../TablePopUpSorter.js";
-// Helper
 import classNames from "../../helper/DomClassNames.js";
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
+import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild.js";
+
+import {
+	weaponSlotIdIntoWeaponSlotObject,
+	AddRemoveInstalledWeapon,
+	pushTargetWeaponObjectOnTop,
+	toggleAsyncSpinner,
+} from "../../helper/helperFunction.js";
+
+import {
+	EVENT_LISTENER_TYPE,
+	GENERIC_STRING,
+} from "../../helper/MagicStrings.js";
+
+import UI_CONFIG from "../../helper/UI_CONFIG.js";
+
 // Views
 import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpContainerView.js";
 import WeaponPopUpTableHeaderView from "../../allViews/WeaponPopUp/WeaponPopUpTableHeaderView.js";
@@ -15,10 +34,6 @@ const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
 	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
 };
-const EVENT_LISTENER_TYPE = {
-	CLICK: "click",
-	HOVER: "mouseover",
-};
 
 const SKIP_SORT_CATEGORY = {
 	icon: "icon",
@@ -26,6 +41,8 @@ const SKIP_SORT_CATEGORY = {
 };
 
 const TABLE_POPUP_TYPE = "weaponPopUpTable";
+// const spinnerDelayMs = 0.5;
+// const spinnerDelayMs = UI_CONFIG.spinnerDelayMs;
 
 export default class WeaponPopUp extends ViewModel {
 	#weaponSlot;
@@ -35,18 +52,29 @@ export default class WeaponPopUp extends ViewModel {
 	#state;
 	#allWeapons;
 	#userShipBuild;
-
+	#installedWeapons;
 	// Hover
 	#currentlyHoveredWeapon;
+	// UI
 	constructor(model) {
 		super(model);
-
+	}
+	#updateData() {
 		this.#state = this.getState();
 		this.#allWeapons = this.#state.dataState.allWeapons;
 		this.#userShipBuild = this.#state.userState.userShipBuild;
+		this.#installedWeapons = this.#userShipBuild.installedWeapons;
+	}
+	#updateOtherComponents() {
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
+		// Update Controller, to display installedHullMods
+		new HullModController(this.getState()).update();
 	}
 	update = (btn) => {
 		if (!btn) return;
+
+		this.#updateData();
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
 			this.getUserShipBuild().weaponSlots,
@@ -54,72 +82,59 @@ export default class WeaponPopUp extends ViewModel {
 		);
 
 		this.#createCurrentWeaponArray();
-		this.#renderWeaponPopUpAndAddEventListeners();
+
+		// Pushes Installed Weapon to the top of the array
+		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
+			this.#installedWeapons,
+			this.#weaponSlot,
+			this.#currentWeaponArray
+		);
+
+		// Render
+		this.#renderAndListeners();
 	};
-	//
-	#renderWeaponPopUpAndAddEventListeners() {
-		// Render Weapon PopUps
-		this.#weaponPopUpRender();
 
-		// Listeners
-		this.#addWeaponPopUpEntryListener();
-		this.#addWeaponPopUpTableHeaderListener();
+	async #renderAndListeners() {
+		//? Strange way to render, but it works.
+		//? first draw "empty" container then target it with other renders
 
-		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
-			`.${classNames.tableContainer}`,
-			WeaponPopUpContainerView._clearRender
-		);
+		WeaponPopUpContainerView.render(this.#userShipBuild);
+		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
+
+		await this.#tableRenderAndSpinner();
+		this.#addEventListeners();
 	}
-	#removeActiveWeaponAndReRenderWeaponPopUp() {
+
+	#toggleWeaponAndClosePopUp() {
 		// Update WeaponSlots // Render // Listener // Arcs / Background
 		new WeaponSlots(this.#state).update();
 
 		// Remove WeaponPopUpContainer
 		WeaponPopUpContainerView._clearRender();
-
-		// Render Again
-		this.#renderWeaponPopUpAndAddEventListeners();
-	}
-	#addWeaponAndCloseWeaponPopUp() {
-		// Update WeaponSlots // Render // Listener // Arcs / Background
-		new WeaponSlots(this.#state).update();
-
-		// Remove WeaponPopUpContainer
-		WeaponPopUpContainerView._clearRender();
-	}
-	// WeaponPopUp Event Listeners
-	#addWeaponPopUpTableHeaderListener() {
-		WeaponPopUpTableHeaderView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#weaponTableSorter
-		);
-	}
-	#addWeaponPopUpEntryListener() {
-		WeaponPopUpTableView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#addCurrentWeaponToInstalledWeapons
-		);
-		WeaponPopUpTableView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
-			EVENT_LISTENER_TYPE.HOVER,
-			this.#showAdditionalInformationOnHover
-		);
 	}
 
 	#weaponTableSorter = (btn) => {
 		const { category } = btn.dataset;
 		if (SKIP_SORT_CATEGORY[category]) return;
 		// Sort the Table
-		this.#currentWeaponArray = TablePopUpSorter.update([
-			btn,
+		const sorterArray = TablePopUpSorter.update([
+			category,
 			TABLE_POPUP_TYPE,
 			this.#currentWeaponArray,
+			this.#userShipBuild,
 		]);
+
+		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
+			this.#installedWeapons,
+			this.#weaponSlot,
+			sorterArray
+		);
+
 		// Render Changes
-		this.#renderWeaponPopUpAndAddEventListeners();
+		this.#tableRenderAndSpinner();
+		this.#addEventListeners();
 	};
+
 	// Creates currentArray based on Weapon Slot Type and Size.
 	#createCurrentWeaponArray() {
 		this.#currentWeaponArray =
@@ -128,54 +143,36 @@ export default class WeaponPopUp extends ViewModel {
 				this.#allWeapons
 			);
 	}
-	// Renders After User Clicks on Weapon Button (Weapon Slot)
-	#weaponPopUpRender() {
-		//? Strange way to render, but it works.
-		//? first draw "empty" container then target it with other renders
-		WeaponPopUpContainerView.render(this.#userShipBuild);
-		WeaponPopUpTableHeaderView.render(this.#userShipBuild);
-		WeaponPopUpTableView.render([
-			this.#userShipBuild,
-			this.#currentWeaponArray,
-			this.#weaponSlot,
-		]);
+
+	async #tableRenderAndSpinner() {
+		return await toggleAsyncSpinner(
+			() =>
+				WeaponPopUpTableView.renderAsync([
+					this.#userShipBuild,
+					this.#currentWeaponArray,
+					this.#weaponSlot,
+				]),
+			WeaponPopUpContainerView
+		);
 	}
 	// User Clicks to Add Weapon to Installed Weapon Array
 	#addCurrentWeaponToInstalledWeapons = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
-		const installedWeapons = userShipBuild.installedWeapons;
-		let isWeaponPopUpOpen = this.getUiState().weaponPopUp.isWeaponPopUpOpen;
-		//
-		const updatedInstalledWeapons = installedWeapons.map(
-			([slotId, currentWeapon]) => {
-				// If weapon already exists in slot, remove it
-				if (currentWeapon === weaponPopUpId) {
-					isWeaponPopUpOpen = !isWeaponPopUpOpen;
-					return [slotId, ""];
-				}
-				// if weapon dont match, keep the original
-				if (slotId !== this.#weaponSlot.id) {
-					return [slotId, currentWeapon];
-				}
-				// Otherwise, add the new weapon
-				return [slotId, weaponPopUpId];
-			}
+
+		new UpdateUserShipBuild(this.getState()).updateWeapons(
+			weaponPopUpId,
+			this.#weaponSlot.id
 		);
 
-		this.setUpdateUserShipBuild({
-			...userShipBuild,
-			installedWeapons: updatedInstalledWeapons,
-		});
-
-		isWeaponPopUpOpen === true
-			? this.#addWeaponAndCloseWeaponPopUp()
-			: this.#removeActiveWeaponAndReRenderWeaponPopUp();
+		this.#updateData();
+		this.#toggleWeaponAndClosePopUp();
+		this.#updateOtherComponents();
 	};
 
 	// Hover
 	#showAdditionalInformationOnHover = (btn) => {
 		const { weaponPopUpId } = btn.dataset;
+
 		if (this.#currentlyHoveredWeapon === weaponPopUpId) return; // guard from mouseover event
 		this.#currentlyHoveredWeapon = weaponPopUpId;
 
@@ -185,7 +182,7 @@ export default class WeaponPopUp extends ViewModel {
 		);
 		// Render Hover Container
 		// strange implementation, I need wpnOb+wpnSlot for icon render
-		WeaponHoverContainerView.render([
+		WeaponHoverContainerView.renderAsync([
 			this.#weaponObjectData(hoveredWeaponObject),
 			hoveredWeaponObject,
 			this.#weaponSlot,
@@ -249,7 +246,7 @@ export default class WeaponPopUp extends ViewModel {
 		const burstSizeString =
 			stats.timing.burstSize && stats.timing.burstSize > 1
 				? `x${stats.ammo.burstSize}`
-				: "";
+				: GENERIC_STRING.EMPTY;
 		const weaponDescription = information.description.split(".");
 
 		const isWeaponBeam = stats.projectile.projectileOrBeam === "beam";
@@ -332,4 +329,38 @@ export default class WeaponPopUp extends ViewModel {
 			},
 		};
 	};
+	// Event Listeners
+	#addEventListeners() {
+		this.#weaponPopUpEntryHandler();
+		this.#weaponPopUpTableHeaderHandler();
+		this.#closeWeaponPopUpHandler();
+	}
+	// handler for table header
+	#weaponPopUpTableHeaderHandler() {
+		WeaponPopUpTableHeaderView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#weaponTableSorter
+		);
+	}
+	// If user clicks on entries
+	#weaponPopUpEntryHandler() {
+		WeaponPopUpTableView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#addCurrentWeaponToInstalledWeapons
+		);
+		WeaponPopUpTableView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.HOVER,
+			this.#showAdditionalInformationOnHover
+		);
+	}
+	// Close If user clicks outside of container
+	#closeWeaponPopUpHandler() {
+		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
+			`.${classNames.tableContainer}`,
+			WeaponPopUpContainerView._clearRender
+		);
+	}
 }

@@ -5,8 +5,10 @@ import ViewModel from "../../ViewModel";
 import CapacitorsView from "../../allViews/Stats/CapacitorsView";
 import OrdinancePointsView from "../../allViews/Stats/OrdinancePointsView";
 import ShieldOrPhaseView from "../../allViews/Stats/ShieldOrPhaseView";
-
 import VentsView from "../../allViews/Stats/VentsView";
+
+// Helper
+import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 import classNames from "../../helper/DomClassNames";
 
 const CONTROLS = {
@@ -56,66 +58,25 @@ const SHIP_SYSTEMS = {
 // mostly identical
 export default class CapacitorsAndVents extends ViewModel {
 	#userShipBuild;
-	#currentFluxCapacity;
-	#currentFluxDissipation;
-	#currentOrdinancePoints;
 
 	constructor(model) {
 		super(model);
-		this.#userShipBuild = this.getUserShipBuild();
+
+		this.update();
 	}
 	update() {
 		this.#processData();
 		this.#capacitorHandler();
 		this.#ventsHandler();
-
-		this.#updateValues();
 	}
-	#processData() {
-		this.#currentFluxCapacity = this.#userShipBuild.fluxCapacity;
-		this.#currentFluxDissipation = this.#userShipBuild.fluxDissipation;
-		this.#currentOrdinancePoints = this.#userShipBuild.ordinancePoints;
-	}
-	#updateValues() {
-		this.#userShipBuild = this.getUserShipBuild();
-
-		const {
-			fluxCapacityPerSingleActiveCapacitor,
-			capacitors,
-			capacitorsOrdinanceCost,
-			vents,
-			fluxDissipationPerSingleActiveVent,
-		} = this.#userShipBuild;
-
-		// Update Capacity
-		const updateFluxCapacity =
-			this.#currentFluxCapacity +
-			fluxCapacityPerSingleActiveCapacitor * capacitors;
-
-		// Update Dissipation
-		const updateFluxDissipation =
-			this.#currentFluxDissipation + fluxDissipationPerSingleActiveVent * vents;
-
-		// Ordinance Cost
-		const updateOrdinancePoints =
-			this.#currentOrdinancePoints +
-			(capacitors + vents) * capacitorsOrdinanceCost;
-
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			ordinancePoints: updateOrdinancePoints,
-			fluxCapacity: updateFluxCapacity,
-			fluxDissipation: updateFluxDissipation,
-		});
-
-		this.#userShipBuild = this.getUserShipBuild();
-
+	#updateRender() {
 		OrdinancePointsView.render(this.#userShipBuild);
 		ShieldOrPhaseView.render(this.#userShipBuild);
-
-		this.#capacitorHandler();
-		this.#ventsHandler();
 	}
+	#processData() {
+		this.#userShipBuild = this.getUserShipBuild();
+	}
+
 	#capacitorHandler() {
 		CapacitorsView.render(this.#userShipBuild);
 
@@ -146,23 +107,33 @@ export default class CapacitorsAndVents extends ViewModel {
 	#changeCapacitorValue(buttonValue) {
 		const { capacitors, maxCapacitors } = this.#userShipBuild;
 
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			capacitors: this.#buttonControls(buttonValue, capacitors, maxCapacitors),
-		});
+		const newCapacitorsValue = this.#buttonControls(
+			buttonValue,
+			capacitors,
+			maxCapacitors
+		);
+		new UpdateUserShipBuild(this.getState()).updateCapacitors(
+			newCapacitorsValue
+		);
 
-		this.#updateValues();
+		this.#userShipBuild = this.getUserShipBuild();
+
+		this.#updateRender();
+
+		this.#capacitorHandler();
 	}
 
 	#changeVentsValue(buttonValue) {
 		const { vents, maxVents } = this.#userShipBuild;
 
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			vents: this.#buttonControls(buttonValue, vents, maxVents),
-		});
+		const newVentsValue = this.#buttonControls(buttonValue, vents, maxVents);
+		new UpdateUserShipBuild(this.getState()).updateVents(newVentsValue);
 
-		this.#updateValues();
+		this.#userShipBuild = this.getUserShipBuild();
+
+		this.#updateRender();
+
+		this.#ventsHandler();
 	}
 
 	#buttonControls = (buttonValue, target, maxTarget) => {

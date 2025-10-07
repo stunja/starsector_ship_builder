@@ -25,16 +25,19 @@ export default class FighterSlots extends ViewModel {
 		this.#allFighters = this.getDataState().allFighters;
 		this.#userShipBuild = this.getUserShipBuild();
 	}
-	update() {
+	async update() {
 		// Assign Data
 		this.#processData();
 		// Render
-		this.#fighterSlotsRender();
+		await this.#fighterSlotsRender();
 		// Listeners
 		this.#fighterSlotsOpenPopUpEventListener();
 	}
-	#fighterSlotsRender() {
-		FightersView.render([this.#userShipBuild, this.#allFighters]);
+	async #fighterSlotsRender() {
+		return await FightersView.renderAsync([
+			this.#userShipBuild,
+			this.#allFighters,
+		]);
 	}
 	#fighterSlotsOpenPopUpEventListener() {
 		FightersView.addClickHandler(

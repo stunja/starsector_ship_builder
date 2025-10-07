@@ -1,5 +1,4 @@
 import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
 // View
 import View from "../view.js";
 

@@ -1,14 +1,18 @@
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
 // View
 import View from "../view.js";
 import WeaponSpriteView from "../../allViews/Weapons/WeaponSpriteView.js";
+// Helper
+import DataSet from "../../helper/DataSet.js";
+import classNames from "../../helper/DomClassNames.js";
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 
 class WeaponPopUpTableView extends View {
 	_localParent = `.${classNames.tableBody}`;
+
 	#currentWeaponArray;
 	#weaponSlot;
 	#installedWeapons;
+
 	generateMarkup() {
 		this.#processData(this._data);
 
@@ -23,13 +27,22 @@ class WeaponPopUpTableView extends View {
 		this.#weaponSlot = weaponSlot;
 	}
 
-	#tableBodyRender() {
-		const entryMarkup = (crrWpn) => `
+	async #tableBodyRender() {
+		const entryMarkup = async (crrWpn) => {
+			const keepBackgroundSpriteEqualToSizeOfWeaponObject = true;
+
+			const imgSprite = await WeaponSpriteView.renderElement([
+				crrWpn,
+				this.#weaponSlot,
+				keepBackgroundSpriteEqualToSizeOfWeaponObject,
+			]);
+
+			return `
 			<ul class="${classNames.tableEntries}${this.#assignActiveClass(crrWpn)}"  
 				${DataSet.dataWeaponPopUpId}="${crrWpn.id}">
 
 				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${WeaponSpriteView.renderElement([crrWpn, this.#weaponSlot])}
+					${imgSprite}
 				</li>
 				<li class="${classNames.tableEntry} ${classNames.tableName}">${crrWpn.name}</li>
 				<li class="${classNames.tableEntry}">
@@ -38,12 +51,18 @@ class WeaponPopUpTableView extends View {
 				<li class="${classNames.tableEntry}">${crrWpn.range}</li>
 				<li class="${classNames.tableEntry}">${crrWpn.oPs}</li>
 			</ul>
-			`;
+		`;
+		};
 
-		return this.#currentWeaponArray
-			.map((crrWpn) => entryMarkup(crrWpn))
-			.join("");
+		const markupArray = await Promise.all(
+			this.#currentWeaponArray.map((currentWeapon) =>
+				entryMarkup(currentWeapon)
+			)
+		);
+
+		return markupArray.join(GENERIC_STRING.EMPTY);
 	}
+
 	#assignActiveClass = (crrWpn) => {
 		if (!crrWpn) return;
 
@@ -53,13 +72,15 @@ class WeaponPopUpTableView extends View {
 		);
 
 		// empty space so they are not joined classes
-		return isActiveClass ? ` ${classNames.weaponPopUpActive}` : "";
+		return isActiveClass
+			? ` ${classNames.weaponPopUpActive}`
+			: GENERIC_STRING.EMPTY;
 	};
 
 	#weaponTypeStringConversion = (damageType) =>
 		damageType
 			.split("_")
 			.map((word) => word[0] + word.slice(1).toLowerCase())
-			.join(" ");
+			.join(GENERIC_STRING.EMPTY);
 }
 export default new WeaponPopUpTableView();

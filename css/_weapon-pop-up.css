@@ -30,7 +30,13 @@
 			transition: all 0.5s;
 		}
 	}
+
+	.table-container {
+		animation: fadeIn 0.25s ease-in forwards;
+		position: relative;
+	}
 }
+
 .table-container {
 	background-color: black;
 
@@ -103,5 +109,13 @@
 	img {
 		height: 4rem;
 		width: 4rem;
+	}
+}
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
 	}
 }

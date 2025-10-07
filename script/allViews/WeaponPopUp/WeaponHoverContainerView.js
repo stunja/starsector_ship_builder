@@ -4,6 +4,7 @@ import DataSet from "../../helper/DataSet.js";
 import View from "../view.js";
 import WeaponSpriteView from "../Weapons/WeaponSpriteView.js";
 import URL from "../../helper/url.js";
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 
 const ALT_TEXT = {
 	WEAPON_DAMAGE_TYPE: "weapon damage type",
@@ -49,17 +50,24 @@ class WeaponHoverContainerView extends View {
 	generateMarkup() {
 		this.#processData(this._data);
 
+		return this.#containerRender();
+	}
+
+	async #containerRender() {
+		const primaryMarkup = await this.#primaryDataMarkup();
 		const markup = `	
 			<ul>
 				${this.#introDataMarkup()}
 				<li class="weapon-divider"><p>Primary Data</p></li>
-				${this.#primaryDataMarkup()}
+				${primaryMarkup}
 				<li class="weapon-divider"><p>Anciliary Data</p></li>
 				${this.#anciliaryDataMarkup()}
 			</ul>
 		`;
+
 		return markup;
 	}
+
 	#introDataMarkup() {
 		return `
 			<li class="weapon-name">
@@ -71,30 +79,26 @@ class WeaponHoverContainerView extends View {
 			</li>
 			`;
 	}
-	#primaryDataMarkup() {
-		return `
-				<div class="d-grid ${classNames.weaponPrimaryData}">
-					<div class="weapon-primary-data__icon">
-						<li class="${classNames.weaponIcon} ${classNames.weaponSize}--${
-			this.#stats.mount.size
-		} ${classNames.weaponType}--${this.#stats.mount.type}" data-id="${
-			this.#information.id
-		}">${WeaponSpriteView.renderElement([
+
+	async #primaryDataMarkup() {
+		//! Here
+		const weaponIconRender = await WeaponSpriteView.renderElement([
 			this.#weaponObject,
 			this.#weaponSlotObject,
-		])}</li>
-		      	</div>
-				<div class="weapon-primary-data_content">
-					${this.#contentMarkup("Primary Role", this.#information.primaryRole)}
-					<li class="${classNames.weaponMountType}">
-						<p>Mount Type:</p>
-						<div class="${classNames.textAlignRight}">
-							<strong><p>${this.#stats.mount.type}</p></strong>
-							<strong><p>${this.#stats.mount.size}</p></strong>
-						</div>
-					</li>
-					${this.#contentMarkup("Ordinance Point", this.#information.op)}
+		]);
 
+		const primaryIconMarkup = `
+				<div class="weapon-primary-data__icon">
+					<li class="${classNames.weaponIcon} 
+					${classNames.weaponSize}--${this.#stats.mount.size} 
+					${classNames.weaponType}--${this.#stats.mount.type}" 
+					data-id="${this.#information.id}"
+					>
+						${weaponIconRender}
+					</li>
+		      	</div>`;
+
+		const weaponContentGroupMarkup = `
 					<div class="${classNames.weaponContentGroup}">
 						${this.#contentMarkup("Range", this.#stats.range)}
 						${
@@ -104,20 +108,43 @@ class WeaponHoverContainerView extends View {
 						}
 						${this.#contentMarkup("Damage / sec", this.#additionalStats.damagePerSecond)}
 					</div>
+					`;
+
+		const weaponMountTypeMarkup = `					
+					<li class="${classNames.weaponMountType}">
+						<p>Mount Type:</p>
+						<div class="${classNames.textAlignRight}">
+							<strong><p>${this.#stats.mount.type}</p></strong>
+							<strong><p>${this.#stats.mount.size}</p></strong>
+						</div>
+					</li>
+					`;
+
+		const primaryContentMarkup = `
+				<div class="weapon-primary-data_content">
+					${this.#contentMarkup("Primary Role", this.#information.primaryRole)}
+					${weaponMountTypeMarkup}
+					${this.#contentMarkup("Ordinance Point", this.#information.op)}
+					${weaponContentGroupMarkup}
 					${this.#fluxMarkUp()}
-				</div>
 				</div>`;
+
+		return `
+			<div class="d-grid ${classNames.weaponPrimaryData}">
+				${primaryIconMarkup}
+				${primaryContentMarkup}
+			</div>`;
 	}
 
 	#anciliaryDataMarkup() {
 		const weaponTypeString = this.#stats.projectile.type
 			.split("_")
-			.join(" ")
+			.join(GENERIC_STRING.EMPTY)
 			.toLowerCase();
 
 		const damageTypeMarkup = this.#damageTypeEffect()
 			.map((str) => `<strong><p>${str}</p></strong>`)
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 
 		return `<div class="d-grid weapon-anciliary-data">
 					<div class="weapon-anciliary-data__icon-parent">
@@ -138,13 +165,13 @@ class WeaponHoverContainerView extends View {
 
 						${
 							this.#stats.ammo.burstSize < 2 || !this.#stats.ammo.burstSize
-								? ""
+								? GENERIC_STRING.EMPTY
 								: this.#contentMarkup("Burst Size", this.#stats.ammo.burstSize)
 						}
 						${
 							this.#stats.ammo.capacity
 								? this.#contentMarkup("Ammo Size", this.#stats.ammo.capacity)
-								: ""
+								: GENERIC_STRING.EMPTY
 						}
 						${
 							this.#stats.ammo.capacity
@@ -152,7 +179,7 @@ class WeaponHoverContainerView extends View {
 										"Ammo Per Sec",
 										this.#stats.ammo.perSecond
 								  )
-								: ""
+								: GENERIC_STRING.EMPTY
 						}
 
 						${this.#contentMarkup("Refire delay", this.#string.refireDelayString)}
@@ -162,28 +189,28 @@ class WeaponHoverContainerView extends View {
 	#contentMarkup = (str, data) => {
 		return `
 				<li>
-					${str !== "" ? `<p>${str}</p>` : ""}
+					${str !== GENERIC_STRING.EMPTY ? `<p>${str}</p>` : GENERIC_STRING.EMPTY}
 					<strong><p>${data}</p></strong>
 				</li>`;
 	};
 	#fluxMarkUp = () => {
 		const fluxPerShotMarkup = this.#stats.flux.perShot
 			? `${this.#contentMarkup("Flux / shot", this.#stats.flux.perShot)}`
-			: "";
+			: GENERIC_STRING.EMPTY;
 
 		const fluxPerSecondMarkup = this.#additionalStats.fluxPerSecond
 			? `${this.#contentMarkup(
 					"Flux / sec",
 					this.#additionalStats.fluxPerSecond
 			  )}`
-			: "";
+			: GENERIC_STRING.EMPTY;
 
 		const fluxPerDamageMarkup = this.#additionalStats.fluxPerDamage
 			? `${this.#contentMarkup(
 					"Flux / damage",
 					this.#additionalStats.fluxPerDamage
 			  )}`
-			: "";
+			: GENERIC_STRING.EMPTY;
 
 		const markup = `
 				${fluxPerSecondMarkup}

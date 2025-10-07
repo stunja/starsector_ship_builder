@@ -7,6 +7,16 @@ import {
 	WEAPON_SLOT,
 } from "../helper/Properties";
 import { GENERIC_STRING } from "../helper/MagicStrings";
+import UI_CONFIG from "./UI_CONFIG";
+import URL from "./url";
+
+const HULLMODS_TO_HIDE = {
+	// these hullMods where remove from the game, for some reason.
+
+	pdintegration: "pdintegration", // #Point Defense Integration
+	assault_package: "assault_package", // Assault Package
+	missile_autoloader: "missile_autoloader", // Missile Autoloader
+};
 //
 export const renameKeysFromCSVdata = function (obj) {
 	const renameObj = {};
@@ -52,65 +62,6 @@ export const extractDataFromObject = (propertiesToExtract, data) =>
 		{}
 	);
 
-export const updateUserShipBuildWithHullModLogic = function (
-	userShipBuild,
-	baseUserShipBuild
-) {
-	const { installedHullMods, builtInMods } = userShipBuild.hullMods;
-	const { hullMods, installedWeapons, capacitors, vents } = userShipBuild;
-
-	const newInstalledWeapons = updateInstalledWeapons(
-		installedHullMods,
-		installedWeapons
-	);
-
-	// baseUserShipBuild to reset userShipBuild // to clean before implementing hullModEffects
-	let currentShipBuild = {
-		...baseUserShipBuild,
-		hullMods,
-		installedWeapons: newInstalledWeapons || installedWeapons,
-		capacitors,
-		vents,
-	};
-
-	// Apply each hull mod effect sequentially
-	const allHullMods = [...builtInMods, ...installedHullMods];
-
-	if (!allHullMods.length) {
-		return currentShipBuild;
-	}
-
-	for (const hullMod of allHullMods) {
-		const [hullModObject] = findHullModKeyName(HULLMODS, hullMod.id);
-
-		if (!hullModObject) {
-			console.warn(`Hull mod not found: ${hullMod.id}`);
-			continue;
-		}
-
-		if (hullModObject.hullModLogic) {
-			currentShipBuild = hullModObject.hullModLogic(currentShipBuild, hullMod);
-		}
-	}
-
-	return currentShipBuild;
-};
-// remove duplicateIWS
-const updateInstalledWeapons = (installedHullMods, installedWeapons) => {
-	const targetClass = "converted_hangar";
-	// Converted Hangar
-	const isHangarExpansionPresent = installedHullMods.some(
-		({ id }) => id === targetClass
-	);
-
-	// exit if no additional installedWeapons are needed
-	if (!isHangarExpansionPresent) {
-		return installedWeapons.filter(
-			([weaponSlotId, _weaponId]) =>
-				weaponSlotId && !weaponSlotId.includes("IWS")
-		);
-	}
-};
 // IWS weapons are speciaal installedWeapons added by a HULLMOD
 export const createNewWeaponSlotsAndInstalledWeapons = function (
 	howManySlotsToCreate
@@ -164,49 +115,8 @@ export const toggleAdditionalInstalledWeapons = function (
 		return true;
 	});
 };
-// export const createNewInstalledWeapons = function (
-// 	installedWeapons,
-// 	howManySlotsToCreate
-// ) {
-// 	const createNewProps = Array.from(
-// 		{
-// 			length: howManySlotsToCreate,
-// 		},
-// 		(_, i) => {
-// 			const currentWeaponId = `IWS-${i + 100}`;
-// 			return {
-// 				newWeaponSlots: {
-// 					id: currentWeaponId,
-// 					mount: WEAPON_SLOT.MOUNT.HIDDEN,
-// 					size: WEAPON_SLOT.SIZE.MEDIUM,
-// 					type: WEAPON_SLOT.TYPE.LAUNCH_BAY,
-// 				},
-// 				newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
-// 			};
-// 		}
-// 	);
-// 	// Filter IWS weapons directly
-// 	const iwsWeapons = installedWeapons.filter(
-// 		(weapon) => weapon[0] && weapon[0].includes("IWS")
-// 	);
 
-// 	// Return early if no IWS weapons
-// 	if (iwsWeapons.length < 1) {
-// 		return createNewProps.map((arr) => arr.newInstalledWeapons);
-// 	}
-
-// 	// Remove duplicates
-// 	const seen = new Set();
-// 	return iwsWeapons.filter((item) => {
-// 		const id = item[0];
-// 		if (seen.has(id)) {
-// 			return false;
-// 		}
-// 		seen.add(id);
-// 		return true;
-// 	});
-// };
-///
+// Model function to find HullMod keys
 export const findHullModKeyName = function (obj, searchKey, matches = []) {
 	// Early return if obj is null or not an object
 	if (!obj || typeof obj !== "object") return matches;
@@ -225,6 +135,107 @@ export const findHullModKeyName = function (obj, searchKey, matches = []) {
 
 	return matches;
 };
+
+// Installed Weapons
+export const AddRemoveInstalledWeapon = function (
+	installedWeapons,
+	weaponPopUpId,
+	weaponSlotId
+) {
+	return installedWeapons.map(([installedSlotId, installedWeaponId]) => {
+		// If weapon already exists in slot, remove it
+		if (
+			installedSlotId === weaponSlotId &&
+			installedWeaponId === weaponPopUpId
+		) {
+			return [installedSlotId, GENERIC_STRING.EMPTY];
+		}
+		// if weapon dont match, keep the original
+		if (installedSlotId !== weaponSlotId) {
+			return [installedSlotId, installedWeaponId];
+		}
+		// Otherwise, add the new weapon
+		return [installedSlotId, weaponPopUpId];
+	});
+};
+
+// Put Installed Weapon On Top of An Array
+export const pushTargetWeaponObjectOnTop = function (
+	installedWeapons,
+	weaponSlot,
+	weaponArray
+) {
+	const installedWeapon = installedWeapons.find(
+		([slotId, _wpnId]) => weaponSlot.id === slotId
+	);
+
+	// if installed weaponId exists, put it on top
+	if (
+		installedWeapon &&
+		installedWeapon.length > 1 &&
+		installedWeapon[1] !== GENERIC_STRING.EMPTY
+	) {
+		const targetId = installedWeapon[1];
+
+		// Separate the target weapon and other weapons in one pass
+		const target = [];
+		const arrayWithoutTarget = [];
+
+		weaponArray.forEach((wpnObj) => {
+			if (wpnObj.id === targetId) {
+				target.push(wpnObj);
+			} else {
+				arrayWithoutTarget.push(wpnObj);
+			}
+		});
+
+		return [...target, ...arrayWithoutTarget];
+	}
+
+	// no change
+	return weaponArray;
+};
+
+// Removes HullMods with [hidden] and [special] rules
+export const createUsableHullMods = function (hullMods) {
+	return hullMods.filter(
+		(hullMod) =>
+			// HIDDEN ARE TRUE => HIDE
+			hullMod.hidden !== GENERIC_STRING.TRUE &&
+			// special hide rule
+			hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
+	);
+};
+
+// Add Remove Spinner for async loading, (found in) Fighter / Weapon and HullMods
+
+export async function toggleAsyncSpinner(
+	asyncOperations,
+	view,
+	args = [],
+	delayMs = UI_CONFIG.spinnerDelayMs
+) {
+	let spinnerTimeout = setTimeout(() => {
+		view.addSpinner();
+	}, delayMs);
+
+	try {
+		return await asyncOperations(...args);
+	} finally {
+		clearTimeout(spinnerTimeout);
+		view.removeSpinner();
+	}
+}
+// Image Loader
+export const imageLoader = async function (src) {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.src = `/${URL.DATA}/${src}`;
+		img.onload = () => resolve(img);
+		img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+	});
+};
+
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original

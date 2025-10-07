@@ -1,5 +1,4 @@
-// import classNames from "../helper/DomClassNames.js";
-//
+import classNames from "../helper/DomClassNames";
 
 export default class View {
 	constructor() {
@@ -28,6 +27,44 @@ export default class View {
 		this._clearRender();
 		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
 	}
+	// async render
+	async renderAsync(data) {
+		if (!data) return this.#renderError("no data");
+
+		if (!this._localParent)
+			console.warn("Issue with parent element", this._localParent);
+
+		this._localParentElement = document.querySelector(this._localParent);
+
+		this._data = data;
+		const markup = await this.generateMarkup();
+
+		this._clearRender();
+		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
+	}
+	addSpinner() {
+		const markup = `
+						<div class="${classNames.tableSpinner}">
+							<div class="${classNames.spinner}"></div>
+						</div>
+		`;
+
+		const targetClass = this._localParentElement.querySelector(
+			`.${classNames.tableContainer}`
+		);
+
+		targetClass.insertAdjacentHTML("afterbegin", markup);
+	}
+	removeSpinner() {
+		const spinnerElement = this._localParentElement.querySelector(
+			`.${classNames.spinner}`
+		);
+
+		if (!spinnerElement) return;
+
+		spinnerElement.remove();
+	}
+	//
 	#renderError(reason) {
 		// TO DO
 		console.error("Render Error", reason);
@@ -40,43 +77,6 @@ export default class View {
         </li>`;
 	}
 
-	// Event Listener
-	// addClickHandler(target, callback) {
-	// 	// Create the event listener function
-	// 	const listener = function (e) {
-	// 		const btn = e.target.closest(target);
-	// 		if (!btn) return;
-	// 		e.preventDefault();
-	// 		callback(btn);
-	// 	};
-
-	// 	// If there's an existing listener for this target, remove it first
-	// 	this.removeClickHandler(target);
-
-	// 	// Store the new listener in the Map
-	// 	this._targetMap.set(target, listener);
-
-	// 	// Add the event listener
-	// 	this._localParentElement.addEventListener("click", listener);
-
-	// 	// Return the listener for potential external reference
-	// 	return listener;
-	// }
-
-	// removeClickHandler(target) {
-	// 	// Get the existing listener if any
-	// 	const existingListener = this._targetMap.get(target);
-
-	// 	if (existingListener) {
-	// 		// Remove the event listener
-	// 		this._localParentElement.removeEventListener("click", existingListener);
-	// 		// Remove from Map
-	// 		this._targetMap.delete(target);
-	// 		return true;
-	// 	}
-
-	// 	return false;
-	// }
 	addClickHandler(target, type, callback) {
 		// Create the event listener function
 		const listener = function (e) {

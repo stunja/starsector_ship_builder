@@ -39,7 +39,9 @@ button:hover {
 	justify-content: center;
 	align-items: center;
 	font-weight: 900;
-	border-radius: 50%;
+	/* border-radius: 50%; */
+	border-radius: 25%;
+
 	padding: 0;
 	height: 3rem;
 	width: 3rem;
@@ -57,4 +59,32 @@ button:hover {
 }
 .text-align-right {
 	text-align: right;
+}
+
+.table-spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+
+	transform: translate(-50%, -50%);
+}
+.spinner {
+	width: 12rem;
+	height: 12rem;
+	border-radius: 50%;
+	display: inline-block;
+	border-top: 0.6rem solid #fff;
+	border-right: 0.6rem solid transparent;
+	box-sizing: border-box;
+
+	animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

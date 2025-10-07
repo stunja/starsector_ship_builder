@@ -1,11 +1,14 @@
+// View
+import View from "../view.js";
+import HullModSprite from "./HullModSprite.js";
+//
+// Helper
+import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import { imageLoader } from "../../helper/helperFunction.js";
+import HullModHelper from "../../components/Hullmods/HullModHelper.js";
 import classNames from "../../helper/DomClassNames.js";
 import DataSet from "../../helper/DataSet.js";
 import URL from "../../helper/url.js";
-// View
-import View from "../view.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
-import HullModHelper from "../../components/Hullmods/HullModHelper.js";
-// Helper
 
 const HULLMOD_ARRAY_TYPE = {
 	AVAILABLE: "AVAILABLE",
@@ -18,12 +21,10 @@ class HullModsPopUpTableView extends View {
 	#unAvailableMods;
 	#userShipBuild;
 	#hullSize;
-	generateMarkup() {
+	async generateMarkup() {
 		this.#processData(this._data);
-		const markup = `
-			${this.#greenArrayRender()}
-			${this.#redArrayRender()}
-		`;
+
+		const markup = this.#tableBodyRender();
 		return markup;
 	}
 
@@ -36,15 +37,64 @@ class HullModsPopUpTableView extends View {
 
 		this.#hullSize = this.#userShipBuild.hullSize;
 	}
+	// const hullModIcon = `<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
 
-	#tagsArray = (crrHullMod) =>
-		crrHullMod.uiTags
+	async #tableBodyRender() {
+		const entryMarkup = async (currentHullMod, arrayType) => {
+			const availableOrUnavailableArray =
+				arrayType === HULLMOD_ARRAY_TYPE.AVAILABLE
+					? classNames.tableEntryAvailable
+					: classNames.tableEntryUnavailable;
+
+			//? idiotic implementation, but easier they fixing original code.
+			//? sometimes it is an array with [obj, str(reason)] and other times just obj
+			let reason = GENERIC_STRING.EMPTY;
+			if (Array.isArray(currentHullMod)) {
+				[currentHullMod, reason] = currentHullMod;
+			}
+			try {
+				const imgSprite = await HullModSprite.renderElement(currentHullMod);
+
+				return `
+						<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}" 
+							${DataSet.dataHullModId}="${currentHullMod.id}"
+						>
+							<li class="${classNames.tableEntry} ${classNames.tableIcon}">
+								${imgSprite}
+							</li>
+							<li class="${classNames.tableEntry} ${classNames.tableName}">
+								<p>${currentHullMod.name}</p>
+							</li>
+							${this.#hullModDescription(currentHullMod)}
+							${this.#typeMarkup(currentHullMod)}
+							${this.#opCostMarkup(currentHullMod)}
+							${this.#reasonMarkup(reason)}
+						</ul>
+						`;
+			} catch (error) {
+				console.error("Failed to load hullMod sprites:", error);
+				return GENERIC_STRING.EMPTY;
+			}
+		};
+
+		const markupArray = await Promise.all([
+			...this.#availableHullMods.map((hullMod) =>
+				entryMarkup(hullMod, HULLMOD_ARRAY_TYPE.AVAILABLE)
+			),
+			...this.#unAvailableMods.map((hullMod) =>
+				entryMarkup(hullMod, HULLMOD_ARRAY_TYPE.UNAVAILABLE)
+			),
+		]);
+
+		return markupArray.join(GENERIC_STRING.EMPTY);
+	}
+
+	#tagsArray(crrHullMod) {
+		return crrHullMod.uiTags
 			.split(GENERIC_STRING.COMMA)
 			.map((str) => `<p>${str}</p>`)
 			.join(GENERIC_STRING.EMPTY);
-
-	#hullModIcon = (crrHullMod) => `
-			<img src="./${URL.DATA}/${crrHullMod.sprite}" alt="${crrHullMod.short}" />`;
+	}
 
 	#hullModDescription(currentHullMod) {
 		const regularValues = currentHullMod.effectValues.regularValues;
@@ -63,15 +113,21 @@ class HullModsPopUpTableView extends View {
 		//prettier-ignore
 		return `<li class="${classNames.tableEntry} ${classNames.tableDesc}"><p>${changeDescription()}</p></li>`;
 	}
-	#typeMarkup = (currentHullMod) =>
-		`<li class="${classNames.tableEntry} ${classNames.tableType}">
-			<div>${this.#tagsArray(currentHullMod)}</div>
-		</li>`;
+	#typeMarkup = (currentHullMod) => {
+		return `
+			<li class="${classNames.tableEntry} ${classNames.tableType}">
+				<div>${this.#tagsArray(currentHullMod)}</div>
+			</li>
+		`;
+	};
 
-	#opCostMarkup = (currentHullMod) =>
-		`<li class="${classNames.tableEntry}">
-			<p>${HullModHelper.normalizedHullSize(currentHullMod, this.#hullSize)}</p>
-		</li>`;
+	#opCostMarkup = (currentHullMod) => {
+		return `
+			<li class="${classNames.tableEntry}">
+				<p>${HullModHelper.normalizedHullSize(currentHullMod, this.#hullSize)}</p>
+			</li>
+			`;
+	};
 
 	#reasonMarkup = (string) => {
 		const stringMarkup = string
@@ -82,47 +138,21 @@ class HullModsPopUpTableView extends View {
 					${stringMarkup}
 				</li>`;
 	};
+	// async #greenArrayRender() {
+	// 	const arrayType = HULLMOD_ARRAY_TYPE.AVAILABLE;
 
-	#singleEntryMarkup(crrHullMod, arrayType) {
-		const [currentHullMod, reason] = crrHullMod;
+	// 	// wrap in an array, so mods looks like
+	// 	return this.#availableHullMods
+	// 		.map((hullMod) => this.#singleHullModEntry([hullMod], arrayType))
+	// 		.join(GENERIC_STRING.EMPTY);
+	// }
 
-		const availableOrUnavailableArray =
-			arrayType === HULLMOD_ARRAY_TYPE.AVAILABLE
-				? classNames.tableEntryAvailable
-				: classNames.tableEntryUnavailable;
+	// async #redArrayRender() {
+	// 	const arrayType = HULLMOD_ARRAY_TYPE.UNAVAILABLE;
 
-		return `
-			<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}" 
-				${DataSet.dataHullModId}="${currentHullMod.id}"
-			>
-				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
-					${this.#hullModIcon(currentHullMod)}
-				</li>
-				<li class="${classNames.tableEntry} ${classNames.tableName}">
-					<p>${currentHullMod.name}</p>
-				</li>
-				${this.#hullModDescription(currentHullMod)}
-				${this.#typeMarkup(currentHullMod)}
-				${this.#opCostMarkup(currentHullMod)}
-				${this.#reasonMarkup(reason)}
-			</ul>`;
-	}
-
-	#greenArrayRender() {
-		const arrayType = HULLMOD_ARRAY_TYPE.AVAILABLE;
-
-		// wrap in an array, so mods looks like
-		return this.#availableHullMods
-			.map((hullMod) => this.#singleEntryMarkup([hullMod], arrayType))
-			.join(GENERIC_STRING.EMPTY);
-	}
-
-	#redArrayRender() {
-		const arrayType = HULLMOD_ARRAY_TYPE.UNAVAILABLE;
-
-		return this.#unAvailableMods
-			.map((hullMod) => this.#singleEntryMarkup(hullMod, arrayType))
-			.join(GENERIC_STRING.EMPTY);
-	}
+	// 	return this.#unAvailableMods
+	// 		.map((hullMod) => this.#singleHullModEntry(hullMod, arrayType))
+	// 		.join(GENERIC_STRING.EMPTY);
+	// }
 }
 export default new HullModsPopUpTableView();

@@ -1,4 +1,6 @@
-/* Weapon Slots */
+/* Weapon Slots and Weapon Background Sprite*/
+/* They are different, but the same element, just in different places */
+
 .weapon-slots {
 	position: relative;
 	z-index: 2;
@@ -30,6 +32,63 @@
 		border: none;
 
 		transform: translate(-50%, -50%);
+
+		/* size */
+		.weapon-background-sprite__size--small {
+			height: 1.6rem;
+			width: 1.6rem;
+		}
+		.weapon-background-sprite__size--medium {
+			height: 2.6rem;
+			width: 2.6rem;
+		}
+		.weapon-background-sprite__size--large {
+			height: 3.6rem;
+			width: 3.6rem;
+		}
+	}
+	/* hover size */
+	.weapon-slot:hover {
+		background-color: transparent;
+		z-index: 100;
+
+		.weapon-background-sprite {
+			border-width: 0.3rem;
+		}
+
+		/* opacity hover */
+		.weapon-background-sprite__opacity--full {
+			opacity: 1;
+		}
+		.weapon-background-sprite__opacity--medium {
+			opacity: 0.75;
+		}
+		.weapon-background-sprite__opacity--light {
+			opacity: 0.5;
+		}
+
+		.weapon-background-sprite__size--small {
+			height: 3rem;
+			width: 3rem;
+		}
+		.weapon-background-sprite__size--medium {
+			height: 4.5rem;
+			width: 4.5rem;
+		}
+		.weapon-background-sprite__size--large {
+			height: 6rem;
+			width: 6rem;
+		}
+
+		.weapon-sprite--gun,
+		.weapon-sprite--base {
+			transform: scale(1.2) translate(-42%, -48%);
+			transition: all 0.45s;
+		}
+
+		.weapon-arc {
+			opacity: 1;
+		}
 	}
 	.weapon-arc {
 		position: absolute;
@@ -97,53 +156,133 @@
 	}
 }
 
-/* hover size */
-.weapon-slot:hover {
-	background-color: transparent;
-	z-index: 100;
-
+/* It is only for weapon pop up table, background icon. */
+.weapon-background-sprite-parent {
 	.weapon-background-sprite {
-		border-width: 0.3rem;
+		border-width: 0.2rem;
+		/* 0.16 */
+		border-style: solid;
+
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
-	.weapon-background-sprite__size--small {
-		height: 3rem;
-		width: 3rem;
+
+	/* color */
+	.weapon-background-sprite__type--ballistic {
+		border-color: var(--ballistic-slot);
 	}
-	.weapon-background-sprite__size--medium {
-		height: 4.5rem;
-		width: 4.5rem;
+	.weapon-background-sprite__type--energy {
+		border-color: var(--energy-slot);
 	}
+	.weapon-background-sprite__type--missile {
+		border-color: var(--missile-slot);
+	}
+
+	.weapon-background-sprite__type--hybrid {
+		border-color: var(--hydrid-slot);
+	}
+	.weapon-background-sprite__type--composite {
+		border-color: var(--composite-slot);
+	}
+	.weapon-background-sprite__type--synergy {
+		border-color: var(--synergy-slot);
+	}
+	.weapon-background-sprite__type--universal {
+		border-color: var(--universal-slot);
+	}
+
+	.weapon-background-sprite__opacity--full,
+	.weapon-background-sprite__opacity--medium,
+	.weapon-background-sprite__opacity--light,
+	.weapon-background-sprite__size--small,
+	.weapon-background-sprite__size--medium,
 	.weapon-background-sprite__size--large {
-		height: 6rem;
-		width: 6rem;
+		transition: all 0.2s;
 	}
-	/* opacity hover */
+
+	.weapon-background-sprite__type--missile,
+	.weapon-background-sprite__type--synergy:nth-of-type(2),
+	.weapon-background-sprite__type--composite:nth-of-type(2) {
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+	.weapon-background-sprite__type--energy,
+	.weapon-background-sprite__type--hybrid:nth-of-type(1),
+	.weapon-background-sprite__type--synergy:nth-of-type(1) {
+		border-radius: 50%;
+	}
+
+	.weapon-background-sprite__type--hybrid
+		.weapon-background-sprite:nth-of-type(1) {
+		width: 2rem;
+		height: 2rem;
+	}
+
+	.weapon-background-sprite__type--composite:nth-of-type(2) {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+	.weapon-background-sprite__type--composite:nth-of-type(2):hover {
+		width: 3rem;
+		height: 3rem;
+	}
+
+	/* opacity */
 	.weapon-background-sprite__opacity--full {
 		opacity: 1;
 	}
 	.weapon-background-sprite__opacity--medium {
-		opacity: 0.75;
+		opacity: 0.8;
 	}
 	.weapon-background-sprite__opacity--light {
-		opacity: 0.5;
+		opacity: 0.6;
 	}
-	.weapon-sprite--gun,
-	.weapon-sprite--base {
-		transform: scale(1.2) translate(-42%, -48%);
-		transition: all 0.45s;
+}
+
+/* Only related to the Weapon PopUp table */
+.table__icon {
+	/* opacity */
+	/* .weapon-background-sprite__opacity--full {
+		opacity: 1;
 	}
-
-	/* .weapon-sprite--gun,
-	.weapon-sprite--base {
-		position: absolute;
-		top: 55%;
-		left: 50%;
-
-		transform: translate(-50%, -50%), scale(1.2);
-		transition: all 0.2;
+	.weapon-background-sprite__opacity--medium {
+		opacity: 0.8;
+	}
+	.weapon-background-sprite__opacity--light {
+		opacity: 0.6;
 	} */
 
-	.weapon-arc {
-		opacity: 1;
+	/* size */
+	/* .weapon-background-sprite__size--small {
+		height: 3.2rem;
+		width: 3.2rem;
+	}
+	.weapon-background-sprite__size--medium {
+		height: 2.6rem;
+		width: 2.6rem;
+	}
+	.weapon-background-sprite__size--large {
+		height: 3.6rem;
+		width: 3.6rem;
+	} */
+
+	.weapon-background-sprite__size--small {
+		height: 1.5rem;
+		width: 1.5rem;
+	}
+	.weapon-background-sprite__size--medium {
+		height: 2.5rem;
+		width: 2.5rem;
+	}
+	.weapon-background-sprite__size--large {
+		height: 3.5rem;
+		width: 3.5rem;
+	}
+	.weapon-background-sprite__type--hybrid
+		.weapon-background-sprite:nth-of-type(1) {
+		width: 2rem;
+		height: 2rem;
 	}
 }

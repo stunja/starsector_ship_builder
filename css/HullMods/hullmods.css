@@ -7,41 +7,80 @@
 	gap: 2.4rem;
 	padding: 2.4rem 0;
 
+	height: 100%;
+
 	.hullmods__header {
 		text-align: right;
+		font-size: 1.6rem;
 	}
+
 	.hullmods__container,
 	.build-in-hullmods,
 	.installed-hullmods {
 		display: flex;
 		flex-direction: column;
-		gap: 1.6rem;
+		/* gap: 1.6rem; */
+		gap: 1rem;
 	}
+
 	.hullmods__container {
 		display: flex;
 		flex-direction: column;
 		gap: 1.6rem;
+
+		max-height: 40vh;
 	}
-	.build-in-hullmods .build-in-hullmods__container {
-		display: flex;
-		flex-direction: column;
-		margin-left: auto;
+	.build-in-hullmods {
+		padding-right: 1rem;
 
-		background-color: rgba(0, 0, 0, 0.25);
-		border: 1px solid rgba(0, 0, 0, 0.5);
+		.build-in-hullmods__container {
+			display: flex;
+			flex-direction: column;
+			margin-left: auto;
 
-		padding: 1.6rem;
-		gap: 1.6rem;
-
-		.hullmod {
-			/* width: max-content; */
-
-			padding-left: 2.4rem;
-			/* padding: 1.4rem 1.4rem 1.4rem 2.4rem; */
+			.hullmod {
+				padding-left: 2.4rem;
+			}
 		}
 	}
-	.hullMod__cost {
-		font-weight: 800;
-		font-size: 1.8rem;
+
+	.installed-hullmods {
+		/* max-height: 14rem; */
+
+		overflow-y: scroll;
+		scrollbar-color: var(--main-darker-color) #000000;
+		scrollbar-gutter: stable;
+	}
+
+	.hullmod {
+		border: 0.2rem solid transparent;
+
+		h5 {
+			font-size: 1.2rem;
+		}
+		img {
+			height: 3.25rem;
+			width: 3.25rem;
+		}
+
+		.hullMod__cost {
+			font-weight: 800;
+			font-size: 1.6rem;
+		}
+		.button-circle {
+			height: 2.5rem;
+			width: 2.5rem;
+		}
+	}
+	.hullmod:hover {
+		/* background-color: rgba(255, 255, 255, 0.1); */
+		background-color: rgba(0, 0, 0, 0.25);
+		border: 0.2rem solid rgba(0, 0, 0, 0.25);
+		border-radius: 0.3rem;
+	}
+
+	/* buttons */
+
+	.hullmods__buttons {
 	}
 }

@@ -15,11 +15,15 @@ import HullModFilter from "./HullModFilter";
 import classNames from "../../helper/DomClassNames";
 import TablePopUpSorter from "../TablePopUpSorter";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import { updateUserShipBuildWithHullModLogic } from "../../helper/helperFunction";
+import { createUsableHullMods } from "../../helper/helperFunction";
+import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
+
+import UI_CONFIG from "../../helper/UI_CONFIG";
 
 import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
 
 import { ScrollPosition } from "../../helper/ScrollPosition";
+import { toggleAsyncSpinner } from "../../helper/helperFunction";
 
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
@@ -81,74 +85,42 @@ export default class HullModsPopUp extends ViewModel {
 
 		new ScrollPosition().clear(classNames.tableContainer);
 
-		this.#processData();
+		this.#updateData();
 		this.#createFilterCategories();
 		this.#update();
 		this.#render();
 	}
-	#processData() {
+	#updateData() {
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#_baseUserShipBuild = this._getBaseShipBuild();
 		this.#userState = this.getUserState();
 
-		this.#usableHullMods = this.#filterUsableHullModArray();
+		this.#usableHullMods = createUsableHullMods(this.#userState.usableHullMods);
 		this.#shipHullMods = this.#userShipBuild.hullMods;
 
 		this.#builtInMods = this.#userShipBuild.hullMods.builtInMods;
 		this.#shieldType = this.#userShipBuild.shieldType;
 		this.#shipIsCivilian = this.#userShipBuild.shipIsCivilian;
-
-		console.log(this.#userShipBuild);
 	}
+	#updateOtherComponents() {
+		// Scroll to position user previously was, to prevent annoying jumps
+		new ScrollPosition().load(classNames.tableContainer);
 
+		// keep the order
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
+
+		// Update Controller, to display installedHullMods
+		new HullModController(this.getState()).update();
+
+		// Update Fighter Slots (in case change in amount fighter Bays)
+		new FighterSlots(this.getState()).update();
+	}
 	#update() {
 		// Not a correct implementation, but it works
-		this.#processData();
-
-		//! not sure if this is needed
-		this.setUpdateUserShipBuild({
-			...updateUserShipBuildWithHullModLogic(
-				this.getUserShipBuild(),
-				this._getBaseShipBuild()
-			),
-		});
+		this.#updateData();
 
 		this.#createHullModsArray();
-	}
-	#render() {
-		this.#renderHullModsPopUp();
-
-		this.#eventListeners();
-
-		this.#assignActiveClasses();
-
-		new ScrollPosition().save(classNames.tableContainer);
-	}
-
-	#renderHullModsPopUp() {
-		// Container
-		HullModsPopUpView.render(this.#greenHullMods);
-
-		// Filter
-		HullModsPopUpFilterView.render([
-			this.#filterCategories,
-			this.#currentFilter,
-		]);
-		// Header
-		HullModsPopUpHeaderView.render(this.#greenHullMods);
-
-		// Table
-		HullModsPopUpTableView.render([
-			this.#greenHullMods,
-			this.#currentUnavailableHullMods,
-			this.#userShipBuild,
-		]);
-	}
-	#eventListeners() {
-		this.#addWeaponPopUpTableHeaderListener();
-		this.#addWeaponPopUpEntryListener();
-		this.#addFilterListener();
-		this.#closePopUp();
 	}
 
 	#createHullModsArray() {
@@ -158,16 +130,6 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#createRedHullMods();
 	}
-	// Removes HullMods with [hidden] and [special] rules
-	#filterUsableHullModArray = () => {
-		return this.#userState.usableHullMods.filter(
-			(hullMod) =>
-				// HIDDEN ARE TRUE => HIDE
-				hullMod.hidden !== GENERIC_STRING.TRUE &&
-				// special hide rule
-				hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
-		);
-	};
 
 	// Available HullMods [Green]
 	#createGreenHullMods = () => {
@@ -182,45 +144,14 @@ export default class HullModsPopUp extends ViewModel {
 		);
 	};
 
-	// WeaponPopUp Event Listeners
-	#addFilterListener() {
-		HullModsPopUpFilterView.addClickHandler(
-			EVENT_LISTENER_TARGET.FILTER_BUTTON,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#filterTable
-		);
-	}
-	#addWeaponPopUpTableHeaderListener() {
-		HullModsPopUpHeaderView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#popUpSorter
-		);
-	}
-	#addWeaponPopUpEntryListener() {
-		HullModsPopUpTableView.addClickHandler(
-			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.#toggleHullMod
-		);
-	}
-	// Close if clicked outside
-	#closePopUp() {
-		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
-			CLASSES.TABLE_CONTAINER,
-			HullModsPopUpView._clearRender
-		);
-	}
 	// TablePopUpSorter
 	#popUpSorter = (btn) => {
 		const { category } = btn.dataset;
 
 		if (SKIP_SORT_CATEGORY[category]) return this.#installedSpecialSorter();
 
-		this.#regularSorter(category);
-	};
+		// this.#regularSorter(category);
 
-	#regularSorter(category) {
 		this.#greenHullMods = TablePopUpSorter.update([
 			category,
 			POPUP_TABLE_TYPE.HULLMOD,
@@ -234,7 +165,7 @@ export default class HullModsPopUp extends ViewModel {
 		this.#updateGreenAndRedHullMods();
 		// Render
 		this.#render();
-	}
+	};
 
 	// Special sorter for installed category
 	#installedSpecialSorter() {
@@ -275,29 +206,14 @@ export default class HullModsPopUp extends ViewModel {
 		}
 
 		const { hullmodId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
 
-		const updatedHullMods = HullModHelper.updateInstalledHullMod(
+		new UpdateUserShipBuild(this.getState()).updateHullMods(
 			hullmodId,
-			userShipBuild,
 			this.#usableHullMods
 		);
 
-		this.setUpdateUserShipBuild({
-			...this.#userShipBuild,
-			hullMods: updatedHullMods,
-		});
-
 		// OverWrite Sort
 		this.#sortByInstalledCategory = true;
-
-		// Fetch fresh data and updateShipBuild with New Logic
-		this.setUpdateUserShipBuild({
-			...updateUserShipBuildWithHullModLogic(
-				this.getUserShipBuild(),
-				this._getBaseShipBuild()
-			),
-		});
 
 		// Update all values including [red] and [green] array
 		// has dublication with [updateUserShipBuildWithHullModLogic] but without, it overwrites with old parameneters
@@ -313,22 +229,12 @@ export default class HullModsPopUp extends ViewModel {
 
 		// Render & EventListeners
 		this.#render();
-
-		// Scroll to position user previously was, to prevent annoying jumps
-		new ScrollPosition().load(classNames.tableContainer);
-
-		// keep the order
-		// Update shipStats to render new fields
-		new ShipStats(this.getState()).update();
-		// Update Controller, to display installedHullMods
-		new HullModController(this.getState()).update();
-		// Update Fighter Slots (in case change in amount fighter Bays)
-		new FighterSlots(this.getState()).update();
+		this.#updateOtherComponents();
 	};
 
 	// Turn HullMod Entry to Active => different Color
 	#assignActiveClasses() {
-		this.#processData();
+		this.#updateData();
 
 		const hullMods = this.#shipHullMods;
 		const installedHullMods = hullMods.installedHullMods;
@@ -430,4 +336,81 @@ export default class HullModsPopUp extends ViewModel {
 			)
 		);
 	};
+
+	// Renders
+	async #render() {
+		await this.#renderHullModsPopUp();
+		// await this.#renderAndListeners();
+
+		this.#eventListeners();
+
+		this.#assignActiveClasses();
+
+		new ScrollPosition().save(classNames.tableContainer);
+	}
+
+	// Event Listeners
+	async #renderHullModsPopUp() {
+		// Container
+		HullModsPopUpView.render(this.#greenHullMods);
+
+		// Filter
+		await HullModsPopUpFilterView.renderAsync([
+			this.#filterCategories,
+			this.#currentFilter,
+		]);
+
+		await this.#tableRenderAndSpinner();
+
+		// Header
+		HullModsPopUpHeaderView.render(this.#greenHullMods);
+	}
+
+	// Only table and spinner
+	async #tableRenderAndSpinner() {
+		return await toggleAsyncSpinner(
+			() =>
+				HullModsPopUpTableView.renderAsync([
+					this.#greenHullMods,
+					this.#currentUnavailableHullMods,
+					this.#userShipBuild,
+				]),
+			HullModsPopUpView
+		);
+	}
+	#eventListeners() {
+		this.#addWeaponPopUpTableHeaderListener();
+		this.#addWeaponPopUpEntryListener();
+		this.#addFilterListener();
+		this.#closePopUp();
+	}
+	// WeaponPopUp Event Listeners
+	#addFilterListener() {
+		HullModsPopUpFilterView.addClickHandler(
+			EVENT_LISTENER_TARGET.FILTER_BUTTON,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#filterTable
+		);
+	}
+	#addWeaponPopUpTableHeaderListener() {
+		HullModsPopUpHeaderView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#popUpSorter
+		);
+	}
+	#addWeaponPopUpEntryListener() {
+		HullModsPopUpTableView.addClickHandler(
+			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
+			EVENT_LISTENER_TYPE.CLICK,
+			this.#toggleHullMod
+		);
+	}
+	// Close if clicked outside
+	#closePopUp() {
+		HullModsPopUpView.closePopUpContainerIfUserClickOutside(
+			CLASSES.TABLE_CONTAINER,
+			HullModsPopUpView._clearRender
+		);
+	}
 }

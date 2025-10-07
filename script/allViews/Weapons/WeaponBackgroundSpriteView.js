@@ -11,6 +11,7 @@ const SPRITE_GROUP = {
 };
 const WEAPON_TYPE = {
 	DECORATIVE: "decorative",
+	SYSTEM: "system",
 };
 const PROPS = {
 	SIZE: {
@@ -27,24 +28,28 @@ const PROPS = {
 // Three sizes
 // if size large, for example three rectangles inside of each others
 const SIZE_CONFIG = {
-	small: [{ size: PROPS.SIZE.SMALL, opacity: PROPS.SIZE.FULL }],
+	small: [{ size: PROPS.SIZE.SMALL, opacity: PROPS.OPACITY.FULL }],
 	medium: [
-		{ size: PROPS.SIZE.SMALL, opacity: PROPS.SIZE.MEDIUM },
-		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.SIZE.FULL },
+		{ size: PROPS.SIZE.SMALL, opacity: PROPS.OPACITY.MEDIUM },
+		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.OPACITY.FULL },
 	],
 	large: [
-		{ size: PROPS.SIZE.SMALL, opacity: PROPS.SIZE.LIGHT },
-		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.SIZE.MEDIUM },
-		{ size: PROPS.SIZE.LARGE, opacity: PROPS.SIZE.FULL },
+		{ size: PROPS.SIZE.SMALL, opacity: PROPS.OPACITY.LIGHT },
+		{ size: PROPS.SIZE.MEDIUM, opacity: PROPS.OPACITY.MEDIUM },
+		{ size: PROPS.SIZE.LARGE, opacity: PROPS.OPACITY.FULL },
 	],
 };
 
 // Old implementation
 class WeaponBackgroundSpriteView {
-	renderElement(weaponType, weaponSize) {
+	renderElement(weaponObject, weaponSlot, backgroundSpriteEqualToWeaponSize) {
 		return `
 		<div class="${classNames.weaponBackgroundSpriteParent}">
-			${this.#generateFinalMarkup(weaponType, weaponSize)}
+			${this.#generateFinalMarkup(
+				weaponObject,
+				weaponSlot,
+				backgroundSpriteEqualToWeaponSize
+			)}
 		</div>`;
 	}
 
@@ -53,11 +58,24 @@ class WeaponBackgroundSpriteView {
 		// type is for color / shape
 		// oppacity for oppacity. Strong in the outer edges and weak in smallest sprite
 		return `<div class="${classNames.weaponBackgroundSprite} 
-					${classNames.weaponBackgroundSpriteSize}--${size} 
-					${classNames.weaponBackgroundSpriteType}--${type} 
+					${classNames.weaponBackgroundSpriteSize}--${size}
+					${classNames.weaponBackgroundSpriteType}--${type}
 					${classNames.weaponBackgroundSpriteOppacity}--${opacity}">
 				</div>`;
 	}
+
+	#weaponType = (weaponObject, weaponSlot) => {
+		const isWeaponPresent = weaponObject.additionalData?.type.toLowerCase();
+		const weaponType = weaponSlot.type.toLowerCase();
+
+		return weaponSlot ? weaponType : isWeaponPresent;
+	};
+	#weaponSize = (weaponObject, weaponSlot) => {
+		const isWeaponPresent = weaponObject.additionalData?.size.toLowerCase();
+		const weaponSlotSize = weaponSlot.size.toLowerCase();
+
+		return isWeaponPresent ? isWeaponPresent : weaponSlotSize;
+	};
 
 	#getStandardWeaponMarkup(weaponSize, weaponType) {
 		const config = SIZE_CONFIG[weaponSize];
@@ -70,7 +88,7 @@ class WeaponBackgroundSpriteView {
 			.map(({ size, opacity }) =>
 				this.#initialMarkup(size, weaponType, opacity)
 			)
-			.join("");
+			.join(GENERIC_STRING.EMPTY);
 	}
 
 	#getDualSpriteMarkup(weaponSize, weaponType) {
@@ -80,20 +98,34 @@ class WeaponBackgroundSpriteView {
 			.join(GENERIC_STRING.EMPTY);
 	}
 
-	#generateFinalMarkup(weaponType, weaponSize) {
+	#generateFinalMarkup(
+		weaponObject,
+		weaponSlot,
+		backgroundSpriteEqualToWeaponSize
+	) {
+		const weaponType = this.#weaponType(weaponObject, weaponSlot);
+		const weaponSize = () => {
+			return backgroundSpriteEqualToWeaponSize
+				? this.#weaponSize(weaponObject, weaponSlot)
+				: weaponSlot.size.toLowerCase();
+		};
+
 		if (SPRITE_GROUP.STANDARD_WEAPONS.includes(weaponType)) {
-			return this.#getStandardWeaponMarkup(weaponSize, weaponType);
+			return this.#getStandardWeaponMarkup(weaponSize(), weaponType);
 		}
 
 		if (SPRITE_GROUP.DUAL_SPRITE_WEAPONS.includes(weaponType)) {
-			return this.#getDualSpriteMarkup(weaponSize, weaponType);
+			return this.#getDualSpriteMarkup(weaponSize(), weaponType);
 		}
 
 		//? I dont remember why decorative is here
-		if (weaponType === WEAPON_TYPE.DECORATIVE) {
+		if (
+			weaponType === WEAPON_TYPE.DECORATIVE ||
+			weaponType === WEAPON_TYPE.SYSTEM
+		) {
 			return GENERIC_STRING.EMPTY;
 		}
-		//! Issue is here
+
 		console.warn(`Unknown weapon type: ${weaponType}`);
 		return GENERIC_STRING.EMPTY;
 	}

@@ -1,15 +1,27 @@
 import ViewModel from "../../../ViewModel";
 import TablePopUpSorter from "../../TablePopUpSorter";
 import FighterSlots from "../FighterSlots";
+import ShipStats from "../../ShipStats/ShipStats";
+import HullModController from "../../Hullmods/HullModController";
 // View
 import FighterPopUpContainerView from "../../../allViews/Fighters/FighterPopUpContainerView";
 import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUpTableHeaderView";
 import FighterPopUpTableView from "../../../allViews/Fighters/FighterPopUpTableView";
 import FighterPopUpHoverView from "../../../allViews/Fighters/FighterPopUpHoverView";
 // Helper
-import { weaponSlotIdIntoWeaponSlotObject } from "../../../helper/helperFunction";
-import classNames from "../../../helper/DomClassNames";
+import {
+	weaponSlotIdIntoWeaponSlotObject,
+	AddRemoveInstalledWeapon,
+	pushTargetWeaponObjectOnTop,
+	toggleAsyncSpinner,
+} from "../../../helper/helperFunction";
 
+import classNames from "../../../helper/DomClassNames";
+import UpdateUserShipBuild from "../../../helper/UpdateUserShipBuild";
+
+import UI_CONFIG from "../../../helper/UI_CONFIG";
+
+//
 const EVENT_LISTENER_TARGET = {
 	TABLE_ENTRIES: `.${classNames.tableEntries}`,
 	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
@@ -37,52 +49,147 @@ export default class FighterPopUp extends ViewModel {
 
 	#getDataState;
 	#weaponSlot;
+
 	// Fighter Object which can be shown to user
 	#currentFighterArray;
 	#currentlyHoveredFighter;
-	#fighterPopUpOpen = false;
+
 	constructor(model) {
 		super(model);
 	}
-	#processData() {
+	#updateData() {
 		this.#state = this.getState();
 		this.#getDataState = this.#state.dataState;
-
-		this.#currentFighterArray = this.#sortFighterArray(
-			this.#state.dataState.allFighters
-		);
 
 		this.#userShipBuild = this.getUserShipBuild();
 		this.#installedWeapons = this.#userShipBuild.installedWeapons;
 		this.#weaponsSlots = this.#userShipBuild.weaponSlots;
 	}
-	#sortFighterArray = (arr) => arr.toSorted((a, b) => b.opCost - a.opCost);
+	#updateOtherComponents() {
+		// Update shipStats to render new fields
+		new ShipStats(this.getState()).update();
 
+		//! Why is this here?
+		// Update Controller, to display installedHullMods
+		new HullModController(this.getState()).update();
+	}
 	update = (btn) => {
 		if (!btn) return;
 
-		this.#processData();
+		this.#updateData();
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
 			this.#weaponsSlots,
 			btn.dataset.fighterId
 		);
 
-		this.#renderFighterPopUp();
+		this.#createFighterWeaponArray();
+
+		// Pushes Installed Weapon to the top of the array
+		this.#currentFighterArray = pushTargetWeaponObjectOnTop(
+			this.#userShipBuild.installedWeapons,
+			this.#weaponSlot,
+			this.#currentFighterArray
+		);
+
+		this.#renderAndListeners();
+	};
+
+	#createFighterWeaponArray = () =>
+		(this.#currentFighterArray = this.#state.dataState.allFighters.toSorted(
+			(a, b) => b.opCost - a.opCost
+		));
+
+	// User Clicks to Add Weapon to Installed Weapon Array
+	#addCurrentFighterToInstalledWeapons = (btn) => {
+		const { weaponPopUpId } = btn.dataset;
+
+		new UpdateUserShipBuild(this.getState()).updateWeapons(
+			weaponPopUpId,
+			this.#weaponSlot.id
+		);
+
+		this.#updateData();
+		this.#toggleWeaponAndClosePopUp();
+		this.#updateOtherComponents();
+	};
+
+	#toggleWeaponAndClosePopUp() {
+		// Update WeaponSlots // Render // Listener // Arcs / Background
+		new FighterSlots(this.#state).update();
+		// Remove WeaponPopUpContainer
+		FighterPopUpContainerView._clearRender();
+	}
+
+	#fighterPopUpTableSorter = (btn) => {
+		const { category } = btn.dataset;
+		if (SKIP_SORT_CATEGORY[category]) return;
+		// Sort the Table
+
+		const sorterArray = TablePopUpSorter.update([
+			category,
+			TABLE_POPUP_TYPE,
+			this.#currentFighterArray,
+			this.#userShipBuild,
+		]);
+
+		this.#currentFighterArray = pushTargetWeaponObjectOnTop(
+			this.#userShipBuild.installedWeapons,
+			this.#weaponSlot,
+			sorterArray
+		);
+
+		// Render Changes
+		this.#tableRenderAndSpinner();
 		this.#addEventListeners();
 	};
-	// render
-	#renderFighterPopUp() {
+	// Hover
+	#showAdditionalInformationOnHover = (btn) => {
+		const { weaponPopUpId } = btn.dataset;
+		if (this.#currentlyHoveredFighter === weaponPopUpId) return; // guard from mouseover event
+		this.#currentlyHoveredFighter = weaponPopUpId;
+
+		const hoveredWeaponObject = weaponSlotIdIntoWeaponSlotObject(
+			this.#currentFighterArray,
+			weaponPopUpId
+		);
+
+		FighterPopUpHoverView.render([
+			hoveredWeaponObject,
+			this.#weaponSlot,
+			this.#getDataState,
+		]);
+	};
+
+	/////
+	// Combined function
+	async #renderAndListeners() {
 		FighterPopUpContainerView.render(this.#state);
 		FighterPopUpTableHeaderView.render(this.#state);
 
-		FighterPopUpTableView.render([
-			this.#installedWeapons,
-			this.#currentFighterArray,
-			this.#weaponSlot,
-		]);
+		await this.#tableRenderAndSpinner();
+		this.#addEventListeners();
+	}
+
+	// Only table and spinner
+	async #tableRenderAndSpinner() {
+		return await toggleAsyncSpinner(
+			() =>
+				FighterPopUpTableView.renderAsync([
+					this.#installedWeapons,
+					this.#currentFighterArray,
+					this.#weaponSlot,
+				]),
+			FighterPopUpContainerView
+		);
 	}
 	// WeaponPopUp Event Listeners
+	#addEventListeners() {
+		// Listeners
+		this.#tableHeaderEventListener();
+		this.#tableEventListener();
+		this.#closePopUpContainer();
+	}
 	#tableHeaderEventListener() {
 		FighterPopUpTableHeaderView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
@@ -102,96 +209,10 @@ export default class FighterPopUp extends ViewModel {
 			this.#showAdditionalInformationOnHover
 		);
 	}
-	#addEventListeners() {
-		// Listeners
-		this.#tableHeaderEventListener();
-		this.#tableEventListener();
-
+	#closePopUpContainer() {
 		FighterPopUpContainerView.closePopUpContainerIfUserClickOutside(
 			`.${classNames.tableContainer}`,
 			FighterPopUpContainerView._clearRender
 		);
 	}
-	// User Clicks to Add Weapon to Installed Weapon Array
-	#addCurrentFighterToInstalledWeapons = (btn) => {
-		const { weaponPopUpId } = btn.dataset;
-		const userShipBuild = this.getUserShipBuild();
-		const installedWeapons = userShipBuild.installedWeapons;
-		//
-		const updatedInstalledWeapons = installedWeapons.map(
-			([slotId, currentWeapon]) => {
-				// If weapon already exists in slot, remove it
-				if (currentWeapon === weaponPopUpId) {
-					this.#fighterPopUpOpen = true;
-					return [slotId, ""];
-				}
-				// if weapon dont match, keep the original
-				if (slotId !== this.#weaponSlot.id) {
-					return [slotId, currentWeapon];
-				}
-				// Otherwise, add the new weapon
-				return [slotId, weaponPopUpId];
-			}
-		);
-
-		// update weapons
-		this.setUpdateUserShipBuild({
-			...userShipBuild,
-			installedWeapons: updatedInstalledWeapons,
-		});
-		// assign new installedWeapons
-		this.#installedWeapons = installedWeapons;
-
-		this.#fighterPopUpOpen === true
-			? this.#addWeaponAndCloseWeaponPopUp()
-			: this.#removeActiveWeaponAndReRenderWeaponPopUp();
-	};
-	#removeActiveWeaponAndReRenderWeaponPopUp() {
-		// Update WeaponSlots // Render // Listener // Arcs / Background
-		new FighterSlots(this.#state).update();
-
-		// Remove WeaponPopUpContainer
-		FighterPopUpContainerView._clearRender();
-
-		// Render Again
-		this.#renderFighterPopUp();
-		this.#addEventListeners();
-	}
-	#addWeaponAndCloseWeaponPopUp() {
-		// Update WeaponSlots // Render // Listener // Arcs / Background
-		new FighterSlots(this.#state).update();
-
-		// Remove WeaponPopUpContainer
-		FighterPopUpContainerView._clearRender();
-	}
-	// Hover
-	#showAdditionalInformationOnHover = (btn) => {
-		const { weaponPopUpId } = btn.dataset;
-		if (this.#currentlyHoveredFighter === weaponPopUpId) return; // guard from mouseover event
-		this.#currentlyHoveredFighter = weaponPopUpId;
-
-		const hoveredWeaponObject = weaponSlotIdIntoWeaponSlotObject(
-			this.#currentFighterArray,
-			weaponPopUpId
-		);
-
-		FighterPopUpHoverView.render([
-			hoveredWeaponObject,
-			this.#weaponSlot,
-			this.#getDataState,
-		]);
-	};
-	#fighterPopUpTableSorter = (btn) => {
-		const { category } = btn.dataset;
-		if (SKIP_SORT_CATEGORY[category]) return;
-		// Sort the Table
-		this.#currentFighterArray = TablePopUpSorter.update([
-			btn,
-			TABLE_POPUP_TYPE,
-			this.#currentFighterArray,
-		]);
-		// Render Changes
-		this.#renderFighterPopUp();
-		this.#addEventListeners();
-	};
 }

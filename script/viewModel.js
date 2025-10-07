@@ -47,12 +47,12 @@ export default class ViewModel {
 	}
 
 	// General Functions
-	isWeaponPopUpStateOpen(isOpen = false) {
+	isWeaponPopUpStateOpen(keepOpen = false) {
 		const weaponPopUp = this.getUiState().weaponPopUp;
 
 		this.setUpdateWeaponPopUpState({
 			...weaponPopUp,
-			isWeaponPopUpOpen: isOpen,
+			isWeaponPopUpOpen: keepOpen,
 		});
 	}
 }

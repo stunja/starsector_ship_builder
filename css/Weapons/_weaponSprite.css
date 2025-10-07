@@ -5,60 +5,8 @@
 .weapon-sprite-parent {
 	position: relative;
 
-	.weapon-background-sprite__size--small {
-		height: 2rem;
-		width: 2rem;
-	}
-	.weapon-background-sprite__size--medium {
-		height: 2.5rem;
-		width: 2.5rem;
-	}
-	.weapon-background-sprite__size--large {
-		height: 3rem;
-		width: 3rem;
-	}
-
 	.weapon-sprite {
 		/* padding-bottom: 4rem; */
 		transform: rotate(-45deg);
 	}
-	.weapon-background-sprite__type--hybrid
-		.weapon-background-sprite:nth-of-type(1) {
-		width: 2rem;
-		height: 2rem;
-	}
 }
-
-/* ! I need to change the class itself */
-/* &.weapon--active,
-	&.fighter--active {
-		font-size: 1.2rem;
-		background-color: rgba(0, 126, 25, 0.5);
-
-		.fighter__icon {
-			padding: 0rem;
-		}
-		.weapon__icon {
-			padding: 3.6rem 0.6rem;
-		}
-	} */
-
-/*******************************************************************/
-/*  WEAPON SPRITE  */
-/*******************************************************************/
-/* .weapon__icon { */
-/* padding: 2.8rem 0.6rem; */
-/* width: 6rem; */
-/* img {
-			max-height: 4rem;
-		}
-
-		.weapon-sprite--gun,
-		.weapon-sprite--base {
-			position: absolute;
-			top: 55%;
-			left: 50%;
-
-			transform: translate(-50%, -50%);
-		}
-	} */

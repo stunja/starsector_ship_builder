@@ -9,6 +9,6 @@ export default class ShipInfo extends ViewModel {
 		this.#containerRender();
 	}
 	#containerRender() {
-		ShipInfoView.render(this.getUserShipBuild());
+		ShipInfoView.render(this.getState());
 	}
 }

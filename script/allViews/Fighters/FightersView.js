@@ -1,15 +1,18 @@
 import classNames from "../../helper/DomClassNames";
 import DataSet from "../../helper/DataSet";
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
-import { GENERIC_STRING } from "../../helper/MagicStrings";
+import {
+	toggleAdditionalInstalledWeapons,
+	weaponSlotIdIntoWeaponSlotObject,
+} from "../../helper/helperFunction";
 import { WEAPON_SLOT } from "../../helper/Properties";
+// Helper
+import { GENERIC_STRING } from "../../helper/MagicStrings";
 // View
 import View from "../view";
 import FighterSprite from "./FighterSprite";
 
 const STRING = {
 	HEADER: "Fighter Bays",
-	EMPTY: "",
 };
 
 class FightersView extends View {
@@ -29,51 +32,63 @@ class FightersView extends View {
 	generateMarkup() {
 		this.#processData(this._data);
 
-		const markup = `${this.#fighterContainerMarkup()}`;
+		const markup = this.#fighterContainerMarkup();
 		return markup;
 	}
-	#fighterContainerMarkup() {
+	async #fighterContainerMarkup() {
+		const markup = await this.#fighterSlotsMarkup();
+
 		return `
 	        <ul class="${classNames.fighterSlotsContainer}">
 	          <li class="${classNames.fighterSlotsContainerHeader}">
                 <h5>${STRING.HEADER}</h5>
               </li>
 	          <li class="${classNames.fighterSlots}">
-	            ${this.#fighterSlotsMarkup()}
+	            ${markup}
 	          </li>
 			  <div class="${classNames.fighterPopUp}"></div>
 	        </ul>
 	`;
 	}
 
-	#fighterSlotsMarkup() {
+	async #fighterSlotsMarkup() {
 		const fighterSlots = this.#createFighterSlotsArray();
-		if (fighterSlots.length === 0) return STRING.EMPTY;
+		if (fighterSlots.length === 0) return GENERIC_STRING.EMPTY;
 
-		//prettier-ignore
-		return fighterSlots
-			.map(
-				(fighterSlot) => {
-					const currentFighter = this.#findCurrentFighter(fighterSlot);
-					
-				return	`
-		                <div class="${classNames.fighterSlotContainer}">
-		                    <figure class="${classNames.fighterSlot}"
-		                        ${DataSet.dataFighterId}="${fighterSlot.id}"
-		                    >
-								${currentFighter ? FighterSprite.renderElement(currentFighter) : GENERIC_STRING.EMPTY}
-		                    </figure>
-		                </div>
-		            `
-				}
-			)
-			.join(GENERIC_STRING.EMPTY);
+		const results = await Promise.all(
+			fighterSlots.map(async (fighterSlot) => {
+				const currentFighter = this.#findCurrentFighter(fighterSlot);
+
+				const crrFg = currentFighter
+					? await FighterSprite.renderElement(currentFighter)
+					: GENERIC_STRING.EMPTY;
+
+				return `
+						<div class="${classNames.weaponSpriteParent}">
+						<div class="${classNames.fighterSlotContainer}">
+							<figure class="${classNames.fighterSlot}"
+								${DataSet.dataFighterId}="${fighterSlot.id}">
+								${crrFg}
+							</figure>
+						</div>
+							${this.#fighterCostMarkup(currentFighter)}
+						</div>
+      					`;
+			})
+		);
+
+		return results.join(GENERIC_STRING.EMPTY); // return as a single markup string
 	}
+	#fighterCostMarkup = (currentFighterObject) => {
+		const opCost = currentFighterObject.opCost ?? GENERIC_STRING.EMPTY;
+		return `<p class="${classNames.fighterSpriteCost}">${opCost}</p>`;
+	};
 
-	#createFighterSlotsArray = () =>
-		this.#weaponSlots.filter(
+	#createFighterSlotsArray = () => {
+		return this.#weaponSlots.filter(
 			(fighterObject) => fighterObject.type === WEAPON_SLOT.TYPE.LAUNCH_BAY
 		);
+	};
 
 	#findCurrentFighter = (weaponSlot) => {
 		if (!weaponSlot) {
@@ -87,11 +102,12 @@ class FightersView extends View {
 		if (!currentInstalledWeapon) {
 			throw new Error(`No weapon found for fighter slot ID: ${weaponSlot.id}`);
 		}
+
 		const [_, currentWeaponId] = currentInstalledWeapon;
 
 		// If weaponId is empty just return empty string
 		// If weaponSlots are actually empty
-		if (currentWeaponId === STRING.EMPTY) return STRING.EMPTY;
+		if (currentWeaponId === GENERIC_STRING.EMPTY) return GENERIC_STRING.EMPTY;
 
 		const currentFighterObject = weaponSlotIdIntoWeaponSlotObject(
 			this.#allFighters,

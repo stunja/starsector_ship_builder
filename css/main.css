@@ -13,6 +13,7 @@
 @import "_build-maker.css";
 @import "./build-maker.css";
 @import "./navigation.css";
+@import "./ship-info-container.css";
 
 /* Fighter */
 @import "./Fighters/fighter-slots.css";
@@ -24,4 +25,3 @@
 
 /* Sprite */
 @import "./Weapons/_weaponSprite.css";
-@import "./Weapons/_weaponBackgroundSprite.css";
