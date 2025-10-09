@@ -55,7 +55,7 @@ class InstalledHullMods extends View {
 		`<button class="${classNames.button} ${classNames.buttonCircle} ${classNames.removeInstalledHullModButton}"
 			${DataSet.dataHullModId}="${currentHullMod.id}"
 		>
-			${BUTTON_TYPE.MINUS}
+			${GENERIC_STRING.MINUS}
 		</button>`;
 
 	#imageMarkup = (currentHullMod) =>

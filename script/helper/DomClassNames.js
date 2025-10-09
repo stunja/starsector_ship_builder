@@ -1,9 +1,13 @@
 const classNames = {
 	// Navigation
 	nav: "nav",
-	searchForm: "search-form",
 	navLogo: "nav_logo",
-	searchForm__Button: "search-form__button",
+
+	// Search
+	searchForm: "search-form",
+	searchFormInput: "search-form__input",
+	searchFormButton: "search-form__button",
+
 	// Generic
 	dNone: "d-none",
 	flexFlexEndGap: "flex-flexEnd-gap",

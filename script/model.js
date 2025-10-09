@@ -12,7 +12,7 @@ import Papa from "papaparse";
 import { SHIELD_TYPE } from "./helper/Properties.js";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "invictus"; // hound // venture
+const shipNameDev = "astral"; // hound // venture
 
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor
@@ -91,6 +91,7 @@ export class Model {
 			]);
 
 			const currentShip = findCurrentShip(ships);
+
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
 				currentShip
 			);
@@ -102,9 +103,10 @@ export class Model {
 
 			// Weapons
 			const weaponOnly = this.#filterWeaponsOnly(weapons);
-			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
 			const filteredWeaponsWithAdditionalData =
 				await additionalWeaponData.fetchAndInjectData(weaponOnly, desc);
+			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
+
 			// Fighters
 			const updatedFighters = await updateFighters.fetchAndInjectData(
 				fighters,
@@ -142,6 +144,25 @@ export class Model {
 			this.updateState("uiState", { isLoading: false });
 		}
 	}
+
+	//////
+	// async loadData() {
+	// 	this.updateState("uiState", { isLoading: true });
+	// 	try {
+	// 		const [ships] = await Promise.all([
+	// 			cvsFetcher.fetch(`/${URL.DATA_STRINGS}/${URL.DESCRIPTION_CVS}`),
+	// 		]);
+
+	// 		this.updateState("dataState", {
+	// 			allShips: ships,
+	// 		});
+	// 	} catch (err) {
+	// 		console.log(`Failed to Load Resources ${err}`);
+	// 	} finally {
+	// 		this.updateState("uiState", { isLoading: false });
+	// 	}
+	// }
+
 	#weaponIsNotSystem = (wpn) => {
 		if (!wpn?.hints) return true;
 
@@ -149,13 +170,14 @@ export class Model {
 
 		return !hasSystemTag;
 	};
-	#filterWeaponSystems = (weaponsArray) =>
-		weaponsArray.filter((weapon) => !this.#weaponIsNotSystem(weapon));
-
-	#filterWeaponsOnly = (weaponsArray) =>
-		weaponsArray.filter(
+	#filterWeaponSystems = (weaponsArray) => {
+		return weaponsArray.filter((weapon) => !this.#weaponIsNotSystem(weapon));
+	};
+	#filterWeaponsOnly = (weaponsArray) => {
+		return weaponsArray.filter(
 			(weapon) => this.#weaponIsNotSystem(weapon) && weapon.id
 		);
+	};
 }
 const cvsFetcher = {
 	fetch: async function (url) {
@@ -860,3 +882,5 @@ const hullMods = {
 		return { ...data, isAutomated };
 	},
 };
+
+const captureUserInput = function () {};

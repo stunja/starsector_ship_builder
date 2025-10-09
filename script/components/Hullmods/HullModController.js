@@ -24,8 +24,8 @@ const HULLMOD_BUTTON_TYPE = {
 };
 
 export default class HullModController extends ViewModel {
-	#userState;
-	#allHullMods;
+	// #userState;
+	// #allHullMods;
 	#userShipBuild;
 
 	#buildInHullMods;
@@ -34,12 +34,13 @@ export default class HullModController extends ViewModel {
 	constructor(model) {
 		super(model);
 
-		this.#userState = this.getUserState();
-		this.#allHullMods = this.#userState.usableHullMods;
-		this.#userShipBuild = this.#userState.userShipBuild;
+		const userState = this.getUserState();
+		// const allHullMods = userState.usableHullMods;
+
+		this.#userShipBuild = userState.userShipBuild;
 		this.#hullSize = this.#userShipBuild.hullSize;
 
-		this.#buildInHullMods = this.#userShipBuild.hullMods.builtInMods;
+		this.#buildInHullMods = this.#userShipBuild.hullMods?.builtInMods;
 	}
 	update() {
 		this.#hullModContainerRender();

@@ -113,6 +113,16 @@ export default class View {
 
 		return false;
 	}
+
+	// Captures only Name from Submit Form
+	inputSubmitHandler(parentElement, targetFunction) {
+		parentElement.addEventListener("submit", function (e) {
+			e.preventDefault();
+			const formData = new FormData(e.target);
+			const inputData = formData.get("search");
+			return targetFunction(inputData);
+		});
+	}
 	// Utility method to check if a target has an active listener
 	hasListener(target) {
 		return this._targetMap.has(target);

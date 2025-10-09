@@ -1,60 +1,52 @@
+// View
 import SearchView from "../allViews/SearchView.js";
 import ViewModel from "../ViewModel.js";
 
+// helper
 import classNames from "../helper/DomClassNames.js";
+import { GENERIC_STRING } from "../helper/MagicStrings.js";
 
 const EVENT_LISTENER_TARGET = {
-	BUTTON: `.${classNames.searchForm__Button}`,
+	BUTTON: `.${classNames.searchFormButton}`,
 };
 const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
 };
 export default class Search extends ViewModel {
+	#searchForm;
+	#searchField;
+	#searchButton;
+
 	constructor(model) {
 		super(model);
 	}
 	update() {
-		this.#searchRender();
+		// Render
+		SearchView.render(this.getState);
+
+		// Find DOM elements
+		this.#searchObjects();
+
+		// Capture the input
+		SearchView.inputSubmitHandler(this.#searchForm, this.#userInput);
 	}
 
-	#searchRender() {
-		SearchView.render(this.getState);
-		SearchView.addClickHandler(
-			EVENT_LISTENER_TARGET.BUTTON,
-			EVENT_LISTENER_TYPE.CLICK,
-			this.test
+	#searchObjects() {
+		this.#searchForm = document.querySelector(`.${classNames.searchForm}`);
+		this.#searchField = this.#searchForm.querySelector(
+			`.${classNames.searchFormInput}`
+		);
+		this.#searchButton = this.#searchForm.querySelector(
+			`${classNames.searchFormButton}`
 		);
 	}
-	test(btn) {
-		console.log(btn);
+
+	#userInput(test) {
+		console.log("userInput");
+		console.log(test); // input from the search form
+	}
+	// Add later
+	#clearInput() {
+		this.#searchField.value = GENERIC_STRING.EMPTY;
 	}
 }
-//! Finish later
-
-// #clearInput() {
-// 	this.#parentElement.querySelector(".search-form__input").value = "";
-// }
-// addSearchHandler(inputFunction) {
-// 	this.#parentElement.addEventListener("submit", function (e) {
-// 		e.preventDefault();
-// 		inputFunction();
-// 	});
-// }
-// getInputValue = () => {
-// 	const inputValue = this.#parentElement.querySelector(
-// 		".search-form__input"
-// 	).value;
-// 	// this.#clearInput(); //
-// 	return inputValue;
-// };
-
-//   addHandlerClick(handler) {
-//     this._parentElement.addEventListener('click', function (e) {
-//       const btn = e.target.closest('.btn--inline');
-//       if (!btn) return;
-
-//       const goToPage = +btn.dataset.goto;
-//       handler(goToPage);
-//     });
-
-//   }

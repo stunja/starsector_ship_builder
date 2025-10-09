@@ -5,6 +5,8 @@ export const GENERIC_STRING = {
 	CHECKMARK: "&#10003",
 	COMMA: ",",
 	HIDDEN: "hidden",
+	PLUS: "+",
+	MINUS: "-",
 };
 export const EVENT_LISTENER_TYPE = {
 	CLICK: "click",

@@ -20,20 +20,21 @@ class SearchView extends View {
 
             <form class="${classNames.searchForm}">
                 <input
+                    name="search"
                     type="text"
-                    id="search-nav-top"
+                    class="${classNames.searchFormInput}"
                     placeholder="Enter the name of the ship"
-                    value="astral"
+                    value="test"
                     required
                 />
 
-                <button type="submit" class="${classNames.button} ${classNames.searchForm__Button}" 
+                <button type="submit" class="${classNames.button} ${classNames.searchFormButton}" 
                     ${DataSet.dataNavButtonType}=${EVENT_LISTENER_TARGET.SEARCH}>
                     ${STRINGS.SEARCH}
                 </button>
             </form>
 
-            <button class="${classNames.button} ${classNames.searchForm__Button}" 
+            <button class="${classNames.button} ${classNames.searchFormButton}" 
                     ${DataSet.dataNavButtonType}=${EVENT_LISTENER_TARGET.SAVE}>
                     ${STRINGS.SAVED}
                 </button>
