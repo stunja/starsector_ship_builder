@@ -1,6 +1,6 @@
 // Views
 import BuilderView from "../allViews/BuilderView.js";
-// ViewModels
+// Components
 import ViewModel from "../ViewModel.js";
 import Search from "./Search.js";
 import ShipStats from "./ShipStats/ShipStats.js";

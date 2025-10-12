@@ -1,8 +1,9 @@
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
 // View
 import View from "../view.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+// helper
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import DATASET from "../../helper/ui/datasets.js";
 
 const CATEGORIES = {
 	icon: GENERIC_STRING.EMPTY,
@@ -14,12 +15,12 @@ const CATEGORIES = {
 };
 
 class FighterPopUpTableHeaderView extends View {
-	_localParent = `.${classNames.tableHeader}`;
+	_localParent = `.${CLASS_NAMES.tableHeader}`;
 
 	generateMarkup() {
 		const markup = Object.entries(CATEGORIES)
 			.map(([key, value]) => {
-				return `<li class="${classNames.unselectable} ${classNames.tableHeaderEntry}" ${DataSet.dataCategory}="${key}">
+				return `<li class="${CLASS_NAMES.unselectable} ${CLASS_NAMES.tableHeaderEntry}" ${DATASET.dataCategory}="${key}">
 							${value}
 						</li>`;
 			})

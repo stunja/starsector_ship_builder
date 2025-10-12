@@ -1,17 +1,17 @@
 // View
 import View from "../view.js";
 // Helper
-import DataSet from "../../helper/DataSet.js";
+import DATASET from "../../helper/ui/datasets.js";
 import URL from "../../helper/url.js";
-import classNames from "../../helper/DomClassNames.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
 import HullModHelper from "../../components/Hullmods/HullModHelper.js";
 
 const BUTTON_TYPE = {
 	MINUS: "-",
 };
 class InstalledHullMods extends View {
-	_localParent = `.${classNames.installedHullMods}`;
+	_localParent = `.${CLASS_NAMES.installedHullMods}`;
 	#installedHullMods;
 	#hullSize;
 
@@ -34,7 +34,7 @@ class InstalledHullMods extends View {
 		const markup = this.#installedHullMods
 			.map(
 				(currentHullMod) =>
-					`<li class="${classNames.flexFlexEndGap} ${classNames.hullMod}">
+					`<li class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.hullMod}">
 						<h5>${currentHullMod.name}</h5>
 						${this.#hullModCostMarkup(currentHullMod)}
 						${this.#buttonMarkup(currentHullMod)}
@@ -47,13 +47,13 @@ class InstalledHullMods extends View {
 	}
 	// Markups
 	#hullModCostMarkup = (currentHullMod) => `
-				<p class="${classNames.hullModCost}">
+				<p class="${CLASS_NAMES.hullModCost}">
 					[${HullModHelper.normalizedHullSize(currentHullMod, this.#hullSize)}]
 				</p>`;
 
 	#buttonMarkup = (currentHullMod) =>
-		`<button class="${classNames.button} ${classNames.buttonCircle} ${classNames.removeInstalledHullModButton}"
-			${DataSet.dataHullModId}="${currentHullMod.id}"
+		`<button class="${CLASS_NAMES.button} ${CLASS_NAMES.buttonCircle} ${CLASS_NAMES.removeInstalledHullModButton}"
+			${DATASET.dataHullModId}="${currentHullMod.id}"
 		>
 			${GENERIC_STRING.MINUS}
 		</button>`;

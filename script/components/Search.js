@@ -3,11 +3,11 @@ import SearchView from "../allViews/SearchView.js";
 import ViewModel from "../ViewModel.js";
 
 // helper
-import classNames from "../helper/DomClassNames.js";
-import { GENERIC_STRING } from "../helper/MagicStrings.js";
+import CLASS_NAMES from "../helper/ui/class_names.js";
+import { GENERIC_STRING } from "../helper/ui/ui_main.js";
 
 const EVENT_LISTENER_TARGET = {
-	BUTTON: `.${classNames.searchFormButton}`,
+	BUTTON: `.${CLASS_NAMES.searchFormButton}`,
 };
 const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
@@ -32,17 +32,16 @@ export default class Search extends ViewModel {
 	}
 
 	#searchObjects() {
-		this.#searchForm = document.querySelector(`.${classNames.searchForm}`);
+		this.#searchForm = document.querySelector(`.${CLASS_NAMES.searchForm}`);
 		this.#searchField = this.#searchForm.querySelector(
-			`.${classNames.searchFormInput}`
+			`.${CLASS_NAMES.searchFormInput}`
 		);
 		this.#searchButton = this.#searchForm.querySelector(
-			`${classNames.searchFormButton}`
+			`${CLASS_NAMES.searchFormButton}`
 		);
 	}
 
 	#userInput(test) {
-		console.log("userInput");
 		console.log(test); // input from the search form
 	}
 	// Add later

@@ -1,14 +1,14 @@
-import DataSet from "../../helper/DataSet";
-import classNames from "../../helper/DomClassNames";
+import DATASET from "../../helper/ui/datasets";
+import CLASS_NAMES from "../../helper/ui/class_names";
 //
 class WeaponArcView {
 	renderElement(currentWeaponSlot) {
 		if (!currentWeaponSlot) return "";
 
 		const markup = `
-		<div class="${classNames.weaponArc}" 
-			${DataSet.dataId}="${currentWeaponSlot.id}" ${DataSet.dataArc}="${currentWeaponSlot.arc}" ${DataSet.dataAngle}="${currentWeaponSlot.angle}">
-			<div class="${classNames.weaponArcSprite}"></div>
+		<div class="${CLASS_NAMES.weaponArc}" 
+			${DATASET.dataId}="${currentWeaponSlot.id}" ${DATASET.dataArc}="${currentWeaponSlot.arc}" ${DATASET.dataAngle}="${currentWeaponSlot.angle}">
+			<div class="${CLASS_NAMES.weaponArcSprite}"></div>
 		</div>`;
 
 		return markup;

@@ -1,8 +1,10 @@
-import classNames from "../helper/DomClassNames";
+// View
 import View from "./view";
+// Helper
+import CLASS_NAMES from "../helper/ui/class_names";
 
 class AdditionalInfoView extends View {
-	_localParent = `.${classNames.additionalInfoContainer}`;
+	_localParent = `.${CLASS_NAMES.additionalInfoContainer}`;
 
 	generateMarkup() {
 		const markup = "additional info";

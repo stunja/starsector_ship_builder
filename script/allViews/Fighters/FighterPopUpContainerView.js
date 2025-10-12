@@ -1,17 +1,18 @@
-import classNames from "../../helper/DomClassNames.js";
 // View
 import View from "../view.js";
+// helper
+import CLASS_NAMES from "../../helper/ui/class_names.js";
 
 class FighterPopUpContainerView extends View {
-	_localParent = `.${classNames.fighterPopUp}`;
+	_localParent = `.${CLASS_NAMES.fighterPopUp}`;
 
 	generateMarkup() {
 		const markup = `
-				<div class="${classNames.tableContainer}">
-					<ul class="${classNames.tableEntries} ${classNames.tableHeader}"></ul>
-					<div class="${classNames.tableBody}"></div>
+				<div class="${CLASS_NAMES.tableContainer}">
+					<ul class="${CLASS_NAMES.tableEntries} ${CLASS_NAMES.tableHeader}"></ul>
+					<div class="${CLASS_NAMES.tableBody}"></div>
 				</div>
-				<div class="${classNames.hoverContainer}"></div>
+				<div class="${CLASS_NAMES.hoverContainer}"></div>
 				`;
 		return markup;
 	}

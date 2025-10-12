@@ -1,3 +1,4 @@
+// View Model
 import ViewModel from "../../ViewModel";
 import ShipStats from "../ShipStats/ShipStats";
 import HullModsPopUp from "./HullModsPopUp";
@@ -7,15 +8,16 @@ import InstalledHullMods from "../../allViews/HullMods/InstalledHullModsView";
 import HullModView from "../../allViews/HullMods/HullModView";
 import BuildInHullModsView from "../../allViews/HullMods/BuildInHullModsView";
 // Helper
-import classNames from "../../helper/DomClassNames";
-import { EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import HullModHelper from "./HullModHelper";
-import { createUsableHullMods } from "../../helper/helperFunction";
+import CLASS_NAMES from "../../helper/ui/class_names";
+import { EVENT_LISTENER_TYPE } from "../../helper/ui/ui_main";
+import { createUsableHullMods } from "../../helper/helper_functions";
 import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
+// import HullModHelper from "./HullModHelper";
+
 const EVENT_LISTENER_TARGET = {
-	HULLMODS: `.${classNames.hullMods__button}`,
-	REMOVE_HULLMOD: `.${classNames.removeInstalledHullModButton}`,
+	HULLMODS: `.${CLASS_NAMES.hullMods__button}`,
+	REMOVE_HULLMOD: `.${CLASS_NAMES.removeInstalledHullModButton}`,
 };
 
 const HULLMOD_BUTTON_TYPE = {

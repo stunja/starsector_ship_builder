@@ -1,10 +1,10 @@
 // View
 import View from "../view";
 // Helper
-import classNames from "../../helper/DomClassNames";
+import CLASS_NAMES from "../../helper/ui/class_names";
 
 class ShipInfoContainerView extends View {
-	_localParent = `.${classNames.shipInfoContainer}`;
+	_localParent = `.${CLASS_NAMES.shipInfoContainer}`;
 
 	generateMarkup() {
 		const markup = this.#infoMarkup(this._data);
@@ -20,10 +20,10 @@ class ShipInfoContainerView extends View {
 
 		return `
 				<div>
-					<h5 class="${classNames.shipInfoTitle}">
+					<h5 class="${CLASS_NAMES.shipInfoTitle}">
 						${name}
 					</h5>
-					<div class="${classNames.shipInfoDetails}">
+					<div class="${CLASS_NAMES.shipInfoDetails}">
 						<p>${hullSizeString()}</p>
 						<p>${designation}</p>
 						<p>${techManufacturer}</p>

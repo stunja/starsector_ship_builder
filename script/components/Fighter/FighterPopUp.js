@@ -1,30 +1,28 @@
-import ViewModel from "../../../ViewModel";
-import TablePopUpSorter from "../../TablePopUpSorter";
-import FighterSlots from "../FighterSlots";
-import ShipStats from "../../ShipStats/ShipStats";
-import HullModController from "../../Hullmods/HullModController";
+import ViewModel from "../../ViewModel";
+import TablePopUpSorter from "../TablePopUpSorter";
+import FighterSlots from "./FighterSlots";
+import ShipStats from "../ShipStats/ShipStats";
+import HullModController from "../Hullmods/HullModController";
 // View
-import FighterPopUpContainerView from "../../../allViews/Fighters/FighterPopUpContainerView";
-import FighterPopUpTableHeaderView from "../../../allViews/Fighters/FighterPopUpTableHeaderView";
-import FighterPopUpTableView from "../../../allViews/Fighters/FighterPopUpTableView";
-import FighterPopUpHoverView from "../../../allViews/Fighters/FighterPopUpHoverView";
+import FighterPopUpContainerView from "../../allViews/Fighters/FighterPopUpContainerView";
+import FighterPopUpTableHeaderView from "../../allViews/Fighters/FighterPopUpTableHeaderView";
+import FighterPopUpTableView from "../../allViews/Fighters/FighterPopUpTableView";
+import FighterPopUpHoverView from "../../allViews/Fighters/FighterPopUpHoverView";
 // Helper
 import {
 	weaponSlotIdIntoWeaponSlotObject,
 	AddRemoveInstalledWeapon,
 	pushTargetWeaponObjectOnTop,
 	toggleAsyncSpinner,
-} from "../../../helper/helperFunction";
+} from "../../helper/helper_functions";
 
-import classNames from "../../../helper/DomClassNames";
-import UpdateUserShipBuild from "../../../helper/UpdateUserShipBuild";
-
-import UI_CONFIG from "../../../helper/UI_CONFIG";
+import CLASS_NAMES from "../../helper/ui/class_names";
+import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
 //
 const EVENT_LISTENER_TARGET = {
-	TABLE_ENTRIES: `.${classNames.tableEntries}`,
-	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
+	TABLE_ENTRIES: `.${CLASS_NAMES.tableEntries}`,
+	TABLE_HEADER_ENTRY: `.${CLASS_NAMES.tableHeaderEntry}`,
 };
 
 const EVENT_LISTENER_TYPE = {
@@ -211,7 +209,7 @@ export default class FighterPopUp extends ViewModel {
 	}
 	#closePopUpContainer() {
 		FighterPopUpContainerView.closePopUpContainerIfUserClickOutside(
-			`.${classNames.tableContainer}`,
+			`.${CLASS_NAMES.tableContainer}`,
 			FighterPopUpContainerView._clearRender
 		);
 	}

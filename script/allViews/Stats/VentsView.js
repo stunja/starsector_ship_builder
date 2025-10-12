@@ -1,6 +1,7 @@
-import classNames from "../../helper/DomClassNames";
-import DataSet from "../../helper/DataSet";
 import View from "../view";
+// helper
+import CLASS_NAMES from "../../helper/ui/class_names";
+import DATASET from "../../helper/ui/datasets";
 
 const BUTTON = {
 	PLUS: "plus",
@@ -11,7 +12,7 @@ const STRINGS = {
 	FLUX: "Flux Dissipation",
 };
 class VentsViews extends View {
-	_localParent = `.${classNames.shipVents}`;
+	_localParent = `.${CLASS_NAMES.shipVents}`;
 
 	generateMarkup() {
 		const userShipBuild = this._data;
@@ -25,18 +26,18 @@ class VentsViews extends View {
 
 	#ventsMarkup(vents) {
 		return `
-            <li class="${classNames.flexFlexEndGap} ${classNames.shipVents__Edit}">
+            <li class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.shipVents__Edit}">
                    <h5>${STRINGS.VENTS}</h5>
-                   <button class="${classNames.button} ${classNames.buttonCircle} ${classNames.shipVents__Button} ${classNames.unselectable} ${classNames.shipVents__EditMinus}" ${DataSet.dataButtonValue}="${BUTTON.MINUS}" ${DataSet.dataButtonName}="${classNames.shipVents}">-</button>
-                   <h5 class="${classNames.shipVents__Edit__Value}">${vents}</h5>
-                   <button class="${classNames.button} ${classNames.buttonCircle} ${classNames.shipVents__Button} ${classNames.unselectable} ${classNames.shipVents__EditPlus}" ${DataSet.dataButtonValue}="${BUTTON.PLUS}" ${DataSet.dataButtonName}="${classNames.shipVents}">+</button>
+                   <button class="${CLASS_NAMES.button} ${CLASS_NAMES.buttonCircle} ${CLASS_NAMES.shipVents__Button} ${CLASS_NAMES.unselectable} ${CLASS_NAMES.shipVents__EditMinus}" ${DATASET.dataButtonValue}="${BUTTON.MINUS}" ${DATASET.dataButtonName}="${CLASS_NAMES.shipVents}">-</button>
+                   <h5 class="${CLASS_NAMES.shipVents__Edit__Value}">${vents}</h5>
+                   <button class="${CLASS_NAMES.button} ${CLASS_NAMES.buttonCircle} ${CLASS_NAMES.shipVents__Button} ${CLASS_NAMES.unselectable} ${CLASS_NAMES.shipVents__EditPlus}" ${DATASET.dataButtonValue}="${BUTTON.PLUS}" ${DATASET.dataButtonName}="${CLASS_NAMES.shipVents}">+</button>
             </li>`;
 	}
 	#fluxDissipationMarkup(fluxDissipation) {
 		return `
-            <li class="${classNames.shipVents__FluxDissipation}">
+            <li class="${CLASS_NAMES.shipVents__FluxDissipation}">
                 <h5>${STRINGS.FLUX}</h5>
-                <p class="${classNames.shipVents__FluxDissipation__Value}">${fluxDissipation}</p>
+                <p class="${CLASS_NAMES.shipVents__FluxDissipation__Value}">${fluxDissipation}</p>
             </li>`;
 	}
 }

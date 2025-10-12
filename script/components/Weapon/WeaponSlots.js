@@ -1,16 +1,16 @@
-// Generic
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
+// View
+import WeaponSlotsView from "../../allViews/Weapons/WeaponSlotsView.js";
+// Components
+import ViewModel from "../../ViewModel.js";
+import WeaponPopUp from "./WeaponPopUp.js";
+// Helper
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import DATASET from "../../helper/ui/datasets.js";
 import {
 	weaponSlotIdIntoWeaponSlotObject,
 	findCurrentWeaponSlotFromWeaponSlotId,
-} from "../../helper/helperFunction.js";
-import { WEAPON_SLOT } from "../../helper/Properties.js";
-// View
-import WeaponSlotsView from "../../allViews/Weapons/WeaponSlotsView.js";
-// View Model
-import ViewModel from "../../ViewModel.js";
-import WeaponPopUp from "./WeaponPopUp.js";
+} from "../../helper/helper_functions.js";
+import { WEAPON_SLOT } from "../../helper/ship_properties.js";
 
 const TARGET_REM = 10; // rem for shipSpriteSize / WeaponSlotsPosition / shipGAP
 
@@ -42,7 +42,7 @@ export default class WeaponSlots extends ViewModel {
 		return await WeaponSlotsView.renderAsync([userShipBuild, getAllWeapons]);
 	}
 	#addWeaponPopUpListener() {
-		const target = `.${classNames.weaponSlot}`;
+		const target = `.${CLASS_NAMES.weaponSlot}`;
 		WeaponSlotsView.addClickHandler(target, "click", this.#weaponPopUp.update);
 	}
 	// Old code, It would be nice to rework it
@@ -52,7 +52,7 @@ export default class WeaponSlots extends ViewModel {
 		const { center, width, height } = userShipBuild.secondaryData;
 
 		const allWeaponSlotsElements = document.querySelectorAll(
-			`.${classNames.weaponSlot}`
+			`.${CLASS_NAMES.weaponSlot}`
 		);
 		const weaponSlots = userShipBuild.weaponSlots;
 		const centerX = center[0] - width;
@@ -61,7 +61,7 @@ export default class WeaponSlots extends ViewModel {
 		//
 
 		allWeaponSlotsElements.forEach((weaponElement) => {
-			const { weaponSlotId } = weaponElement.dataset;
+			const { weaponSlotId } = weaponElement.DATASET;
 
 			const currentWeaponSlot = weaponSlotIdIntoWeaponSlotObject(
 				weaponSlots,
@@ -86,14 +86,14 @@ export default class WeaponSlots extends ViewModel {
 	}
 	// Old code, It would be nice to rework it
 	#weaponArcsUpdate() {
-		const weaponArcs = document.querySelectorAll(`.${classNames.weaponArc}`);
+		const weaponArcs = document.querySelectorAll(`.${CLASS_NAMES.weaponArc}`);
 
 		weaponArcs.forEach((wpnArc) => {
 			const secondaryArc = wpnArc.querySelector(
-				`.${classNames.weaponArcSprite}`
+				`.${CLASS_NAMES.weaponArcSprite}`
 			);
 			//
-			const { arc, angle } = wpnArc.dataset;
+			const { arc, angle } = wpnArc.DATASET;
 			const halfArc = arc / 2;
 			let reverseAngle = -angle;
 			// Arc consists of two lines, after and before, and use weapon angle to rotate
@@ -127,10 +127,10 @@ export default class WeaponSlots extends ViewModel {
 		// Some slots are hidden, not need to rotate them
 		if (mount === WEAPON_SLOT.MOUNT.HIDDEN) return null;
 
-		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
+		const localParent = `[${DATASET.dataWeaponSlotId}="${weaponSlotId}"]`;
 
 		const targetElement = document.querySelector(
-			`.${classNames.weaponSlot}${localParent} .${classNames.weaponSprite}`
+			`.${CLASS_NAMES.weaponSlot}${localParent} .${CLASS_NAMES.weaponSprite}`
 		);
 		targetElement.style.setProperty("--weapon-rotate", `${-angle}deg`);
 	}
@@ -140,9 +140,9 @@ export default class WeaponSlots extends ViewModel {
 		// Some slots are hidden, not need to rotate them
 		if (mount === WEAPON_SLOT.MOUNT.HIDDEN) return null;
 
-		const localParent = `[${DataSet.dataWeaponSlotId}="${weaponSlotId}"]`;
+		const localParent = `[${DATASET.dataWeaponSlotId}="${weaponSlotId}"]`;
 		const target = document.querySelector(
-			`${localParent} .${classNames.weaponSprite}`
+			`${localParent} .${CLASS_NAMES.weaponSprite}`
 		);
 		const targetChildren = Array.from(target.children);
 

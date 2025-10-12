@@ -2,12 +2,12 @@
 import View from "../view.js";
 import FighterSprite from "./FighterSprite.js";
 // Helper
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import DATASET from "../../helper/ui/datasets.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
 
 class FighterPopUpTableView extends View {
-	_localParent = `.${classNames.tableBody}`;
+	_localParent = `.${CLASS_NAMES.tableBody}`;
 
 	#installedWeapons;
 	#currentFighterArray;
@@ -42,7 +42,7 @@ class FighterPopUpTableView extends View {
 
 		// empty space so they are not joined classes
 		return isActiveClass
-			? ` ${classNames.weaponPopUpActive}`
+			? ` ${CLASS_NAMES.weaponPopUpActive}`
 			: GENERIC_STRING.EMPTY;
 	};
 
@@ -51,30 +51,30 @@ class FighterPopUpTableView extends View {
 			const imgSprite = await FighterSprite.renderElement(currentFighter);
 
 			return `
-			<ul class="${classNames.tableEntries}${this.#assignActiveClass(
+			<ul class="${CLASS_NAMES.tableEntries}${this.#assignActiveClass(
 				currentFighter,
 				this.#installedWeapons,
 				this.#weaponSlot
-			)}" ${DataSet.dataWeaponPopUpId}="${currentFighter.id}">
+			)}" ${DATASET.dataWeaponPopUpId}="${currentFighter.id}">
 
-				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
+				<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableIcon}">
 					${imgSprite}
 				</li>
 
-				<li class="${classNames.tableEntry} ${classNames.tableName}">
+				<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableName}">
 					${currentFighter.additionalData.name}
 				</li>
 
-				<li class="${classNames.tableEntry}">
+				<li class="${CLASS_NAMES.tableEntry}">
 					${this.#fighterRoleString(currentFighter)}
 				</li>
 
-				<li class="${classNames.tableEntry}">
+				<li class="${CLASS_NAMES.tableEntry}">
 					${this.#numberOfFightersInAWing(currentFighter)}
 				</li>
 				
-				<li class="${classNames.tableEntry}">${currentFighter.range}</li>
-				<li class="${classNames.tableEntry}">${currentFighter.opCost}</li>
+				<li class="${CLASS_NAMES.tableEntry}">${currentFighter.range}</li>
+				<li class="${CLASS_NAMES.tableEntry}">${currentFighter.opCost}</li>
 			</ul>
 			`;
 		};

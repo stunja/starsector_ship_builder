@@ -1,7 +1,8 @@
-import { HULLMODS } from "./HullModData";
-import { findHullModKeyName } from "../../helper/helperFunction";
 // ViewModels
 import ViewModel from "../../ViewModel";
+// helper
+import { HULLMODS } from "./HullModData";
+import { findHullModKeyName } from "../../helper/helper_functions";
 
 class HullModFilter extends ViewModel {
 	constructor() {

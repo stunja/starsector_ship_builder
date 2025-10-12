@@ -1,7 +1,8 @@
-import classNames from "../../helper/DomClassNames.js";
 import ViewModel from "../../ViewModel.js";
 import ShipAreaView from "../../allViews/Weapons/ShipAreaView.js";
 import WeaponSlots from "../Weapon/WeaponSlots.js";
+// Helper
+import CLASS_NAMES from "../../helper/ui/class_names.js";
 
 const TARGET_REM = 10; // rem for shipSpriteSize / WeaponSlotsPosition / shipGAP
 
@@ -26,8 +27,8 @@ export default class ShipArea extends ViewModel {
 
 	#shipSpriteUpdate() {
 		const { width, height } = this.getUserShipBuild().secondaryData;
-		const targetElement = document.querySelector(`.${classNames.shipSprite}`);
-		const className = classNames.currentShipSprite;
+		const targetElement = document.querySelector(`.${CLASS_NAMES.shipSprite}`);
+		const className = CLASS_NAMES.currentShipSprite;
 
 		// Convert pixel dimensions to rems
 		const dimensions = {
@@ -54,8 +55,8 @@ export default class ShipArea extends ViewModel {
 	removeCurrentWeaponAndFighterSlot(type) {
 		const id = model.uiState.currentWeaponSlot.id;
 		const selectors = {
-			weapon: `[${DataSet.dataId}="${id}"] .${classNames.weaponSprite}`,
-			fighter: `[${DataSet.dataFighterId}="${id}"] .${classNames.weaponSpriteParent}`,
+			weapon: `[${DataSet.dataId}="${id}"] .${CLASS_NAMES.weaponSprite}`,
+			fighter: `[${DataSet.dataFighterId}="${id}"] .${CLASS_NAMES.weaponSpriteParent}`,
 		};
 
 		const selector = selectors[type];

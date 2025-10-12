@@ -1,12 +1,12 @@
-import classNames from "../../helper/DomClassNames";
-import DataSet from "../../helper/DataSet";
+// Helper
+import { WEAPON_SLOT } from "../../helper/ship_properties";
+import { GENERIC_STRING } from "../../helper/ui/ui_main";
+import CLASS_NAMES from "../../helper/ui/class_names";
+import DATASET from "../../helper/ui/datasets";
 import {
 	toggleAdditionalInstalledWeapons,
 	weaponSlotIdIntoWeaponSlotObject,
-} from "../../helper/helperFunction";
-import { WEAPON_SLOT } from "../../helper/Properties";
-// Helper
-import { GENERIC_STRING } from "../../helper/MagicStrings";
+} from "../../helper/helper_functions";
 // View
 import View from "../view";
 import FighterSprite from "./FighterSprite";
@@ -16,7 +16,7 @@ const STRING = {
 };
 
 class FightersView extends View {
-	_localParent = `.${classNames.fighterContainer}`;
+	_localParent = `.${CLASS_NAMES.fighterContainer}`;
 
 	#installedWeapons;
 	#weaponSlots;
@@ -39,14 +39,14 @@ class FightersView extends View {
 		const markup = await this.#fighterSlotsMarkup();
 
 		return `
-	        <ul class="${classNames.fighterSlotsContainer}">
-	          <li class="${classNames.fighterSlotsContainerHeader}">
+	        <ul class="${CLASS_NAMES.fighterSlotsContainer}">
+	          <li class="${CLASS_NAMES.fighterSlotsContainerHeader}">
                 <h5>${STRING.HEADER}</h5>
               </li>
-	          <li class="${classNames.fighterSlots}">
+	          <li class="${CLASS_NAMES.fighterSlots}">
 	            ${markup}
 	          </li>
-			  <div class="${classNames.fighterPopUp}"></div>
+			  <div class="${CLASS_NAMES.fighterPopUp}"></div>
 	        </ul>
 	`;
 	}
@@ -64,10 +64,10 @@ class FightersView extends View {
 					: GENERIC_STRING.EMPTY;
 
 				return `
-						<div class="${classNames.weaponSpriteParent}">
-						<div class="${classNames.fighterSlotContainer}">
-							<figure class="${classNames.fighterSlot}"
-								${DataSet.dataFighterId}="${fighterSlot.id}">
+						<div class="${CLASS_NAMES.weaponSpriteParent}">
+						<div class="${CLASS_NAMES.fighterSlotContainer}">
+							<figure class="${CLASS_NAMES.fighterSlot}"
+								${DATASET.dataFighterId}="${fighterSlot.id}">
 								${crrFg}
 							</figure>
 						</div>
@@ -81,7 +81,7 @@ class FightersView extends View {
 	}
 	#fighterCostMarkup = (currentFighterObject) => {
 		const opCost = currentFighterObject.opCost ?? GENERIC_STRING.EMPTY;
-		return `<p class="${classNames.fighterSpriteCost}">${opCost}</p>`;
+		return `<p class="${CLASS_NAMES.fighterSpriteCost}">${opCost}</p>`;
 	};
 
 	#createFighterSlotsArray = () => {

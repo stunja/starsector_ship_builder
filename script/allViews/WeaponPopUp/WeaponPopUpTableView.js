@@ -2,12 +2,12 @@
 import View from "../view.js";
 import WeaponSpriteView from "../../allViews/Weapons/WeaponSpriteView.js";
 // Helper
-import DataSet from "../../helper/DataSet.js";
-import classNames from "../../helper/DomClassNames.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import DATASET from "../../helper/ui/datasets.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
 
 class WeaponPopUpTableView extends View {
-	_localParent = `.${classNames.tableBody}`;
+	_localParent = `.${CLASS_NAMES.tableBody}`;
 
 	#currentWeaponArray;
 	#weaponSlot;
@@ -38,18 +38,20 @@ class WeaponPopUpTableView extends View {
 			]);
 
 			return `
-			<ul class="${classNames.tableEntries}${this.#assignActiveClass(crrWpn)}"  
-				${DataSet.dataWeaponPopUpId}="${crrWpn.id}">
+			<ul class="${CLASS_NAMES.tableEntries}${this.#assignActiveClass(crrWpn)}"  
+				${DATASET.dataWeaponPopUpId}="${crrWpn.id}">
 
-				<li class="${classNames.tableEntry} ${classNames.tableIcon}">
+				<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableIcon}">
 					${imgSprite}
 				</li>
-				<li class="${classNames.tableEntry} ${classNames.tableName}">${crrWpn.name}</li>
-				<li class="${classNames.tableEntry}">
+				<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableName}">${
+				crrWpn.name
+			}</li>
+				<li class="${CLASS_NAMES.tableEntry}">
 					${this.#weaponTypeStringConversion(crrWpn.type)}
 				</li>
-				<li class="${classNames.tableEntry}">${crrWpn.range}</li>
-				<li class="${classNames.tableEntry}">${crrWpn.oPs}</li>
+				<li class="${CLASS_NAMES.tableEntry}">${crrWpn.range}</li>
+				<li class="${CLASS_NAMES.tableEntry}">${crrWpn.oPs}</li>
 			</ul>
 		`;
 		};
@@ -73,7 +75,7 @@ class WeaponPopUpTableView extends View {
 
 		// empty space so they are not joined classes
 		return isActiveClass
-			? ` ${classNames.weaponPopUpActive}`
+			? ` ${CLASS_NAMES.weaponPopUpActive}`
 			: GENERIC_STRING.EMPTY;
 	};
 

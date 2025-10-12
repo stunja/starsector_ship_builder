@@ -1,11 +1,11 @@
 // Helper
-import { VALUE_CHANGE } from "../../helper/MagicStrings";
+import { VALUE_CHANGE } from "../../helper/ui/ui_main";
 import {
 	SHIELD_TYPE,
 	HULL_SIZE,
 	SHIP_TYPE,
 	HULLMOD_COST_KEYS,
-} from "../../helper/Properties";
+} from "../../helper/ship_properties";
 
 const HullModHelper = {
 	updateInstalledHullMod(hullmodId, userShipBuild, allHullMods) {

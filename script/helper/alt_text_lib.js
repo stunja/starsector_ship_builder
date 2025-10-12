@@ -1,9 +1,9 @@
 // Library to keep all alt text
 // from images for example
 
-const altTextLib = {
+const ALT_TEXT_LIB = {
 	turrentGunSprite: "Turrent Gun Sprite",
 	weaponBaseSprite: "Weapon Base Sprite",
 	shipSprite: "Current Ship Sprite",
 };
-export default altTextLib;
+export default ALT_TEXT_LIB;

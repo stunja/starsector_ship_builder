@@ -1,4 +1,4 @@
-import classNames from "../helper/DomClassNames";
+import CLASS_NAMES from "../helper/ui/class_names";
 
 class WeaponPopUpHandlers {
 	closeIfClickOutsideTargetContainer(className) {
@@ -18,26 +18,26 @@ class WeaponPopUpHandlers {
 	}
 	// Handlers
 	headerHandler(callback) {
-		const localParent = `.${classNames.tableHeader}`;
-		const eventTarget = `.${classNames.tableHeaderEntry}`;
+		const localParent = `.${CLASS_NAMES.tableHeader}`;
+		const eventTarget = `.${CLASS_NAMES.tableHeaderEntry}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
 	tableHandler(callback) {
-		const localParent = `.${classNames.tableBody}`;
-		const eventTarget = `.${classNames.tableEntries}`;
+		const localParent = `.${CLASS_NAMES.tableBody}`;
+		const eventTarget = `.${CLASS_NAMES.tableEntries}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
 	weaponPopUpRemoveCurrentWeapon(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.weaponPopUpActive}`;
+		const localParent = `.${CLASS_NAMES.weaponPopUpTable}`;
+		const eventTarget = `.${CLASS_NAMES.weaponPopUpActive}`;
 		const actionType = "click";
 		return [localParent, eventTarget, actionType, callback];
 	}
 	weaponPopUpHoverEffect(callback) {
-		const localParent = `.${classNames.weaponPopUpTable}`;
-		const eventTarget = `.${classNames.weapon}`;
+		const localParent = `.${CLASS_NAMES.weaponPopUpTable}`;
+		const eventTarget = `.${CLASS_NAMES.weapon}`;
 		const actionType = "mouseover";
 		return [localParent, eventTarget, actionType, callback];
 	}
@@ -45,8 +45,8 @@ class WeaponPopUpHandlers {
 export default new WeaponPopUpHandlers();
 
 // weaponPopUpHeaderHandler(callback) {
-// 	const localParent = `.${classNames.weaponPopUpTableHeader}`;
-// 	const eventTarget = `.${classNames.tableHeader}`;
+// 	const localParent = `.${CLASS_NAMES.weaponPopUpTableHeader}`;
+// 	const eventTarget = `.${CLASS_NAMES.tableHeader}`;
 // 	const actionType = "click";
 // 	return [localParent, eventTarget, actionType, callback];
 // }

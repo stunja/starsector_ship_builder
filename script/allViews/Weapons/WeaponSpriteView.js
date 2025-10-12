@@ -2,11 +2,10 @@ import WeaponArcView from "./WeaponArcView.js";
 import WeaponBackgroundSpriteView from "./WeaponBackgroundSpriteView.js";
 
 // Generic
-import classNames from "../../helper/DomClassNames.js";
-import URL from "../../helper/url.js";
-import altTextLib from "../../helper/altTextLib.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
-import { imageLoader } from "../../helper/helperFunction.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import altTextLib from "../../helper/alt_text_lib.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
+import { imageLoader } from "../../helper/helper_functions.js";
 
 // Old implementation
 // I need to change the name
@@ -19,7 +18,7 @@ class WeaponSpriteView {
 		const spriteMarkup = await this.#weaponSpriteMarkupAsync(weaponObject);
 
 		const markup = `
-				<div class="${classNames.weaponSpriteParent}">
+				<div class="${CLASS_NAMES.weaponSpriteParent}">
 					${WeaponBackgroundSpriteView.renderElement(
 						weaponObject,
 						weaponSlot,
@@ -45,15 +44,15 @@ class WeaponSpriteView {
 			const [turretImg, gunImg] = await Promise.all(promises);
 
 			const turretHTML = turretImg
-				? `<img src="${turretImg.src}" alt="${altTextLib.weaponBaseSprite}" class="${classNames.weaponSpriteBase}" />`
+				? `<img src="${turretImg.src}" alt="${altTextLib.weaponBaseSprite}" class="${CLASS_NAMES.weaponSpriteBase}" />`
 				: GENERIC_STRING.EMPTY;
 
 			const gunHTML = gunImg
-				? `<img src="${gunImg.src}" alt="${altTextLib.turrentGunSprite}" class="${classNames.weaponSpriteGun}" />`
+				? `<img src="${gunImg.src}" alt="${altTextLib.turrentGunSprite}" class="${CLASS_NAMES.weaponSpriteGun}" />`
 				: GENERIC_STRING.EMPTY;
 
 			return `
-            <div class="${classNames.weaponSprite}">
+            <div class="${CLASS_NAMES.weaponSprite}">
                 ${turretHTML}
                 ${gunHTML}
             </div>

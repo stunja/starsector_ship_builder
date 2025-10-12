@@ -1,5 +1,7 @@
-import classNames from "../../helper/DomClassNames";
 import View from "../view";
+
+// helper
+import CLASS_NAMES from "../../helper/ui/class_names";
 
 const weaponFluxSec = 999999;
 
@@ -8,7 +10,7 @@ const STRING = {
 	FLUX: "Weapon Flux / sec",
 };
 class WeaponFluxView extends View {
-	_localParent = `.${classNames.weaponFlux}`;
+	_localParent = `.${CLASS_NAMES.weaponFlux}`;
 
 	generateMarkup() {
 		const markup = `

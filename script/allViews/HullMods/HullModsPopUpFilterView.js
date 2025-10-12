@@ -1,10 +1,10 @@
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import DATASET from "../../helper/ui/datasets.js";
 // View
 import View from "../view.js";
 
 class HullModsPopUpFilterView extends View {
-	_localParent = `.${classNames.tableFilter}`;
+	_localParent = `.${CLASS_NAMES.tableFilter}`;
 
 	#filterCategories;
 	#currentFilter;
@@ -24,7 +24,7 @@ class HullModsPopUpFilterView extends View {
 
 	#activeClass = (category) =>
 		category === this.#currentFilter
-			? `class="${classNames.hullModsFilterActive}"`
+			? `class="${CLASS_NAMES.hullModsFilterActive}"`
 			: "";
 
 	#allButtonsMarkup = () =>
@@ -33,16 +33,16 @@ class HullModsPopUpFilterView extends View {
 			.join("");
 
 	#singleFilterButton = (category) => {
-		const dataSetId = `${DataSet.dataFilter}="${category}"`;
+		const DATASETId = `${DATASET.dataFilter}="${category}"`;
 		return `<li ${this.#activeClass(category)}>
-					<button class="${classNames.button} ${classNames.filterButton}" ${dataSetId}>
+					<button class="${CLASS_NAMES.button} ${CLASS_NAMES.filterButton}" ${DATASETId}>
 						${category}
 					</button>
 				</li>`;
 	};
 	#filterView() {
 		const markup = `
-			<div class="${classNames.filterButtons}">
+			<div class="${CLASS_NAMES.filterButtons}">
 				${this.#allButtonsMarkup()}
 			</div>
 			`;

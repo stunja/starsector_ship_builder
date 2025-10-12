@@ -1,12 +1,12 @@
 import ViewModel from "../../ViewModel";
-import FighterPopUp from "./FighterPopUp.js/FighterPopUp";
+import FighterPopUp from "./FighterPopUp";
 // Views
 import FightersView from "../../allViews/Fighters/FightersView";
 // Helper
-import classNames from "../../helper/DomClassNames";
+import CLASS_NAMES from "../../helper/ui/class_names";
 
 const EVENT_LISTENER_TARGET = {
-	FIGHTER_SLOT: `.${classNames.fighterSlot}`,
+	FIGHTER_SLOT: `.${CLASS_NAMES.fighterSlot}`,
 };
 const EVENT_LISTENER_TYPE = {
 	CLICK: `click`,

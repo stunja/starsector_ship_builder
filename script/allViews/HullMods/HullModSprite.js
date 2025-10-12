@@ -1,6 +1,6 @@
 // Helper Functions
-import { GENERIC_STRING } from "../../helper/MagicStrings";
-import { imageLoader } from "../../helper/helperFunction";
+import { GENERIC_STRING } from "../../helper/ui/ui_main";
+import { imageLoader } from "../../helper/helper_functions";
 
 //? this type of implementation is necessary. Otherwise incorrectly imports as an image.
 class HullModSprite {

@@ -6,7 +6,7 @@ import HullModController from "../../components/Hullmods/HullModController.js";
 // Helper
 import WeaponPopUpCreateCurrentWeaponArray from "./WeaponPopUpCreateCurrentWeaponArray.js";
 import TablePopUpSorter from "../TablePopUpSorter.js";
-import classNames from "../../helper/DomClassNames.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
 import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild.js";
 
 import {
@@ -14,14 +14,12 @@ import {
 	AddRemoveInstalledWeapon,
 	pushTargetWeaponObjectOnTop,
 	toggleAsyncSpinner,
-} from "../../helper/helperFunction.js";
+} from "../../helper/helper_functions.js";
 
 import {
 	EVENT_LISTENER_TYPE,
 	GENERIC_STRING,
-} from "../../helper/MagicStrings.js";
-
-import UI_CONFIG from "../../helper/UI_CONFIG.js";
+} from "../../helper/ui/ui_main.js";
 
 // Views
 import WeaponPopUpContainerView from "../../allViews/WeaponPopUp/WeaponPopUpContainerView.js";
@@ -31,8 +29,8 @@ import WeaponSlots from "./WeaponSlots.js";
 import WeaponHoverContainerView from "../../allViews/WeaponPopUp/WeaponHoverContainerView.js";
 
 const EVENT_LISTENER_TARGET = {
-	TABLE_ENTRIES: `.${classNames.tableEntries}`,
-	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
+	TABLE_ENTRIES: `.${CLASS_NAMES.tableEntries}`,
+	TABLE_HEADER_ENTRY: `.${CLASS_NAMES.tableHeaderEntry}`,
 };
 
 const SKIP_SORT_CATEGORY = {
@@ -359,7 +357,7 @@ export default class WeaponPopUp extends ViewModel {
 	// Close If user clicks outside of container
 	#closeWeaponPopUpHandler() {
 		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
-			`.${classNames.tableContainer}`,
+			`.${CLASS_NAMES.tableContainer}`,
 			WeaponPopUpContainerView._clearRender
 		);
 	}

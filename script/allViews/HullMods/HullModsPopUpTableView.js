@@ -3,19 +3,19 @@ import View from "../view.js";
 import HullModSprite from "./HullModSprite.js";
 //
 // Helper
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
-import { imageLoader } from "../../helper/helperFunction.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
+// import { imageLoader } from "../../helper/helperFunction.js";
 import HullModHelper from "../../components/Hullmods/HullModHelper.js";
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
-import URL from "../../helper/url.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import DATASET from "../../helper/ui/datasets.js";
+// import URL from "../../helper/url.js";
 
 const HULLMOD_ARRAY_TYPE = {
 	AVAILABLE: "AVAILABLE",
 	UNAVAILABLE: "UNAVAILABLE",
 };
 class HullModsPopUpTableView extends View {
-	_localParent = `.${classNames.tableBody}`;
+	_localParent = `.${CLASS_NAMES.tableBody}`;
 
 	#availableHullMods;
 	#unAvailableMods;
@@ -43,8 +43,8 @@ class HullModsPopUpTableView extends View {
 		const entryMarkup = async (currentHullMod, arrayType) => {
 			const availableOrUnavailableArray =
 				arrayType === HULLMOD_ARRAY_TYPE.AVAILABLE
-					? classNames.tableEntryAvailable
-					: classNames.tableEntryUnavailable;
+					? CLASS_NAMES.tableEntryAvailable
+					: CLASS_NAMES.tableEntryUnavailable;
 
 			//? idiotic implementation, but easier they fixing original code.
 			//? sometimes it is an array with [obj, str(reason)] and other times just obj
@@ -56,13 +56,13 @@ class HullModsPopUpTableView extends View {
 				const imgSprite = await HullModSprite.renderElement(currentHullMod);
 
 				return `
-						<ul class="${classNames.tableEntries} ${availableOrUnavailableArray}" 
-							${DataSet.dataHullModId}="${currentHullMod.id}"
+						<ul class="${CLASS_NAMES.tableEntries} ${availableOrUnavailableArray}" 
+							${DATASET.dataHullModId}="${currentHullMod.id}"
 						>
-							<li class="${classNames.tableEntry} ${classNames.tableIcon}">
+							<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableIcon}">
 								${imgSprite}
 							</li>
-							<li class="${classNames.tableEntry} ${classNames.tableName}">
+							<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableName}">
 								<p>${currentHullMod.name}</p>
 							</li>
 							${this.#hullModDescription(currentHullMod)}
@@ -106,16 +106,16 @@ class HullModsPopUpTableView extends View {
 				/%s/g,
 				() =>
 					`<span class="${
-						classNames.hullModDescValues
+						CLASS_NAMES.hullModDescValues
 					}">${currentNumber.shift()}</span>`
 			);
 		};
 		//prettier-ignore
-		return `<li class="${classNames.tableEntry} ${classNames.tableDesc}"><p>${changeDescription()}</p></li>`;
+		return `<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableDesc}"><p>${changeDescription()}</p></li>`;
 	}
 	#typeMarkup = (currentHullMod) => {
 		return `
-			<li class="${classNames.tableEntry} ${classNames.tableType}">
+			<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableType}">
 				<div>${this.#tagsArray(currentHullMod)}</div>
 			</li>
 		`;
@@ -123,7 +123,7 @@ class HullModsPopUpTableView extends View {
 
 	#opCostMarkup = (currentHullMod) => {
 		return `
-			<li class="${classNames.tableEntry}">
+			<li class="${CLASS_NAMES.tableEntry}">
 				<p>${HullModHelper.normalizedHullSize(currentHullMod, this.#hullSize)}</p>
 			</li>
 			`;
@@ -134,7 +134,7 @@ class HullModsPopUpTableView extends View {
 			? `<p>${string}</p>`
 			: `<i>${GENERIC_STRING.CHECKMARK}</i>`;
 
-		return `<li class="${classNames.tableEntry} ${classNames.tableInstalledIcon}">
+		return `<li class="${CLASS_NAMES.tableEntry} ${CLASS_NAMES.tableInstalledIcon}">
 					${stringMarkup}
 				</li>`;
 	};

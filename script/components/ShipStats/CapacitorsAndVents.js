@@ -9,7 +9,7 @@ import VentsView from "../../allViews/Stats/VentsView";
 
 // Helper
 import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
-import classNames from "../../helper/DomClassNames";
+import CLASS_NAMES from "../../helper/ui/class_names";
 
 const CONTROLS = {
 	BUTTON_ACTIONS: {
@@ -26,8 +26,8 @@ const CONTROLS = {
 	},
 };
 const EVENT_LISTENER_TARGET = {
-	CAPACITOR: `.${classNames.shipCapacitors__Button}`,
-	VENTS: `.${classNames.shipVents__Button}`,
+	CAPACITOR: `.${CLASS_NAMES.shipCapacitors__Button}`,
+	VENTS: `.${CLASS_NAMES.shipVents__Button}`,
 };
 const EVENT_LISTENER_TYPE = {
 	CLICK: `click`,

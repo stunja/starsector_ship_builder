@@ -1,6 +1,8 @@
+// View
 import View from "./view";
-import classNames from "../helper/DomClassNames";
-import DataSet from "../helper/DataSet";
+// Helper
+import CLASS_NAMES from "../helper/ui/class_names";
+import DATASET from "../helper/ui/datasets";
 //
 const BUTTON_NAMES = {
 	STRIP: "Strip Everything",
@@ -11,7 +13,7 @@ const BUTTON_DATASET = {
 	SAVE: "save",
 };
 class BuilderButtonsView extends View {
-	_localParent = `.${classNames.builderButtonsContainer}`;
+	_localParent = `.${CLASS_NAMES.builderButtonsContainer}`;
 
 	generateMarkup() {
 		const markup = `${this.#buttonsMarkup()}`;
@@ -21,14 +23,14 @@ class BuilderButtonsView extends View {
 		return `
                 <ul>
 					<li>
-                    	<button class="${classNames.button} ${classNames.builderButton}" 
-							${DataSet.dataBuilderButtonType}="${BUTTON_DATASET.STRIP}">
+                    	<button class="${CLASS_NAMES.button} ${CLASS_NAMES.builderButton}" 
+							${DATASET.dataBuilderButtonType}="${BUTTON_DATASET.STRIP}">
 							${BUTTON_NAMES.STRIP}
 						</button>
 					<li>
 					<li>
-                    	<button class="${classNames.button} ${classNames.builderButton}" 
-							${DataSet.dataBuilderButtonType}="${BUTTON_DATASET.SAVE}">
+                    	<button class="${CLASS_NAMES.button} ${CLASS_NAMES.builderButton}" 
+							${DATASET.dataBuilderButtonType}="${BUTTON_DATASET.SAVE}">
 							${BUTTON_NAMES.SAVE}
 						</button>
 					<li>

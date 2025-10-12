@@ -1,8 +1,7 @@
 // Helper Functions
-import classNames from "../../helper/DomClassNames";
-import URL from "../../helper/url";
-import { GENERIC_STRING } from "../../helper/MagicStrings";
-import { imageLoader } from "../../helper/helperFunction";
+import CLASS_NAMES from "../../helper/ui/class_names";
+import { GENERIC_STRING } from "../../helper/ui/ui_main";
+import { imageLoader } from "../../helper/helper_functions";
 
 class FighterSprite {
 	async renderElement(crrFighter) {
@@ -10,8 +9,8 @@ class FighterSprite {
 			crrFighter
 		);
 		const markup = `
-                    <div class="${classNames.weaponSpriteParent}">
-						<div class="${classNames.fighterSpriteContainer}">
+                    <div class="${CLASS_NAMES.weaponSpriteParent}">
+						<div class="${CLASS_NAMES.fighterSpriteContainer}">
                             ${renderFighterSpriteAsync}
 						</div>
 					</div>`;
@@ -31,9 +30,9 @@ class FighterSprite {
 			const joinedSprites = Array.from({ length: numberOfFighters }, (_, i) => {
 				return `
                 <img src="${fighter.src}" alt="fighter sprite"
-                class="${classNames.fighterSprite}
-                ${classNames.fighterSprite}--${i + 1}
-                ${classNames.fighterSpritesMax}--${numberOfFighters}"/>
+                class="${CLASS_NAMES.fighterSprite}
+                ${CLASS_NAMES.fighterSprite}--${i + 1}
+                ${CLASS_NAMES.fighterSpritesMax}--${numberOfFighters}"/>
             `;
 			});
 			return joinedSprites.join(GENERIC_STRING.EMPTY);

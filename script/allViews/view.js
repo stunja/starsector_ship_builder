@@ -1,4 +1,6 @@
-import classNames from "../helper/DomClassNames";
+// Helper
+import CLASS_NAMES from "../helper/ui/class_names";
+import DATASET from "../helper/ui/datasets";
 
 export default class View {
 	constructor() {
@@ -44,20 +46,20 @@ export default class View {
 	}
 	addSpinner() {
 		const markup = `
-						<div class="${classNames.tableSpinner}">
-							<div class="${classNames.spinner}"></div>
+						<div class="${CLASS_NAMES.tableSpinner}">
+							<div class="${CLASS_NAMES.spinner}"></div>
 						</div>
 		`;
 
 		const targetClass = this._localParentElement.querySelector(
-			`.${classNames.tableContainer}`
+			`.${CLASS_NAMES.tableContainer}`
 		);
 
 		targetClass.insertAdjacentHTML("afterbegin", markup);
 	}
 	removeSpinner() {
 		const spinnerElement = this._localParentElement.querySelector(
-			`.${classNames.spinner}`
+			`.${CLASS_NAMES.spinner}`
 		);
 
 		if (!spinnerElement) return;
@@ -118,9 +120,19 @@ export default class View {
 	inputSubmitHandler(parentElement, targetFunction) {
 		parentElement.addEventListener("submit", function (e) {
 			e.preventDefault();
+			console.log(e);
+			// console.log(e.target);
+
+			// if (!target) return;
 			const formData = new FormData(e.target);
-			const inputData = formData.get("search");
-			return targetFunction(inputData);
+			console.log(formData);
+			// const inputData = formData.get(`[${DATASET.dataNavSearch}]`);
+
+			// console.log(inputData);
+
+			// const formData = new FormData(e.target);
+			// console.log(inputData);
+			// return targetFunction(inputData);
 		});
 	}
 	// Utility method to check if a target has an active listener

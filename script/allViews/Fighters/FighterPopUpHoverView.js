@@ -1,9 +1,10 @@
-import View from "../view.js";
-import classNames from "../../helper/DomClassNames.js";
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction.js";
 // View
-import URL from "../../helper/url.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import View from "../view.js";
+// helper
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helper_functions.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
+// import URL from "../../helper/url.js";
 
 const ALT_TEXT = {
 	WEAPON_DAMAGE_TYPE: "weapon damage type",
@@ -15,7 +16,7 @@ const WEAPON_SYSTEMS = {
 const EMPTY_PROP_STRING = "[x]";
 
 class FighterPopUpHoverView extends View {
-	_localParent = `.${classNames.hoverContainer}`;
+	_localParent = `.${CLASS_NAMES.hoverContainer}`;
 
 	// Weapon Object props
 	#opCost;
@@ -124,20 +125,20 @@ class FighterPopUpHoverView extends View {
 	#primaryDataMarkup() {
 		// prettier-ignore
 		return `
-				<div class="${classNames.dFlex} ${classNames.weaponPrimaryData}">
-					<div class="${classNames.weaponContentGroup}">
+				<div class="${CLASS_NAMES.dFlex} ${CLASS_NAMES.weaponPrimaryData}">
+					<div class="${CLASS_NAMES.weaponContentGroup}">
 	                 ${this.#contentMarkup("Primary Role", this.#roleDesc)}
 	                 ${this.#contentMarkup("Ordnance Points", this.#opCost)}
 	                 ${this.#contentMarkup("Crew per Fighter", this.#maxCrew)}
 	                 ${this.#contentMarkup("Maximum engagement range", this.#range)}
 	             </div>
-					<div class="${classNames.weaponContentGroup}">
+					<div class="${CLASS_NAMES.weaponContentGroup}">
 						${this.#contentMarkup("Fighters in wing", this.#num)}
 						${this.#contentMarkup("Base replacement time (seconds)",this.#refit)}
 						${this.#contentMarkup("Hull integrity", this.#hitpoints)}
 						${this.#contentMarkup("Armor rating", this.#armorRating)}
 					</div>
-					<div class="${classNames.weaponContentGroup}">
+					<div class="${CLASS_NAMES.weaponContentGroup}">
 						${this.#shieldType !== "NONE"
 						? `${this.#contentMarkup("Shield Type", this.#shieldType)}
 							${this.#contentMarkup("Shield Arc", this.#shieldArc)}`
@@ -147,7 +148,7 @@ class FighterPopUpHoverView extends View {
 						${this.#contentMarkup("System",this.#fighterSystemMarkup(this.#systemId, this.#allWeaponSystems))}
 						${this.#contentMultyItems("HullMods",this.#hullModsMarkUp(this.#hullMods, this.#allHullMods))}
 					</div>
-					<div class="${classNames.weaponContentGroup}">
+					<div class="${CLASS_NAMES.weaponContentGroup}">
 						${this.#contentMultyItems("Armaments",this.#fighterWeaponsMarkUp(this.#weaponGroups,this.#allWeapons, this.#allWeaponSystems))}
 					</div>
 				</div>`;
@@ -163,7 +164,7 @@ class FighterPopUpHoverView extends View {
 		return `
 				<li>
 					${this.#createParagraph(str)}
-					<div class="${classNames.fighterFlexColumn}">
+					<div class="${CLASS_NAMES.fighterFlexColumn}">
 						${data}
 					</div>
 				</li>`;

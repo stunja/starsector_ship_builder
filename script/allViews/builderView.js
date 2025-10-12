@@ -1,5 +1,5 @@
 import View from "./view.js";
-import classNames from "../helper/DomClassNames.js";
+import CLASS_NAMES from "../helper/ui/class_names.js";
 
 class BuilderView extends View {
 	_localParent = `body`;
@@ -10,16 +10,16 @@ class BuilderView extends View {
 	}
 	#builderMarkup() {
 		return `
-         <div class="${classNames.buildMakerContainer}">
-            <nav class="${classNames.nav}"></nav>
-            <main class="${classNames.buildMaker}">
-                <section class="${classNames.hullModsPopUp}"></section>
-                <section class="${classNames.gridContainer} ${classNames.shipInfoContainer}"></section>
-                <section class="${classNames.gridContainer} ${classNames.fighterContainer}"></section>
-                <section class="${classNames.gridContainer} ${classNames.builderButtonsContainer}"></section>
-                <section class="${classNames.gridContainer} ${classNames.additionalInfoContainer}"></section>
-                <section class="${classNames.gridContainer} ${classNames.shipAreaContainer}"></section>
-                <section class="${classNames.gridContainer} ${classNames.statsContainer}"></section>
+         <div class="${CLASS_NAMES.buildMakerContainer}">
+            <nav class="${CLASS_NAMES.nav}"></nav>
+            <main class="${CLASS_NAMES.buildMaker}">
+                <section class="${CLASS_NAMES.hullModsPopUp}"></section>
+                <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.shipInfoContainer}"></section>
+                <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.fighterContainer}"></section>
+                <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.builderButtonsContainer}"></section>
+                <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.additionalInfoContainer}"></section>
+                <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.shipAreaContainer}"></section>
+                <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.statsContainer}"></section>
             </main>
         </div>
         `;

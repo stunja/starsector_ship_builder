@@ -1,4 +1,4 @@
-import { HULLMOD_COST_KEYS } from "../helper/Properties";
+import { HULLMOD_COST_KEYS } from "../helper/ship_properties";
 
 const SORT_TABLES = {
 	WEAPON_TABLE: "weaponPopUpTable",

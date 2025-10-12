@@ -1,5 +1,5 @@
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import DATASET from "../../helper/ui/datasets.js";
 // View
 import View from "../view.js";
 
@@ -13,7 +13,7 @@ const CATEGORIES = {
 };
 
 class HullModsPopUpHeaderView extends View {
-	_localParent = `.${classNames.tableHeader}`;
+	_localParent = `.${CLASS_NAMES.tableHeader}`;
 
 	generateMarkup() {
 		const markup = this.#tableHeader();
@@ -22,8 +22,8 @@ class HullModsPopUpHeaderView extends View {
 	#tableHeader() {
 		const markup = Object.entries(CATEGORIES)
 			.map(([key, value]) => {
-				return `<li class="${classNames.unselectable} ${classNames.tableHeaderEntry}" 
-			${DataSet.dataCategory}="${key}"
+				return `<li class="${CLASS_NAMES.unselectable} ${CLASS_NAMES.tableHeaderEntry}" 
+			${DATASET.dataCategory}="${key}"
 			>
 				${value}
 			</li>`;

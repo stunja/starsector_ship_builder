@@ -1,9 +1,11 @@
-import classNames from "../../helper/DomClassNames.js";
 // View
 import View from "../view.js";
 
+// helper
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+
 class HullModsPopUpView extends View {
-	_localParent = `.${classNames.hullModsPopUp}`;
+	_localParent = `.${CLASS_NAMES.hullModsPopUp}`;
 
 	#allHullMods;
 	generateMarkup() {
@@ -17,10 +19,10 @@ class HullModsPopUpView extends View {
 	}
 	#renderContainer() {
 		const markup = `				
-                <div class="${classNames.tableContainer}">
-					<ul class="${classNames.tableFilter}"></ul>
-					<ul class="${classNames.tableEntries} ${classNames.tableHeader}"></ul>
-					<div class="${classNames.tableBody}"></div>
+                <div class="${CLASS_NAMES.tableContainer}">
+					<ul class="${CLASS_NAMES.tableFilter}"></ul>
+					<ul class="${CLASS_NAMES.tableEntries} ${CLASS_NAMES.tableHeader}"></ul>
+					<div class="${CLASS_NAMES.tableBody}"></div>
 				</div>
                 `;
 		return markup;

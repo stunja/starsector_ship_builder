@@ -1,3 +1,4 @@
+// Change types with lowerCase, better visibility when used
 export const GENERIC_STRING = {
 	EMPTY: "",
 	SPACE: " ",
@@ -7,10 +8,16 @@ export const GENERIC_STRING = {
 	HIDDEN: "hidden",
 	PLUS: "+",
 	MINUS: "-",
+	HASH: "#",
 };
 export const EVENT_LISTENER_TYPE = {
 	CLICK: "click",
 	HOVER: "mouseover",
+};
+
+export const EVENT_LISTENER = {
+	TYPE: {},
+	TARGET: {},
 };
 
 // HullModHelper
@@ -19,4 +26,11 @@ export const VALUE_CHANGE = {
 	DECREASE: "decrease",
 	MULTIPLY: "multiply",
 	DIVISION: "division ",
+};
+
+// Form
+export const formInputNames = {
+	SEARCH: {
+		NAV_SEARCH: "nav-search",
+	},
 };

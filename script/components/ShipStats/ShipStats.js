@@ -1,5 +1,5 @@
 import ViewModel from "../../ViewModel.js";
-
+// View
 import OrdinancePointsView from "../../allViews/Stats/OrdinancePointsView.js";
 import SpeedArmorHullView from "../../allViews/Stats/SpeedArmorHullView.js";
 import WeaponFluxView from "../../allViews/Stats/WeaponFluxView.js";

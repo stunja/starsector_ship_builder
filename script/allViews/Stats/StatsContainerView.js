@@ -1,20 +1,21 @@
-import classNames from "../../helper/DomClassNames";
 import View from "../view";
+// Helper
+import CLASS_NAMES from "../../helper/ui/class_names";
 
 class StatsContainerView extends View {
-	_localParent = `.${classNames.statsContainer}`;
+	_localParent = `.${CLASS_NAMES.statsContainer}`;
 
 	generateMarkup() {
 		return `
-        <ul class="${classNames.ordinancePointsGraph}"></ul>
-            <div class="${classNames.topContentGroup}">
-                <ul class="${classNames.flexFlexEndGap} ${classNames.speedArmorHullContainer}"></ul>
-                <ul class="${classNames.flexFlexEndGap} ${classNames.shipCapacitorsContainer}"></ul>
-                <ul class="${classNames.flexFlexEndGap} ${classNames.shipVents}"></ul>
-                <div class="${classNames.phaseOrShieldContainer}"></div>
-                <ul class="${classNames.flexFlexEndGap} ${classNames.weaponFlux}"></ul>
+        <ul class="${CLASS_NAMES.ordinancePointsGraph}"></ul>
+            <div class="${CLASS_NAMES.topContentGroup}">
+                <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.speedArmorHullContainer}"></ul>
+                <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.shipCapacitorsContainer}"></ul>
+                <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.shipVents}"></ul>
+                <div class="${CLASS_NAMES.phaseOrShieldContainer}"></div>
+                <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.weaponFlux}"></ul>
             </div>
-        <div class="${classNames.hullMods}"></div>`;
+        <div class="${CLASS_NAMES.hullMods}"></div>`;
 	}
 }
 export default new StatsContainerView();

@@ -2,13 +2,13 @@ import View from "../view";
 import WeaponSpriteView from "./WeaponSpriteView";
 
 // Helper
-import classNames from "../../helper/DomClassNames";
-import DataSet from "../../helper/DataSet";
-import { GENERIC_STRING } from "../../helper/MagicStrings";
-import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helperFunction";
+import CLASS_NAMES from "../../helper/ui/class_names";
+import DATASET from "../../helper/ui/datasets";
+import { GENERIC_STRING } from "../../helper/ui/ui_main";
+import { weaponSlotIdIntoWeaponSlotObject } from "../../helper/helper_functions";
 
 class WeaponSlotsView extends View {
-	_localParent = `.${classNames.weaponSlots}`;
+	_localParent = `.${CLASS_NAMES.weaponSlots}`;
 	#allWeapons;
 
 	async generateMarkup() {
@@ -70,8 +70,8 @@ class WeaponSlotsView extends View {
 		]);
 		// prettier-ignore
 		const markup = `
-				<button class="${classNames.weaponSlot} ${classNames.weaponSize}--${weaponSize} ${classNames.weaponType}--${weaponType}" 
-					${DataSet.dataWeaponSlotId}="${weaponSlot.id}"
+				<button class="${CLASS_NAMES.weaponSlot} ${CLASS_NAMES.weaponSize}--${weaponSize} ${CLASS_NAMES.weaponType}--${weaponType}" 
+					${DATASET.dataWeaponSlotId}="${weaponSlot.id}"
 				>
 					${imgSprite}
 				</button>`;

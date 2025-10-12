@@ -12,7 +12,7 @@ import {
 	AddRemoveInstalledWeapon,
 	weaponSlotIdIntoWeaponSlotObject,
 	pushTargetWeaponObjectOnTop,
-} from "../helper/helperFunction";
+} from "./helper_functions";
 // helperFunction
 
 //

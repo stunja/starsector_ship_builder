@@ -1,6 +1,8 @@
-import classNames from "../../helper/DomClassNames";
-import DataSet from "../../helper/DataSet";
+// View
 import View from "../view";
+// Helper
+import CLASS_NAMES from "../../helper/ui/class_names";
+import DATASET from "../../helper/ui/datasets";
 
 const BUTTON__TYPE = {
 	OPEN: "open",
@@ -12,7 +14,7 @@ const TITLES = {
 	BUTTON__SMODS: "S-Mods",
 };
 class HullModView extends View {
-	_localParent = `.${classNames.hullMods}`;
+	_localParent = `.${CLASS_NAMES.hullMods}`;
 
 	generateMarkup() {
 		const markup = `${this.#hullModMarkUp()}`;
@@ -20,29 +22,29 @@ class HullModView extends View {
 	}
 
 	#hullModMarkUp() {
-		const dataSetButtonType = (type) =>
-			`${DataSet.dataHullModButtonType}="${type}"`;
+		const DATASETButtonType = (type) =>
+			`${DATASET.dataHullModButtonType}="${type}"`;
 
 		// prettier-ignore
 		return `
-	                <h3 class="${classNames.hullMods__header}">${TITLES.HEADER}</h3>
-	                <ul class="${classNames.hullMods__container}">
-	                  <div class="${classNames.buildInHullmods}"></div>
-	                  <div class="${classNames.installedHullMods}"></div>
+	                <h3 class="${CLASS_NAMES.hullMods__header}">${TITLES.HEADER}</h3>
+	                <ul class="${CLASS_NAMES.hullMods__container}">
+	                  <div class="${CLASS_NAMES.buildInHullmods}"></div>
+	                  <div class="${CLASS_NAMES.installedHullMods}"></div>
 	                </ul>
-	                <ul class="${classNames.flexFlexEndGap} ${classNames.hullMods__buttons}">
+	                <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.hullMods__buttons}">
 	                  <li>
-	                    <button class="${classNames.button} ${classNames.hullMods__button}"
-                        	${dataSetButtonType(BUTTON__TYPE.OPEN)}
+	                    <button class="${CLASS_NAMES.button} ${CLASS_NAMES.hullMods__button}"
+                        	${DATASETButtonType(BUTTON__TYPE.OPEN)}
 						>
                             ${TITLES.BUTTON__OPEN}
                         </button>
 	                  </li>
 	                  <li>
-	                    <button class="${classNames.button} ${
-			classNames.hullMods__button
+	                    <button class="${CLASS_NAMES.button} ${
+			CLASS_NAMES.hullMods__button
 		}" 
-                        ${DataSet.dataHullModButtonType}="${BUTTON__TYPE.SMODS}"
+                        ${DATASET.dataHullModButtonType}="${BUTTON__TYPE.SMODS}"
 						>
                             ${TITLES.BUTTON__SMODS}
                         </button>

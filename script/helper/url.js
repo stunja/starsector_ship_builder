@@ -1,23 +1,50 @@
-const URL = {
-	DATA: `src/starsector_data`,
-	DATA_GRAPHICS: "src/starsector_data/graphics",
-	DATA_HULLS: `src/starsector_data/hulls`,
-	DATA_VARIANTS: `src/starsector_data/variants`,
-	DATA_VARIANTS_FIGHTERS: `src/starsector_data/variants/fighters`,
-	DATA_VARIANTS_REMNANT: `src/starsector_data/variants/remnant`,
-	DATA_VARIANTS_DRONES: `src/starsector_data/variants/drones`,
-
-	//
-	DATA_WEAPONS: `src/starsector_data/weapons`,
-	DATA_HULLMODS: `src/starsector_data/hullmods`,
-	DATA_STRINGS: `src/starsector_data/strings`,
-
-	SHIPDATA_CVS: `ship_data.csv`,
-	WEAPONDATA_CVS: `weapon_data.csv`,
-	HULLMODS_CVS: `hull_mods.csv`,
-	DESCRIPTION_CVS: "descriptions.csv",
-	FIGHTER_CVS: "wing_data.csv",
-
-	UI_ICONS: "src/starsector_data/graphics/ui/icons/",
+const SRC_BASE = `src/starsector_data`;
+const DATA_FOLDER = {
+	GRAPHICS: `${SRC_BASE}/graphics`,
+	HULLS: `${SRC_BASE}/hulls`,
+	WEAPONS: `${SRC_BASE}/weapons`,
+	HULL_MODS: `${SRC_BASE}/hullmods`,
+	STRINGS: `${SRC_BASE}/strings`,
 };
+
+const VARIANT_BASE = `${SRC_BASE}/variants`;
+const VARIANTS = {
+	FIGHTERS: `fighters`,
+	REMNANT: `remnant`,
+	DRONES: `drones`,
+};
+
+const SVC = {
+	SHIP_DATA: `ship_data.csv`,
+	WEAPON_DATA: `weapon_data.csv`,
+	HULL_MODS: `hull_mods.csv`,
+	DESCRIPTION: `descriptions.csv`,
+	FIGHTER: `wing_data.csv`,
+};
+
+const UI_BASE = `${DATA_FOLDER.GRAPHICS}/ui`;
+const UI = {
+	ICONS: "icons",
+};
+
+// IIFE self referencing path constructor
+export const URL = {
+	DATA_FOLDER: DATA_FOLDER,
+	SVC: {
+		SHIP_DATA: `/${DATA_FOLDER.HULLS}/${SVC.SHIP_DATA}`,
+		FIGHTER: `/${DATA_FOLDER.HULLS}/${SVC.FIGHTER}`,
+		WEAPON_DATA: `/${DATA_FOLDER.WEAPONS}/${SVC.WEAPON_DATA}`,
+		HULL_MODS: `/${DATA_FOLDER.HULL_MODS}/${SVC.HULL_MODS}`,
+		DESCRIPTION: `/${DATA_FOLDER.STRINGS}/${SVC.DESCRIPTION}`,
+	},
+	VARIANTS: {
+		FIGHTERS: `/${VARIANT_BASE}/${VARIANTS.FIGHTERS}`,
+		REMNANT: `/${VARIANT_BASE}/${VARIANTS.REMNANT}`,
+		DRONES: `/${VARIANT_BASE}/${VARIANTS.DRONES}`,
+	},
+	UI: {
+		ICONS: `/${UI_BASE}/${UI.ICONS}/`,
+	},
+};
+
 export default URL;

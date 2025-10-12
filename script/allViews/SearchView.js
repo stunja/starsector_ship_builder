@@ -1,6 +1,13 @@
-import classNames from "../helper/DomClassNames";
+// View
 import View from "./view";
-import DataSet from "../helper/DataSet";
+// Helper
+import DATASET from "../helper/ui/datasets";
+import CLASS_NAMES from "../helper/ui/class_names";
+import { GENERIC_STRING } from "../helper/ui/ui_main";
+
+//! missing in different folder
+// formInputNames,
+// uiDescription,
 
 const STRINGS = {
 	LOGO: "Ship Builder",
@@ -11,31 +18,33 @@ const EVENT_LISTENER_TARGET = {
 	SEARCH: "search",
 	SAVE: "save",
 };
+
 class SearchView extends View {
-	_localParent = `.${classNames.nav}`;
+	_localParent = `.${CLASS_NAMES.nav}`;
 
 	generateMarkup() {
 		const markup = `   
-            <a href="#" class="${classNames.navLogo}">${STRINGS.LOGO}</a>
+            <a href="${GENERIC_STRING.HASH}" class="${CLASS_NAMES.navLogo}">${STRINGS.LOGO}</a>
 
-            <form class="${classNames.searchForm}">
+            <form class="${CLASS_NAMES.searchForm}">
                 <input
-                    name="search"
                     type="text"
-                    class="${classNames.searchFormInput}"
-                    placeholder="Enter the name of the ship"
-                    value="test"
+                    name="${formInputNames.SEARCH.NAV_SEARCH}"
+                    class="${CLASS_NAMES.searchFormInput}"
+                    label="${uiDescription.NAV.SEARCH.INPUT.LABEL}"
+                    placeholder="${uiDescription.NAV.SEARCH.INPUT.DESC}"
+                    value="astral"
                     required
                 />
 
-                <button type="submit" class="${classNames.button} ${classNames.searchFormButton}" 
-                    ${DataSet.dataNavButtonType}=${EVENT_LISTENER_TARGET.SEARCH}>
+                <button type="submit" class="${CLASS_NAMES.button} ${CLASS_NAMES.searchFormButton}" 
+                    ${DATASET.dataNavButtonType}=${EVENT_LISTENER_TARGET.SEARCH}>
                     ${STRINGS.SEARCH}
                 </button>
             </form>
 
-            <button class="${classNames.button} ${classNames.searchFormButton}" 
-                    ${DataSet.dataNavButtonType}=${EVENT_LISTENER_TARGET.SAVE}>
+            <button class="${CLASS_NAMES.button} ${CLASS_NAMES.searchFormButton}" 
+                    ${DATASET.dataNavButtonType}=${EVENT_LISTENER_TARGET.SAVE}>
                     ${STRINGS.SAVED}
                 </button>
         `;

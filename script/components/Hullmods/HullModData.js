@@ -3,14 +3,14 @@ import {
 	HULL_SIZE,
 	SHIP_TYPE,
 	WEAPON_SLOT,
-} from "../../helper/Properties";
+} from "../../helper/ship_properties";
 
 import HullModHelper from "./HullModHelper";
-import { VALUE_CHANGE, GENERIC_STRING } from "../../helper/MagicStrings";
+import { VALUE_CHANGE, GENERIC_STRING } from "../../helper/ui/ui_main";
 import {
 	createNewWeaponSlotsAndInstalledWeapons,
 	toggleAdditionalInstalledWeapons,
-} from "../../helper/helperFunction";
+} from "../../helper/helper_functions";
 
 const UI_TAGS = {
 	LOGISTICS: "Logistics",

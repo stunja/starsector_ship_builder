@@ -1,16 +1,16 @@
-import classNames from "../../helper/DomClassNames.js";
-import DataSet from "../../helper/DataSet.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+// import DATASET from "../../helper/ui/datasets.js";
+import URL from "../../helper/url.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
 // View
 import View from "../view.js";
 import WeaponSpriteView from "../Weapons/WeaponSpriteView.js";
-import URL from "../../helper/url.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
 
 const ALT_TEXT = {
 	WEAPON_DAMAGE_TYPE: "weapon damage type",
 };
 class WeaponHoverContainerView extends View {
-	_localParent = `.${classNames.hoverContainer}`;
+	_localParent = `.${CLASS_NAMES.hoverContainer}`;
 
 	#information;
 	#stats;
@@ -74,7 +74,7 @@ class WeaponHoverContainerView extends View {
 				<p>Weapon Name</p>
 				<p>${this.#information.name}</p>
 			</li>
-			<li class="${classNames.weaponDescription}">
+			<li class="${CLASS_NAMES.weaponDescription}">
 				<p>${this.#string.shortWeaponDescription}.</p>
 			</li>
 			`;
@@ -89,9 +89,9 @@ class WeaponHoverContainerView extends View {
 
 		const primaryIconMarkup = `
 				<div class="weapon-primary-data__icon">
-					<li class="${classNames.weaponIcon} 
-					${classNames.weaponSize}--${this.#stats.mount.size} 
-					${classNames.weaponType}--${this.#stats.mount.type}" 
+					<li class="${CLASS_NAMES.weaponIcon} 
+					${CLASS_NAMES.weaponSize}--${this.#stats.mount.size} 
+					${CLASS_NAMES.weaponType}--${this.#stats.mount.type}" 
 					data-id="${this.#information.id}"
 					>
 						${weaponIconRender}
@@ -99,7 +99,7 @@ class WeaponHoverContainerView extends View {
 		      	</div>`;
 
 		const weaponContentGroupMarkup = `
-					<div class="${classNames.weaponContentGroup}">
+					<div class="${CLASS_NAMES.weaponContentGroup}">
 						${this.#contentMarkup("Range", this.#stats.range)}
 						${
 							!this.#additionalStats.isWeaponBeam
@@ -111,9 +111,9 @@ class WeaponHoverContainerView extends View {
 					`;
 
 		const weaponMountTypeMarkup = `					
-					<li class="${classNames.weaponMountType}">
+					<li class="${CLASS_NAMES.weaponMountType}">
 						<p>Mount Type:</p>
-						<div class="${classNames.textAlignRight}">
+						<div class="${CLASS_NAMES.textAlignRight}">
 							<strong><p>${this.#stats.mount.type}</p></strong>
 							<strong><p>${this.#stats.mount.size}</p></strong>
 						</div>
@@ -130,7 +130,7 @@ class WeaponHoverContainerView extends View {
 				</div>`;
 
 		return `
-			<div class="d-grid ${classNames.weaponPrimaryData}">
+			<div class="d-grid ${CLASS_NAMES.weaponPrimaryData}">
 				${primaryIconMarkup}
 				${primaryContentMarkup}
 			</div>`;
@@ -153,9 +153,9 @@ class WeaponHoverContainerView extends View {
 						</li>
 					</div>
 					<div class="weapon-primary-data_content">
-						<li class="${classNames.weaponDamageType}">
+						<li class="${CLASS_NAMES.weaponDamageType}">
 							<p>Damage Type:</p>
-							<div class="${classNames.textAlignRight}">
+							<div class="${CLASS_NAMES.textAlignRight}">
 								<strong><p>${weaponTypeString}</p></strong>
 								${damageTypeMarkup}
 							</div>
@@ -221,7 +221,7 @@ class WeaponHoverContainerView extends View {
 	#weaponTypeSprite(weaponObject) {
 		const editedString = weaponObject.type.toLowerCase();
 		const targetFile = `damagetype_${editedString}.png`;
-		return `<img src="/${URL.UI_ICONS}/${targetFile}" alt="${ALT_TEXT.WEAPON_DAMAGE_TYPE}" class="${classNames.weaponDamageType}"/>`;
+		return `<img src="/${URL.UI_ICONS}/${targetFile}" alt="${ALT_TEXT.WEAPON_DAMAGE_TYPE}" class="${CLASS_NAMES.weaponDamageType}"/>`;
 	}
 }
 export default new WeaponHoverContainerView();

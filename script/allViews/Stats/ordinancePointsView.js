@@ -1,11 +1,12 @@
-import classNames from "../../helper/DomClassNames";
 import View from "../view";
+// Helper
+import CLASS_NAMES from "../../helper/ui/class_names";
 
 const STRING = {
 	GRAPH_TITLE: "[Current / Total] Ordinance Points",
 };
 class OrdinancePointsView extends View {
-	_localParent = `.${classNames.ordinancePointsGraph}`;
+	_localParent = `.${CLASS_NAMES.ordinancePointsGraph}`;
 
 	#userShipBuild;
 	generateMarkup() {
@@ -15,17 +16,17 @@ class OrdinancePointsView extends View {
 	}
 	#ordinancePointsMarkup = () =>
 		`<li>
-          <h5 class="${classNames.ordinanceGraphTitle}">
+          <h5 class="${CLASS_NAMES.ordinanceGraphTitle}">
             ${STRING.GRAPH_TITLE}
           </h5>
         </li>
-        <li class="${classNames.ordinanceGraphBody}">
-          <div class="${classNames.ordinanceGraphPoints}">
-            <h5 class="${classNames.ordinancePointsRenderTextClass}">
+        <li class="${CLASS_NAMES.ordinanceGraphBody}">
+          <div class="${CLASS_NAMES.ordinanceGraphPoints}">
+            <h5 class="${CLASS_NAMES.ordinancePointsRenderTextClass}">
               ${this.#userShipBuild.ordinancePoints || 0}
             </h5>
             <span> / </span>
-            <h5 class="${classNames.ordinanceGraphPointsMaxPoints}">
+            <h5 class="${CLASS_NAMES.ordinanceGraphPointsMaxPoints}">
               ${this.#userShipBuild.maxOrdinancePoints}
             </h5>
           </div>

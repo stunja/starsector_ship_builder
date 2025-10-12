@@ -5,9 +5,9 @@ import {
 	HULL_SIZE,
 	SHIP_TYPE,
 	WEAPON_SLOT,
-} from "../helper/Properties";
-import { GENERIC_STRING } from "../helper/MagicStrings";
-import UI_CONFIG from "./UI_CONFIG";
+} from "./ship_properties";
+import { GENERIC_STRING } from "./ui/ui_main";
+import UI_CONFIG from "./ui/configs";
 import URL from "./url";
 
 const HULLMODS_TO_HIDE = {

@@ -1,8 +1,8 @@
 // View Functions
 import View from "../../allViews/view";
 // Helper Functions
-import classNames from "../../helper/DomClassNames";
-import { GENERIC_STRING } from "../../helper/MagicStrings";
+import CLASS_NAMES from "../../helper/ui/class_names";
+import { GENERIC_STRING } from "../../helper/ui/ui_main";
 
 const SHIELD_TYPE = {
 	SHIELD_FRONT: "FRONT",
@@ -22,7 +22,7 @@ const PHASE_TITLES = {
 const NO_SHIELD_ICON = "---";
 
 class ShieldOrPhaseView extends View {
-	_localParent = `.${classNames.phaseOrShieldContainer}`;
+	_localParent = `.${CLASS_NAMES.phaseOrShieldContainer}`;
 
 	generateMarkup() {
 		const userShipBuild = this._data;
@@ -48,14 +48,14 @@ class ShieldOrPhaseView extends View {
 			return GENERIC_STRING.EMPTY;
 
 		return `
-            <ul class="${classNames.flexFlexEndGap} ${classNames.shieldFlux}">
+            <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.shieldFlux}">
 				${this.createList(
-					classNames.phaseFlux__PerSec,
+					CLASS_NAMES.phaseFlux__PerSec,
 					PHASE_TITLES.PER_SEC,
 					upkeepString
 				)}
 				${this.createList(
-					classNames.phaseFlux__Activation,
+					CLASS_NAMES.phaseFlux__Activation,
 					PHASE_TITLES.ACTIVATION,
 					activationCostString
 				)}
@@ -70,15 +70,15 @@ class ShieldOrPhaseView extends View {
 		} = this.#calculateShieldValues(state);
 
 		return `
-            <ul class="${classNames.flexFlexEndGap} ${classNames.shieldFlux}">
-				${this.createList(classNames.shieldArc, SHIELD_TITLES.ARC, shieldArc)}
+            <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.shieldFlux}">
+				${this.createList(CLASS_NAMES.shieldArc, SHIELD_TITLES.ARC, shieldArc)}
 				${this.createList(
-					classNames.shieldFlux__PerSec,
+					CLASS_NAMES.shieldFlux__PerSec,
 					SHIELD_TITLES.PER_SEC,
 					fluxPerSec
 				)}
 				${this.createList(
-					classNames.shieldFlux__PerDmg,
+					CLASS_NAMES.shieldFlux__PerDmg,
 					SHIELD_TITLES.PER_DMG,
 					fluxPerDmg
 				)}
@@ -87,15 +87,15 @@ class ShieldOrPhaseView extends View {
 	}
 	#noShieldDataRender() {
 		return `
-            <ul class="${classNames.flexFlexEndGap} ${classNames.shieldFlux}">
-				${this.createList(classNames.shieldArc, SHIELD_TITLES.ARC, NO_SHIELD_ICON)}
+            <ul class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.shieldFlux}">
+				${this.createList(CLASS_NAMES.shieldArc, SHIELD_TITLES.ARC, NO_SHIELD_ICON)}
 				${this.createList(
-					classNames.shieldFlux__PerSec,
+					CLASS_NAMES.shieldFlux__PerSec,
 					SHIELD_TITLES.PER_SEC,
 					NO_SHIELD_ICON
 				)}
 				${this.createList(
-					classNames.shieldFlux__PerDmg,
+					CLASS_NAMES.shieldFlux__PerDmg,
 					SHIELD_TITLES.PER_DMG,
 					NO_SHIELD_ICON
 				)}

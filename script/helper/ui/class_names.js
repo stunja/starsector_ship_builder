@@ -1,4 +1,5 @@
-const classNames = {
+// I am trying to keep classNames in camel case
+const CLASS_NAMES = {
 	// Navigation
 	nav: "nav",
 	navLogo: "nav_logo",
@@ -264,4 +265,4 @@ const classNames = {
 	tableSpinner: "table-spinner",
 };
 
-export default classNames;
+export default CLASS_NAMES;

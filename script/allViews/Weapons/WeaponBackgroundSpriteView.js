@@ -1,7 +1,7 @@
 // View
 // Helper
-import classNames from "../../helper/DomClassNames.js";
-import { GENERIC_STRING } from "../../helper/MagicStrings.js";
+import CLASS_NAMES from "../../helper/ui/class_names.js";
+import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
 
 // Difference between the two, is that Dual Sprite
 // has two different sprites for example "circle inside rect".
@@ -44,7 +44,7 @@ const SIZE_CONFIG = {
 class WeaponBackgroundSpriteView {
 	renderElement(weaponObject, weaponSlot, backgroundSpriteEqualToWeaponSize) {
 		return `
-		<div class="${classNames.weaponBackgroundSpriteParent}">
+		<div class="${CLASS_NAMES.weaponBackgroundSpriteParent}">
 			${this.#generateFinalMarkup(
 				weaponObject,
 				weaponSlot,
@@ -57,10 +57,10 @@ class WeaponBackgroundSpriteView {
 		// Size is for rem size
 		// type is for color / shape
 		// oppacity for oppacity. Strong in the outer edges and weak in smallest sprite
-		return `<div class="${classNames.weaponBackgroundSprite} 
-					${classNames.weaponBackgroundSpriteSize}--${size}
-					${classNames.weaponBackgroundSpriteType}--${type}
-					${classNames.weaponBackgroundSpriteOppacity}--${opacity}">
+		return `<div class="${CLASS_NAMES.weaponBackgroundSprite} 
+					${CLASS_NAMES.weaponBackgroundSpriteSize}--${size}
+					${CLASS_NAMES.weaponBackgroundSpriteType}--${type}
+					${CLASS_NAMES.weaponBackgroundSpriteOppacity}--${opacity}">
 				</div>`;
 	}
 

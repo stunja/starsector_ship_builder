@@ -12,27 +12,34 @@ import HullModsPopUpFilterView from "../../allViews/HullMods/HullModsPopUpFilter
 import HullModHelper from "./HullModHelper";
 import HullModFilter from "./HullModFilter";
 // Helper Function
-import classNames from "../../helper/DomClassNames";
+import CLASS_NAMES from "../../helper/ui/class_names";
 import TablePopUpSorter from "../TablePopUpSorter";
-import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/MagicStrings";
-import { createUsableHullMods } from "../../helper/helperFunction";
+import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../../helper/ui/ui_main";
+import {
+	createUsableHullMods,
+	toggleAsyncSpinner,
+} from "../../helper/helper_functions";
+
 import UpdateUserShipBuild from "../../helper/UpdateUserShipBuild";
 
-import UI_CONFIG from "../../helper/UI_CONFIG";
+import UI_CONFIG from "../../helper/ui/configs";
 
-import { SHIELD_TYPE, HULL_SIZE, SHIP_TYPE } from "../../helper/Properties";
+import {
+	SHIELD_TYPE,
+	HULL_SIZE,
+	SHIP_TYPE,
+} from "../../helper/ship_properties";
 
 import { ScrollPosition } from "../../helper/ScrollPosition";
-import { toggleAsyncSpinner } from "../../helper/helperFunction";
 
 const EVENT_LISTENER_TARGET = {
-	TABLE_ENTRIES: `.${classNames.tableEntryAvailable}`,
-	TABLE_HEADER_ENTRY: `.${classNames.tableHeaderEntry}`,
-	FILTER_BUTTON: `.${classNames.filterButton}`,
+	TABLE_ENTRIES: `.${CLASS_NAMES.tableEntryAvailable}`,
+	TABLE_HEADER_ENTRY: `.${CLASS_NAMES.tableHeaderEntry}`,
+	FILTER_BUTTON: `.${CLASS_NAMES.filterButton}`,
 };
 const CLASSES = {
-	TABLE_CONTAINER: `.${classNames.tableContainer}`,
-	WEAPON_POP_UP_ACTIVE: classNames.weaponPopUpActive,
+	TABLE_CONTAINER: `.${CLASS_NAMES.tableContainer}`,
+	WEAPON_POP_UP_ACTIVE: CLASS_NAMES.weaponPopUpActive,
 };
 
 const POPUP_TABLE_TYPE = {
@@ -83,7 +90,7 @@ export default class HullModsPopUp extends ViewModel {
 	constructor(model) {
 		super(model);
 
-		new ScrollPosition().clear(classNames.tableContainer);
+		new ScrollPosition().clear(CLASS_NAMES.tableContainer);
 
 		this.#updateData();
 		this.#createFilterCategories();
@@ -104,7 +111,7 @@ export default class HullModsPopUp extends ViewModel {
 	}
 	#updateOtherComponents() {
 		// Scroll to position user previously was, to prevent annoying jumps
-		new ScrollPosition().load(classNames.tableContainer);
+		new ScrollPosition().load(CLASS_NAMES.tableContainer);
 
 		// keep the order
 		// Update shipStats to render new fields
@@ -346,7 +353,7 @@ export default class HullModsPopUp extends ViewModel {
 
 		this.#assignActiveClasses();
 
-		new ScrollPosition().save(classNames.tableContainer);
+		new ScrollPosition().save(CLASS_NAMES.tableContainer);
 	}
 
 	// Event Listeners

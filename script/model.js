@@ -3,13 +3,14 @@ import {
 	renameKeysFromCSVdata,
 	convertStringsIntoNumbersCSVdata,
 	extractDataFromObject,
-} from "./helper/helperFunction.js";
-import { GENERIC_STRING } from "./helper/MagicStrings.js";
+} from "./helper/helper_functions.js";
+// helper
+import { GENERIC_STRING } from "./helper/ui/ui_main.js";
 import URL from "./helper/url.js";
 import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
+import { SHIELD_TYPE } from "./helper/ship_properties.js";
+// external import
 import Papa from "papaparse";
-
-import { SHIELD_TYPE } from "./helper/Properties.js";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
 const shipNameDev = "astral"; // hound // venture
@@ -83,13 +84,14 @@ export class Model {
 		this.updateState("uiState", { isLoading: true });
 		try {
 			const [ships, weapons, hullmods, fighters, desc] = await Promise.all([
-				cvsFetcher.fetch(`/${URL.DATA_HULLS}/${URL.SHIPDATA_CVS}`),
-				cvsFetcher.fetch(`/${URL.DATA_WEAPONS}/${URL.WEAPONDATA_CVS}`),
-				cvsFetcher.fetch(`/${URL.DATA_HULLMODS}/${URL.HULLMODS_CVS}`),
-				cvsFetcher.fetch(`/${URL.DATA_HULLS}/${URL.FIGHTER_CVS}`),
-				cvsFetcher.fetch(`/${URL.DATA_STRINGS}/${URL.DESCRIPTION_CVS}`),
+				cvsFetcher.fetch(URL.SVC.SHIP_DATA),
+				cvsFetcher.fetch(URL.SVC.WEAPON_DATA),
+				cvsFetcher.fetch(URL.SVC.HULL_MODS),
+				cvsFetcher.fetch(URL.SVC.FIGHTER),
+				cvsFetcher.fetch(URL.SVC.DESCRIPTION),
 			]);
 
+			console.log(ships, weapons, hullmods, fighters, desc);
 			const currentShip = findCurrentShip(ships);
 
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
@@ -244,7 +246,7 @@ const fetchCurrentShipAdditionalData = async function (currentShip) {
 	];
 	try {
 		const data = await jsonFetcher.fetch(
-			`/${URL.DATA_HULLS}/${currentShip.id}.ship`
+			`${URL.DATA_FOLDER.HULLS}/${currentShip.id}.ship`
 		);
 		const additionalData = Object.fromEntries(
 			Object.entries(data).filter(([key]) => whatToExtract.includes(key))
@@ -300,7 +302,7 @@ const additionalWeaponData = {
 	async processWeapon(weaponObject, allDescriptions) {
 		try {
 			const dirtyData = await jsonFetcher.fetchData(
-				`/${URL.DATA_WEAPONS}/${weaponObject.id}.wpn`
+				`${URL.DATA_FOLDER.WEAPONS}/${weaponObject.id}.wpn`
 			);
 			const cleanData = this.cleanWeaponData(dirtyData);
 			const jsonData = JSON.parse(cleanData);
@@ -617,7 +619,7 @@ const updateFighters = {
 			);
 
 			const fetchData = await jsonFetcher.fetchData(
-				`/${URL.DATA_HULLS}/${convertedFighterId}.ship`
+				`${URL.DATA_FOLDER.HULLS}/${convertedFighterId}.ship`
 			);
 
 			const jsonData = JSON.parse(fetchData);
@@ -759,12 +761,13 @@ const updateFighters = {
 		//? WHY FLASH IS IN REMNANT
 		//? HOPLON IS KOPESH (OLD NAME)
 		const SPECIAL_RULES = {
-			drone_borer: URL.DATA_VARIANTS_DRONES,
-			drone_terminator: URL.DATA_VARIANTS_DRONES,
-			flash_Bomber: URL.DATA_VARIANTS_REMNANT,
-			spark_Interceptor: URL.DATA_VARIANTS_REMNANT,
-			lux_Fighter: URL.DATA_VARIANTS_REMNANT,
+			drone_borer: URL.VARIANTS.DRONES,
+			drone_terminator: URL.VARIANTS.DRONES,
+			flash_Bomber: URL.VARIANTS.REMNANT,
+			spark_Interceptor: URL.VARIANTS.REMNANT,
+			lux_Fighter: URL.VARIANTS.REMNANT,
 		};
+
 		const cleanToJson = (fileContent) => {
 			fileContent = fileContent.replace(/#.*$/gm, GENERIC_STRING.EMPTY); // Remove inline comments
 			fileContent = fileContent.replace(/,(\s*[}\]])/g, "$1"); // Remove trailing commas
@@ -780,9 +783,9 @@ const updateFighters = {
 		};
 		const convertedURL = (urlCheck, fighterVariant) => {
 			if (urlCheck === undefined) {
-				return `/${URL.DATA_VARIANTS_FIGHTERS}/${fighterVariant}.variant`;
+				return `${URL.VARIANTS.FIGHTERS}/${fighterVariant}.variant`;
 			}
-			return `/${urlCheck}/${fighterVariant}.variant`;
+			return `${urlCheck}/${fighterVariant}.variant`;
 		};
 		try {
 			const variantId = variantTargeting(fighterObject);

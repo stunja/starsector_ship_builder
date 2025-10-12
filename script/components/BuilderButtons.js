@@ -3,12 +3,12 @@ import BuilderButtonsView from "../allViews/BuilderButtonsView";
 // ViewModel
 import ViewModel from "../ViewModel";
 // Helper
-import classNames from "../helper/DomClassNames";
+import CLASS_NAMES from "../helper/ui/class_names";
 import UpdateUserShipBuild from "../helper/UpdateUserShipBuild";
 import BuilderController from "./BuilderController";
 
 const EVENT_LISTENER_TARGET = {
-	BUILDER_BUTTON: `.${classNames.builderButton}`,
+	BUILDER_BUTTON: `.${CLASS_NAMES.builderButton}`,
 };
 
 const BUTTON_TYPE = {
