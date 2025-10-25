@@ -5,7 +5,7 @@ class BuilderView extends View {
 	_localParent = `body`;
 
 	generateMarkup() {
-		const markup = `${this.#builderMarkup()}`;
+		const markup = this.#builderMarkup();
 		return markup;
 	}
 	#builderMarkup() {

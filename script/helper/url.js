@@ -1,5 +1,6 @@
 const SRC_BASE = `src/starsector_data`;
 const DATA_FOLDER = {
+	BASE: SRC_BASE,
 	GRAPHICS: `${SRC_BASE}/graphics`,
 	HULLS: `${SRC_BASE}/hulls`,
 	WEAPONS: `${SRC_BASE}/weapons`,

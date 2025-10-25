@@ -23,5 +23,9 @@ class HullModSprite {
 			return GENERIC_STRING.EMPTY;
 		}
 	}
+
+	spriteMarkup(src, name) {
+		return `<img src="${src}" alt="Image of a ${name}">`;
+	}
 }
 export default new HullModSprite();

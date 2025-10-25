@@ -7,7 +7,7 @@ import {
 	WEAPON_SLOT,
 } from "./ship_properties";
 import { GENERIC_STRING } from "./ui/ui_main";
-import UI_CONFIG from "./ui/configs";
+import CONFIG from "./ui/configs";
 import URL from "./url";
 
 const HULLMODS_TO_HIDE = {
@@ -213,7 +213,7 @@ export async function toggleAsyncSpinner(
 	asyncOperations,
 	view,
 	args = [],
-	delayMs = UI_CONFIG.spinnerDelayMs
+	delayMs = CONFIG.SPINNER.spinnerDelayMs
 ) {
 	let spinnerTimeout = setTimeout(() => {
 		view.addSpinner();
@@ -230,7 +230,7 @@ export async function toggleAsyncSpinner(
 export const imageLoader = async function (src) {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
-		img.src = `/${URL.DATA}/${src}`;
+		img.src = `/${URL.DATA_FOLDER.BASE}/${src}`;
 		img.onload = () => resolve(img);
 		img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
 	});

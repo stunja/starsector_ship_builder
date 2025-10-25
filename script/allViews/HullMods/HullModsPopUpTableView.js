@@ -37,7 +37,6 @@ class HullModsPopUpTableView extends View {
 
 		this.#hullSize = this.#userShipBuild.hullSize;
 	}
-	// const hullModIcon = `<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
 
 	async #tableBodyRender() {
 		const entryMarkup = async (currentHullMod, arrayType) => {
@@ -138,21 +137,5 @@ class HullModsPopUpTableView extends View {
 					${stringMarkup}
 				</li>`;
 	};
-	// async #greenArrayRender() {
-	// 	const arrayType = HULLMOD_ARRAY_TYPE.AVAILABLE;
-
-	// 	// wrap in an array, so mods looks like
-	// 	return this.#availableHullMods
-	// 		.map((hullMod) => this.#singleHullModEntry([hullMod], arrayType))
-	// 		.join(GENERIC_STRING.EMPTY);
-	// }
-
-	// async #redArrayRender() {
-	// 	const arrayType = HULLMOD_ARRAY_TYPE.UNAVAILABLE;
-
-	// 	return this.#unAvailableMods
-	// 		.map((hullMod) => this.#singleHullModEntry(hullMod, arrayType))
-	// 		.join(GENERIC_STRING.EMPTY);
-	// }
 }
 export default new HullModsPopUpTableView();

@@ -3,6 +3,7 @@ import ShipAreaView from "../../allViews/Weapons/ShipAreaView.js";
 import WeaponSlots from "../Weapon/WeaponSlots.js";
 // Helper
 import CLASS_NAMES from "../../helper/ui/class_names.js";
+import CONFIG from "../../helper/ui/configs.js";
 
 const TARGET_REM = 10; // rem for shipSpriteSize / WeaponSlotsPosition / shipGAP
 
@@ -20,7 +21,7 @@ export default class ShipArea extends ViewModel {
 		this.#weaponSlots.update();
 	}
 	#containerRender() {
-		ShipAreaView.render(this.getUserShipBuild());
+		ShipAreaView.render([this.getCurrentShip(), this.getUserShipBuild()]);
 
 		this.#shipSpriteUpdate();
 	}

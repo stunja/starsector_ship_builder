@@ -25,14 +25,14 @@ class BuildInHullModsView extends View {
 			return GENERIC_STRING.EMPTY && console.warn("Too Few hullMods to Render");
 
 		const markup = this.#buildInHullMods
-			.map(
-				(currentHullMod) =>
-					`<li class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.hullMod}">
+			.map((currentHullMod) => {
+				return `
+					<li class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.hullMod}" title="${currentHullMod.name} - ${currentHullMod.short}">
 						<h5>${currentHullMod.name}</h5>
-						<img src="./${URL.DATA}/${currentHullMod.sprite}"
-						alt="${currentHullMod.short}" />
-					</li>`
-			)
+						<img src="./${URL.DATA_FOLDER.BASE}/${currentHullMod.sprite}"
+						alt="Sprite of a ${currentHullMod.name} build-in hullMod"/>
+					</li>`;
+			})
 			.join(GENERIC_STRING.EMPTY);
 
 		return `<div class="${CLASS_NAMES.buildInHullModsContainer}">${markup}</div>`;

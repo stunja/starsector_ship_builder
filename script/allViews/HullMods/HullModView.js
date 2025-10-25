@@ -17,7 +17,7 @@ class HullModView extends View {
 	_localParent = `.${CLASS_NAMES.hullMods}`;
 
 	generateMarkup() {
-		const markup = `${this.#hullModMarkUp()}`;
+		const markup = this.#hullModMarkUp();
 		return markup;
 	}
 
@@ -41,11 +41,7 @@ class HullModView extends View {
                         </button>
 	                  </li>
 	                  <li>
-	                    <button class="${CLASS_NAMES.button} ${
-			CLASS_NAMES.hullMods__button
-		}" 
-                        ${DATASET.dataHullModButtonType}="${BUTTON__TYPE.SMODS}"
-						>
+	                    <button class="${CLASS_NAMES.button} ${CLASS_NAMES.hullMods__button}" ${DATASET.dataHullModButtonType}="${BUTTON__TYPE.SMODS}">
                             ${TITLES.BUTTON__SMODS}
                         </button>
 	                  </li>

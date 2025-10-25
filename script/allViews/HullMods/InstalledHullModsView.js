@@ -46,10 +46,12 @@ class InstalledHullMods extends View {
 		return markup;
 	}
 	// Markups
-	#hullModCostMarkup = (currentHullMod) => `
+	#hullModCostMarkup = (currentHullMod) => {
+		return `
 				<p class="${CLASS_NAMES.hullModCost}">
 					[${HullModHelper.normalizedHullSize(currentHullMod, this.#hullSize)}]
 				</p>`;
+	};
 
 	#buttonMarkup = (currentHullMod) =>
 		`<button class="${CLASS_NAMES.button} ${CLASS_NAMES.buttonCircle} ${CLASS_NAMES.removeInstalledHullModButton}"
@@ -58,7 +60,8 @@ class InstalledHullMods extends View {
 			${GENERIC_STRING.MINUS}
 		</button>`;
 
-	#imageMarkup = (currentHullMod) =>
-		`<img src="./${URL.DATA}/${currentHullMod.sprite}" alt="${currentHullMod.short}" />`;
+	#imageMarkup(currentHullMod) {
+		return `<img src="./${URL.DATA_FOLDER.BASE}/${currentHullMod.sprite}" alt="Sprite of a ${currentHullMod.name}" />`;
+	}
 }
 export default new InstalledHullMods();

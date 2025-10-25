@@ -61,7 +61,7 @@ export default class WeaponSlots extends ViewModel {
 		//
 
 		allWeaponSlotsElements.forEach((weaponElement) => {
-			const { weaponSlotId } = weaponElement.DATASET;
+			const { weaponSlotId } = weaponElement.dataset;
 
 			const currentWeaponSlot = weaponSlotIdIntoWeaponSlotObject(
 				weaponSlots,
@@ -93,7 +93,7 @@ export default class WeaponSlots extends ViewModel {
 				`.${CLASS_NAMES.weaponArcSprite}`
 			);
 			//
-			const { arc, angle } = wpnArc.DATASET;
+			const { arc, angle } = wpnArc.dataset;
 			const halfArc = arc / 2;
 			let reverseAngle = -angle;
 			// Arc consists of two lines, after and before, and use weapon angle to rotate

@@ -9,19 +9,19 @@ class ShipAreaView extends View {
 
 	generateMarkup() {
 		const data = this._data;
-		const markup = `${this.#structureMarkup(data)}`;
 
+		const markup = this.#structureMarkup(data);
 		return markup;
 	}
 
-	#structureMarkup(currentShip) {
+	#structureMarkup([currentShip, userShipBuild]) {
 		return `
 				<div class="${CLASS_NAMES.weaponPopUp}"></div>
                 <ul class="${CLASS_NAMES.shipAndWeaponsHolder}">
                   	<li class="${CLASS_NAMES.weaponSlotsHolder}">
                     	<ul class="${CLASS_NAMES.weaponSlots}"></ul>
                   	</li>
-                  	<img src="/${URL.DATA}/${currentShip.secondaryData.spriteName}" alt="${currentShip.spriteName}" class="${CLASS_NAMES.shipSprite}" />
+                  	<img src="/${URL.DATA_FOLDER.BASE}/${userShipBuild.secondaryData.spriteName}" alt="Large image of a ${userShipBuild.name} Ship" class="${CLASS_NAMES.shipSprite}" />
                 </ul>
                   `;
 	}

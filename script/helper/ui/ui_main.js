@@ -27,10 +27,3 @@ export const VALUE_CHANGE = {
 	MULTIPLY: "multiply",
 	DIVISION: "division ",
 };
-
-// Form
-export const formInputNames = {
-	SEARCH: {
-		NAV_SEARCH: "nav-search",
-	},
-};

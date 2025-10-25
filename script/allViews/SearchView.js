@@ -3,6 +3,8 @@ import View from "./view";
 // Helper
 import DATASET from "../helper/ui/datasets";
 import CLASS_NAMES from "../helper/ui/class_names";
+
+import UI_STRINGS from "../helper/ui/ui_strings";
 import { GENERIC_STRING } from "../helper/ui/ui_main";
 
 //! missing in different folder
@@ -29,10 +31,10 @@ class SearchView extends View {
             <form class="${CLASS_NAMES.searchForm}">
                 <input
                     type="text"
-                    name="${formInputNames.SEARCH.NAV_SEARCH}"
+                    name="${UI_STRINGS.NAV.SEARCH.INPUT.NAME}"
                     class="${CLASS_NAMES.searchFormInput}"
-                    label="${uiDescription.NAV.SEARCH.INPUT.LABEL}"
-                    placeholder="${uiDescription.NAV.SEARCH.INPUT.DESC}"
+                    label="${UI_STRINGS.NAV.SEARCH.INPUT.LABEL}"
+                    placeholder="${UI_STRINGS.NAV.SEARCH.INPUT.DESC}"
                     value="astral"
                     required
                 />

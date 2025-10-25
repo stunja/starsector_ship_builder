@@ -91,9 +91,7 @@ export class Model {
 				cvsFetcher.fetch(URL.SVC.DESCRIPTION),
 			]);
 
-			console.log(ships, weapons, hullmods, fighters, desc);
 			const currentShip = findCurrentShip(ships);
-
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
 				currentShip
 			);
@@ -146,24 +144,6 @@ export class Model {
 			this.updateState("uiState", { isLoading: false });
 		}
 	}
-
-	//////
-	// async loadData() {
-	// 	this.updateState("uiState", { isLoading: true });
-	// 	try {
-	// 		const [ships] = await Promise.all([
-	// 			cvsFetcher.fetch(`/${URL.DATA_STRINGS}/${URL.DESCRIPTION_CVS}`),
-	// 		]);
-
-	// 		this.updateState("dataState", {
-	// 			allShips: ships,
-	// 		});
-	// 	} catch (err) {
-	// 		console.log(`Failed to Load Resources ${err}`);
-	// 	} finally {
-	// 		this.updateState("uiState", { isLoading: false });
-	// 	}
-	// }
 
 	#weaponIsNotSystem = (wpn) => {
 		if (!wpn?.hints) return true;
