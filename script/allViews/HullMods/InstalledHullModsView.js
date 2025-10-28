@@ -7,9 +7,6 @@ import CLASS_NAMES from "../../helper/ui/class_names.js";
 import { GENERIC_STRING } from "../../helper/ui/ui_main.js";
 import HullModHelper from "../../components/Hullmods/HullModHelper.js";
 
-const BUTTON_TYPE = {
-	MINUS: "-",
-};
 class InstalledHullMods extends View {
 	_localParent = `.${CLASS_NAMES.installedHullMods}`;
 	#installedHullMods;
@@ -32,16 +29,17 @@ class InstalledHullMods extends View {
 			return GENERIC_STRING.EMPTY && console.warn("Too Few hullMods to Render");
 
 		const markup = this.#installedHullMods
-			.map(
-				(currentHullMod) =>
-					`<li class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.hullMod}">
+			.map((currentHullMod) => {
+				return `
+					<li class="${CLASS_NAMES.flexFlexEndGap} ${CLASS_NAMES.hullMod}" 
+					title="${currentHullMod.name} - ${currentHullMod.short}">
 						<h5>${currentHullMod.name}</h5>
 						${this.#hullModCostMarkup(currentHullMod)}
 						${this.#buttonMarkup(currentHullMod)}
 						${this.#imageMarkup(currentHullMod)}
-					</li>`
-			)
-			.join("");
+					</li>`;
+			})
+			.join(GENERIC_STRING.EMPTY);
 
 		return markup;
 	}
