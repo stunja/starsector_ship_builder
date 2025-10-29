@@ -68,14 +68,26 @@ class WeaponSlotsView extends View {
 			weaponObject,
 			weaponSlot,
 		]);
+		console.log(weaponObject);
+
+		const weaponSlotOnHoverTitle = weaponObject.name ?? GENERIC_STRING.EMPTY;
+
 		// prettier-ignore
 		const markup = `
 				<button class="${CLASS_NAMES.weaponSlot} ${CLASS_NAMES.weaponSize}--${weaponSize} ${CLASS_NAMES.weaponType}--${weaponType}" 
-					${DATASET.dataWeaponSlotId}="${weaponSlot.id}"
+					${DATASET.dataWeaponSlotId}="${weaponSlot.id}" title="${weaponSlotOnHoverTitle}"
 				>
 					${imgSprite}
+					${this.#hoverContainer(weaponObject)}
 				</button>`;
 		return markup;
+	}
+	//! Here
+	#hoverContainer(wpnObject) {
+		if (!wpnObject) return GENERIC_STRING.EMPTY;
+		// console.log(wpnObject);
+		// return `<div>${wpnObject.name}</div>`;
+		return `<div class="${CLASS_NAMES.hoverContainer}"></div>`;
 	}
 }
 
