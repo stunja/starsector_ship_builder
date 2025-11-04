@@ -1,6 +1,7 @@
 // Helper
 import CLASS_NAMES from "../helper/ui/class_names";
 import DATASET from "../helper/ui/datasets";
+import UI_STRINGS from "../helper/ui/ui_strings";
 
 export default class View {
 	constructor() {
@@ -118,21 +119,12 @@ export default class View {
 
 	// Captures only Name from Submit Form
 	inputSubmitHandler(parentElement, targetFunction) {
-		parentElement.addEventListener("submit", function (e) {
+		parentElement.addEventListener("submit", (e) => {
 			e.preventDefault();
-			console.log(e);
-			// console.log(e.target);
-
-			// if (!target) return;
 			const formData = new FormData(e.target);
-			console.log(formData);
-			// const inputData = formData.get(`[${DATASET.dataNavSearch}]`);
+			const searchValue = formData.get(`${UI_STRINGS.NAV.SEARCH.INPUT.NAME}`); // captures the name attribute
 
-			// console.log(inputData);
-
-			// const formData = new FormData(e.target);
-			// console.log(inputData);
-			// return targetFunction(inputData);
+			return targetFunction(searchValue);
 		});
 	}
 	// Utility method to check if a target has an active listener

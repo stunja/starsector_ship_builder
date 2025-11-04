@@ -1,6 +1,8 @@
+import App from "../app.js";
+import ViewModel from "../ViewModel.js";
 // View
 import SearchView from "../allViews/SearchView.js";
-import ViewModel from "../ViewModel.js";
+import SearchWarningPopUpView from "../allViews/Search/SearchWarningPopUpView.js";
 
 // helper
 import CLASS_NAMES from "../helper/ui/class_names.js";
@@ -15,35 +17,38 @@ const EVENT_LISTENER_TYPE = {
 export default class Search extends ViewModel {
 	#searchForm;
 	#searchField;
-	#searchButton;
 
 	constructor(model) {
 		super(model);
 	}
 	update() {
 		// Render
-		SearchView.render(this.getState);
+		// SearchView.render(this.getState);
+		SearchView.render();
 
 		// Find DOM elements
-		this.#searchObjects();
+		const searchFormElement = this.#targetDOM();
 
 		// Capture the input
-		SearchView.inputSubmitHandler(this.#searchForm, this.#userInput);
+		SearchView.inputSubmitHandler(searchFormElement, this.#userInput);
 	}
 
-	#searchObjects() {
-		this.#searchForm = document.querySelector(`.${CLASS_NAMES.searchForm}`);
-		this.#searchField = this.#searchForm.querySelector(
-			`.${CLASS_NAMES.searchFormInput}`
-		);
-		this.#searchButton = this.#searchForm.querySelector(
-			`${CLASS_NAMES.searchFormButton}`
-		);
+	#targetDOM() {
+		const parentTarget = document.querySelector(`.${CLASS_NAMES.searchForm}`);
+		return parentTarget;
 	}
 
-	#userInput(test) {
-		console.log(test); // input from the search form
+	async #userInput(userInput) {
+		const doesUserAllowWipe = true;
+
+		SearchWarningPopUpView.render();
+		if (!userInput || userInput === GENERIC_STRING.EMPTY || !doesUserAllowWipe)
+			return;
+		// clear the workspace and provide new ship as a foundation
+		//! I need a form of protection against accidental wiping of old ship
+		// new App(userInput);
 	}
+
 	// Add later
 	#clearInput() {
 		this.#searchField.value = GENERIC_STRING.EMPTY;

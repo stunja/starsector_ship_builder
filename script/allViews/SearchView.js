@@ -7,14 +7,9 @@ import CLASS_NAMES from "../helper/ui/class_names";
 import UI_STRINGS from "../helper/ui/ui_strings";
 import { GENERIC_STRING } from "../helper/ui/ui_main";
 
-//! missing in different folder
-// formInputNames,
-// uiDescription,
-
+//
 const STRINGS = {
-	LOGO: "Ship Builder",
 	SAVED: "Saved Builds",
-	SEARCH: "Search",
 };
 const EVENT_LISTENER_TARGET = {
 	SEARCH: "search",
@@ -26,29 +21,29 @@ class SearchView extends View {
 
 	generateMarkup() {
 		const markup = `   
-            <a href="${GENERIC_STRING.HASH}" class="${CLASS_NAMES.navLogo}">${STRINGS.LOGO}</a>
+            <a href="${GENERIC_STRING.HASH}" class="${CLASS_NAMES.navLogo}">${UI_STRINGS.NAV.LOGO.TEXT}</a>
 
             <form class="${CLASS_NAMES.searchForm}">
                 <input
-                    type="text"
+                    type="search"
                     name="${UI_STRINGS.NAV.SEARCH.INPUT.NAME}"
                     class="${CLASS_NAMES.searchFormInput}"
                     label="${UI_STRINGS.NAV.SEARCH.INPUT.LABEL}"
                     placeholder="${UI_STRINGS.NAV.SEARCH.INPUT.DESC}"
-                    value="astral"
+                    value=""
                     required
                 />
 
                 <button type="submit" class="${CLASS_NAMES.button} ${CLASS_NAMES.searchFormButton}" 
                     ${DATASET.dataNavButtonType}=${EVENT_LISTENER_TARGET.SEARCH}>
-                    ${STRINGS.SEARCH}
+                    ${UI_STRINGS.NAV.SEARCH.BUTTON.TEXT}
                 </button>
             </form>
 
             <button class="${CLASS_NAMES.button} ${CLASS_NAMES.searchFormButton}" 
                     ${DATASET.dataNavButtonType}=${EVENT_LISTENER_TARGET.SAVE}>
                     ${STRINGS.SAVED}
-                </button>
+            </button>
         `;
 
 		return markup;

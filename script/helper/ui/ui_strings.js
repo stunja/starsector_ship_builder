@@ -8,6 +8,12 @@ const UI_STRINGS = {
 				DESC: "Enter the name of the ship...",
 				LABEL: "Search input field",
 			},
+			BUTTON: {
+				TEXT: "search",
+			},
+		},
+		LOGO: {
+			TEXT: "Ship Builder",
 		},
 	},
 };

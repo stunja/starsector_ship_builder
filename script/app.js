@@ -2,15 +2,16 @@ import { Model } from "./model";
 import BuilderController from "./components/BuilderController";
 
 export default class App {
-	constructor() {
-		this.initialize();
+	constructor(shipName) {
+		// shipName is a insertable value to create a newShip, for example Search => create new Ship
+		this.initialize(shipName);
 	}
-	async initialize() {
+	async initialize(shipName) {
 		try {
 			const model = new Model();
 
 			// make sure it is before viewModel
-			await model.loadData();
+			await model.loadData(shipName);
 
 			const viewModel = new BuilderController(model);
 		} catch (err) {

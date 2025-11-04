@@ -13,7 +13,7 @@ import { SHIELD_TYPE } from "./helper/ship_properties.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const shipNameDev = "astral"; // hound // venture
+const placeHolderShipForDEV = "astral"; // hound // venture
 
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor
@@ -80,7 +80,7 @@ export class Model {
 		});
 	}
 
-	async loadData() {
+	async loadData(currentShipId = placeHolderShipForDEV) {
 		this.updateState("uiState", { isLoading: true });
 		try {
 			const [ships, weapons, hullmods, fighters, desc] = await Promise.all([
@@ -91,9 +91,8 @@ export class Model {
 				cvsFetcher.fetch(URL.SVC.DESCRIPTION),
 			]);
 
-			const currentShip = findCurrentShip(ships);
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
-				currentShip
+				this.#findCurrentShip(ships, currentShipId)
 			);
 
 			// HullMods
@@ -144,7 +143,9 @@ export class Model {
 			this.updateState("uiState", { isLoading: false });
 		}
 	}
-
+	#findCurrentShip(allShips, currentShipId) {
+		return allShips.find((ship) => ship.id === currentShipId);
+	}
 	#weaponIsNotSystem = (wpn) => {
 		if (!wpn?.hints) return true;
 
@@ -865,5 +866,3 @@ const hullMods = {
 		return { ...data, isAutomated };
 	},
 };
-
-const captureUserInput = function () {};
