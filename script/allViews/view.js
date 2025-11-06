@@ -1,6 +1,5 @@
 // Helper
 import CLASS_NAMES from "../helper/ui/class_names";
-import DATASET from "../helper/ui/datasets";
 import UI_STRINGS from "../helper/ui/ui_strings";
 
 export default class View {

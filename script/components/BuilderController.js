@@ -2,7 +2,7 @@
 import BuilderView from "../allViews/BuilderView.js";
 // Components
 import ViewModel from "../ViewModel.js";
-import Search from "./Search.js";
+import Navigation from "./Navigation.js";
 import ShipStats from "./ShipStats/ShipStats.js";
 import ShipInfo from "./ShipInfo.js";
 import HullModController from "./Hullmods/HullModController.js";
@@ -22,7 +22,7 @@ export default class BuilderController extends ViewModel {
 		// Builder
 		BuilderView.render(model);
 
-		new Search(model).update();
+		new Navigation(model).update();
 		// Right View
 		new ShipStats(model).update();
 		// HullMods

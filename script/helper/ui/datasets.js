@@ -22,10 +22,6 @@ const DATASET = {
 	// Search
 	dataNavSearch: "data-nav-search",
 
-	POPUP: {
-		WIPE_WARNING: "data-wipe-warning",
-		// FIRST: `${DATASET.dataPopUpButton}="${BUTTON_DATASET.CONTINUE}"`,
-	},
 	dataPopUpButton: "data-popup-button",
 };
 

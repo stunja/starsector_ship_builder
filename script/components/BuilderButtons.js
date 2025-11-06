@@ -31,6 +31,7 @@ export default class BuilderButtons extends ViewModel {
 		);
 	}
 	#buttonLogic = (btn) => {
+		console.log(btn);
 		// keep arrow function
 		const { builderButtonType } = btn.dataset;
 		const model = this.getState();

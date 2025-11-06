@@ -1,14 +1,14 @@
 // import App from "../app.js";
 import ViewModel from "../ViewModel.js";
 // View
-import SearchView from "../allViews/SearchView.js";
+import NavigationView from "../allViews/NavigationView.js";
 import SearchWarningPopUpView from "../allViews/Search/SearchWarningPopUpView.js";
 
 // helper
 import CLASS_NAMES from "../helper/ui/class_names.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
 
-export default class Search extends ViewModel {
+export default class Navigation extends ViewModel {
 	#searchForm;
 	#searchField;
 	#getState;
@@ -19,12 +19,12 @@ export default class Search extends ViewModel {
 	}
 	update() {
 		// Render
-		SearchView.render(this.getState());
+		NavigationView.render(this.getState());
 		// Find DOM elements
 		const searchFormElement = this.#targetDOM();
 
 		// Capture the input
-		SearchView.inputSubmitHandler(searchFormElement, this.#userInput);
+		NavigationView.inputSubmitHandler(searchFormElement, this.#userInput);
 	}
 
 	#targetDOM() {
@@ -38,6 +38,7 @@ export default class Search extends ViewModel {
 		this.#isUserInputValid();
 		SearchWarningPopUpView.render(this.#getState);
 		this.#buttonEventHandlers();
+
 		if (!userInput || userInput === GENERIC_STRING.EMPTY || !doesUserAllowWipe)
 			return;
 		// clear the workspace and provide new ship as a foundation
