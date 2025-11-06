@@ -21,5 +21,12 @@ const DATASET = {
 	dataFilter: "data-filter",
 	// Search
 	dataNavSearch: "data-nav-search",
+
+	POPUP: {
+		WIPE_WARNING: "data-wipe-warning",
+		// FIRST: `${DATASET.dataPopUpButton}="${BUTTON_DATASET.CONTINUE}"`,
+	},
+	dataPopUpButton: "data-popup-button",
 };
+
 export default DATASET;

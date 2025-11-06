@@ -263,6 +263,11 @@ const CLASS_NAMES = {
 	// Spinner
 	spinner: "spinner",
 	tableSpinner: "table-spinner",
+
+	// general popup
+	mainPopup: "main-popup",
+	popUpWarning: "popup-warning",
+	popUpWarningButton: "popup-warning__button",
 };
 
 export default CLASS_NAMES;

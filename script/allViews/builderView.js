@@ -21,6 +21,7 @@ class BuilderView extends View {
                 <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.shipAreaContainer}"></section>
                 <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.statsContainer}"></section>
             </main>
+            <div class="${CLASS_NAMES.mainPopup}"></div>
         </div>
         `;
 	}
