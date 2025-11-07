@@ -3,15 +3,20 @@ const CLASS_NAMES = {
 	NAVIGATION: {
 		_BASE: "nav",
 		NAV_LOGO: "nav_logo",
+		SAVE_BUILD: "nav_save-build",
+	},
+	SEARCH_FORM: {
+		_BASE: "search-form",
+		FORM_INPUT: "search-form__input",
 	},
 	// Navigation
 	// nav: "nav",
 	// navLogo: "nav_logo",
 
 	// Search
-	searchForm: "search-form",
-	searchFormInput: "search-form__input",
-	searchFormButton: "search-form__button",
+	// searchForm: "search-form",
+	// searchFormInput: "search-form__input",
+	// searchFormButton: "search-form__button",
 
 	// Generic
 	dNone: "d-none",

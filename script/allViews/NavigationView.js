@@ -30,23 +30,23 @@ class NavigationView extends View {
                 ${STRINGS.LOGO.TEXT}
             </a>
 
-            <form class="${CLASS_NAMES.searchForm}">
+            <form class="${CLASS_NAMES.SEARCH_FORM._BASE}">
                 <input
                     type="search"
                     name="${STRINGS.INPUT.NAME}"
-                    class="${CLASS_NAMES.searchFormInput}"
+                    class="${CLASS_NAMES.SEARCH_FORM.FORM_INPUT}"
                     label="${STRINGS.INPUT.LABEL}"
                     placeholder="${STRINGS.INPUT.DESC}"
                     value=""
                     required
                 />
 
-                <button type="submit" class="${CLASS_NAMES.button} ${CLASS_NAMES.searchFormButton}" ${UI_DATASETS.NAV.FORM.SEARCH}>
+                <button type="submit" class="${CLASS_NAMES.button}" ${UI_DATASETS.NAV.FORM.SEARCH}>
                     ${STRINGS.BUTTONS.SEARCH}
                 </button>
             </form>
 
-            <button class="${CLASS_NAMES.button} ${CLASS_NAMES.searchFormButton}" ${UI_DATASETS.NAV.FORM.SAVE}>
+            <button class="${CLASS_NAMES.button} ${CLASS_NAMES.NAVIGATION.SAVE_BUILD}" ${UI_DATASETS.NAV.FORM.SAVE}>
                     ${STRINGS.BUTTONS.SAVE_BUILDS}
             </button>
         `;

@@ -19,6 +19,7 @@ const ID = {
 };
 
 const UI_DATASETS = {
+	ONLY_ID: { ...ID },
 	NAV: {
 		FORM: {
 			SEARCH: combineDataSet(TITLE.NAV.FORM.BUTTONS, ID.SEARCH),

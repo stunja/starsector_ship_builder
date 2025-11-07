@@ -1,5 +1,6 @@
 // Helper
 import CLASS_NAMES from "../helper/ui/class_names";
+import { GENERIC_STRING } from "../helper/ui/ui_main";
 import UI_STRINGS from "../helper/ui/ui_strings";
 
 export default class View {
@@ -15,6 +16,10 @@ export default class View {
 	};
 
 	_clearRender = () => (this._localParentElement.textContent = "");
+	//
+	_clearTargetValue = (target) => {
+		this._localParentElement.querySelector(target).value = "";
+	};
 	render(data) {
 		if (!data) return this.#renderError("no data");
 
