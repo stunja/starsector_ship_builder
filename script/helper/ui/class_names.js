@@ -1,8 +1,12 @@
 // I am trying to keep classNames in camel case
 const CLASS_NAMES = {
+	NAVIGATION: {
+		_BASE: "nav",
+		NAV_LOGO: "nav_logo",
+	},
 	// Navigation
-	nav: "nav",
-	navLogo: "nav_logo",
+	// nav: "nav",
+	// navLogo: "nav_logo",
 
 	// Search
 	searchForm: "search-form",

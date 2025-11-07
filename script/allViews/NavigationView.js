@@ -21,12 +21,12 @@ const STRINGS = {
 	},
 };
 
-class SearchView extends View {
-	_localParent = `.${CLASS_NAMES.nav}`;
+class NavigationView extends View {
+	_localParent = `.${CLASS_NAMES.NAVIGATION._BASE}`;
 
 	generateMarkup() {
 		const markup = `   
-            <a href="${GENERIC_STRING.HASH}" class="${CLASS_NAMES.navLogo}">
+            <a href="${GENERIC_STRING.HASH}" class="${CLASS_NAMES.NAVIGATION.NAV_LOGO}">
                 ${STRINGS.LOGO.TEXT}
             </a>
 
@@ -54,4 +54,4 @@ class SearchView extends View {
 		return markup;
 	}
 }
-export default new SearchView();
+export default new NavigationView();

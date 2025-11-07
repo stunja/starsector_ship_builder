@@ -11,7 +11,7 @@ class BuilderView extends View {
 	#builderMarkup() {
 		return `
          <div class="${CLASS_NAMES.buildMakerContainer}">
-            <nav class="${CLASS_NAMES.nav}"></nav>
+            <nav class="${CLASS_NAMES.NAVIGATION._BASE}"></nav>
             <main class="${CLASS_NAMES.buildMaker}">
                 <section class="${CLASS_NAMES.hullModsPopUp}"></section>
                 <section class="${CLASS_NAMES.gridContainer} ${CLASS_NAMES.shipInfoContainer}"></section>

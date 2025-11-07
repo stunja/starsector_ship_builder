@@ -20,16 +20,18 @@ export default class Navigation extends ViewModel {
 	update() {
 		// Render
 		NavigationView.render(this.getState());
-		// Find DOM elements
-		const searchFormElement = this.#targetDOM();
 
+		// EventHandler
+		NavigationView.addClickHandler(
+			`.${CLASS_NAMES.searchFormButton}`,
+			"click",
+			this.#saveBuild
+		);
 		// Capture the input
-		NavigationView.inputSubmitHandler(searchFormElement, this.#userInput);
-	}
-
-	#targetDOM() {
-		const parentTarget = document.querySelector(`.${CLASS_NAMES.searchForm}`);
-		return parentTarget;
+		NavigationView.inputSubmitHandler(
+			document.querySelector(`.${CLASS_NAMES.searchForm}`),
+			this.#userInput
+		);
 	}
 
 	#userInput = (userInput) => {
@@ -51,6 +53,9 @@ export default class Navigation extends ViewModel {
 			EVENT_LISTENER_TYPE.CLICK,
 			this.#test
 		);
+	}
+	#saveBuild(btn) {
+		console.log(btn);
 	}
 	#test(btn) {
 		console.log(btn);
