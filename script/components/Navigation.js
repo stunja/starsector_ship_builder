@@ -1,4 +1,4 @@
-// import App from "../app.js";
+import App from "../app.js";
 import ViewModel from "../ViewModel.js";
 // View
 import NavigationView from "../allViews/NavigationView.js";
@@ -13,6 +13,7 @@ export default class Navigation extends ViewModel {
 	#searchForm;
 	#searchField;
 	#getState;
+	#currentUserInput;
 	constructor(model) {
 		super(model);
 
@@ -46,13 +47,11 @@ export default class Navigation extends ViewModel {
 			return;
 		}
 
-		// clear the workspace and provide new ship as a foundation
+		this.#currentUserInput = userInput;
+		console.log(this.#currentUserInput);
 		// Display warning to protect user from loosing current design
-		//! I need a form of protection against accidental wiping of old ship
 		this.#warningPopUpRender();
 		this.#warningPopUpHandler();
-
-		// new App(userInput);
 	};
 	#warningPopUpRender() {
 		SearchWarningPopUpView.render(this.#getState);
@@ -66,7 +65,7 @@ export default class Navigation extends ViewModel {
 	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.
-	#searchWarningLogic(btn) {
+	#searchWarningLogic = (btn) => {
 		const userAction = btn.dataset.wipeWarning;
 		if (userAction === UI_DATASETS.ONLY_ID.RETURN) {
 			SearchWarningPopUpView._clearRender();
@@ -75,9 +74,12 @@ export default class Navigation extends ViewModel {
 				`.${CLASS_NAMES.SEARCH_FORM.FORM_INPUT}`
 			);
 		}
-		// search-form__input
-		if (userAction === UI_DATASETS.ONLY_ID.CONTINUE) console.log("continue");
-	}
+
+		// clear the workspace and provide new ship as a foundation
+		if (userAction === UI_DATASETS.ONLY_ID.CONTINUE) {
+			new App(this.#currentUserInput);
+		}
+	};
 	// Check if ship user searches even exist
 	#isUserInputValid(shipId) {
 		const allShips = this.#getState.dataState.allShips;
