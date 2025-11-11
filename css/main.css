@@ -22,7 +22,7 @@
 /* HullMods */
 @import "./HullMods/hull-mods-pop-up.css";
 @import "./HullMods/hullmods.css";
-@import "./search-popup.css";
+@import "./warning-popup.css";
 
 /* Sprite */
 @import "./Weapons/_weaponSprite.css";

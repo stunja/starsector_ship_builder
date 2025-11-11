@@ -9,6 +9,25 @@ const CLASS_NAMES = {
 		_BASE: "search-form",
 		FORM_INPUT: "search-form__input",
 	},
+
+	POP_UP: {
+		_BASE: "popup",
+		OVERLAY: "popup_overlay",
+		WARNING_WRAPPER: "popup_warning-wrapper",
+		WARNING: "popup_warning",
+		WARNING_BAR: "popup_warning-bar",
+		WARNING_BUTTON: "popup_warning-button",
+		WARNING_WRAPPER_BUTTONS: "popup_warning-buttons",
+	},
+
+	BUTTON: {
+		SECONDARY: "button-secondary",
+	},
+
+	// general popup
+	// mainPopup: "main-popup",
+	// popUpWarning: "popup-warning",
+	// popUpWarningButton: "popup-warning__button",
 	// Navigation
 	// nav: "nav",
 	// navLogo: "nav_logo",
@@ -272,11 +291,6 @@ const CLASS_NAMES = {
 	// Spinner
 	spinner: "spinner",
 	tableSpinner: "table-spinner",
-
-	// general popup
-	mainPopup: "main-popup",
-	popUpWarning: "popup-warning",
-	popUpWarningButton: "popup-warning__button",
 };
 
 export default CLASS_NAMES;

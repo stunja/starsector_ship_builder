@@ -16,7 +16,7 @@ class BuilderButtonsView extends View {
 	_localParent = `.${CLASS_NAMES.builderButtonsContainer}`;
 
 	generateMarkup() {
-		const markup = `${this.#buttonsMarkup()}`;
+		const markup = this.#buttonsMarkup();
 		return markup;
 	}
 	#buttonsMarkup() {

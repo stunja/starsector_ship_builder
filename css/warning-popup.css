@@ -1,0 +1,87 @@
+/* Main Pop up */
+.popup .popup_warning-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	width: 100%;
+	height: 100%;
+
+	z-index: 2000;
+}
+
+.popup .popup_overlay {
+	background-color: rgba(0, 0, 0, 0.75);
+
+	height: 100%;
+	width: 100%;
+}
+
+.popup .popup_warning {
+	position: relative;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1000;
+
+	display: flex;
+	flex-direction: column;
+	width: 50rem;
+	padding: 4rem;
+
+	/* gap: 2.4rem; */
+	gap: 3rem;
+
+	border-radius: 1rem;
+
+	background-color: white;
+	color: black;
+}
+.popup .popup_warning h3,
+.popup .popup_warning p {
+	color: black;
+}
+.popup .popup_warning h3 {
+	font-size: 3rem;
+	font-weight: 700;
+}
+.popup .popup_warning p {
+	font-size: 1.8rem;
+	line-height: 1.5;
+}
+/* Warning Bar */
+.popup .popup_warning-bar {
+	padding: 1rem;
+	border: 1px solid rgba(157, 46, 46, 0.5);
+	background-color: rgba(157, 46, 46, 0.2);
+
+	border-radius: 0.5rem;
+
+	display: flex;
+	flex-direction: row;
+	gap: 1.4rem;
+}
+.popup .popup_warning-bar img {
+	width: 2rem;
+	height: 2rem;
+}
+.popup .popup_warning-bar p {
+	color: rgba(157, 46, 46, 1);
+	font-weight: 500;
+	font-size: 1.4rem;
+}
+
+/*  Buttons */
+.popup .popup_warning-buttons {
+	display: flex;
+	align-self: flex-end;
+	gap: 2rem;
+
+	text-align: center;
+}
+.popup .button {
+	padding: 1rem 2rem;
+	border-radius: 0.2rem;
+
+	font-size: 1.4rem;
+}

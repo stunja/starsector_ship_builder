@@ -22,18 +22,38 @@ button {
 	cursor: pointer;
 }
 .button {
-	background-color: var(--main-color);
+	/* background-color: var(--main-color);
 	padding: 1rem 2rem;
 	color: var(--white-text-color);
 	font-size: 1.2rem;
 	font-weight: 600;
-	text-transform: uppercase;
-}
-button:hover {
-	color: var(--dark-color);
-	background-color: var(--secondary-color);
+	text-transform: uppercase; */
+
+	background-color: var(--main-color);
+	color: var(--white-text-color);
+	padding: 1rem 2rem;
+	font-size: 1.4rem;
+	font-weight: 600;
+
+	border-radius: 0.2rem;
+
+	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+		rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 
+.button:hover {
+	/* color: var(--dark-color); */
+	color: white;
+	background-color: #145ca0;
+	/* background-color: var(--secondary-color); */
+}
+.button-secondary {
+	background-color: white;
+	border: 0.1rem solid #9a9a9a;
+	color: var(--dark-text-color);
+}
+.button-big {
+}
 .button-circle {
 	display: flex;
 	justify-content: center;

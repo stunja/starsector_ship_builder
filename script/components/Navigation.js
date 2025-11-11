@@ -58,7 +58,7 @@ export default class Navigation extends ViewModel {
 	}
 	#warningPopUpHandler() {
 		SearchWarningPopUpView.addClickHandler(
-			`.${CLASS_NAMES.popUpWarningButton}`,
+			`.${CLASS_NAMES.POP_UP.WARNING_BUTTON}`,
 			"click",
 			this.#searchWarningLogic
 		);
@@ -78,6 +78,19 @@ export default class Navigation extends ViewModel {
 		// clear the workspace and provide new ship as a foundation
 		if (userAction === UI_DATASETS.ONLY_ID.CONTINUE) {
 			new App(this.#currentUserInput);
+			console.log("test");
+
+			// async #tableRenderAndSpinner() {
+			// 		return await toggleAsyncSpinner(
+			// 			() =>
+			// 				WeaponPopUpTableView.renderAsync([
+			// 					this.#userShipBuild,
+			// 					this.#currentWeaponArray,
+			// 					this.#weaponSlot,
+			// 				]),
+			// 			WeaponPopUpContainerView
+			// 		);
+			// 	}
 		}
 	};
 	// Check if ship user searches even exist
