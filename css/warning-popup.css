@@ -9,7 +9,6 @@
 
 	z-index: 2000;
 }
-
 .popup .popup_overlay {
 	background-color: rgba(0, 0, 0, 0.75);
 
@@ -59,14 +58,19 @@
 
 	display: flex;
 	flex-direction: row;
-	gap: 1.4rem;
+	gap: 0.8rem;
 }
-.popup .popup_warning-bar img {
+.popup .popup_warning-bar span {
+	display: block;
+
 	width: 2rem;
 	height: 2rem;
+	background-image: url(../icons/warning.png);
+	background-size: contain;
+	border: none;
 }
 .popup .popup_warning-bar p {
-	color: rgba(157, 46, 46, 1);
+	color: #9d2e2e;
 	font-weight: 500;
 	font-size: 1.4rem;
 }

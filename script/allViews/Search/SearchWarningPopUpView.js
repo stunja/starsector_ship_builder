@@ -23,7 +23,7 @@ class SearchWarningPopUpView extends View {
 								<h3>${STRINGS.HEADER}</h3>
 								<p>${STRINGS.TEXT}</p>
 								<div class="${CLASS_NAMES.POP_UP.WARNING_BAR}">
-									<img />
+									<span class="${CLASS_NAMES.ICON._BASE}"></span>
 									<p>${STRINGS.WARNING_TEXT}</p>
 								</div>
 								<div class="${CLASS_NAMES.POP_UP.WARNING_WRAPPER_BUTTONS}">

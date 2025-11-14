@@ -5,11 +5,14 @@ const CLASS_NAMES = {
 		NAV_LOGO: "nav_logo",
 		SAVE_BUILD: "nav_save-build",
 	},
-	SEARCH_FORM: {
-		_BASE: "search-form",
-		FORM_INPUT: "search-form__input",
-	},
 
+	SEARCH: {
+		_BASE: "search",
+		FORM_INPUT: "search_input",
+		DROPDOWN: "search_dropdown",
+		SELECTED: "search_selected",
+	},
+	TEST: "test",
 	POP_UP: {
 		_BASE: "popup",
 		OVERLAY: "popup_overlay",
@@ -19,11 +22,22 @@ const CLASS_NAMES = {
 		WARNING_BUTTON: "popup_warning-button",
 		WARNING_WRAPPER_BUTTONS: "popup_warning-buttons",
 	},
+	// POP_UP: {
+	// 	_BASE: "popup",
+	// 	OVERLAY: "popup_overlay",
+	// 	WARNING_WRAPPER: "popup_warning-wrapper",
+	// 	WARNING: "popup_warning",
+	// 	WARNING_BAR: "popup_warning-bar",
+	// 	WARNING_BUTTON: "popup_warning-button",
+	// 	WARNING_WRAPPER_BUTTONS: "popup_warning-buttons",
+	// },
 
 	BUTTON: {
 		SECONDARY: "button-secondary",
 	},
-
+	ICON: {
+		_BASE: "icon",
+	},
 	// general popup
 	// mainPopup: "main-popup",
 	// popUpWarning: "popup-warning",

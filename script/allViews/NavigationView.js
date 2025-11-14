@@ -9,7 +9,7 @@ import UI_DATASETS from "../helper/ui/ui_datasets";
 const STRINGS = {
 	INPUT: {
 		NAME: "search-input",
-		DESC: "Enter the name of the ship...",
+		PLACEHOLDER: "Enter the name of the ship...",
 		LABEL: "Search input field",
 	},
 	BUTTONS: {
@@ -30,7 +30,28 @@ class NavigationView extends View {
                 ${STRINGS.LOGO.TEXT}
             </a>
 
-            <form class="${CLASS_NAMES.SEARCH_FORM._BASE}">
+            <div class="${CLASS_NAMES.SEARCH._BASE}">
+                <div class="search-wrapper">
+                    <input
+                        type="text"
+                        class="${CLASS_NAMES.SEARCH.FORM_INPUT}"
+                        placeholder="${STRINGS.INPUT.PLACEHOLDER}"
+                        autocomplete="off"
+                    />
+                    <div class="${CLASS_NAMES.SEARCH.DROPDOWN}"></div>
+                </div>
+			    <div class="${CLASS_NAMES.SEARCH.SELECTED}"></div>
+		    </div>
+
+            <button class="${CLASS_NAMES.button} ${CLASS_NAMES.NAVIGATION.SAVE_BUILD}" ${UI_DATASETS.NAV.FORM.SAVE}>
+                    ${STRINGS.BUTTONS.SAVE_BUILDS}
+            </button>
+        `;
+
+		return markup;
+	}
+
+	/*  <form class="${CLASS_NAMES.SEARCH_FORM._BASE}">
                 <input
                     type="search"
                     name="${STRINGS.INPUT.NAME}"
@@ -45,13 +66,6 @@ class NavigationView extends View {
                     ${STRINGS.BUTTONS.SEARCH}
                 </button>
             </form>
-
-            <button class="${CLASS_NAMES.button} ${CLASS_NAMES.NAVIGATION.SAVE_BUILD}" ${UI_DATASETS.NAV.FORM.SAVE}>
-                    ${STRINGS.BUTTONS.SAVE_BUILDS}
-            </button>
-        `;
-
-		return markup;
-	}
+    */
 }
 export default new NavigationView();

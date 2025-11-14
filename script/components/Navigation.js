@@ -29,13 +29,41 @@ export default class Navigation extends ViewModel {
 			"click",
 			this.#saveBuild
 		);
-		// Capture the input
-		NavigationView.inputSubmitHandler(
-			document.querySelector(`.${CLASS_NAMES.SEARCH_FORM._BASE}`),
-			this.#userSearchInputLogic
-		);
-	}
 
+		this.#userSearchInputLogic2();
+		// Capture the input
+		// NavigationView.inputSubmitHandler(
+		// 	document.querySelector(`.${CLASS_NAMES.SEARCH_FORM._BASE}`),
+		// 	this.#userSearchInputLogic
+		// );
+	}
+	#userSearchInputLogic2 = (userInput) => {
+		const localParent = document.querySelector(`.${CLASS_NAMES.SEARCH._BASE}`);
+		const searchInput = localParent.querySelector(
+			`.${CLASS_NAMES.SEARCH.FORM_INPUT}`
+		);
+		const dropdown = localParent.querySelector(
+			`.${CLASS_NAMES.SEARCH.DROPDOWN}`
+		);
+		const selectedShip = localParent.querySelector(
+			`.${CLASS_NAMES.SEARCH.SELECTED}`
+		);
+		const shipList = this.#getState.dataState.allShips;
+
+		searchInput.addEventListener("input", function () {
+			const query = this.value.trim().toLowerCase();
+
+			if (query === "") {
+				console.log("empty");
+				return;
+			}
+
+			const shipMatch = shipList.filter((ship) =>
+				ship.name.toLowerCase().includes(query)
+			);
+			console.log(shipMatch);
+		});
+	};
 	#userSearchInputLogic = (userInput) => {
 		// check if ship even exists
 		if (
@@ -78,8 +106,6 @@ export default class Navigation extends ViewModel {
 		// clear the workspace and provide new ship as a foundation
 		if (userAction === UI_DATASETS.ONLY_ID.CONTINUE) {
 			new App(this.#currentUserInput);
-			console.log("test");
-
 			// async #tableRenderAndSpinner() {
 			// 		return await toggleAsyncSpinner(
 			// 			() =>
