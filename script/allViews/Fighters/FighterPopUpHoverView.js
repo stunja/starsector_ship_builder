@@ -39,7 +39,7 @@ class FighterPopUpHoverView extends View {
 	#hullMods;
 
 	#dataState;
-	#allShips;
+	#allHulls;
 	#allHullMods;
 	#allWeaponSystems;
 	#allWeapons;
@@ -69,7 +69,7 @@ class FighterPopUpHoverView extends View {
 		// States
 
 		this.#dataState = dataState;
-		this.#allShips = dataState.allShips;
+		this.#allHulls = dataState.allHulls;
 		this.#allWeaponSystems = dataState.allWeaponSystems;
 		this.#allWeapons = dataState.allWeapons;
 		this.#allHullMods = dataState.allHullMods;

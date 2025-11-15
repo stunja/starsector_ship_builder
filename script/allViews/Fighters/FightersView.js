@@ -21,10 +21,10 @@ class FightersView extends View {
 	#installedWeapons;
 	#weaponSlots;
 
-	#allFighters;
+	#allFighterHulls;
 
-	#processData([userShipBuild, allFighters]) {
-		this.#allFighters = allFighters;
+	#processData([userShipBuild, allFighterHulls]) {
+		this.#allFighterHulls = allFighterHulls;
 
 		this.#installedWeapons = userShipBuild.installedWeapons;
 		this.#weaponSlots = userShipBuild.weaponSlots;
@@ -110,7 +110,7 @@ class FightersView extends View {
 		if (currentWeaponId === GENERIC_STRING.EMPTY) return GENERIC_STRING.EMPTY;
 
 		const currentFighterObject = weaponSlotIdIntoWeaponSlotObject(
-			this.#allFighters,
+			this.#allFighterHulls,
 			currentWeaponId
 		);
 

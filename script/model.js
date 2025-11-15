@@ -40,11 +40,11 @@ const placeHolderShipForDEV = "astral"; // hound // venture
 
 export class Model {
 	dataState = {
-		allShips: [],
+		allHulls: [],
 		allWeapons: [],
 		allWeaponSystems: [],
 		allHullMods: [],
-		allFighters: [],
+		allFighterHulls: [],
 	};
 	userState = {
 		_currentShip: {},
@@ -83,16 +83,17 @@ export class Model {
 	async loadData(currentShipId = placeHolderShipForDEV) {
 		this.updateState("uiState", { isLoading: true });
 		try {
-			const [ships, weapons, hullmods, fighters, desc] = await Promise.all([
-				cvsFetcher.fetch(URL.SVC.SHIP_DATA),
-				cvsFetcher.fetch(URL.SVC.WEAPON_DATA),
-				cvsFetcher.fetch(URL.SVC.HULL_MODS),
-				cvsFetcher.fetch(URL.SVC.FIGHTER),
-				cvsFetcher.fetch(URL.SVC.DESCRIPTION),
-			]);
+			const [shipAndFighterHulls, weapons, hullmods, fighters, desc] =
+				await Promise.all([
+					cvsFetcher.fetch(URL.SVC.SHIP_DATA),
+					cvsFetcher.fetch(URL.SVC.WEAPON_DATA),
+					cvsFetcher.fetch(URL.SVC.HULL_MODS),
+					cvsFetcher.fetch(URL.SVC.FIGHTER),
+					cvsFetcher.fetch(URL.SVC.DESCRIPTION),
+				]);
 
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
-				this.#findCurrentShip(ships, currentShipId)
+				this.#findCurrentShip(shipAndFighterHulls, currentShipId)
 			);
 
 			// HullMods
@@ -107,10 +108,10 @@ export class Model {
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
 
 			// Fighters
-			const updatedFighters = await updateFighters.fetchAndInjectData(
+			const fighterOnlyHulls = await updateFighters.fetchAndInjectData(
 				fighters,
 				desc,
-				ships
+				shipAndFighterHulls
 			);
 
 			// UserShipBuild
@@ -124,11 +125,12 @@ export class Model {
 			);
 
 			this.updateState("dataState", {
-				allShips: ships,
+				allHulls: shipAndFighterHulls,
+				allShipHulls: listOfAllEditableShips(shipAndFighterHulls),
 				allWeapons: filteredWeaponsWithAdditionalData,
 				allWeaponSystems: weaponSystemsOnly,
 				allHullMods: hullmods,
-				allFighters: updatedFighters,
+				allFighterHulls: fighterOnlyHulls,
 				allDescriptions: desc,
 			});
 			this.updateUserShipBuild(finalUserShipBuild);
@@ -143,8 +145,8 @@ export class Model {
 			this.updateState("uiState", { isLoading: false });
 		}
 	}
-	#findCurrentShip(allShips, currentShipId) {
-		return allShips.find((ship) => ship.id === currentShipId);
+	#findCurrentShip(allHulls, currentShipId) {
+		return allHulls.find((ship) => ship.id === currentShipId);
 	}
 	#weaponIsNotSystem = (wpn) => {
 		if (!wpn?.hints) return true;
@@ -207,8 +209,8 @@ const jsonFetcher = {
 		return await res.text();
 	},
 };
-const findCurrentShip = function (allShips) {
-	const [currentShip] = allShips.filter((ship) =>
+const findCurrentShip = function (allHulls) {
+	const [currentShip] = allHulls.filter((ship) =>
 		ship.id === shipNameDev ? ship.id : GENERIC_STRING.EMPTY
 	);
 	return currentShip;
@@ -580,9 +582,9 @@ const updateFighters = {
 	],
 
 	// I need a different name
-	// Additional properties take from AllShips CVS
-	//! extract from allShips
-	KEYS_TO_EXTRACT_FROM_ALLSHIPS: [
+	// Additional properties take from allHulls CVS
+	//! extract from allHulls
+	KEYS_TO_EXTRACT_FROM_allHulls: [
 		"shieldType",
 		"techManufacturer",
 		"shieldArc",
@@ -593,7 +595,8 @@ const updateFighters = {
 		"systemId",
 		"maxSpeed",
 	],
-	async processWeapon(fighterObject, allDescriptions, allShips) {
+
+	async processWeapon(fighterObject, allDescriptions, allHulls) {
 		try {
 			const convertedFighterId = this.convertIdToDifferentIdSpecialRule(
 				this.updatedId(fighterObject)
@@ -616,11 +619,11 @@ const updateFighters = {
 				createAdditionalDataObject,
 				allDescriptions
 			);
-			// Add data from AllShips to Additional Data
+			// Add data from allHulls to Additional Data
 			const arrayWithFighterHullData = this.injectFighterHullData(
 				convertedFighterId,
 				arrayWithDescriptions,
-				allShips
+				allHulls
 			);
 			const finalArray = await this.injectVariantData(
 				fighterObject,
@@ -636,10 +639,14 @@ const updateFighters = {
 			return fighterObject;
 		}
 	},
-	fetchAndInjectData: async function (allFighters, allDescriptions, allShips) {
+	fetchAndInjectData: async function (
+		allFighterHulls,
+		allDescriptions,
+		allHulls
+	) {
 		return Promise.all(
-			this.cleanedArray(allFighters).map((weaponObject) =>
-				this.processWeapon(weaponObject, allDescriptions, allShips)
+			this.cleanedArray(allFighterHulls).map((weaponObject) =>
+				this.processWeapon(weaponObject, allDescriptions, allHulls)
 			)
 		);
 	},
@@ -728,10 +735,10 @@ const updateFighters = {
 			return additionalData;
 		}
 	},
-	injectFighterHullData(fighterId, data, allShips) {
-		const findCorrectHull = allShips.find((ship) => ship.id === fighterId);
+	injectFighterHullData(fighterId, data, allHulls) {
+		const findCorrectHull = allHulls.find((ship) => ship.id === fighterId);
 		const extractedData = extractDataFromObject(
-			this.KEYS_TO_EXTRACT_FROM_ALLSHIPS,
+			this.KEYS_TO_EXTRACT_FROM_allHulls,
 			findCorrectHull
 		);
 		return { ...data, ...extractedData };
@@ -785,7 +792,19 @@ const updateFighters = {
 		}
 	},
 };
-
+const listOfAllEditableShips = function (allships) {
+	const filterByTags = ["HIDE_IN_CODEX", "STATION"];
+	console.log("test");
+	// All playable ships have engines, or at least can fly in hyperspace
+	// removes fighters / rockets / stations and other entities
+	const onlyFlyableShips = allships.filter((hull) => hull.maxBurn !== "");
+	const normalShips = onlyFlyableShips.filter((ship) => {
+		return filterByTags.map((tag) => !ship.hints.includes(tag));
+	});
+	// !ship.hints.includes("HIDE_IN_CODEX") && !ship.hints.includes("STATION")
+	console.log(normalShips);
+	return normalShips;
+};
 // create new object with VISIBLE and DEFINED hulls. // D-mods are hidden!
 const hullMods = {
 	createUsableHullMods(data) {

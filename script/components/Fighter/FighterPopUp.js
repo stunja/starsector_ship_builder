@@ -94,7 +94,7 @@ export default class FighterPopUp extends ViewModel {
 	};
 
 	#createFighterWeaponArray = () =>
-		(this.#currentFighterArray = this.#state.dataState.allFighters.toSorted(
+		(this.#currentFighterArray = this.#state.dataState.allFighterHulls.toSorted(
 			(a, b) => b.opCost - a.opCost
 		));
 

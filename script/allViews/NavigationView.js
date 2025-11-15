@@ -34,7 +34,7 @@ class NavigationView extends View {
                 <div class="search-wrapper">
                     <input
                         type="text"
-                        class="${CLASS_NAMES.SEARCH.FORM_INPUT}"
+                        class="${CLASS_NAMES.SEARCH.INPUT}"
                         placeholder="${STRINGS.INPUT.PLACEHOLDER}"
                         autocomplete="off"
                     />

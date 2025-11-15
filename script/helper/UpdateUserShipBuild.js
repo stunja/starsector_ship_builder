@@ -229,13 +229,13 @@ export default class UpdateUserShipBuild extends ViewModel {
 
 	// Increase OP cost from Weapons and Fighter
 	#updateOpCost(installedWeapon) {
-		const { allWeapons, allFighters } = this.getState().dataState;
+		const { allWeapons, allFighterHulls } = this.getState().dataState;
 		const weaponIdArray = installedWeapon
 			.filter(([_, weaponId]) => weaponId)
 			.map((pair) => pair[1]);
 
 		const findOpValue = weaponIdArray.map((singleWeaponId) => {
-			const { oPs, opCost } = [...allWeapons, ...allFighters].find(
+			const { oPs, opCost } = [...allWeapons, ...allFighterHulls].find(
 				({ id }) => id === singleWeaponId
 			);
 

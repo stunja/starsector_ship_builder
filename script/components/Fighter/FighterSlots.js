@@ -14,7 +14,7 @@ const EVENT_LISTENER_TYPE = {
 
 export default class FighterSlots extends ViewModel {
 	#fighterPopUp;
-	#allFighters;
+	#allFighterHulls;
 	#userShipBuild;
 	constructor(model) {
 		super(model);
@@ -22,7 +22,7 @@ export default class FighterSlots extends ViewModel {
 		this.#fighterPopUp = new FighterPopUp(model);
 	}
 	#processData() {
-		this.#allFighters = this.getDataState().allFighters;
+		this.#allFighterHulls = this.getDataState().allFighterHulls;
 		this.#userShipBuild = this.getUserShipBuild();
 	}
 	async update() {
@@ -36,7 +36,7 @@ export default class FighterSlots extends ViewModel {
 	async #fighterSlotsRender() {
 		return await FightersView.renderAsync([
 			this.#userShipBuild,
-			this.#allFighters,
+			this.#allFighterHulls,
 		]);
 	}
 	#fighterSlotsOpenPopUpEventListener() {

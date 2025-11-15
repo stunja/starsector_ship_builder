@@ -3,6 +3,7 @@ import ViewModel from "../ViewModel.js";
 // View
 import NavigationView from "../allViews/NavigationView.js";
 import SearchWarningPopUpView from "../allViews/Search/SearchWarningPopUpView.js";
+import SearchDropdownView from "../allViews/Search/SearchDropdownView.js";
 
 // helper
 import CLASS_NAMES from "../helper/ui/class_names.js";
@@ -18,6 +19,7 @@ export default class Navigation extends ViewModel {
 		super(model);
 
 		this.#getState = this.getState();
+		console.log(this.#getState);
 	}
 	update() {
 		// Render
@@ -30,57 +32,51 @@ export default class Navigation extends ViewModel {
 			this.#saveBuild
 		);
 
-		this.#userSearchInputLogic2();
+		this.#dynamicUserInputCapture();
 		// Capture the input
 		// NavigationView.inputSubmitHandler(
 		// 	document.querySelector(`.${CLASS_NAMES.SEARCH_FORM._BASE}`),
 		// 	this.#userSearchInputLogic
 		// );
 	}
-	#userSearchInputLogic2 = (userInput) => {
+	#dynamicUserInputCapture() {
 		const localParent = document.querySelector(`.${CLASS_NAMES.SEARCH._BASE}`);
 		const searchInput = localParent.querySelector(
-			`.${CLASS_NAMES.SEARCH.FORM_INPUT}`
+			`.${CLASS_NAMES.SEARCH.INPUT}`
 		);
-		const dropdown = localParent.querySelector(
-			`.${CLASS_NAMES.SEARCH.DROPDOWN}`
+		// const dropdown = localParent.querySelector(
+		// 	`.${CLASS_NAMES.SEARCH.DROPDOWN}`
+		// );
+		// const selectedShip = localParent.querySelector(
+		// 	`.${CLASS_NAMES.SEARCH.SELECTED}`
+		// );
+
+		NavigationView._inputDynamicListener(
+			searchInput,
+			this.#getState.dataState.allHulls,
+			this.#displayMatchedItems
 		);
-		const selectedShip = localParent.querySelector(
-			`.${CLASS_NAMES.SEARCH.SELECTED}`
-		);
-		const shipList = this.#getState.dataState.allShips;
-
-		searchInput.addEventListener("input", function () {
-			const query = this.value.trim().toLowerCase();
-
-			if (query === "") {
-				console.log("empty");
-				return;
-			}
-
-			const shipMatch = shipList.filter((ship) =>
-				ship.name.toLowerCase().includes(query)
-			);
-			console.log(shipMatch);
-		});
+	}
+	#displayMatchedItems = (value) => {
+		SearchDropdownView.render(value);
 	};
-	#userSearchInputLogic = (userInput) => {
-		// check if ship even exists
-		if (
-			!userInput ||
-			userInput === GENERIC_STRING.EMPTY ||
-			!this.#isUserInputValid(userInput)
-		) {
-			console.log("ship doesnt exists");
-			return;
-		}
+	// #userSearchInputLogic = (userInput) => {
+	// 	// check if ship even exists
+	// 	if (
+	// 		!userInput ||
+	// 		userInput === GENERIC_STRING.EMPTY ||
+	// 		!this.#isUserInputValid(userInput)
+	// 	) {
+	// 		console.log("ship doesnt exists");
+	// 		return;
+	// 	}
 
-		this.#currentUserInput = userInput;
-		console.log(this.#currentUserInput);
-		// Display warning to protect user from loosing current design
-		this.#warningPopUpRender();
-		this.#warningPopUpHandler();
-	};
+	// 	this.#currentUserInput = userInput;
+	// 	console.log(this.#currentUserInput);
+	// 	// Display warning to protect user from loosing current design
+	// 	this.#warningPopUpRender();
+	// 	this.#warningPopUpHandler();
+	// };
 	#warningPopUpRender() {
 		SearchWarningPopUpView.render(this.#getState);
 	}
@@ -121,8 +117,8 @@ export default class Navigation extends ViewModel {
 	};
 	// Check if ship user searches even exist
 	#isUserInputValid(shipId) {
-		const allShips = this.#getState.dataState.allShips;
-		const isUserSearchesWithCorrectShipId = allShips.find(
+		const allHulls = this.#getState.dataState.allHulls;
+		const isUserSearchesWithCorrectShipId = allHulls.find(
 			(ship) => ship.id === shipId
 		);
 

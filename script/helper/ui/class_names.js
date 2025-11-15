@@ -8,7 +8,7 @@ const CLASS_NAMES = {
 
 	SEARCH: {
 		_BASE: "search",
-		FORM_INPUT: "search_input",
+		INPUT: "search_input",
 		DROPDOWN: "search_dropdown",
 		SELECTED: "search_selected",
 	},
