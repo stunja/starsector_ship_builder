@@ -1,6 +1,5 @@
 import { Model } from "./model";
 import BuilderController from "./components/BuilderController";
-
 export default class App {
 	constructor(shipName) {
 		// shipName is a insertable value to create a newShip, for example Search => create new Ship
@@ -24,3 +23,10 @@ export default class App {
 window.addEventListener("DOMContentLoaded", () => {
 	new App();
 });
+
+//! DELETE LATER
+if (import.meta.hot) {
+	import.meta.hot.accept(() => {
+		window.location.reload();
+	});
+}

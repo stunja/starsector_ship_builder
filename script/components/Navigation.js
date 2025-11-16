@@ -19,7 +19,7 @@ export default class Navigation extends ViewModel {
 		super(model);
 
 		this.#getState = this.getState();
-		console.log(this.#getState);
+		console.log(this.#getState.dataState);
 	}
 	update() {
 		// Render

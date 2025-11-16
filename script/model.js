@@ -792,18 +792,47 @@ const updateFighters = {
 		}
 	},
 };
-const listOfAllEditableShips = function (allships) {
-	const filterByTags = ["HIDE_IN_CODEX", "STATION"];
-	console.log("test");
-	// All playable ships have engines, or at least can fly in hyperspace
-	// removes fighters / rockets / stations and other entities
-	const onlyFlyableShips = allships.filter((hull) => hull.maxBurn !== "");
-	const normalShips = onlyFlyableShips.filter((ship) => {
-		return filterByTags.map((tag) => !ship.hints.includes(tag));
+// const listOfAllEditableShips = function (shipList) {
+// 	const HINTS_TO_FILTER = ["STATION", "SHIP_WITH_MODULES"];
+// 	const TAGS_TO_FILTER = ["restricted"];
+
+// 	// All playable ships have engines, or at least can fly in hyperspace
+// 	// removes fighters / rockets / stations and other entities
+// 	const onlyFlyableShips = shipList.filter((hull) => hull.maxBurn !== "");
+// 	// remove stations
+
+// 	// if (!ship.hints.includes(string)) return ship;
+// 	const filterByHints = onlyFlyableShips.filter((ship) => {
+// 		const test = HINTS_TO_FILTER.filter((string) => {
+// 			return ship.hints.includes(string);
+// 		});
+// 		if (test.length < 1) return ship;
+// 	});
+// 	// remove omega related ships
+// 	const returnArray = filterByHints.filter((ship) => {
+// 		return !ship.tags.includes(TAGS_TO_FILTER[0]);
+// 	});
+
+// 	console.log(returnArray);
+// 	return returnArray;
+// };
+const listOfAllEditableShips = function (shipList) {
+	const HINTS_TO_FILTER = ["STATION", "SHIP_WITH_MODULES"];
+	const TAGS_TO_FILTER = ["restricted"];
+
+	return shipList.filter((ship) => {
+		// All playable ships have engines, or at least can fly in hyperspace
+		// removes fighters / rockets / stations and other entities
+		if (!ship.maxBurn) return false;
+
+		// Remove stations and ships with unwanted hints
+		if (HINTS_TO_FILTER.some((hint) => ship.hints.includes(hint))) return false;
+
+		// Remove omega related ships
+		if (ship.tags.includes(TAGS_TO_FILTER[0])) return false;
+
+		return true;
 	});
-	// !ship.hints.includes("HIDE_IN_CODEX") && !ship.hints.includes("STATION")
-	console.log(normalShips);
-	return normalShips;
 };
 // create new object with VISIBLE and DEFINED hulls. // D-mods are hidden!
 const hullMods = {
