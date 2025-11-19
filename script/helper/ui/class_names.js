@@ -8,9 +8,15 @@ const CLASS_NAMES = {
 
 	SEARCH: {
 		_BASE: "search",
+		WRAPPER: "search_wrapper",
 		INPUT: "search_input",
-		DROPDOWN: "search_dropdown",
 		SELECTED: "search_selected",
+		DROPDOWN: {
+			_BASE: "search_dropdown",
+			ITEM: "search_dropdown-item",
+			ITEM_NAME: "search_dropdown-item_name",
+			ITEM_INFO: "search_dropdown-item_info",
+		},
 	},
 	TEST: "test",
 	POP_UP: {

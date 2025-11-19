@@ -31,14 +31,14 @@ class NavigationView extends View {
             </a>
 
             <div class="${CLASS_NAMES.SEARCH._BASE}">
-                <div class="search-wrapper">
+                <div class="${CLASS_NAMES.SEARCH.WRAPPER}">
                     <input
                         type="text"
                         class="${CLASS_NAMES.SEARCH.INPUT}"
                         placeholder="${STRINGS.INPUT.PLACEHOLDER}"
                         autocomplete="off"
                     />
-                    <div class="${CLASS_NAMES.SEARCH.DROPDOWN}"></div>
+                    <div class="${CLASS_NAMES.SEARCH.DROPDOWN._BASE}"></div>
                 </div>
 			    <div class="${CLASS_NAMES.SEARCH.SELECTED}"></div>
 		    </div>
@@ -50,22 +50,5 @@ class NavigationView extends View {
 
 		return markup;
 	}
-
-	/*  <form class="${CLASS_NAMES.SEARCH_FORM._BASE}">
-                <input
-                    type="search"
-                    name="${STRINGS.INPUT.NAME}"
-                    class="${CLASS_NAMES.SEARCH_FORM.FORM_INPUT}"
-                    label="${STRINGS.INPUT.LABEL}"
-                    placeholder="${STRINGS.INPUT.DESC}"
-                    value=""
-                    required
-                />
-
-                <button type="submit" class="${CLASS_NAMES.button}" ${UI_DATASETS.NAV.FORM.SEARCH}>
-                    ${STRINGS.BUTTONS.SEARCH}
-                </button>
-            </form>
-    */
 }
 export default new NavigationView();

@@ -92,6 +92,7 @@ export class Model {
 					cvsFetcher.fetch(URL.SVC.DESCRIPTION),
 				]);
 
+			console.log(currentShipId);
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
 				this.#findCurrentShip(shipAndFighterHulls, currentShipId)
 			);
@@ -792,30 +793,7 @@ const updateFighters = {
 		}
 	},
 };
-// const listOfAllEditableShips = function (shipList) {
-// 	const HINTS_TO_FILTER = ["STATION", "SHIP_WITH_MODULES"];
-// 	const TAGS_TO_FILTER = ["restricted"];
 
-// 	// All playable ships have engines, or at least can fly in hyperspace
-// 	// removes fighters / rockets / stations and other entities
-// 	const onlyFlyableShips = shipList.filter((hull) => hull.maxBurn !== "");
-// 	// remove stations
-
-// 	// if (!ship.hints.includes(string)) return ship;
-// 	const filterByHints = onlyFlyableShips.filter((ship) => {
-// 		const test = HINTS_TO_FILTER.filter((string) => {
-// 			return ship.hints.includes(string);
-// 		});
-// 		if (test.length < 1) return ship;
-// 	});
-// 	// remove omega related ships
-// 	const returnArray = filterByHints.filter((ship) => {
-// 		return !ship.tags.includes(TAGS_TO_FILTER[0]);
-// 	});
-
-// 	console.log(returnArray);
-// 	return returnArray;
-// };
 const listOfAllEditableShips = function (shipList) {
 	const HINTS_TO_FILTER = ["STATION", "SHIP_WITH_MODULES"];
 	const TAGS_TO_FILTER = ["restricted"];

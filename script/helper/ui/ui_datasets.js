@@ -6,6 +6,7 @@ const TITLE = {
 		FORM: {
 			BUTTONS: "data-nav-button-type",
 		},
+		DROPDOWN: "data-ship-id",
 	},
 	MAIN_POPUP: {
 		WIPE_WARNING: "data-wipe-warning",
@@ -24,6 +25,12 @@ const UI_DATASETS = {
 		FORM: {
 			SEARCH: combineDataSet(TITLE.NAV.FORM.BUTTONS, ID.SEARCH),
 			SAVE: combineDataSet(TITLE.NAV.FORM.BUTTONS, ID.SAVE),
+		},
+		DROPDOWN: {
+			_BASE: TITLE.NAV.DROPDOWN,
+			FUNC: (input) => {
+				return combineDataSet(TITLE.NAV.DROPDOWN, input);
+			},
 		},
 	},
 	MAIN_POPUP: {

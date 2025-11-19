@@ -10,6 +10,7 @@ import CLASS_NAMES from "../helper/ui/class_names.js";
 import UI_DATASETS from "../helper/ui/ui_datasets.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
 
+//! SEARCH INPUT NEEDS TO BE MORE COMPLEX
 export default class Navigation extends ViewModel {
 	#searchForm;
 	#searchField;
@@ -19,7 +20,6 @@ export default class Navigation extends ViewModel {
 		super(model);
 
 		this.#getState = this.getState();
-		console.log(this.#getState.dataState);
 	}
 	update() {
 		// Render
@@ -32,98 +32,73 @@ export default class Navigation extends ViewModel {
 			this.#saveBuild
 		);
 
+		// dynamic search field
 		this.#dynamicUserInputCapture();
-		// Capture the input
-		// NavigationView.inputSubmitHandler(
-		// 	document.querySelector(`.${CLASS_NAMES.SEARCH_FORM._BASE}`),
-		// 	this.#userSearchInputLogic
-		// );
 	}
 	#dynamicUserInputCapture() {
 		const localParent = document.querySelector(`.${CLASS_NAMES.SEARCH._BASE}`);
 		const searchInput = localParent.querySelector(
 			`.${CLASS_NAMES.SEARCH.INPUT}`
 		);
-		// const dropdown = localParent.querySelector(
-		// 	`.${CLASS_NAMES.SEARCH.DROPDOWN}`
-		// );
-		// const selectedShip = localParent.querySelector(
-		// 	`.${CLASS_NAMES.SEARCH.SELECTED}`
-		// );
 
 		NavigationView._inputDynamicListener(
 			searchInput,
-			this.#getState.dataState.allHulls,
+			this.#getState.dataState.allShipHulls,
 			this.#displayMatchedItems
 		);
 	}
 	#displayMatchedItems = (value) => {
 		SearchDropdownView.render(value);
-	};
-	// #userSearchInputLogic = (userInput) => {
-	// 	// check if ship even exists
-	// 	if (
-	// 		!userInput ||
-	// 		userInput === GENERIC_STRING.EMPTY ||
-	// 		!this.#isUserInputValid(userInput)
-	// 	) {
-	// 		console.log("ship doesnt exists");
-	// 		return;
-	// 	}
 
-	// 	this.#currentUserInput = userInput;
-	// 	console.log(this.#currentUserInput);
-	// 	// Display warning to protect user from loosing current design
-	// 	this.#warningPopUpRender();
-	// 	this.#warningPopUpHandler();
-	// };
-	#warningPopUpRender() {
-		SearchWarningPopUpView.render(this.#getState);
-	}
-	#warningPopUpHandler() {
+		SearchDropdownView.addClickHandler(
+			`.${CLASS_NAMES.SEARCH.DROPDOWN.ITEM}`,
+			"click",
+			this.#switchToDifferentShip
+		);
+	};
+	#switchToDifferentShip = (btn) => {
+		const shipId = btn.getAttribute(UI_DATASETS.NAV.DROPDOWN._BASE);
+
+		// Check if ship user searches even exist
+		const isUserSearchesWithCorrectShipId =
+			this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
+
+		if (!isUserSearchesWithCorrectShipId) {
+			console.log("ship doesnt exists");
+			return;
+		}
+		this.#currentUserInput = isUserSearchesWithCorrectShipId;
+
+		// Display warning to protect user from loosing current design
+		this.#warningPopUp();
+	};
+
+	#warningPopUp = () => {
+		SearchWarningPopUpView.render(this.#currentUserInput);
+
 		SearchWarningPopUpView.addClickHandler(
 			`.${CLASS_NAMES.POP_UP.WARNING_BUTTON}`,
 			"click",
 			this.#searchWarningLogic
 		);
-	}
+	};
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.
 	#searchWarningLogic = (btn) => {
 		const userAction = btn.dataset.wipeWarning;
+
 		if (userAction === UI_DATASETS.ONLY_ID.RETURN) {
 			SearchWarningPopUpView._clearRender();
+
 			// clear input input field
-			NavigationView._clearTargetValue(
-				`.${CLASS_NAMES.SEARCH_FORM.FORM_INPUT}`
-			);
+			NavigationView._clearTargetValue(`.${CLASS_NAMES.SEARCH.INPUT}`);
 		}
 
 		// clear the workspace and provide new ship as a foundation
 		if (userAction === UI_DATASETS.ONLY_ID.CONTINUE) {
-			new App(this.#currentUserInput);
-			// async #tableRenderAndSpinner() {
-			// 		return await toggleAsyncSpinner(
-			// 			() =>
-			// 				WeaponPopUpTableView.renderAsync([
-			// 					this.#userShipBuild,
-			// 					this.#currentWeaponArray,
-			// 					this.#weaponSlot,
-			// 				]),
-			// 			WeaponPopUpContainerView
-			// 		);
-			// 	}
+			new App(this.#currentUserInput.id);
 		}
 	};
-	// Check if ship user searches even exist
-	#isUserInputValid(shipId) {
-		const allHulls = this.#getState.dataState.allHulls;
-		const isUserSearchesWithCorrectShipId = allHulls.find(
-			(ship) => ship.id === shipId
-		);
-
-		if (isUserSearchesWithCorrectShipId) return true;
-	}
 
 	// TODO
 	// A way for a user to save their current design
