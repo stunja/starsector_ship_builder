@@ -62,7 +62,20 @@
 		border-radius: 1rem;
 		overflow-y: scroll;
 		color: black;
+
+		opacity: 1;
+		visibility: visible;
+
+		transition: opacity 0.3s 0s, visibility 0.3s 0s;
 	}
+
+	.search_dropdown.hidden {
+		opacity: 0;
+		visibility: hidden;
+
+		transition: opacity 0.3s 0s, visibility 0.3s 0s;
+	}
+
 	.search_dropdown-item {
 		padding: 2rem;
 		cursor: pointer;

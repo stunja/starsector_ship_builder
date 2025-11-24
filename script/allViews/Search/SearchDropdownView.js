@@ -8,9 +8,7 @@ class SearchDropdownView extends View {
 	_localParent = `.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`;
 
 	generateMarkup() {
-		const listOfShipObjectsToDisplay = this._data;
-
-		const markup = this.#dropdownItems(listOfShipObjectsToDisplay);
+		const markup = this.#dropdownItems(this._data);
 		return markup;
 	}
 	#dropdownItems(data) {

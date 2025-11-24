@@ -38,7 +38,7 @@ class NavigationView extends View {
                         placeholder="${STRINGS.INPUT.PLACEHOLDER}"
                         autocomplete="off"
                     />
-                    <div class="${CLASS_NAMES.SEARCH.DROPDOWN._BASE}"></div>
+                    <div class="${CLASS_NAMES.SEARCH.DROPDOWN._BASE} ${CLASS_NAMES.ANIM.HIDDEN}"></div>
                 </div>
 			    <div class="${CLASS_NAMES.SEARCH.SELECTED}"></div>
 		    </div>

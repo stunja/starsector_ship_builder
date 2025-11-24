@@ -155,20 +155,4 @@ export default class View {
 			document.addEventListener("click", handleOutsideClick, { once: true });
 		});
 	}
-	_inputDynamicListener(parentElement, dataObject, targetReturnFunction) {
-		parentElement.addEventListener("input", function () {
-			const query = this.value.trim().toLowerCase();
-
-			if (query === "") {
-				console.log("empty");
-				return;
-			}
-
-			const matchedItems = dataObject.filter((item) =>
-				item.name.toLowerCase().includes(query)
-			);
-
-			return targetReturnFunction(matchedItems);
-		});
-	}
 }

@@ -18,7 +18,10 @@ const CLASS_NAMES = {
 			ITEM_INFO: "search_dropdown-item_info",
 		},
 	},
-	TEST: "test",
+	ANIM: {
+		HIDDEN: "hidden",
+		IS_VISIBLE: "visible",
+	},
 	POP_UP: {
 		_BASE: "popup",
 		OVERLAY: "popup_overlay",

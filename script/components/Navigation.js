@@ -11,6 +11,8 @@ import UI_DATASETS from "../helper/ui/ui_datasets.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
 
 //! SEARCH INPUT NEEDS TO BE MORE COMPLEX
+//! make transition
+//! THERE IS NO WAY TO SEARCH FOR SKINS (FOR EXAMPLE ONSLAUGH XIV). I dont see a way to connect them systemically
 export default class Navigation extends ViewModel {
 	#searchForm;
 	#searchField;
@@ -33,45 +35,69 @@ export default class Navigation extends ViewModel {
 		);
 
 		// dynamic search field
-		this.#dynamicUserInputCapture();
+		this.#dynamicInputListener();
 	}
-	#dynamicUserInputCapture() {
-		const localParent = document.querySelector(`.${CLASS_NAMES.SEARCH._BASE}`);
-		const searchInput = localParent.querySelector(
+
+	// Set up dynamic search input listener
+	#dynamicInputListener() {
+		const localParentElement = document.querySelector(
+			`.${CLASS_NAMES.SEARCH._BASE}`
+		);
+		const searchInputElement = localParentElement.querySelector(
 			`.${CLASS_NAMES.SEARCH.INPUT}`
 		);
 
-		NavigationView._inputDynamicListener(
-			searchInput,
-			this.#getState.dataState.allShipHulls,
-			this.#displayMatchedItems
+		const dropdownElement = localParentElement.querySelector(
+			`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`
+		);
+
+		searchInputElement.addEventListener("input", (e) => {
+			const query = e.target.value.trim().toLowerCase();
+
+			dropdownElement.classList.remove(CLASS_NAMES.ANIM.HIDDEN);
+
+			// IF empty input, hide dropdown
+			if (!query) {
+				searchInputElement.value = "";
+				dropdownElement.classList.add(CLASS_NAMES.ANIM.HIDDEN);
+				return;
+			}
+
+			const matchedItems = this.#filterShipsByQuery(query);
+			this.#renderSearchResults(matchedItems);
+		});
+	}
+
+	#filterShipsByQuery(query) {
+		return this.#getState.dataState.allShipHulls.filter((item) =>
+			item.name.toLowerCase().includes(query)
 		);
 	}
-	#displayMatchedItems = (value) => {
-		SearchDropdownView.render(value);
 
+	#renderSearchResults(matchedItems) {
+		SearchDropdownView.render(matchedItems);
 		SearchDropdownView.addClickHandler(
 			`.${CLASS_NAMES.SEARCH.DROPDOWN.ITEM}`,
 			"click",
-			this.#switchToDifferentShip
+			this.#handleShipSelection
 		);
-	};
-	#switchToDifferentShip = (btn) => {
+	}
+	#handleShipSelection = (btn) => {
 		const shipId = btn.getAttribute(UI_DATASETS.NAV.DROPDOWN._BASE);
+		const selectedShip = this.#findShipById(shipId);
 
-		// Check if ship user searches even exist
-		const isUserSearchesWithCorrectShipId =
-			this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
-
-		if (!isUserSearchesWithCorrectShipId) {
-			console.log("ship doesnt exists");
+		if (!selectedShip) {
+			console.warn(`Ship with ID "${shipId}" not found`);
 			return;
 		}
-		this.#currentUserInput = isUserSearchesWithCorrectShipId;
 
-		// Display warning to protect user from loosing current design
+		this.#currentUserInput = selectedShip;
 		this.#warningPopUp();
 	};
+
+	#findShipById(shipId) {
+		return this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
+	}
 
 	#warningPopUp = () => {
 		SearchWarningPopUpView.render(this.#currentUserInput);
@@ -81,17 +107,26 @@ export default class Navigation extends ViewModel {
 			"click",
 			this.#searchWarningLogic
 		);
+
+		SearchWarningPopUpView.closePopUpContainerIfUserClickOutside(
+			`.${CLASS_NAMES.POP_UP.WARNING}`,
+			this.#closePopUpAndClearInput
+		);
 	};
+	#closePopUpAndClearInput() {
+		SearchWarningPopUpView._clearRender();
+		SearchDropdownView._clearRender();
+
+		// clear input input field
+		NavigationView._clearTargetValue(`.${CLASS_NAMES.SEARCH.INPUT}`);
+	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.
 	#searchWarningLogic = (btn) => {
 		const userAction = btn.dataset.wipeWarning;
 
 		if (userAction === UI_DATASETS.ONLY_ID.RETURN) {
-			SearchWarningPopUpView._clearRender();
-
-			// clear input input field
-			NavigationView._clearTargetValue(`.${CLASS_NAMES.SEARCH.INPUT}`);
+			this.#closePopUpAndClearInput();
 		}
 
 		// clear the workspace and provide new ship as a foundation
