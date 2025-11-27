@@ -69,9 +69,25 @@ export default class Navigation extends ViewModel {
 	}
 
 	#filterShipsByQuery(query) {
-		return this.#getState.dataState.allShipHulls.filter((item) =>
-			item.name.toLowerCase().includes(query)
-		);
+		const allShip = this.#getState.dataState.allShipHulls;
+
+		const FILTER_CATEGORIES = [
+			"name",
+			"techManufacturer",
+			"designation",
+			"hints",
+		];
+
+		const sortByName = FILTER_CATEGORIES.flatMap((category) => {
+			return allShip.filter((item) => {
+				return item[category].toLowerCase().includes(query);
+			});
+		});
+		const newTest = sortByName.toSorted((a, b) => {
+			return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+		});
+
+		return newTest;
 	}
 
 	#renderSearchResults(matchedItems) {

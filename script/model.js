@@ -92,7 +92,6 @@ export class Model {
 					cvsFetcher.fetch(URL.SVC.DESCRIPTION),
 				]);
 
-			console.log(currentShipId);
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
 				this.#findCurrentShip(shipAndFighterHulls, currentShipId)
 			);
@@ -125,9 +124,13 @@ export class Model {
 				userShipBuildBuildInHullMods
 			);
 
+			const onlyShipHulls = listOfAllEditableShips(shipAndFighterHulls);
+			// For some reason Salvage Rig has no Name
+			const finalOnlyShipHulls = fixMissingShipName(onlyShipHulls);
+
 			this.updateState("dataState", {
 				allHulls: shipAndFighterHulls,
-				allShipHulls: listOfAllEditableShips(shipAndFighterHulls),
+				allShipHulls: finalOnlyShipHulls,
 				allWeapons: filteredWeaponsWithAdditionalData,
 				allWeaponSystems: weaponSystemsOnly,
 				allHullMods: hullmods,
@@ -891,4 +894,20 @@ const hullMods = {
 		const isAutomated = builtInMods.some(({ id }) => id === hullModId);
 		return { ...data, isAutomated };
 	},
+};
+
+const fixMissingShipName = function (data) {
+	// fix for salvage rig
+	const findMissingName = data.map((obj) => {
+		if (!obj.name)
+			return {
+				...obj,
+				name: obj.designation,
+			};
+		return obj;
+	});
+
+	console.log(findMissingName);
+	//! salvage rig duplicate
+	return findMissingName;
 };
