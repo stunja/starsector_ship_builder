@@ -13,6 +13,9 @@ import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
 //! SEARCH INPUT NEEDS TO BE MORE COMPLEX
 //! make transition
 //! THERE IS NO WAY TO SEARCH FOR SKINS (FOR EXAMPLE ONSLAUGH XIV). I dont see a way to connect them systemically
+
+//! CHECK FOR ERRORS (filterShipsByQuery)
+
 export default class Navigation extends ViewModel {
 	#searchForm;
 	#searchField;
@@ -68,6 +71,7 @@ export default class Navigation extends ViewModel {
 		});
 	}
 
+	//! CHECK FOR ERRORS
 	#filterShipsByQuery(query) {
 		const allShip = this.#getState.dataState.allShipHulls;
 
@@ -77,17 +81,21 @@ export default class Navigation extends ViewModel {
 			"designation",
 			"hints",
 		];
-
-		const sortByName = FILTER_CATEGORIES.flatMap((category) => {
+// hints CARRIER
+// shieldType
+		const sortByCategories = FILTER_CATEGORIES.flatMap((category) => {
 			return allShip.filter((item) => {
 				return item[category].toLowerCase().includes(query);
 			});
 		});
-		const newTest = sortByName.toSorted((a, b) => {
+
+		const removeDuplicates = [...new Set(sortByCategories)];
+		// Alphabetic sort
+		const sortedArray = removeDuplicates.toSorted((a, b) => {
 			return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
 		});
-
-		return newTest;
+		console.log(sortedArray);
+		return sortedArray;
 	}
 
 	#renderSearchResults(matchedItems) {

@@ -898,7 +898,7 @@ const hullMods = {
 
 const fixMissingShipName = function (data) {
 	// fix for salvage rig
-	const findMissingName = data.map((obj) => {
+	return data.map((obj) => {
 		if (!obj.name)
 			return {
 				...obj,
@@ -906,8 +906,4 @@ const fixMissingShipName = function (data) {
 			};
 		return obj;
 	});
-
-	console.log(findMissingName);
-	//! salvage rig duplicate
-	return findMissingName;
 };
