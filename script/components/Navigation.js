@@ -81,21 +81,22 @@ export default class Navigation extends ViewModel {
 			"designation",
 			"hints",
 		];
-// hints CARRIER
-// shieldType
-		const sortByCategories = FILTER_CATEGORIES.flatMap((category) => {
-			return allShip.filter((item) => {
-				return item[category].toLowerCase().includes(query);
-			});
-		});
 
-		const removeDuplicates = [...new Set(sortByCategories)];
-		// Alphabetic sort
-		const sortedArray = removeDuplicates.toSorted((a, b) => {
-			return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-		});
-		console.log(sortedArray);
-		return sortedArray;
+		const normalziedQuery = query.toLowerCase();
+
+		const filteredShips = allShip.filter((ship) =>
+			FILTER_CATEGORIES.some((category) => {
+				const value = ship[category];
+				return (
+					typeof value === "string" &&
+					value.toLowerCase().includes(normalziedQuery)
+				);
+			})
+		);
+
+		return filteredShips.toSorted((a, b) =>
+			a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+		);
 	}
 
 	#renderSearchResults(matchedItems) {
