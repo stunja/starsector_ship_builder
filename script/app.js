@@ -1,5 +1,9 @@
 import { Model } from "./model";
 import BuilderController from "./components/BuilderController";
+
+import "@fontsource-variable/plus-jakarta-sans";
+import "@fontsource/material-symbols-outlined";
+
 export default class App {
 	constructor(shipName) {
 		// shipName is a insertable value to create a newShip, for example Search => create new Ship

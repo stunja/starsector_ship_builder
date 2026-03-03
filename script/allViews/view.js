@@ -1,7 +1,6 @@
 // Helper
 import CLASS_NAMES from "../helper/ui/class_names";
-import { GENERIC_STRING } from "../helper/ui/ui_main";
-import UI_STRINGS from "../helper/ui/ui_strings";
+import { NAV_STRING } from "../helper/ui/ui_strings";
 
 export default class View {
 	constructor() {
@@ -57,14 +56,14 @@ export default class View {
 		`;
 
 		const targetClass = this._localParentElement.querySelector(
-			`.${CLASS_NAMES.tableContainer}`
+			`.${CLASS_NAMES.tableContainer}`,
 		);
 
 		targetClass.insertAdjacentHTML("afterbegin", markup);
 	}
 	removeSpinner() {
 		const spinnerElement = this._localParentElement.querySelector(
-			`.${CLASS_NAMES.spinner}`
+			`.${CLASS_NAMES.spinner}`,
 		);
 
 		if (!spinnerElement) return;
@@ -126,7 +125,8 @@ export default class View {
 		parentElement.addEventListener("submit", (e) => {
 			e.preventDefault();
 			const formData = new FormData(e.target);
-			const searchValue = formData.get(`${UI_STRINGS.NAV.SEARCH.INPUT.NAME}`); // captures the name attribute
+
+			const searchValue = formData.get(NAV_STRING.SEARCH_INPUT_LABEL); // captures the name attribute
 
 			return targetFunction(searchValue);
 		});
@@ -141,7 +141,7 @@ export default class View {
 
 		const handleOutsideClick = (event) => {
 			const userClickedOutsideOfContainer = !targetContainer.contains(
-				event.target
+				event.target,
 			);
 
 			if (userClickedOutsideOfContainer) {

@@ -40,8 +40,7 @@
 	box-sizing: content-box;
 	margin: 0;
 	padding: 0;
-	/* font-family: "Nunito", serif; */
-	font-family: "Inter", sans-serif;
+	font-family: "Plus Jakarta Sans Variable", sans-serif;
 	text-decoration: none;
 }
 body {
@@ -54,4 +53,18 @@ body {
 }
 html {
 	font-size: 62.5%;
+}
+
+.material-symbols-outlined {
+	font-variation-settings:
+		"FILL" 0,
+		"wght" 400,
+		"GRAD" 0,
+		"opsz" 24;
+
+	font-family: "Material Symbols Outlined";
+	font-weight: normal;
+	font-style: normal;
+	display: inline-block;
+	line-height: 1;
 }

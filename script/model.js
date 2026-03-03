@@ -13,7 +13,7 @@ import { SHIELD_TYPE } from "./helper/ship_properties.js";
 import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
-const placeHolderShipForDEV = "astral"; // hound // venture
+const placeHolderShipForDEV = "gryphon"; // hound // venture
 
 // invictus // astral // grendel // atlas // colussus // venture // falcon // legion // Conquest
 // paragon // hound // gryphon // shepherd // Hammerhead // monitor

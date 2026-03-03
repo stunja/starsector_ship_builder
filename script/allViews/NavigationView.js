@@ -1,25 +1,13 @@
 // View
 import View from "./view";
 // Helper
-import CLASS_NAMES from "../helper/ui/class_names";
-import { GENERIC_STRING } from "../helper/ui/ui_main";
-import UI_DATASETS from "../helper/ui/ui_datasets";
 
-//
-const STRINGS = {
-	INPUT: {
-		NAME: "search-input",
-		PLACEHOLDER: "Enter the name of the ship...",
-		LABEL: "Search input field",
-	},
-	BUTTONS: {
-		SEARCH: "Search",
-		SAVE_BUILDS: "Saved Builds",
-	},
-	LOGO: {
-		TEXT: "Ship Builder",
-	},
-};
+// UI
+import { GENERIC_STRING } from "../helper/ui/ui_main";
+import CLASS_NAMES from "../helper/ui/class_names";
+import UI_DATASETS from "../helper/ui/ui_datasets";
+import FONT_ICONS from "../helper/ui/font_icons_classes";
+import { NAV_STRING } from "../helper/ui/ui_strings";
 
 class NavigationView extends View {
 	_localParent = `.${CLASS_NAMES.NAVIGATION._BASE}`;
@@ -27,15 +15,16 @@ class NavigationView extends View {
 	generateMarkup() {
 		const markup = `   
             <a href="${GENERIC_STRING.HASH}" class="${CLASS_NAMES.NAVIGATION.NAV_LOGO}">
-                ${STRINGS.LOGO.TEXT}
+                ${NAV_STRING.LOGO}
             </a>
 
             <div class="${CLASS_NAMES.SEARCH._BASE}">
                 <div class="${CLASS_NAMES.SEARCH.WRAPPER}">
+					${FONT_ICONS.SEARCH}
                     <input
                         type="text"
                         class="${CLASS_NAMES.SEARCH.INPUT}"
-                        placeholder="${STRINGS.INPUT.PLACEHOLDER}"
+                        placeholder="${NAV_STRING.SEARCH_INPUT_PLACEHOLDER}"
                         autocomplete="off"
                     />
                     <div class="${CLASS_NAMES.SEARCH.DROPDOWN._BASE} ${CLASS_NAMES.ANIM.HIDDEN}"></div>
@@ -44,7 +33,7 @@ class NavigationView extends View {
 		    </div>
 
             <button class="${CLASS_NAMES.button} ${CLASS_NAMES.NAVIGATION.SAVE_BUILD}" ${UI_DATASETS.NAV.FORM.SAVE}>
-                    ${STRINGS.BUTTONS.SAVE_BUILDS}
+                    ${NAV_STRING.SAVE_BUILDS_BUTTON}
             </button>
         `;
 
