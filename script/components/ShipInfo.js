@@ -12,3 +12,5 @@ export default class ShipInfo extends ViewModel {
 		ShipInfoView.render(this.getState());
 	}
 }
+
+//stat 0 1 2

@@ -23,6 +23,7 @@ class SearchDropdownView extends View {
 	}
 
 	#dropdownItems(data) {
+		console.log(data);
 		const markup = data
 			.map((ship) => {
 				const shipInfo = this.#shipAdditionalInformation(ship);

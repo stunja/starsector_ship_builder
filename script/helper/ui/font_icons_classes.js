@@ -5,7 +5,8 @@ const ICON_NAMES = {
 };
 
 const spanElement = function (className) {
-	return `<span class="${CLASS_NAME}">${className}</span>`;
+	const iconElementClass = `${className}-icon`;
+	return `<span class="${CLASS_NAME} ${iconElementClass}">${className}</span>`;
 };
 
 const FONT_ICONS = function () {

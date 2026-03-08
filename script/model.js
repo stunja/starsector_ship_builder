@@ -93,7 +93,7 @@ export class Model {
 				]);
 
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
-				this.#findCurrentShip(shipAndFighterHulls, currentShipId)
+				this.#findCurrentShip(shipAndFighterHulls, currentShipId),
 			);
 
 			// HullMods
@@ -111,26 +111,23 @@ export class Model {
 			const fighterOnlyHulls = await updateFighters.fetchAndInjectData(
 				fighters,
 				desc,
-				shipAndFighterHulls
+				shipAndFighterHulls,
 			);
 
 			// UserShipBuild
 			const userShipBuild = createUserShipBuild.controller(updatedCurrentShip);
 			const userShipBuildBuildInHullMods = hullMods.updateBuiltInHullMods(
 				userShipBuild,
-				hullModsWithEffectValues
+				hullModsWithEffectValues,
 			);
 			const finalUserShipBuild = hullMods.checkIfAutomatedShip(
-				userShipBuildBuildInHullMods
+				userShipBuildBuildInHullMods,
 			);
-
-			const onlyShipHulls = listOfAllEditableShips(shipAndFighterHulls);
-			// For some reason Salvage Rig has no Name
-			const finalOnlyShipHulls = fixMissingShipName(onlyShipHulls);
-
+			const test = await prepareShipHulls(shipAndFighterHulls);
+			console.log(test);
 			this.updateState("dataState", {
 				allHulls: shipAndFighterHulls,
-				allShipHulls: finalOnlyShipHulls,
+				allShipHulls: test,
 				allWeapons: filteredWeaponsWithAdditionalData,
 				allWeaponSystems: weaponSystemsOnly,
 				allHullMods: hullmods,
@@ -164,7 +161,7 @@ export class Model {
 	};
 	#filterWeaponsOnly = (weaponsArray) => {
 		return weaponsArray.filter(
-			(weapon) => this.#weaponIsNotSystem(weapon) && weapon.id
+			(weapon) => this.#weaponIsNotSystem(weapon) && weapon.id,
 		);
 	};
 }
@@ -215,7 +212,7 @@ const jsonFetcher = {
 };
 const findCurrentShip = function (allHulls) {
 	const [currentShip] = allHulls.filter((ship) =>
-		ship.id === shipNameDev ? ship.id : GENERIC_STRING.EMPTY
+		ship.id === shipNameDev ? ship.id : GENERIC_STRING.EMPTY,
 	);
 	return currentShip;
 };
@@ -233,10 +230,10 @@ const fetchCurrentShipAdditionalData = async function (currentShip) {
 	];
 	try {
 		const data = await jsonFetcher.fetch(
-			`${URL.DATA_FOLDER.HULLS}/${currentShip.id}.ship`
+			`${URL.DATA_FOLDER.HULLS}/${currentShip.id}.ship`,
 		);
 		const additionalData = Object.fromEntries(
-			Object.entries(data).filter(([key]) => whatToExtract.includes(key))
+			Object.entries(data).filter(([key]) => whatToExtract.includes(key)),
 		);
 		return { ...currentShip, additionalData };
 	} catch (err) {
@@ -277,7 +274,7 @@ const additionalWeaponData = {
 								const trimmed = item.trim();
 								return isNaN(trimmed) ? `"${trimmed}"` : trimmed;
 							})
-							.join(",")}]`
+							.join(",")}]`,
 				),
 			// Final cleanup
 			(data) =>
@@ -289,19 +286,19 @@ const additionalWeaponData = {
 	async processWeapon(weaponObject, allDescriptions) {
 		try {
 			const dirtyData = await jsonFetcher.fetchData(
-				`${URL.DATA_FOLDER.WEAPONS}/${weaponObject.id}.wpn`
+				`${URL.DATA_FOLDER.WEAPONS}/${weaponObject.id}.wpn`,
 			);
 			const cleanData = this.cleanWeaponData(dirtyData);
 			const jsonData = JSON.parse(cleanData);
 			const createAdditionalDataObject = extractDataFromObject(
 				this.KEYS_TO_INJECT,
-				jsonData
+				jsonData,
 			);
 
 			const injectAdditionalDescriptions = await this.injectWeaponDescriptions(
 				weaponObject,
 				createAdditionalDataObject,
-				allDescriptions
+				allDescriptions,
 			);
 
 			return {
@@ -316,11 +313,11 @@ const additionalWeaponData = {
 	async injectWeaponDescriptions(
 		weaponObject,
 		additionalData,
-		allDescriptions
+		allDescriptions,
 	) {
 		try {
 			const descriptionObject = allDescriptions.find(
-				(desc) => desc.id === weaponObject.id
+				(desc) => desc.id === weaponObject.id,
 			);
 
 			// if (!descriptionObject) return additionalData;
@@ -349,8 +346,8 @@ const additionalWeaponData = {
 	fetchAndInjectData: async function (allWeapons, allDescriptions) {
 		return Promise.all(
 			allWeapons.map((weaponObject) =>
-				this.processWeapon(weaponObject, allDescriptions)
-			)
+				this.processWeapon(weaponObject, allDescriptions),
+			),
 		);
 	},
 };
@@ -477,7 +474,7 @@ const createUserShipBuild = {
 
 			// Installed Weapons
 			installedWeapons: this.injectCurrentShipSlotsIntoWeapons(
-				additionalData.weaponSlots
+				additionalData.weaponSlots,
 			),
 		};
 
@@ -489,7 +486,7 @@ const createUserShipBuild = {
 		return {
 			...weaponObjectWithAdditionalData,
 			...this.addDataBasedOnShipHullSize(
-				weaponObjectWithAdditionalData.hullSize
+				weaponObjectWithAdditionalData.hullSize,
 			),
 		};
 	},
@@ -540,7 +537,7 @@ const createUserShipBuild = {
 		const hullSizeData = () => {
 			const values = hullSizeProperties[hullSize];
 			return Object.fromEntries(
-				propertyNames.map((name, index) => [name, values[index]])
+				propertyNames.map((name, index) => [name, values[index]]),
 			);
 		};
 
@@ -603,35 +600,35 @@ const updateFighters = {
 	async processWeapon(fighterObject, allDescriptions, allHulls) {
 		try {
 			const convertedFighterId = this.convertIdToDifferentIdSpecialRule(
-				this.updatedId(fighterObject)
+				this.updatedId(fighterObject),
 			);
 
 			const fetchData = await jsonFetcher.fetchData(
-				`${URL.DATA_FOLDER.HULLS}/${convertedFighterId}.ship`
+				`${URL.DATA_FOLDER.HULLS}/${convertedFighterId}.ship`,
 			);
 
 			const jsonData = JSON.parse(fetchData);
 
 			const createAdditionalDataObject = extractDataFromObject(
 				this.KEYS_TO_INJECT,
-				jsonData
+				jsonData,
 			);
 
 			// Add Descriptions to Addtional Data
 			const arrayWithDescriptions = this.injectFighterDescriptions(
 				fighterObject,
 				createAdditionalDataObject,
-				allDescriptions
+				allDescriptions,
 			);
 			// Add data from allHulls to Additional Data
 			const arrayWithFighterHullData = this.injectFighterHullData(
 				convertedFighterId,
 				arrayWithDescriptions,
-				allHulls
+				allHulls,
 			);
 			const finalArray = await this.injectVariantData(
 				fighterObject,
-				arrayWithFighterHullData
+				arrayWithFighterHullData,
 			);
 
 			return {
@@ -646,12 +643,12 @@ const updateFighters = {
 	fetchAndInjectData: async function (
 		allFighterHulls,
 		allDescriptions,
-		allHulls
+		allHulls,
 	) {
 		return Promise.all(
 			this.cleanedArray(allFighterHulls).map((weaponObject) =>
-				this.processWeapon(weaponObject, allDescriptions, allHulls)
-			)
+				this.processWeapon(weaponObject, allDescriptions, allHulls),
+			),
 		);
 	},
 	// Helper functions
@@ -699,8 +696,8 @@ const updateFighters = {
 
 			const removeBrokenKeysArray = removeIgnoredFighterObjects.map((obj) =>
 				Object.fromEntries(
-					Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
-				)
+					Object.entries(obj).filter(([key]) => !keysToRemove.includes(key)),
+				),
 			);
 			return removeBrokenKeysArray;
 		} catch (err) {
@@ -710,11 +707,11 @@ const updateFighters = {
 	injectFighterDescriptions(fighterObject, additionalData, allDescriptions) {
 		try {
 			const convertedFighterId = this.convertIdToDifferentIdSpecialRule(
-				this.updatedId(fighterObject)
+				this.updatedId(fighterObject),
 			);
 
 			const descriptionObject = allDescriptions.find(
-				(desc) => desc.id === convertedFighterId
+				(desc) => desc.id === convertedFighterId,
 			);
 
 			if (!descriptionObject) throw new Error("missing description");
@@ -743,7 +740,7 @@ const updateFighters = {
 		const findCorrectHull = allHulls.find((ship) => ship.id === fighterId);
 		const extractedData = extractDataFromObject(
 			this.KEYS_TO_EXTRACT_FROM_allHulls,
-			findCorrectHull
+			findCorrectHull,
 		);
 		return { ...data, ...extractedData };
 	},
@@ -782,7 +779,7 @@ const updateFighters = {
 		try {
 			const variantId = variantTargeting(fighterObject);
 			const fetchedData = await jsonFetcher.fetchData(
-				convertedURL(SPECIAL_RULES[variantId], variantId)
+				convertedURL(SPECIAL_RULES[variantId], variantId),
 			);
 			const cleanedData = cleanToJson(fetchedData);
 			const variantData = JSON.parse(cleanedData);
@@ -797,24 +794,6 @@ const updateFighters = {
 	},
 };
 
-const listOfAllEditableShips = function (shipList) {
-	const HINTS_TO_FILTER = ["STATION", "SHIP_WITH_MODULES"];
-	const TAGS_TO_FILTER = ["restricted"];
-
-	return shipList.filter((ship) => {
-		// All playable ships have engines, or at least can fly in hyperspace
-		// removes fighters / rockets / stations and other entities
-		if (!ship.maxBurn) return false;
-
-		// Remove stations and ships with unwanted hints
-		if (HINTS_TO_FILTER.some((hint) => ship.hints.includes(hint))) return false;
-
-		// Remove omega related ships
-		if (ship.tags.includes(TAGS_TO_FILTER[0])) return false;
-
-		return true;
-	});
-};
 // create new object with VISIBLE and DEFINED hulls. // D-mods are hidden!
 const hullMods = {
 	createUsableHullMods(data) {
@@ -875,7 +854,7 @@ const hullMods = {
 		const builtInMods = userShipBuild.hullMods.builtInMods;
 
 		const newBuildInMods = builtInMods.map((hullModId) =>
-			hullMods.find(({ id }) => id === hullModId)
+			hullMods.find(({ id }) => id === hullModId),
 		);
 		const newHullMods = {
 			...userShipBuild.hullMods,
@@ -896,6 +875,32 @@ const hullMods = {
 	},
 };
 
+//? Ship Hulls Processing
+const prepareShipHulls = async function (data) {
+	const onlyShipHulls = listOfAllEditableShips(data);
+	// For some reason Salvage Rig has no Name
+	const hullsWithFixNaming = fixMissingShipName(onlyShipHulls);
+	const withHullSizes = await injectHullSize(hullsWithFixNaming);
+	return withHullSizes;
+};
+const listOfAllEditableShips = function (shipList) {
+	const HINTS_TO_FILTER = ["STATION", "SHIP_WITH_MODULES"];
+	const TAGS_TO_FILTER = ["restricted"];
+
+	return shipList.filter((ship) => {
+		// All playable ships have engines, or at least can fly in hyperspace
+		// removes fighters / rockets / stations and other entities
+		if (!ship.maxBurn) return false;
+
+		// Remove stations and ships with unwanted hints
+		if (HINTS_TO_FILTER.some((hint) => ship.hints.includes(hint))) return false;
+
+		// Remove omega related ships
+		if (ship.tags.includes(TAGS_TO_FILTER[0])) return false;
+
+		return true;
+	});
+};
 const fixMissingShipName = function (data) {
 	// fix for salvage rig
 	return data.map((obj) => {
@@ -906,4 +911,43 @@ const fixMissingShipName = function (data) {
 			};
 		return obj;
 	});
+};
+const injectHullSize = async function (data) {
+	//! some of the ships, ID doesn`t match name files
+	// TODO I need variance hulls data
+	const SHIP_ID_CORRECTIONS = {
+		//? first is ID, hull name in files and sprite name
+		crig: "constructionrig", // constructionrig // salvage_rig
+		buffalo2: "buffalo_mk2", // buffalo_mk2 // buffalo_dd
+		cerberus: "warhound",
+	};
+	const correctId = function (shipId) {
+		const returnValue = Object.entries(SHIP_ID_CORRECTIONS).find(
+			(el) => el[0] === shipId,
+		);
+		return returnValue ? returnValue[1] : shipId;
+	};
+
+	const HULL_FIELDS_TO_EXTRACT = ["hullSize"]; //! expand it later
+
+	const fetchCurrentShipAdditionalData = async function (currentShip) {
+		try {
+			const rawData = await jsonFetcher.fetch(
+				`${URL.DATA_FOLDER.HULLS}/${correctId(currentShip.id)}.ship`,
+			);
+			const additionalData = Object.fromEntries(
+				Object.entries(rawData).filter(([key]) =>
+					HULL_FIELDS_TO_EXTRACT.includes(key),
+				),
+			);
+			return { ...currentShip, additionalData };
+		} catch (err) {
+			console.log(currentShip);
+			console.log("Failed to fetch additiona data for currentShip", err);
+		}
+	};
+
+	return Promise.all(
+		data.map((entry) => fetchCurrentShipAdditionalData(entry)),
+	);
 };
