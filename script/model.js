@@ -1,7 +1,7 @@
 "use strict";
 import {
-	renameKeysFromCSVdata,
-	convertStringsIntoNumbersCSVdata,
+	// renameKeysFromCSVdata,
+	// convertStringsIntoNumbersCSVdata,
 	extractDataFromObject,
 } from "./helper/helper_functions.js";
 // helper
@@ -9,8 +9,10 @@ import { GENERIC_STRING } from "./helper/ui/ui_main.js";
 import URL from "./helper/url.js";
 import { HULLMODS_DATA } from "./components/Hullmods/HullModData.js";
 import { SHIELD_TYPE } from "./helper/ship_properties.js";
+import { cvsFetcher, jsonFetcher } from "./model/fetchers.js";
+// import { prepareShipHulls } from "./model/processShipHulls.js";
 // external import
-import Papa from "papaparse";
+// import Papa from "papaparse";
 
 // "astral"; "gryphon"; "drover"; "hound"; "ox"; "legion"; // pegasus // paragon // astral // legion // odyssey
 const placeHolderShipForDEV = "gryphon"; // hound // venture
@@ -92,10 +94,14 @@ export class Model {
 					cvsFetcher.fetch(URL.SVC.DESCRIPTION),
 				]);
 
+			// fix issues, and add additional Data
+			const shipHulls = await prepareShipHulls(shipAndFighterHulls);
+
 			const updatedCurrentShip = await fetchCurrentShipAdditionalData(
-				this.#findCurrentShip(shipAndFighterHulls, currentShipId),
+				this.#findCurrentShip(shipHulls, currentShipId),
 			);
 
+			console.log(updatedCurrentShip);
 			// HullMods
 			const allHullMods = hullMods.createUsableHullMods(hullmods);
 			const hullModsWithEffectValues =
@@ -108,7 +114,7 @@ export class Model {
 			const weaponSystemsOnly = this.#filterWeaponSystems(weapons);
 
 			// Fighters
-			const fighterOnlyHulls = await updateFighters.fetchAndInjectData(
+			const fighterHulls = await updateFighters.fetchAndInjectData(
 				fighters,
 				desc,
 				shipAndFighterHulls,
@@ -123,15 +129,15 @@ export class Model {
 			const finalUserShipBuild = hullMods.checkIfAutomatedShip(
 				userShipBuildBuildInHullMods,
 			);
-			const test = await prepareShipHulls(shipAndFighterHulls);
-			console.log(test);
+			console.log(finalUserShipBuild);
+			console.log(shipHulls);
 			this.updateState("dataState", {
 				allHulls: shipAndFighterHulls,
-				allShipHulls: test,
+				allShipHulls: shipHulls,
 				allWeapons: filteredWeaponsWithAdditionalData,
 				allWeaponSystems: weaponSystemsOnly,
 				allHullMods: hullmods,
-				allFighterHulls: fighterOnlyHulls,
+				allFighterHulls: fighterHulls,
 				allDescriptions: desc,
 			});
 			this.updateUserShipBuild(finalUserShipBuild);
@@ -165,51 +171,51 @@ export class Model {
 		);
 	};
 }
-const cvsFetcher = {
-	fetch: async function (url) {
-		const csvData = await this.fetchData(url);
-		const convertedData = await this.papaDataConverter(csvData);
-		const dataWithConvertedKeys = convertedData.map(renameKeysFromCSVdata);
-		const exportData = convertStringsIntoNumbersCSVdata(dataWithConvertedKeys);
-		return exportData;
-	},
-	fetchData: async function (url) {
-		const res = await fetch(url);
+// const cvsFetcher = {
+// 	fetch: async function (url) {
+// 		const csvData = await this.fetchData(url);
+// 		const convertedData = await this.papaDataConverter(csvData);
+// 		const dataWithConvertedKeys = convertedData.map(renameKeysFromCSVdata);
+// 		const exportData = convertStringsIntoNumbersCSVdata(dataWithConvertedKeys);
+// 		return exportData;
+// 	},
+// 	fetchData: async function (url) {
+// 		const res = await fetch(url);
 
-		if (!res.ok) {
-			throw new Error(`HTTP error! status: ${res.status}`);
-		}
-		return await res.blob();
-	},
-	papaDataConverter(data) {
-		return new Promise((resolve, reject) => {
-			Papa.parse(data, {
-				header: true,
-				complete: (results) => {
-					resolve(results.data);
-				},
-				error: (err) => {
-					reject(err);
-				},
-			});
-		});
-	},
-};
-const jsonFetcher = {
-	fetch: async function (url) {
-		const csvData = await this.fetchData(url);
-		const dataNormalized = JSON.parse(csvData);
-		return dataNormalized;
-	},
-	fetchData: async function (url) {
-		const res = await fetch(url);
+// 		if (!res.ok) {
+// 			throw new Error(`HTTP error! status: ${res.status}`);
+// 		}
+// 		return await res.blob();
+// 	},
+// 	papaDataConverter(data) {
+// 		return new Promise((resolve, reject) => {
+// 			Papa.parse(data, {
+// 				header: true,
+// 				complete: (results) => {
+// 					resolve(results.data);
+// 				},
+// 				error: (err) => {
+// 					reject(err);
+// 				},
+// 			});
+// 		});
+// 	},
+// };
+// const jsonFetcher = {
+// 	fetch: async function (url) {
+// 		const csvData = await this.fetchData(url);
+// 		const dataNormalized = JSON.parse(csvData);
+// 		return dataNormalized;
+// 	},
+// 	fetchData: async function (url) {
+// 		const res = await fetch(url);
 
-		if (!res.ok) {
-			throw new Error(`HTTP error! status: ${res.status}`);
-		}
-		return await res.text();
-	},
-};
+// 		if (!res.ok) {
+// 			throw new Error(`HTTP error! status: ${res.status}`);
+// 		}
+// 		return await res.text();
+// 	},
+// };
 const findCurrentShip = function (allHulls) {
 	const [currentShip] = allHulls.filter((ship) =>
 		ship.id === shipNameDev ? ship.id : GENERIC_STRING.EMPTY,
@@ -221,12 +227,12 @@ const fetchCurrentShipAdditionalData = async function (currentShip) {
 		"spriteName",
 		"builtInMods",
 		"weaponSlots",
-		"hullSize",
 		"builtInWings",
 		"width",
 		"height",
 		"center",
 		"viewOffset",
+		"hullSize",
 	];
 	try {
 		const data = await jsonFetcher.fetch(
@@ -235,6 +241,7 @@ const fetchCurrentShipAdditionalData = async function (currentShip) {
 		const additionalData = Object.fromEntries(
 			Object.entries(data).filter(([key]) => whatToExtract.includes(key)),
 		);
+		// return { ...currentShip, additionalData };
 		return { ...currentShip, additionalData };
 	} catch (err) {
 		console.log("Failed to fetch additiona data for currentShip", err);
@@ -540,7 +547,6 @@ const createUserShipBuild = {
 				propertyNames.map((name, index) => [name, values[index]]),
 			);
 		};
-
 		return hullSizeData();
 	},
 	injectCurrentShipSlotsIntoWeapons(weaponSlotInput) {
@@ -912,42 +918,89 @@ const fixMissingShipName = function (data) {
 		return obj;
 	});
 };
-const injectHullSize = async function (data) {
-	//! some of the ships, ID doesn`t match name files
-	// TODO I need variance hulls data
-	const SHIP_ID_CORRECTIONS = {
-		//? first is ID, hull name in files and sprite name
-		crig: "constructionrig", // constructionrig // salvage_rig
-		buffalo2: "buffalo_mk2", // buffalo_mk2 // buffalo_dd
-		cerberus: "warhound",
-	};
-	const correctId = function (shipId) {
-		const returnValue = Object.entries(SHIP_ID_CORRECTIONS).find(
-			(el) => el[0] === shipId,
-		);
-		return returnValue ? returnValue[1] : shipId;
-	};
-
-	const HULL_FIELDS_TO_EXTRACT = ["hullSize"]; //! expand it later
-
-	const fetchCurrentShipAdditionalData = async function (currentShip) {
-		try {
-			const rawData = await jsonFetcher.fetch(
-				`${URL.DATA_FOLDER.HULLS}/${correctId(currentShip.id)}.ship`,
-			);
-			const additionalData = Object.fromEntries(
-				Object.entries(rawData).filter(([key]) =>
-					HULL_FIELDS_TO_EXTRACT.includes(key),
-				),
-			);
-			return { ...currentShip, additionalData };
-		} catch (err) {
-			console.log(currentShip);
-			console.log("Failed to fetch additiona data for currentShip", err);
-		}
-	};
-
-	return Promise.all(
-		data.map((entry) => fetchCurrentShipAdditionalData(entry)),
-	);
+// Ship ID corrections mapping
+const SHIP_ID_CORRECTIONS = {
+	crig: "constructionrig", // constructionrig / salvage_rig
+	buffalo2: "buffalo_mk2", // buffalo_mk2 / buffalo_dd
+	cerberus: "warhound",
 };
+
+const HULL_FIELDS_TO_EXTRACT = [
+	"spriteName",
+	"builtInMods",
+	"weaponSlots",
+	"builtInWings",
+	"width",
+	"height",
+	"center",
+	"viewOffset",
+	"hullSize",
+];
+
+const resolveShipId = (shipId) => SHIP_ID_CORRECTIONS[shipId] ?? shipId;
+
+const fetchShipHullData = async (ship) => {
+	const hullFilePath = `${URL.DATA_FOLDER.HULLS}/${resolveShipId(ship.id)}.ship`;
+
+	try {
+		const rawData = await jsonFetcher.fetch(hullFilePath);
+
+		const additionalData = Object.fromEntries(
+			Object.entries(rawData).filter(([key]) =>
+				HULL_FIELDS_TO_EXTRACT.includes(key),
+			),
+		);
+
+		return { ...ship, additionalData };
+	} catch (err) {
+		console.error(`Failed to fetch hull data for ship "${ship.id}":`, err);
+		return { ...ship, additionalData1: null }; // graceful fallback
+	}
+};
+
+const injectHullSize = (data) => Promise.all(data.map(fetchShipHullData));
+/////
+// const injectHullSize = async function (data) {
+// 	//! some of the ships, ID doesn`t match name files
+// 	// TODO I need variance hulls data
+// 	const SHIP_ID_CORRECTIONS = {
+// 		//? first is ID, hull name in files and sprite name
+// 		crig: "constructionrig", // constructionrig // salvage_rig
+// 		buffalo2: "buffalo_mk2", // buffalo_mk2 // buffalo_dd
+// 		cerberus: "warhound",
+// 	};
+// 	const correctId = function (shipId) {
+// 		const returnValue = Object.entries(SHIP_ID_CORRECTIONS).find(
+// 			(el) => el[0] === shipId,
+// 		);
+// 		return returnValue ? returnValue[1] : shipId;
+// 	};
+
+// 	const HULL_FIELDS_TO_EXTRACT = [
+// 		// "spriteName",
+// 		// "builtInMods",
+// 		// "weaponSlots",
+// 		// "builtInWings",
+// 		"hullSize",
+// 	];
+// 	const fetchCurrentShipAdditionalData = async function (currentShip) {
+// 		try {
+// 			const rawData = await jsonFetcher.fetch(
+// 				`${URL.DATA_FOLDER.HULLS}/${correctId(currentShip.id)}.ship`,
+// 			);
+// 			const additionalData = Object.fromEntries(
+// 				Object.entries(rawData).filter(([key]) =>
+// 					HULL_FIELDS_TO_EXTRACT.includes(key),
+// 				),
+// 			);
+// 			return { ...currentShip, additionalData };
+// 		} catch (err) {
+// 			console.log(currentShip);
+// 			console.log("Failed to fetch additiona data for currentShip", err);
+// 		}
+// 	};
+
+// 	return Promise.all(
+// 		data.map((entry) => fetchCurrentShipAdditionalData(entry)),
+// 	);
+// };
