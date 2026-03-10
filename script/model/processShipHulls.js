@@ -1,4 +1,5 @@
 import URL from "../helper/url";
+import { jsonFetcher } from "./fetchers";
 //? Ship Hulls Processing
 // Ship ID corrections mapping
 const SHIP_ID_CORRECTIONS = {
@@ -23,30 +24,16 @@ const HINTS_TO_FILTER = ["STATION", "SHIP_WITH_MODULES"];
 
 const TAGS_TO_FILTER = ["restricted"];
 
-export const prepareShipHulls = async function (data) {
-	console.log(data);
-	const onlyShipHulls = listOfAllEditableShips(data);
-	// For some reason Salvage Rig has no Name
-	const hullsWithFixNaming = fixMissingShipName(onlyShipHulls);
-	const withHullSizes = await injectHullSize(hullsWithFixNaming);
-	return withHullSizes;
-};
+const hasEngine = (ship) => Boolean(ship.maxBurn);
+const hasUnwantedHint = (ship) =>
+	HINTS_TO_FILTER.some((hint) => ship.hints.includes(hint));
+const isRestricted = (ship) => ship.tags.includes(TAGS_TO_FILTER);
 
-const listOfAllEditableShips = function (shipList) {
-	return shipList.filter((ship) => {
-		// All playable ships have engines, or at least can fly in hyperspace
-		// removes fighters / rockets / stations and other entities
-		if (!ship.maxBurn) return false;
+const listOfAllEditableShips = (shipList) =>
+	shipList.filter(
+		(ship) => hasEngine(ship) && !hasUnwantedHint(ship) && !isRestricted(ship),
+	);
 
-		// Remove stations and ships with unwanted hints
-		if (HINTS_TO_FILTER.some((hint) => ship.hints.includes(hint))) return false;
-
-		// Remove omega related ships
-		if (ship.tags.includes(TAGS_TO_FILTER[0])) return false;
-
-		return true;
-	});
-};
 const fixMissingShipName = function (data) {
 	// fix for salvage rig
 	return data.map((obj) => {
@@ -60,7 +47,6 @@ const fixMissingShipName = function (data) {
 };
 
 const resolveShipId = (shipId) => SHIP_ID_CORRECTIONS[shipId] ?? shipId;
-
 const fetchShipHullData = async (ship) => {
 	const hullFilePath = `${URL.DATA_FOLDER.HULLS}/${resolveShipId(ship.id)}.ship`;
 
@@ -76,8 +62,14 @@ const fetchShipHullData = async (ship) => {
 		return { ...ship, additionalData };
 	} catch (err) {
 		console.error(`Failed to fetch hull data for ship "${ship.id}":`, err);
-		return { ...ship, additionalData1: null }; // graceful fallback
+		return { ...ship, additionalData: null }; // graceful fallback
 	}
 };
 
 const injectHullSize = (data) => Promise.all(data.map(fetchShipHullData));
+
+export const prepareShipHulls = async function (data) {
+	const onlyShipHulls = listOfAllEditableShips(data);
+	const hullsWithFixNaming = fixMissingShipName(onlyShipHulls);
+	return injectHullSize(hullsWithFixNaming);
+};
