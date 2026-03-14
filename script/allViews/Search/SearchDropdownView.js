@@ -27,8 +27,9 @@ class SearchDropdownView extends View {
 		const markup = data
 			.map((ship) => {
 				const shipInfo = this.#shipAdditionalInformation(ship);
+				const hullSize = ship.additionalData.hullSize.toLowerCase();
 				const markup = `
-								<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM}" 
+								<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM} ${hullSize}" 
 									${UI_DATASETS.NAV.DROPDOWN.FUNC(ship.id)}
 								>
 									<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_NAME}">${ship.name}</p>

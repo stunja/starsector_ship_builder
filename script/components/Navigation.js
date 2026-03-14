@@ -34,7 +34,7 @@ export default class Navigation extends ViewModel {
 		NavigationView.addClickHandler(
 			`.${CLASS_NAMES.NAVIGATION.SAVE_BUILD}`,
 			"click",
-			this.#saveBuild
+			this.#saveBuild,
 		);
 
 		// dynamic search field
@@ -44,14 +44,14 @@ export default class Navigation extends ViewModel {
 	// Set up dynamic search input listener
 	#dynamicInputListener() {
 		const localParentElement = document.querySelector(
-			`.${CLASS_NAMES.SEARCH._BASE}`
+			`.${CLASS_NAMES.SEARCH._BASE}`,
 		);
 		const searchInputElement = localParentElement.querySelector(
-			`.${CLASS_NAMES.SEARCH.INPUT}`
+			`.${CLASS_NAMES.SEARCH.INPUT}`,
 		);
 
 		const dropdownElement = localParentElement.querySelector(
-			`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`
+			`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
 		);
 
 		searchInputElement.addEventListener("input", (e) => {
@@ -84,18 +84,21 @@ export default class Navigation extends ViewModel {
 
 		const normalziedQuery = query.toLowerCase();
 
-		const filteredShips = allShip.filter((ship) =>
-			FILTER_CATEGORIES.some((category) => {
+		//! Here
+		//! I need to add a proper size check
+		const filteredShips = allShip.filter((ship) => {
+			console.log(ship);
+			return FILTER_CATEGORIES.some((category) => {
 				const value = ship[category];
 				return (
 					typeof value === "string" &&
 					value.toLowerCase().includes(normalziedQuery)
 				);
-			})
-		);
+			});
+		});
 
 		return filteredShips.toSorted((a, b) =>
-			a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+			a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
 		);
 	}
 
@@ -104,7 +107,7 @@ export default class Navigation extends ViewModel {
 		SearchDropdownView.addClickHandler(
 			`.${CLASS_NAMES.SEARCH.DROPDOWN.ITEM}`,
 			"click",
-			this.#handleShipSelection
+			this.#handleShipSelection,
 		);
 	}
 	#handleShipSelection = (btn) => {
@@ -130,12 +133,12 @@ export default class Navigation extends ViewModel {
 		SearchWarningPopUpView.addClickHandler(
 			`.${CLASS_NAMES.POP_UP.WARNING_BUTTON}`,
 			"click",
-			this.#searchWarningLogic
+			this.#searchWarningLogic,
 		);
 
 		SearchWarningPopUpView.closePopUpContainerIfUserClickOutside(
 			`.${CLASS_NAMES.POP_UP.WARNING}`,
-			this.#closePopUpAndClearInput
+			this.#closePopUpAndClearInput,
 		);
 	};
 	#closePopUpAndClearInput() {
