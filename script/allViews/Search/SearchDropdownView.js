@@ -1,9 +1,11 @@
 import CLASS_NAMES from "../../helper/ui/class_names";
 import UI_DATASETS from "../../helper/ui/ui_datasets";
+import FONT_ICONS from "../../helper/ui/font_icons_classes";
 // View
 import View from "../view";
 
 // find hint and show it as a string
+//! move it out of here
 const HINTS = {
 	HIDE: "Special",
 	CIVILIAN: "Civilian",
@@ -23,15 +25,20 @@ class SearchDropdownView extends View {
 	}
 
 	#dropdownItems(data) {
-		console.log(data);
+		const iconClassBasedOnHullSize = function (hullSize) {
+			return FONT_ICONS[SEARCH];
+		};
 		const markup = data
 			.map((ship) => {
 				const shipInfo = this.#shipAdditionalInformation(ship);
-				const hullSize = ship.additionalData.hullSize.toLowerCase();
+				const hullSize = ship.additionalData.hullSize;
+				console.log(hullSize);
+
 				const markup = `
-								<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM} ${hullSize}" 
+								<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM} ${hullSize.toLowerCase()}" 
 									${UI_DATASETS.NAV.DROPDOWN.FUNC(ship.id)}
 								>
+									${FONT_ICONS[hullSize]}
 									<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_NAME}">${ship.name}</p>
 									<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_INFO}">
 										${shipInfo}

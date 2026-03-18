@@ -20,7 +20,7 @@ class NavigationView extends View {
 
             <div class="${CLASS_NAMES.SEARCH._BASE}">
                 <div class="${CLASS_NAMES.SEARCH.WRAPPER}">
-					<div class="test_test">
+					<div>
 						${FONT_ICONS.SEARCH}
 					</div>
                     <input
