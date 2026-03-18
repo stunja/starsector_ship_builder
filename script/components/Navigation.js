@@ -21,6 +21,10 @@ export default class Navigation extends ViewModel {
 	#searchField;
 	#getState;
 	#currentUserInput;
+
+	#FILTER_CATEGORIES = ["name", "techManufacturer", "designation", "hints"];
+	// Sub Object, holds additional properties
+	#ADDITIONAL_DATA_PROPERTIES = ["hullSize"];
 	constructor(model) {
 		super(model);
 
@@ -72,29 +76,29 @@ export default class Navigation extends ViewModel {
 	}
 
 	//! CHECK FOR ERRORS
+
 	#filterShipsByQuery(query) {
-		const allShip = this.#getState.dataState.allShipHulls;
-
-		const FILTER_CATEGORIES = [
-			"name",
-			"techManufacturer",
-			"designation",
-			"hints",
-		];
-
+		const allShipHulls = this.#getState.dataState.allShipHulls;
 		const normalziedQuery = query.toLowerCase();
 
-		//! Here
-		//! I need to add a proper size check
-		const filteredShips = allShip.filter((ship) => {
-			console.log(ship);
-			return FILTER_CATEGORIES.some((category) => {
-				const value = ship[category];
-				return (
-					typeof value === "string" &&
-					value.toLowerCase().includes(normalziedQuery)
-				);
+		const matchingValues = (value) => {
+			if (Array.isArray(value)) {
+				return value.some((v) => v.toLowerCase().includes(normalziedQuery));
+			}
+			if (typeof value === "string") {
+				return value.toLowerCase().includes(normalziedQuery);
+			}
+			return false;
+		};
+
+		const filteredShips = allShipHulls.filter((ship) => {
+			const categoryMatch = this.#FILTER_CATEGORIES.some((key) => {
+				return matchingValues(ship[key]);
 			});
+			const hullSizeMatch = this.#ADDITIONAL_DATA_PROPERTIES.some((key) => {
+				return matchingValues(ship.additionalData?.[key]);
+			});
+			return categoryMatch || hullSizeMatch;
 		});
 
 		return filteredShips.toSorted((a, b) =>
