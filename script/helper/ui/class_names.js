@@ -3,13 +3,13 @@ import { HULL_SIZE } from "../ship_properties";
 
 const CLASS_NAMES = {
 	// check google material symbols
-	_FONT_ICONS: {
+	FONT_ICONS: {
 		_BASE: "material-symbols-outlined",
 		ICON_CONTAINER: "icon-container",
 		HOME: "home",
 		SEARCH: "search",
+		// HullSize Icons
 		HULL_SIZES: {
-			// HullSize Icons
 			[HULL_SIZE.FRIGATE]: "stat_1",
 			[HULL_SIZE.DESTROYER]: "stat_2",
 			[HULL_SIZE.CRUISER]: "stat_3",

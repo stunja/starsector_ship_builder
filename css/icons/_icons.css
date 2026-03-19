@@ -24,3 +24,9 @@
 	font-size: 2rem;
 	font-weight: 600;
 }
+
+/* Container for Font Icon */
+.icon-container {
+	display: flex;
+	align-items: center;
+}
