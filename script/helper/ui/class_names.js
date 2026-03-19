@@ -1,5 +1,21 @@
 // I am trying to keep classNames in camel case
+import { HULL_SIZE } from "../ship_properties";
+
 const CLASS_NAMES = {
+	// check google material symbols
+	_FONT_ICONS: {
+		_BASE: "material-symbols-outlined",
+		ICON_CONTAINER: "icon-container",
+		HOME: "home",
+		SEARCH: "search",
+		HULL_SIZES: {
+			// HullSize Icons
+			[HULL_SIZE.FRIGATE]: "stat_1",
+			[HULL_SIZE.DESTROYER]: "stat_2",
+			[HULL_SIZE.CRUISER]: "stat_3",
+			[HULL_SIZE.CAPITAL_SHIP]: "stat_0",
+		},
+	},
 	NAVIGATION: {
 		_BASE: "nav",
 		NAV_LOGO: "nav_logo",
@@ -15,6 +31,7 @@ const CLASS_NAMES = {
 			_BASE: "search_dropdown",
 			ITEM: "search_dropdown-item",
 			ITEM_NAME: "search_dropdown-item_name",
+			SHIP_DESIGNATION: "ship-designation",
 			ITEM_INFO: "search_dropdown-item_info",
 		},
 	},

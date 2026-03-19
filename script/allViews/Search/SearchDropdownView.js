@@ -1,6 +1,6 @@
 import CLASS_NAMES from "../../helper/ui/class_names";
 import UI_DATASETS from "../../helper/ui/ui_datasets";
-import FONT_ICONS from "../../helper/ui/font_icons_classes";
+import FONT_ICONS_MARKUP from "../../helper/ui/font_icons_markup";
 // View
 import View from "../view";
 
@@ -25,21 +25,22 @@ class SearchDropdownView extends View {
 	}
 
 	#dropdownItems(data) {
-		const iconClassBasedOnHullSize = function (hullSize) {
-			return FONT_ICONS[SEARCH];
-		};
 		const markup = data
 			.map((ship) => {
 				const shipInfo = this.#shipAdditionalInformation(ship);
 				const hullSize = ship.additionalData.hullSize;
+				const shipDesignation = ship.designation;
 				console.log(hullSize);
 
 				const markup = `
 								<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM} ${hullSize.toLowerCase()}" 
 									${UI_DATASETS.NAV.DROPDOWN.FUNC(ship.id)}
 								>
-									${FONT_ICONS[hullSize]}
-									<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_NAME}">${ship.name}</p>
+									${FONT_ICONS_MARKUP[hullSize]}
+									<div>
+										<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_NAME}">${ship.name}</p>
+										<p class="${CLASS_NAMES.SEARCH.DROPDOWN.SHIP_DESIGNATION}">${shipDesignation}</p>
+									</div>
 									<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_INFO}">
 										${shipInfo}
 									</p>
