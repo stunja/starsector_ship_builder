@@ -1,4 +1,5 @@
 // Change types with lowerCase, better visibility when used
+//! I dont remember why I did this
 export const GENERIC_STRING = {
 	EMPTY: "",
 	SPACE: " ",

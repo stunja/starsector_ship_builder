@@ -1,20 +1,9 @@
 import CLASS_NAMES from "../../helper/ui/class_names";
 import UI_DATASETS from "../../helper/ui/ui_datasets";
 import FONT_ICONS_MARKUP from "../../helper/ui/font_icons_markup";
+import { SHIP_HINTS_STRINGS } from "../../helper/ui/ui_strings";
 // View
 import View from "../view";
-
-// find hint and show it as a string
-//! move it out of here
-const HINTS = {
-	HIDE: "Special",
-	CIVILIAN: "Civilian",
-	TRANSPORT: "Transport",
-	CARRIER: "Carrier",
-	TANKER: "Tanker",
-	COMBAT: "Combat",
-	FREIGHTER: "Freighter",
-};
 
 class SearchDropdownView extends View {
 	_localParent = `.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`;
@@ -27,11 +16,8 @@ class SearchDropdownView extends View {
 	#dropdownItems(data) {
 		const markup = data
 			.map((ship) => {
-				const shipInfo = this.#shipAdditionalInformation(ship);
 				const hullSize = ship.additionalData.hullSize;
-				const shipDesignation = ship.designation;
-				console.log(hullSize);
-
+				const shipInfo = this.#formatShipInfo(ship);
 				const markup = `
 								<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM} ${hullSize.toLowerCase()}" 
 									${UI_DATASETS.NAV.DROPDOWN.FUNC(ship.id)}
@@ -39,11 +25,8 @@ class SearchDropdownView extends View {
 									${FONT_ICONS_MARKUP[hullSize]}
 									<div>
 										<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_NAME}">${ship.name}</p>
-										<p class="${CLASS_NAMES.SEARCH.DROPDOWN.SHIP_DESIGNATION}">${shipDesignation}</p>
+										<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_INFO}">${shipInfo}</p>
 									</div>
-									<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_INFO}">
-										${shipInfo}
-									</p>
 								</div>
 								`;
 				return markup;
@@ -52,21 +35,20 @@ class SearchDropdownView extends View {
 
 		return markup;
 	}
-	#shipAdditionalInformation(ship) {
-		const destination = ship.designation;
-		const manufacturer = ship.techManufacturer;
-		const hints = ship.hints.toLowerCase(); // could have couple of parameters
 
-		const processedHints = Object.entries(HINTS)
-			.map(([target, stringToReplace]) => {
-				if (hints.includes(target.toLowerCase())) {
-					return stringToReplace;
-				}
-			})
-			.filter((item) => item);
-
-		const markup = [destination, manufacturer, ...processedHints].join(" | ");
-		return markup;
+	#convertHints(rawHints) {
+		const normalize = rawHints.toUpperCase(); // same logic as in UI strings
+		return Object.entries(SHIP_HINTS_STRINGS).flatMap(([token, label]) =>
+			normalize.includes(token) ? [label] : [],
+		);
+	}
+	#formatShipInfo(ship) {
+		const info = [
+			ship.designation,
+			ship.techManufacturer,
+			...this.#convertHints(ship.hints),
+		];
+		return info.filter(Boolean).join(" / ");
 	}
 }
 export default new SearchDropdownView();

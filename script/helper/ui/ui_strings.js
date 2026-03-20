@@ -11,3 +11,14 @@ export const NAV_STRING = {
 	SEARCH_BUTTON: "Search",
 	SAVE_BUILDS_BUTTON: "Saved Builds",
 };
+
+// Take Ship.hits => string labels
+
+export const SHIP_HINTS_STRINGS = {
+	// HIDE: "Special",
+	CIVILIAN: "Civilian",
+	TRANSPORT: "Transport",
+	CARRIER: "Carrier",
+	TANKER: "Tanker",
+	FREIGHTER: "Freighter",
+};

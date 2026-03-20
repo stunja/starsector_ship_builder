@@ -30,9 +30,8 @@ const CLASS_NAMES = {
 		DROPDOWN: {
 			_BASE: "search_dropdown",
 			ITEM: "search_dropdown-item",
-			ITEM_NAME: "search_dropdown-item_name",
-			SHIP_DESIGNATION: "ship-designation",
-			ITEM_INFO: "search_dropdown-item_info",
+			ITEM_NAME: "item_name",
+			ITEM_INFO: "item_info",
 		},
 	},
 	ANIM: {
