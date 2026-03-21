@@ -5,6 +5,8 @@
 @import "_component.css";
 @import "_typography.css";
 @import "/css/icons/_icons.css";
+@import "/css/text_decor.css";
+
 /* Weapon / Fighter Pop Up */
 @import "_weapon-pop-up.css";
 @import "fighter-pop-up.css";

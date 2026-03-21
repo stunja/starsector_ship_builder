@@ -10,6 +10,7 @@ const CLASS_NAMES = {
 		// iCONS
 		ICON_CONTAINER: "icon-container",
 		SWAP_ICON: "swap_horiz",
+		WARNING: "warning",
 		// HullSize Icons
 		HULL_SIZES: {
 			[HULL_SIZE.FRIGATE]: "stat_1",
@@ -63,6 +64,9 @@ const CLASS_NAMES = {
 	},
 	ICON: {
 		_BASE: "icon",
+	},
+	TEXT_DECOR: {
+		UNDERLINE: "underline",
 	},
 	// general popup
 	// mainPopup: "main-popup",
