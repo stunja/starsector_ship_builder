@@ -10,11 +10,8 @@ import CLASS_NAMES from "../helper/ui/class_names.js";
 import UI_DATASETS from "../helper/ui/ui_datasets.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
 
-//! SEARCH INPUT NEEDS TO BE MORE COMPLEX
 //! make transition
 //! THERE IS NO WAY TO SEARCH FOR SKINS (FOR EXAMPLE ONSLAUGH XIV). I dont see a way to connect them systemically
-
-//! CHECK FOR ERRORS (filterShipsByQuery)
 
 export default class Navigation extends ViewModel {
 	#searchForm;
@@ -74,8 +71,6 @@ export default class Navigation extends ViewModel {
 			this.#renderSearchResults(matchedItems);
 		});
 	}
-
-	//! CHECK FOR ERRORS
 
 	#filterShipsByQuery(query) {
 		const allShipHulls = this.#getState.dataState.allShipHulls;

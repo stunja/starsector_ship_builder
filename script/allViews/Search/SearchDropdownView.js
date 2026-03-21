@@ -23,10 +23,11 @@ class SearchDropdownView extends View {
 									${UI_DATASETS.NAV.DROPDOWN.FUNC(ship.id)}
 								>
 									${FONT_ICONS_MARKUP[hullSize]}
-									<div>
-										<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_NAME}">${ship.name}</p>
-										<p class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_INFO}">${shipInfo}</p>
+									<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_INFO}">
+										<p>${ship.name}</p>
+										<p>${shipInfo}</p>
 									</div>
+									${FONT_ICONS_MARKUP.SWAP_ICON}
 								</div>
 								`;
 				return markup;

@@ -5,9 +5,11 @@ const CLASS_NAMES = {
 	// check google material symbols
 	FONT_ICONS: {
 		_BASE: "material-symbols-outlined",
-		ICON_CONTAINER: "icon-container",
 		HOME: "home",
 		SEARCH: "search",
+		// iCONS
+		ICON_CONTAINER: "icon-container",
+		SWAP_ICON: "swap_horiz",
 		// HullSize Icons
 		HULL_SIZES: {
 			[HULL_SIZE.FRIGATE]: "stat_1",
@@ -29,8 +31,7 @@ const CLASS_NAMES = {
 		SELECTED: "search_selected",
 		DROPDOWN: {
 			_BASE: "search_dropdown",
-			ITEM: "search_dropdown-item",
-			ITEM_NAME: "item_name",
+			ITEM: "item",
 			ITEM_INFO: "item_info",
 		},
 	},

@@ -54,10 +54,6 @@
 		/* border: 0.2rem solid var(--main-lighter-color); */
 	}
 
-	input[type="text"]:hover {
-		/* border: 0.2rem solid var(--main-lighter-color); */
-	}
-
 	.search-icon {
 		color: var(--main-color);
 		padding-right: 0.6rem;
@@ -89,6 +85,58 @@
 	transition:
 		opacity 0.3s 0s,
 		visibility 0.3s 0s;
+
+	.item {
+		cursor: pointer;
+		display: flex;
+		gap: 1.6rem;
+
+		border-top: 0.1rem solid #e9e9e9;
+		padding: 1.4rem 2rem 1.4rem 1.4rem;
+
+		.item_info {
+			flex-grow: 2;
+			p:first-of-type {
+				color: var(--dark-color);
+				font-size: 1.6rem;
+				font-weight: 500;
+			}
+
+			p:last-of-type {
+				color: var(--main-grey-color);
+				font-size: 1.2rem;
+			}
+		}
+
+		.icon-container:last-of-type {
+			align-self: stretch;
+			span {
+				opacity: 0;
+			}
+			span:first-of-type {
+				transition: all 0.3s;
+			}
+		}
+
+		/* Icon for HullSize and Arrow */
+		span {
+			font-size: 1.6rem;
+		}
+	}
+	.item:hover {
+		background-color: #efefef;
+
+		span:first-of-type {
+			padding-left: 0.4rem;
+			transition: padding-left 0.3s;
+		}
+
+		.icon-container:last-of-type {
+			span {
+				opacity: 1;
+			}
+		}
+	}
 }
 
 .search_dropdown.hidden {
@@ -98,41 +146,4 @@
 	transition:
 		opacity 0.3s 0s,
 		visibility 0.3s 0s;
-}
-
-.search_dropdown-item {
-	cursor: pointer;
-	display: flex;
-	gap: 1.6rem;
-
-	border-top: 0.1rem solid #e9e9e9;
-	padding: 1.4rem;
-
-	.item_name {
-		color: var(--dark-color);
-		font-size: 1.6rem;
-		font-weight: 500;
-	}
-
-	.item_info {
-		color: var(--main-grey-color);
-		font-size: 1.2rem;
-	}
-
-	.hullsize {
-		color: black;
-	}
-	/* Icon for HullSize */
-	span {
-		font-size: 1.6rem;
-		/* color: red; */
-	}
-
-	.ship-designation {
-		font-size: 1.2rem;
-		color: var(--main-grey-color);
-	}
-}
-.search_dropdown-item:hover {
-	background-color: #efefef;
 }

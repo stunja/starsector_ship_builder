@@ -6,7 +6,7 @@ import View from "./view";
 import { GENERIC_STRING } from "../helper/ui/ui_main";
 import CLASS_NAMES from "../helper/ui/class_names";
 import UI_DATASETS from "../helper/ui/ui_datasets";
-import FONT_ICONS from "../helper/ui/font_icons_markup";
+import FONT_ICONS_MARKUP from "../helper/ui/font_icons_markup";
 import { NAV_STRING } from "../helper/ui/ui_strings";
 
 class NavigationView extends View {
@@ -20,7 +20,7 @@ class NavigationView extends View {
 
             <div class="${CLASS_NAMES.SEARCH._BASE}">
                 <div class="${CLASS_NAMES.SEARCH.WRAPPER}">
-					${FONT_ICONS.SEARCH}
+					${FONT_ICONS_MARKUP.SEARCH}
                     <input
                         type="text"
                         class="${CLASS_NAMES.SEARCH.INPUT}"
