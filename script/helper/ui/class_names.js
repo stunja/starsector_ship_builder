@@ -39,6 +39,7 @@ const CLASS_NAMES = {
 	ANIM: {
 		HIDDEN: "hidden",
 		IS_VISIBLE: "visible",
+		FADE_OUT: "fade-out",
 	},
 	POP_UP: {
 		_BASE: "popup",
@@ -67,9 +68,6 @@ const CLASS_NAMES = {
 	},
 	TEXT_DECOR: {
 		UNDERLINE: "underline",
-	},
-	ANIM: {
-		FADE_OUT: "fade-out",
 	},
 	// general popup
 	// mainPopup: "main-popup",

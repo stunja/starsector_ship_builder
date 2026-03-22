@@ -9,6 +9,7 @@ import SearchDropdownView from "../allViews/Search/SearchDropdownView.js";
 import CLASS_NAMES from "../helper/ui/class_names.js";
 import UI_DATASETS from "../helper/ui/ui_datasets.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
+import SearchView from "../allViews/Search/SearchView.js";
 
 //! make transition
 //! THERE IS NO WAY TO SEARCH FOR SKINS (FOR EXAMPLE ONSLAUGH XIV). I dont see a way to connect them systemically
@@ -30,6 +31,7 @@ export default class Navigation extends ViewModel {
 	update() {
 		// Render
 		NavigationView.render(this.getState());
+		SearchView.render();
 
 		// EventHandler
 		NavigationView.addClickHandler(
@@ -55,15 +57,19 @@ export default class Navigation extends ViewModel {
 			`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
 		);
 
+		SearchView.inputCapture();
+
 		searchInputElement.addEventListener("input", (e) => {
 			const query = e.target.value.trim().toLowerCase();
 
-			dropdownElement.classList.remove(CLASS_NAMES.ANIM.HIDDEN);
+			// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
 
 			// IF empty input, hide dropdown
 			if (!query) {
+				console.log("test");
 				searchInputElement.value = "";
-				dropdownElement.classList.add(CLASS_NAMES.ANIM.HIDDEN);
+				// dropdownElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
+
 				return;
 			}
 

@@ -17,21 +17,7 @@ class NavigationView extends View {
             <a href="${GENERIC_STRING.HASH}" class="${CLASS_NAMES.NAVIGATION.NAV_LOGO}">
                 ${NAV_STRING.LOGO}
             </a>
-
-            <div class="${CLASS_NAMES.SEARCH._BASE}">
-                <div class="${CLASS_NAMES.SEARCH.WRAPPER}">
-					${FONT_ICONS_MARKUP.SEARCH}
-                    <input
-                        type="text"
-                        class="${CLASS_NAMES.SEARCH.INPUT}"
-                        placeholder="${NAV_STRING.SEARCH_INPUT_PLACEHOLDER}"
-                        autocomplete="off"
-                    />
-                    <div class="${CLASS_NAMES.SEARCH.DROPDOWN._BASE} ${CLASS_NAMES.ANIM.HIDDEN}"></div>
-                </div>
-			    <div class="${CLASS_NAMES.SEARCH.SELECTED}"></div>
-		    </div>
-
+            <div class="${CLASS_NAMES.SEARCH._BASE}"></div>
             <button class="${CLASS_NAMES.button} ${CLASS_NAMES.NAVIGATION.SAVE_BUILD}" ${UI_DATASETS.NAV.FORM.SAVE}>
                     ${NAV_STRING.SAVE_BUILDS_BUTTON}
             </button>

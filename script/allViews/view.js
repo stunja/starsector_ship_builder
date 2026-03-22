@@ -20,15 +20,16 @@ export default class View {
 	_clearTargetValue = (target) => {
 		this._localParentElement.querySelector(target).value = "";
 	};
-	render(data) {
-		if (!data) return this.#renderError("no data");
 
+	render(data) {
+		// 	if (!data) return this.#renderError("no data");
+		if (!data) console.warn("no data");
 		if (!this._localParent)
 			console.warn("Issue with parent element", this._localParent);
 
 		this._localParentElement = document.querySelector(this._localParent);
 
-		this._data = data;
+		if (data) this._data = data;
 		const markup = this.generateMarkup();
 
 		this._clearRender();
@@ -132,17 +133,18 @@ export default class View {
 		return false;
 	}
 
+	//? I don`t remember this
 	// Captures only Name from Submit Form
-	inputSubmitHandler(parentElement, targetFunction) {
-		parentElement.addEventListener("submit", (e) => {
-			e.preventDefault();
-			const formData = new FormData(e.target);
+	// inputSubmitHandler(parentElement, targetFunction) {
+	// 	parentElement.addEventListener("submit", (e) => {
+	// 		e.preventDefault();
+	// 		const formData = new FormData(e.target);
 
-			const searchValue = formData.get(NAV_STRING.SEARCH_INPUT_LABEL); // captures the name attribute
+	// 		const searchValue = formData.get(NAV_STRING.SEARCH_INPUT_LABEL); // captures the name attribute
 
-			return targetFunction(searchValue);
-		});
-	}
+	// 		return targetFunction(searchValue);
+	// 	});
+	// }
 	// Utility method to check if a target has an active listener
 	hasListener(target) {
 		return this._targetMap.has(target);
