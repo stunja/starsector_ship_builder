@@ -1,14 +1,9 @@
 /* Main Pop up */
 .popup {
-	-webkit-transition:
-		opacity 0.3s 0s,
-		visibility 0s 0.3s;
-	-moz-transition:
-		opacity 0.3s 0s,
-		visibility 0s 0.3s;
-	transition:
-		opacity 0.3s 0s,
-		visibility 0s 0.3s;
+	/* how quickly it appears */
+	transition: opacity 0.6s ease-in-out;
+	z-index: 1000;
+	opacity: 1;
 
 	.popup_warning-wrapper {
 		position: absolute;

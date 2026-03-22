@@ -30,3 +30,6 @@
 
 /* Sprite */
 @import "./Weapons/_weaponSprite.css";
+
+/* Animations */
+@import "./generic_animations.css";

@@ -126,7 +126,7 @@ export default class Navigation extends ViewModel {
 		return this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
 	}
 
-	#warningPopUp = () => {
+	#warningPopUp() {
 		SearchWarningPopUpView.render(this.#currentUserInput);
 
 		SearchWarningPopUpView.addClickHandler(
@@ -139,13 +139,10 @@ export default class Navigation extends ViewModel {
 			`.${CLASS_NAMES.POP_UP.WARNING}`,
 			this.#closePopUpAndClearInput,
 		);
-	};
-	#closePopUpAndClearInput() {
+	}
+	async #closePopUpAndClearInput() {
+		await SearchWarningPopUpView.fadeOutAnimation();
 		SearchWarningPopUpView._clearRender();
-		SearchDropdownView._clearRender();
-
-		// clear input input field
-		NavigationView._clearTargetValue(`.${CLASS_NAMES.SEARCH.INPUT}`);
 	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.

@@ -1,5 +1,6 @@
 // Helper
 import CLASS_NAMES from "../helper/ui/class_names";
+import CONFIG from "../helper/ui/configs";
 import { NAV_STRING } from "../helper/ui/ui_strings";
 
 export default class View {
@@ -32,6 +33,17 @@ export default class View {
 
 		this._clearRender();
 		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
+	}
+	// simple function to give fade out animation
+	async fadeOutAnimation() {
+		this._localParentElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
+
+		return new Promise((resolve) =>
+			setTimeout(() => {
+				this._localParentElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
+				resolve();
+			}, CONFIG.ANIM.FADEOUT_MS),
+		);
 	}
 	// async render
 	async renderAsync(data) {

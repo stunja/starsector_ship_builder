@@ -68,6 +68,9 @@ const CLASS_NAMES = {
 	TEXT_DECOR: {
 		UNDERLINE: "underline",
 	},
+	ANIM: {
+		FADE_OUT: "fade-out",
+	},
 	// general popup
 	// mainPopup: "main-popup",
 	// popUpWarning: "popup-warning",

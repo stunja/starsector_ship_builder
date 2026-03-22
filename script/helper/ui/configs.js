@@ -7,5 +7,8 @@ const CONFIG = {
 	SHIP_AREA: {
 		TARGET_REM: 10,
 	},
+	ANIM: {
+		FADEOUT_MS: 300,
+	},
 };
 export default CONFIG;
