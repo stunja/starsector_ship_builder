@@ -117,7 +117,6 @@ export default class View {
 		// Return the listener for potential external reference
 		return listener;
 	}
-
 	removeClickHandler(target, type) {
 		// Get the existing listener if any
 		const existingListener = this._targetMap.get(target);
@@ -132,7 +131,43 @@ export default class View {
 
 		return false;
 	}
+	//! New simpler and cleaner I need to rework the code
+	// Mouse Click Handler
+	addMouseClickHandler(targetClass, callbackFunction) {
+		// Create the event listener function
+		const listener = function (e) {
+			const btn = e.target.closest(`.${targetClass}`);
+			if (!btn) return;
+			e.preventDefault();
+			callbackFunction(btn);
+		};
 
+		// If there's an existing listener for this target, remove it first
+		this.removeClickHandler(targetClass);
+
+		// Store the new listener in the Map
+		this._targetMap.set(targetClass, listener);
+
+		// Add the event listener
+		this._localParentElement.addEventListener("click", listener);
+
+		// Return the listener for potential external reference
+		return listener;
+	}
+	removeClickHandler(targetClass) {
+		// Get the existing listener if any
+		const existingListener = this._targetMap.get(targetClass);
+
+		if (existingListener) {
+			// Remove the event listener
+			this._localParentElement.removeEventListener("click", existingListener);
+			// Remove from Map
+			this._targetMap.delete(targetClass);
+			return true;
+		}
+
+		return false;
+	}
 	//? I don`t remember this
 	// Captures only Name from Submit Form
 	// inputSubmitHandler(parentElement, targetFunction) {

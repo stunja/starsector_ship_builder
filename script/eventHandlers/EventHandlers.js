@@ -1,5 +1,6 @@
 import CLASS_NAMES from "../helper/ui/class_names";
 
+//! Why
 class EventHandlers {
 	constructor() {
 		this.eventListenerFolder = new Map();

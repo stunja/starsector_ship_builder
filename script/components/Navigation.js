@@ -34,9 +34,8 @@ export default class Navigation extends ViewModel {
 		SearchView.render();
 
 		// EventHandler
-		NavigationView.addClickHandler(
-			`.${CLASS_NAMES.NAVIGATION.SAVE_BUILD}`,
-			"click",
+		NavigationView.addMouseClickHandler(
+			CLASS_NAMES.NAVIGATION.SAVE_BUILD,
 			this.#saveBuild,
 		);
 
@@ -46,36 +45,36 @@ export default class Navigation extends ViewModel {
 
 	// Set up dynamic search input listener
 	#dynamicInputListener() {
-		const localParentElement = document.querySelector(
-			`.${CLASS_NAMES.SEARCH._BASE}`,
-		);
-		const searchInputElement = localParentElement.querySelector(
-			`.${CLASS_NAMES.SEARCH.INPUT}`,
-		);
+		// const localParentElement = document.querySelector(
+		// 	`.${CLASS_NAMES.SEARCH._BASE}`,
+		// );
+		// const searchInputElement = localParentElement.querySelector(
+		// 	`.${CLASS_NAMES.SEARCH.INPUT}`,
+		// );
 
-		const dropdownElement = localParentElement.querySelector(
-			`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
-		);
+		// const dropdownElement = localParentElement.querySelector(
+		// 	`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
+		// );
 
 		SearchView.inputCapture();
 
-		searchInputElement.addEventListener("input", (e) => {
-			const query = e.target.value.trim().toLowerCase();
+		// searchInputElement.addEventListener("input", (e) => {
+		// 	const query = e.target.value.trim().toLowerCase();
 
-			// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
+		// 	// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
 
-			// IF empty input, hide dropdown
-			if (!query) {
-				console.log("test");
-				searchInputElement.value = "";
-				// dropdownElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
+		// 	// IF empty input, hide dropdown
+		// 	if (!query) {
+		// 		console.log("test");
+		// 		searchInputElement.value = "";
+		// 		// dropdownElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
 
-				return;
-			}
+		// 		return;
+		// 	}
 
-			const matchedItems = this.#filterShipsByQuery(query);
-			this.#renderSearchResults(matchedItems);
-		});
+		// 	const matchedItems = this.#filterShipsByQuery(query);
+		// 	this.#renderSearchResults(matchedItems);
+		// });
 	}
 
 	#filterShipsByQuery(query) {
