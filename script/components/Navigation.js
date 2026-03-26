@@ -31,7 +31,6 @@ export default class Navigation extends ViewModel {
 	update() {
 		// Render
 		NavigationView.render(this.getState());
-		SearchView.render();
 
 		// EventHandler
 		NavigationView.addMouseClickHandler(
@@ -39,43 +38,16 @@ export default class Navigation extends ViewModel {
 			this.#saveBuild,
 		);
 
-		// dynamic search field
-		this.#dynamicInputListener();
+		// Search
+		SearchView.render();
+		SearchView.inputCapture(this.#dynamicInputListener);
 	}
 
 	// Set up dynamic search input listener
-	#dynamicInputListener() {
-		// const localParentElement = document.querySelector(
-		// 	`.${CLASS_NAMES.SEARCH._BASE}`,
-		// );
-		// const searchInputElement = localParentElement.querySelector(
-		// 	`.${CLASS_NAMES.SEARCH.INPUT}`,
-		// );
-
-		// const dropdownElement = localParentElement.querySelector(
-		// 	`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
-		// );
-
-		SearchView.inputCapture();
-
-		// searchInputElement.addEventListener("input", (e) => {
-		// 	const query = e.target.value.trim().toLowerCase();
-
-		// 	// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
-
-		// 	// IF empty input, hide dropdown
-		// 	if (!query) {
-		// 		console.log("test");
-		// 		searchInputElement.value = "";
-		// 		// dropdownElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
-
-		// 		return;
-		// 	}
-
-		// 	const matchedItems = this.#filterShipsByQuery(query);
-		// 	this.#renderSearchResults(matchedItems);
-		// });
-	}
+	#dynamicInputListener = (userInput) => {
+		const matchedItems = this.#filterShipsByQuery(userInput);
+		this.#renderSearchResults(matchedItems);
+	};
 
 	#filterShipsByQuery(query) {
 		const allShipHulls = this.#getState.dataState.allShipHulls;
@@ -98,6 +70,7 @@ export default class Navigation extends ViewModel {
 			const hullSizeMatch = this.#ADDITIONAL_DATA_PROPERTIES.some((key) => {
 				return matchingValues(ship.additionalData?.[key]);
 			});
+
 			return categoryMatch || hullSizeMatch;
 		});
 
@@ -108,9 +81,8 @@ export default class Navigation extends ViewModel {
 
 	#renderSearchResults(matchedItems) {
 		SearchDropdownView.render(matchedItems);
-		SearchDropdownView.addClickHandler(
+		SearchDropdownView.addMouseClickHandler(
 			`.${CLASS_NAMES.SEARCH.DROPDOWN.ITEM}`,
-			"click",
 			this.#handleShipSelection,
 		);
 	}
@@ -134,9 +106,8 @@ export default class Navigation extends ViewModel {
 	#warningPopUp() {
 		SearchWarningPopUpView.render(this.#currentUserInput);
 
-		SearchWarningPopUpView.addClickHandler(
+		SearchWarningPopUpView.addMouseClickHandler(
 			`.${CLASS_NAMES.POP_UP.WARNING_BUTTON}`,
-			"click",
 			this.#searchWarningLogic,
 		);
 

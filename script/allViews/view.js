@@ -21,11 +21,18 @@ export default class View {
 		this._localParentElement.querySelector(target).value = "";
 	};
 
+	//! rewrite it later.
+	ERROR_MSG = {};
 	render(data) {
-		// 	if (!data) return this.#renderError("no data");
-		if (!data) console.warn("no data");
+		if (!data) console.warn(`no data ${this.constructor.name}`);
+		// if (!data) throw new Error(`no data for ${this._localParent}`);
+
 		if (!this._localParent)
-			console.warn("Issue with parent element", this._localParent);
+			console.warn(
+				`Issue with parent element in ${this.constructor.name}`,
+				this._localParent,
+			);
+		// if (!this._localParent) throw new Error("no local parent");
 
 		this._localParentElement = document.querySelector(this._localParent);
 
@@ -132,6 +139,7 @@ export default class View {
 		return false;
 	}
 	//! New simpler and cleaner I need to rework the code
+	//! add more guarding
 	// Mouse Click Handler
 	addMouseClickHandler(targetClass, callbackFunction) {
 		// Create the event listener function

@@ -27,23 +27,29 @@ class SearchView extends View {
 
 		return markup;
 	}
-	inputCapture() {
-		console.log("teste");
-		console.log(this._localParent);
-		// searchInputElement.addEventListener("input", (e) => {
-		// 	const query = e.target.value.trim().toLowerCase();
 
-		// 	// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
+	inputCapture(returnFunc) {
+		const localParentElement = document.querySelector(this._localParent);
+		const searchInputElement = localParentElement.querySelector(
+			`.${CLASS_NAMES.SEARCH.INPUT}`,
+		);
 
-		// 	// IF empty input, hide dropdown
-		// 	if (!query) {
-		// 		console.log("test");
-		// 		searchInputElement.value = "";
-		// 		// dropdownElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
+		const dropdownElement = localParentElement.querySelector(
+			`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
+		);
 
-		// 		return;
-		// 	}
+		searchInputElement.addEventListener("input", (e) => {
+			const query = e.target.value.trim().toLowerCase();
+			// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
 
+			// IF empty input, hide dropdown
+			// if (!query) {
+			// 	searchInputElement.value = "";
+			// 	dropdownElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
+			// 	return;
+			// }
+			returnFunc(query);
+		});
 		// 	const matchedItems = this.#filterShipsByQuery(query);
 		// 	this.#renderSearchResults(matchedItems);
 		// });
