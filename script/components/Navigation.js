@@ -19,20 +19,21 @@ export default class Navigation extends ViewModel {
 	#searchField;
 	#getState;
 	#currentUserInput;
+	#allShipHulls;
 
 	#FILTER_CATEGORIES = ["name", "techManufacturer", "designation", "hints"];
 	// Sub Object, holds additional properties
 	#ADDITIONAL_DATA_PROPERTIES = ["hullSize"];
+
 	constructor(model) {
 		super(model);
 
 		this.#getState = this.getState();
+		this.#allShipHulls = this.#getState.dataState.allShipHulls;
 	}
 	update() {
 		// Render
 		NavigationView.render(this.getState());
-
-		// EventHandler
 		NavigationView.addMouseClickHandler(
 			CLASS_NAMES.NAVIGATION.SAVE_BUILD,
 			this.#saveBuild,
@@ -40,9 +41,15 @@ export default class Navigation extends ViewModel {
 
 		// Search
 		SearchView.render();
+		SearchView.addMouseClickHandler(
+			CLASS_NAMES.SEARCH.INPUT,
+			this.#showAllDropdownItems,
+		);
 		SearchView.inputCapture(this.#dynamicInputListener);
 	}
-
+	#showAllDropdownItems = () => {
+		this.#renderSearchResults(this.#allShipHulls);
+	};
 	// Set up dynamic search input listener
 	#dynamicInputListener = (userInput) => {
 		const matchedItems = this.#filterShipsByQuery(userInput);
@@ -50,7 +57,6 @@ export default class Navigation extends ViewModel {
 	};
 
 	#filterShipsByQuery(query) {
-		const allShipHulls = this.#getState.dataState.allShipHulls;
 		const normalziedQuery = query.toLowerCase();
 
 		const matchingValues = (value) => {
@@ -63,7 +69,7 @@ export default class Navigation extends ViewModel {
 			return false;
 		};
 
-		const filteredShips = allShipHulls.filter((ship) => {
+		const filteredShips = this.#allShipHulls.filter((ship) => {
 			const categoryMatch = this.#FILTER_CATEGORIES.some((key) => {
 				return matchingValues(ship[key]);
 			});
