@@ -4,12 +4,13 @@ import ViewModel from "../ViewModel.js";
 import NavigationView from "../allViews/NavigationView.js";
 import SearchWarningPopUpView from "../allViews/Search/SearchWarningPopUpView.js";
 import SearchDropdownView from "../allViews/Search/SearchDropdownView.js";
+import SearchView from "../allViews/Search/SearchView.js";
 
 // helper
 import CLASS_NAMES from "../helper/ui/class_names.js";
 import UI_DATASETS from "../helper/ui/ui_datasets.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
-import SearchView from "../allViews/Search/SearchView.js";
+import { arrayToSortedByName } from "../helper/helper_functions.js";
 
 //! make transition
 //! THERE IS NO WAY TO SEARCH FOR SKINS (FOR EXAMPLE ONSLAUGH XIV). I dont see a way to connect them systemically
@@ -45,18 +46,16 @@ export default class Navigation extends ViewModel {
 			CLASS_NAMES.SEARCH.INPUT,
 			this.#showAllDropdownItems,
 		);
-		SearchView.inputCapture(this.#dynamicInputListener);
+
+		SearchView.inputCapture(this.#filterShipsByQuery);
 	}
+
 	#showAllDropdownItems = () => {
-		this.#renderSearchResults(this.#allShipHulls);
-	};
-	// Set up dynamic search input listener
-	#dynamicInputListener = (userInput) => {
-		const matchedItems = this.#filterShipsByQuery(userInput);
-		this.#renderSearchResults(matchedItems);
+		const newArray = arrayToSortedByName(this.#allShipHulls);
+		this.#renderSearchResults(newArray);
 	};
 
-	#filterShipsByQuery(query) {
+	#filterShipsByQuery = (query) => {
 		const normalziedQuery = query.toLowerCase();
 
 		const matchingValues = (value) => {
@@ -80,10 +79,14 @@ export default class Navigation extends ViewModel {
 			return categoryMatch || hullSizeMatch;
 		});
 
-		return filteredShips.toSorted((a, b) =>
-			a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
-		);
-	}
+		//! replace
+		const arrayToRender = arrayToSortedByName(filteredShips);
+		this.#renderSearchResults(arrayToRender);
+
+		// return filteredShips.toSorted((a, b) =>
+		// 	a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+		// );
+	};
 
 	#renderSearchResults(matchedItems) {
 		SearchDropdownView.render(matchedItems);

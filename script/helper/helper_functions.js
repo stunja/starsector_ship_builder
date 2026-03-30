@@ -59,12 +59,12 @@ export const extractDataFromObject = (propertiesToExtract, data) =>
 			...acc,
 			[key]: data[key],
 		}),
-		{}
+		{},
 	);
 
 // IWS weapons are speciaal installedWeapons added by a HULLMOD
 export const createNewWeaponSlotsAndInstalledWeapons = function (
-	howManySlotsToCreate
+	howManySlotsToCreate,
 ) {
 	const createNewProps = Array.from(
 		{
@@ -81,7 +81,7 @@ export const createNewWeaponSlotsAndInstalledWeapons = function (
 				},
 				newInstalledWeapons: [currentWeaponId, GENERIC_STRING.EMPTY],
 			};
-		}
+		},
 	);
 	return {
 		newInstalledWeapons: createNewProps.map((arr) => arr.newInstalledWeapons),
@@ -92,11 +92,11 @@ export const createNewWeaponSlotsAndInstalledWeapons = function (
 // RemoveIwsWeapons
 export const toggleAdditionalInstalledWeapons = function (
 	installedWeapons,
-	newInstalledWeapons
+	newInstalledWeapons,
 ) {
 	// Filter IWS weapons directly
 	const iwsWeapons = installedWeapons.filter(
-		([weaponSlotId, _weaponId]) => weaponSlotId && weaponSlotId.includes("IWS")
+		([weaponSlotId, _weaponId]) => weaponSlotId && weaponSlotId.includes("IWS"),
 	);
 
 	// Return early if no IWS weapons
@@ -140,7 +140,7 @@ export const findHullModKeyName = function (obj, searchKey, matches = []) {
 export const AddRemoveInstalledWeapon = function (
 	installedWeapons,
 	weaponPopUpId,
-	weaponSlotId
+	weaponSlotId,
 ) {
 	return installedWeapons.map(([installedSlotId, installedWeaponId]) => {
 		// If weapon already exists in slot, remove it
@@ -163,10 +163,10 @@ export const AddRemoveInstalledWeapon = function (
 export const pushTargetWeaponObjectOnTop = function (
 	installedWeapons,
 	weaponSlot,
-	weaponArray
+	weaponArray,
 ) {
 	const installedWeapon = installedWeapons.find(
-		([slotId, _wpnId]) => weaponSlot.id === slotId
+		([slotId, _wpnId]) => weaponSlot.id === slotId,
 	);
 
 	// if installed weaponId exists, put it on top
@@ -203,7 +203,7 @@ export const createUsableHullMods = function (hullMods) {
 			// HIDDEN ARE TRUE => HIDE
 			hullMod.hidden !== GENERIC_STRING.TRUE &&
 			// special hide rule
-			hullMod.id !== HULLMODS_TO_HIDE[hullMod.id]
+			hullMod.id !== HULLMODS_TO_HIDE[hullMod.id],
 	);
 };
 
@@ -213,7 +213,7 @@ export async function toggleAsyncSpinner(
 	asyncOperations,
 	view,
 	args = [],
-	delayMs = CONFIG.SPINNER.spinnerDelayMs
+	delayMs = CONFIG.SPINNER.spinnerDelayMs,
 ) {
 	let spinnerTimeout = setTimeout(() => {
 		view.addSpinner();
@@ -235,7 +235,14 @@ export const imageLoader = async function (src) {
 		img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
 	});
 };
-
+// Sorting ships by name
+const SORT_LOCALE = "en";
+const SORT_OPTIONS = { sensitivity: "base" };
+export const arrayToSortedByName = function (array) {
+	return array.toSorted((a, b) =>
+		a.name.localeCompare(b.name, SORT_LOCALE, SORT_OPTIONS),
+	);
+};
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original
@@ -245,5 +252,5 @@ export const weaponSlotIdIntoWeaponSlotObject = (allWeapons, weaponSlotId) =>
 // Why do I even need these? too simple to even keep, just need to rework original
 export const findCurrentWeaponSlotFromWeaponSlotId = (
 	weaponSlots,
-	weaponSlotId
+	weaponSlotId,
 ) => weaponSlots.find((slot) => slot.id === weaponSlotId);
