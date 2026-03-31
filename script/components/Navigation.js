@@ -47,14 +47,18 @@ export default class Navigation extends ViewModel {
 			this.#showAllDropdownItems,
 		);
 
-		SearchView.inputCapture(this.#filterShipsByQuery);
+		SearchView.inputCapture(this.#showFilteredDropdownItems);
 	}
 
 	#showAllDropdownItems = () => {
-		const newArray = arrayToSortedByName(this.#allShipHulls);
-		this.#renderSearchResults(newArray);
+		const array = arrayToSortedByName(this.#allShipHulls);
+		this.#renderSearchResults(array);
 	};
-
+	#showFilteredDropdownItems = (inputCapture) => {
+		const array = this.#filterShipsByQuery(inputCapture);
+		console.log(array);
+		this.#renderSearchResults(array);
+	};
 	#filterShipsByQuery = (query) => {
 		const normalziedQuery = query.toLowerCase();
 
@@ -75,14 +79,12 @@ export default class Navigation extends ViewModel {
 			const hullSizeMatch = this.#ADDITIONAL_DATA_PROPERTIES.some((key) => {
 				return matchingValues(ship.additionalData?.[key]);
 			});
-
 			return categoryMatch || hullSizeMatch;
 		});
 
-		//! replace
-		const arrayToRender = arrayToSortedByName(filteredShips);
-		this.#renderSearchResults(arrayToRender);
+		return arrayToSortedByName(filteredShips);
 
+		//! replace
 		// return filteredShips.toSorted((a, b) =>
 		// 	a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
 		// );
@@ -91,7 +93,7 @@ export default class Navigation extends ViewModel {
 	#renderSearchResults(matchedItems) {
 		SearchDropdownView.render(matchedItems);
 		SearchDropdownView.addMouseClickHandler(
-			`.${CLASS_NAMES.SEARCH.DROPDOWN.ITEM}`,
+			CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
 			this.#handleShipSelection,
 		);
 	}
@@ -111,23 +113,23 @@ export default class Navigation extends ViewModel {
 	#findShipById(shipId) {
 		return this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
 	}
-
+	async #closePopUpAndClearInput() {
+		await SearchWarningPopUpView.fadeOutAnimation();
+		SearchWarningPopUpView._clearRender();
+	}
 	#warningPopUp() {
 		SearchWarningPopUpView.render(this.#currentUserInput);
 
 		SearchWarningPopUpView.addMouseClickHandler(
-			`.${CLASS_NAMES.POP_UP.WARNING_BUTTON}`,
+			CLASS_NAMES.POP_UP.WARNING_BUTTON,
 			this.#searchWarningLogic,
 		);
 
+		//! rework implementation
 		SearchWarningPopUpView.closePopUpContainerIfUserClickOutside(
 			`.${CLASS_NAMES.POP_UP.WARNING}`,
 			this.#closePopUpAndClearInput,
 		);
-	}
-	async #closePopUpAndClearInput() {
-		await SearchWarningPopUpView.fadeOutAnimation();
-		SearchWarningPopUpView._clearRender();
 	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.

@@ -151,7 +151,7 @@ export default class View {
 		};
 
 		// If there's an existing listener for this target, remove it first
-		this.removeClickHandler(targetClass);
+		this.removeMouseClickHandler(targetClass);
 
 		// Store the new listener in the Map
 		this._targetMap.set(targetClass, listener);
@@ -162,7 +162,7 @@ export default class View {
 		// Return the listener for potential external reference
 		return listener;
 	}
-	removeClickHandler(targetClass) {
+	removeMouseClickHandler(targetClass) {
 		// Get the existing listener if any
 		const existingListener = this._targetMap.get(targetClass);
 
@@ -192,24 +192,32 @@ export default class View {
 	hasListener(target) {
 		return this._targetMap.has(target);
 	}
-	// Event Listener for Closing Container if User click outside of it { Once }
+
 	closePopUpContainerIfUserClickOutside(targetClass, callback) {
+		if (typeof callback !== "function") return;
+
 		const targetContainer = document.querySelector(targetClass);
+		if (!targetContainer) return;
+
+		const contoller = new AbortController();
 
 		const handleOutsideClick = (event) => {
-			const userClickedOutsideOfContainer = !targetContainer.contains(
-				event.target,
-			);
-
-			if (userClickedOutsideOfContainer) {
+			if (!targetContainer.contains(event.target)) {
 				callback();
 			}
 		};
 
-		// Conflict between Weapon EL and close form EL.
-		// Defer the event listener to next tick to avoid immediate triggering
-		requestAnimationFrame(() => {
-			document.addEventListener("click", handleOutsideClick, { once: true });
-		});
+		// Defer so the click that opened the popup
+
+		setTimeout(() => {
+			document.addEventListener("click", handleOutsideClick, {
+				once: true,
+				signal: AbortController.signal,
+			});
+		}, 0);
+
+		// Return cleanup => callers can cancel if the popup closes another way
+		// for example using esc, (implement)
+		return () => contoller.abort();
 	}
 }
