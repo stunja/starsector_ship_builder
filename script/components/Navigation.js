@@ -56,7 +56,6 @@ export default class Navigation extends ViewModel {
 	};
 	#showFilteredDropdownItems = (inputCapture) => {
 		const array = this.#filterShipsByQuery(inputCapture);
-		console.log(array);
 		this.#renderSearchResults(array);
 	};
 	#filterShipsByQuery = (query) => {
@@ -96,6 +95,15 @@ export default class Navigation extends ViewModel {
 			CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
 			this.#handleShipSelection,
 		);
+		// search_dropdown
+		SearchDropdownView.closePopUpContainerIfUserClickOutside(
+			CLASS_NAMES.SEARCH.DROPDOWN._BASE,
+			this.#closeDropdownAndClearInput,
+		);
+	}
+	async #closeDropdownAndClearInput() {
+		await SearchDropdownView.fadeOutAnimation();
+		SearchDropdownView._clearRender();
 	}
 	#handleShipSelection = (btn) => {
 		const shipId = btn.getAttribute(UI_DATASETS.NAV.DROPDOWN._BASE);
@@ -113,10 +121,7 @@ export default class Navigation extends ViewModel {
 	#findShipById(shipId) {
 		return this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
 	}
-	async #closePopUpAndClearInput() {
-		await SearchWarningPopUpView.fadeOutAnimation();
-		SearchWarningPopUpView._clearRender();
-	}
+
 	#warningPopUp() {
 		SearchWarningPopUpView.render(this.#currentUserInput);
 
@@ -125,11 +130,15 @@ export default class Navigation extends ViewModel {
 			this.#searchWarningLogic,
 		);
 
-		//! rework implementation
 		SearchWarningPopUpView.closePopUpContainerIfUserClickOutside(
-			`.${CLASS_NAMES.POP_UP.WARNING}`,
+			CLASS_NAMES.POP_UP.WARNING,
 			this.#closePopUpAndClearInput,
 		);
+	}
+
+	async #closePopUpAndClearInput() {
+		await SearchWarningPopUpView.fadeOutAnimation();
+		SearchWarningPopUpView._clearRender();
 	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.

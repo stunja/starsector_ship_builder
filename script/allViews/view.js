@@ -196,28 +196,26 @@ export default class View {
 	closePopUpContainerIfUserClickOutside(targetClass, callback) {
 		if (typeof callback !== "function") return;
 
-		const targetContainer = document.querySelector(targetClass);
+		const targetContainer = document.querySelector(`.${targetClass}`);
 		if (!targetContainer) return;
 
-		const contoller = new AbortController();
+		const controller = new AbortController();
 
 		const handleOutsideClick = (event) => {
 			if (!targetContainer.contains(event.target)) {
 				callback();
+				controller.abort(); // self-cleanup on success
 			}
 		};
 
-		// Defer so the click that opened the popup
-
+		// Defer so the click that opened the popup doesn't immediately trigger close
 		setTimeout(() => {
 			document.addEventListener("click", handleOutsideClick, {
-				once: true,
-				signal: AbortController.signal,
+				signal: controller.signal,
 			});
 		}, 0);
 
-		// Return cleanup => callers can cancel if the popup closes another way
-		// for example using esc, (implement)
-		return () => contoller.abort();
+		// Return cleanup so callers can cancel (e.g. via Escape key)
+		return () => controller.abort();
 	}
 }
