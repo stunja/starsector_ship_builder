@@ -27,18 +27,20 @@ class SearchView extends View {
 
 		return markup;
 	}
-
-	inputCapture(returnFunc) {
+	#searchInputSelector() {
 		const localParentElement = document.querySelector(this._localParent);
 		const searchInputElement = localParentElement.querySelector(
 			`.${CLASS_NAMES.SEARCH.INPUT}`,
 		);
 
-		const dropdownElement = localParentElement.querySelector(
-			`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
-		);
+		return searchInputElement;
+	}
+	inputCapture(returnFunc) {
+		// const dropdownElement = localParentElement.querySelector(
+		// 	`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
+		// );
 
-		searchInputElement.addEventListener("input", (e) => {
+		this.#searchInputSelector().addEventListener("input", (e) => {
 			const query = e.target.value.trim().toLowerCase();
 			// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
 
@@ -53,6 +55,9 @@ class SearchView extends View {
 		// 	const matchedItems = this.#filterShipsByQuery(query);
 		// 	this.#renderSearchResults(matchedItems);
 		// });
+	}
+	clearInputField() {
+		this.#searchInputSelector().value = "";
 	}
 }
 export default new SearchView();

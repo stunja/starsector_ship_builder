@@ -102,6 +102,7 @@ export default class Navigation extends ViewModel {
 		);
 	}
 	async #closeDropdownAndClearInput() {
+		SearchView.clearInputField();
 		await SearchDropdownView.fadeOutAnimation();
 		SearchDropdownView._clearRender();
 	}
