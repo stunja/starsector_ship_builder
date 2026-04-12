@@ -35,28 +35,29 @@ export default class Navigation extends ViewModel {
 	update() {
 		// Render
 		NavigationView.render(this.getState());
-		NavigationView.addMouseClickHandler(
+		// NavigationView.addMouseClickHandler(
+		// 	CLASS_NAMES.NAVIGATION.SAVE_BUILD,
+		// 	this.#saveBuild,
+		// );
+		NavigationView.mouseClick(
 			CLASS_NAMES.NAVIGATION.SAVE_BUILD,
 			this.#saveBuild,
 		);
 
 		// Search
 		SearchView.render();
-		SearchView.addMouseClickHandler(
-			CLASS_NAMES.SEARCH.INPUT,
-			this.#showAllDropdownItems,
-		);
+		SearchView.addMouseClickHandler(CLASS_NAMES.SEARCH.INPUT, () => {
+			console.log("user clicked on the input");
+			const allShips = arrayToSortedByName(this.#allShipHulls);
+			this.#renderSearchResults(allShips);
+		});
 
-		SearchView.inputCapture(this.#showFilteredDropdownItems);
+		// SearchView.inputCapture(this.#showFilteredDropdownItems);
 	}
 
-	#showAllDropdownItems = () => {
-		const array = arrayToSortedByName(this.#allShipHulls);
-		this.#renderSearchResults(array);
-	};
 	#showFilteredDropdownItems = (inputCapture) => {
-		const array = this.#filterShipsByQuery(inputCapture);
-		this.#renderSearchResults(array);
+		const filteredShips = this.#filterShipsByQuery(inputCapture);
+		this.#renderSearchResults(filteredShips);
 	};
 	#filterShipsByQuery = (query) => {
 		const normalziedQuery = query.toLowerCase();
@@ -90,23 +91,34 @@ export default class Navigation extends ViewModel {
 	};
 
 	#renderSearchResults(matchedItems) {
-		SearchDropdownView.render(matchedItems);
-		SearchDropdownView.addMouseClickHandler(
-			CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
-			this.#handleShipSelection,
-		);
-		// search_dropdown
-		SearchDropdownView.closePopUpContainerIfUserClickOutside(
-			CLASS_NAMES.SEARCH.DROPDOWN._BASE,
-			this.#closeDropdownAndClearInput,
-		);
+		//
+		// const dropdownState = SearchDropdownView._localParentElement
+		// if (isOpen) {
+		// 	this.#closeDropDown();
+		// } else {
+		// 	this.#openDropDown();
+		// }
+		// SearchDropdownView.render(matchedItems);
+		// SearchDropdownView.addMouseClickHandler(
+		// 	CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
+		// 	this.#onDropDownItemSelection,
+		// );
+		// // search_dropdown
+		// SearchDropdownView.closePopUpContainerIfUserClickOutside(
+		// 	CLASS_NAMES.SEARCH.DROPDOWN._BASE,
+		// 	async () => {
+		// 		SearchView.clearInputField();
+		// 		await SearchDropdownView.fadeOutAnimation();
+		// 		SearchDropdownView._clearRender();
+		// 	},
+		// );
 	}
-	async #closeDropdownAndClearInput() {
-		SearchView.clearInputField();
-		await SearchDropdownView.fadeOutAnimation();
-		SearchDropdownView._clearRender();
+	#openDropDown(btn) {
+		this.#onDropDownItemSelection(btn);
 	}
-	#handleShipSelection = (btn) => {
+	#closeDropDown() {}
+	// user selected one of the ships in dropdown menu
+	#onDropDownItemSelection = (btn) => {
 		const shipId = btn.getAttribute(UI_DATASETS.NAV.DROPDOWN._BASE);
 		const selectedShip = this.#findShipById(shipId);
 
@@ -124,7 +136,7 @@ export default class Navigation extends ViewModel {
 	}
 
 	#warningPopUp() {
-		SearchWarningPopUpView.render(this.#currentUserInput);
+		SearchWarningPopUpView.renderAsync(this.#currentUserInput);
 
 		SearchWarningPopUpView.addMouseClickHandler(
 			CLASS_NAMES.POP_UP.WARNING_BUTTON,

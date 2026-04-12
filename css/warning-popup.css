@@ -67,9 +67,9 @@
 		align-items: center;
 		gap: 0.8rem;
 
-		span {
+		/* span {
 			font-weight: 300;
-		}
+		} */
 		p {
 			font-weight: 500;
 			font-size: 1.4rem;

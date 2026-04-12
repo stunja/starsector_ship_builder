@@ -1,9 +1,11 @@
 // Helper
+import { EventManager } from "../eventHandlers/EventManager";
 import CLASS_NAMES from "../helper/ui/class_names";
 import CONFIG from "../helper/ui/configs";
 import { NAV_STRING } from "../helper/ui/ui_strings";
 
 export default class View {
+	//! remove
 	constructor() {
 		this._targetMap = new Map();
 	}
@@ -140,13 +142,16 @@ export default class View {
 	}
 	//! New simpler and cleaner I need to rework the code
 	//! add more guarding
+	//! Workable code, just hidden
 	// Mouse Click Handler
 	addMouseClickHandler(targetClass, callbackFunction) {
 		// Create the event listener function
 		const listener = function (e) {
 			const btn = e.target.closest(`.${targetClass}`);
 			if (!btn) return;
+
 			e.preventDefault();
+
 			callbackFunction(btn);
 		};
 
@@ -188,34 +193,74 @@ export default class View {
 	// 		return targetFunction(searchValue);
 	// 	});
 	// }
+	//? Not used
 	// Utility method to check if a target has an active listener
 	hasListener(target) {
 		return this._targetMap.has(target);
 	}
 
-	closePopUpContainerIfUserClickOutside(targetClass, callback) {
-		if (typeof callback !== "function") return;
+	// closePopUpContainerIfUserClickOutside(targetClass, callback) {
+	// 	if (typeof callback !== "function") return;
 
-		const targetContainer = document.querySelector(`.${targetClass}`);
-		if (!targetContainer) return;
+	// 	const targetContainer = document.querySelector(`.${targetClass}`);
+	// 	if (!targetContainer) return;
 
-		const controller = new AbortController();
+	// 	const controller = new AbortController();
 
-		const handleOutsideClick = (event) => {
-			if (!targetContainer.contains(event.target)) {
-				callback();
-				controller.abort(); // self-cleanup on success
-			}
-		};
+	// 	const handleOutsideClick = (event) => {
+	// 		if (!targetContainer.contains(event.target)) {
+	// 			callback();
+	// 			controller.abort(); // self-cleanup on success
+	// 		}
+	// 	};
 
-		// Defer so the click that opened the popup doesn't immediately trigger close
-		setTimeout(() => {
-			document.addEventListener("click", handleOutsideClick, {
-				signal: controller.signal,
-			});
-		}, 0);
+	// 	// Defer so the click that opened the popup doesn't immediately trigger close
+	// 	setTimeout(() => {
+	// 		document.addEventListener("click", handleOutsideClick, {
+	// 			signal: controller.signal,
+	// 		});
+	// 	}, 0);
 
-		// Return cleanup so callers can cancel (e.g. via Escape key)
-		return () => controller.abort();
+	// 	// Return cleanup so callers can cancel (e.g. via Escape key)
+	// 	return () => controller.abort();
+	// }
+	////!
+	//! Workable code, just hidden
+	// closePopUpContainerIfUserClickOutside(targetClass, callback) {
+	// 	if (typeof callback !== "function") return () => {};
+
+	// 	const targetContainer = document.querySelector(`.${targetClass}`);
+	// 	if (!targetContainer) {
+	// 		console.warn(`Target .${targetClass} not found`);
+	// 		return () => {};
+	// 	}
+	// 	const controller = new AbortController();
+
+	// 	const handleOutsideClick = (event) => {
+	// 		if (targetContainer && !targetContainer.contains(event.target)) {
+	// 			callback();
+	// 			controller.abort(); // self-cleanup on success
+	// 		}
+	// 	};
+	// 	// Defer so the click that opened the popup doesn't immediately trigger close
+	// 	const timeoutId = setTimeout(() => {
+	// 		document.addEventListener("click", handleOutsideClick, {
+	// 			signal: controller.signal,
+	// 			capture: true,
+	// 		});
+	// 	}, 0);
+	// 	// Return cleanup so callers can cancel (e.g. via Escape key)
+	// 	return () => {
+	// 		clearTimeout(timeoutId);
+	// 		controller.abort();
+	// 	};
+	// }
+
+	/////
+	mouseClick(targetClass, callbackFunction) {
+		EventManager(this._localParentElement).addMouseClickHandler(
+			targetClass,
+			callbackFunction,
+		);
 	}
 }

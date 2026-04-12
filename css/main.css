@@ -33,3 +33,7 @@
 
 /* Animations */
 @import "./generic_animations.css";
+
+/* Icons */
+@import "@fontsource-variable/material-symbols-outlined";
+@import "@fontsource-variable/plus-jakarta-sans";

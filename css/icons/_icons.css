@@ -9,24 +9,18 @@
 	background-color: var(--main-lighter-color);
 } */
 
-.material-symbols-outlined {
-	font-variation-settings:
-		"FILL" 0,
-		"wght" 400,
-		"GRAD" 0,
-		"opsz" 24;
-
-	font-family: "Material Symbols Outlined";
-	font-style: normal;
-	/* display: inline-block; */
-	/* line-height: 1; */
-
-	font-size: 2rem;
-	font-weight: 600;
-}
-
 /* Container for Font Icon */
 .icon-container {
 	display: flex;
 	align-items: center;
+}
+
+/* Base class for all icons */
+.material-symbols-outlined {
+	font-size: 2rem;
+
+	font-family: "Material Symbols Outlined Variable", sans-serif;
+	font-variation-settings: "wght" 500;
+	display: inline-block;
+	direction: ltr;
 }

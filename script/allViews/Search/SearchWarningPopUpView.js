@@ -11,16 +11,14 @@ class SearchWarningPopUpView extends View {
 	generateMarkup() {
 		const currentShip = this._data;
 		const customHeader = `<span class="${CLASS_NAMES.TEXT_DECOR.UNDERLINE}">${currentShip.name}</span>`;
+
 		const markup = `
 					<div class="${CLASS_NAMES.POP_UP.WARNING_WRAPPER}">
 						<div class="${CLASS_NAMES.POP_UP.OVERLAY}">
 							<div class="${CLASS_NAMES.POP_UP.WARNING}">
 								<h3>${SEARCH_WARNING_POPUP_STRING.HEADER(customHeader)}</h3>
 								<p>${SEARCH_WARNING_POPUP_STRING.TEXT}</p>
-								<div class="${CLASS_NAMES.POP_UP.WARNING_BAR}">
-									${FONT_ICONS_MARKUP.WARNING}
-									<p>${SEARCH_WARNING_POPUP_STRING.WARNING_TEXT}</p>
-								</div>
+								${this.#warningBar()}
 								<div class="${CLASS_NAMES.POP_UP.WARNING_WRAPPER_BUTTONS}">
 									<button class="${CLASS_NAMES.button} 
 									${CLASS_NAMES.BUTTON.SECONDARY} ${CLASS_NAMES.POP_UP.WARNING_BUTTON}"
@@ -37,6 +35,12 @@ class SearchWarningPopUpView extends View {
 						</div>
 					</div>`;
 		return markup;
+	}
+	#warningBar() {
+		return `<div class="${CLASS_NAMES.POP_UP.WARNING_BAR}">
+						${FONT_ICONS_MARKUP.WARNING}
+						<p>${SEARCH_WARNING_POPUP_STRING.WARNING_TEXT}</p>
+				</div>`;
 	}
 }
 export default new SearchWarningPopUpView();

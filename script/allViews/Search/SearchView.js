@@ -57,7 +57,9 @@ class SearchView extends View {
 		// });
 	}
 	clearInputField() {
-		this.#searchInputSelector().value = "";
+		const input = this.#searchInputSelector();
+		input.value = "";
+		input.blur();
 	}
 }
 export default new SearchView();
