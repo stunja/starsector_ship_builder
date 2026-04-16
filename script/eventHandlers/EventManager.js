@@ -1,7 +1,9 @@
-export class EventManager {
-	constructor(localParent) {
-		this._targetMap = new Map();
-		this._localParentElement = localParent;
+export default class EventManager {
+	#targetMap = new Map();
+	#localParentElement;
+	//
+	constructor(localParentElement) {
+		this.#localParentElement = localParentElement;
 	}
 	addMouseClickHandler(targetClass, callbackFunction) {
 		// Create the event listener function
@@ -18,23 +20,23 @@ export class EventManager {
 		this.#removeMouseClickHandler(targetClass);
 
 		// Store the new listener in the Map
-		this._targetMap.set(targetClass, listener);
+		this.#targetMap.set(targetClass, listener);
 
 		// Add the event listener
-		this._localParentElement.addEventListener("click", listener);
+		this.#localParentElement.addEventListener("click", listener);
 
 		// Return the listener for potential external reference
 		return listener;
 	}
 	#removeMouseClickHandler(targetClass) {
 		// Get the existing listener if any
-		const existingListener = this._targetMap.get(targetClass);
+		const existingListener = this.#targetMap.get(targetClass);
 
 		if (existingListener) {
 			// Remove the event listener
-			this._localParentElement.removeEventListener("click", existingListener);
+			this.#localParentElement.removeEventListener("click", existingListener);
 			// Remove from Map
-			this._targetMap.delete(targetClass);
+			this.#targetMap.delete(targetClass);
 			return true;
 		}
 

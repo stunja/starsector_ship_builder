@@ -76,7 +76,7 @@ export default class WeaponPopUp extends ViewModel {
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
 			this.getUserShipBuild().weaponSlots,
-			btn.dataset.weaponSlotId
+			btn.dataset.weaponSlotId,
 		);
 
 		this.#createCurrentWeaponArray();
@@ -85,7 +85,7 @@ export default class WeaponPopUp extends ViewModel {
 		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
 			this.#installedWeapons,
 			this.#weaponSlot,
-			this.#currentWeaponArray
+			this.#currentWeaponArray,
 		);
 
 		// Render
@@ -125,7 +125,7 @@ export default class WeaponPopUp extends ViewModel {
 		this.#currentWeaponArray = pushTargetWeaponObjectOnTop(
 			this.#installedWeapons,
 			this.#weaponSlot,
-			sorterArray
+			sorterArray,
 		);
 
 		// Render Changes
@@ -138,7 +138,7 @@ export default class WeaponPopUp extends ViewModel {
 		this.#currentWeaponArray =
 			WeaponPopUpCreateCurrentWeaponArray.weaponFilterArray(
 				this.#weaponSlot,
-				this.#allWeapons
+				this.#allWeapons,
 			);
 	}
 
@@ -150,7 +150,7 @@ export default class WeaponPopUp extends ViewModel {
 					this.#currentWeaponArray,
 					this.#weaponSlot,
 				]),
-			WeaponPopUpContainerView
+			WeaponPopUpContainerView,
 		);
 	}
 	// User Clicks to Add Weapon to Installed Weapon Array
@@ -159,7 +159,7 @@ export default class WeaponPopUp extends ViewModel {
 
 		new UpdateUserShipBuild(this.getState()).updateWeapons(
 			weaponPopUpId,
-			this.#weaponSlot.id
+			this.#weaponSlot.id,
 		);
 
 		this.#updateData();
@@ -176,7 +176,7 @@ export default class WeaponPopUp extends ViewModel {
 
 		const hoveredWeaponObject = weaponSlotIdIntoWeaponSlotObject(
 			this.#allWeapons,
-			weaponPopUpId
+			weaponPopUpId,
 		);
 		// Render Hover Container
 		// strange implementation, I need wpnOb+wpnSlot for icon render
@@ -252,7 +252,7 @@ export default class WeaponPopUp extends ViewModel {
 			stats.projectile.projectileOrBeam === "projectile";
 		//
 		const damagePerSecond = Math.round(
-			(stats.damage.perShot * stats.ammo.burstSize) / refireDelay
+			(stats.damage.perShot * stats.ammo.burstSize) / refireDelay,
 		);
 		const fluxPerSecond = isWeaponProjectile
 			? Math.round(stats.flux.perShot / refireDelay)
@@ -290,40 +290,40 @@ export default class WeaponPopUp extends ViewModel {
 				return turnRate > 40
 					? `Excellent  (${turnRate})`
 					: turnRate > 25
-					? `Very Fast  (${turnRate})`
-					: turnRate >= 20
-					? `Fast (${turnRate})`
-					: turnRate >= 15
-					? `Slow (${turnRate})`
-					: turnRate < 15
-					? `Very Slow (${turnRate})`
-					: "Error";
+						? `Very Fast  (${turnRate})`
+						: turnRate >= 20
+							? `Fast (${turnRate})`
+							: turnRate >= 15
+								? `Slow (${turnRate})`
+								: turnRate < 15
+									? `Very Slow (${turnRate})`
+									: "Error";
 			},
 			accuracyRating: () => {
 				const { accuracy } = stats.handling;
 				return accuracy < 0.25 || !accuracy
 					? `Perfect  (${accuracy ? accuracy : `< 0.25`})`
 					: accuracy <= 1
-					? `Good (${accuracy})`
-					: accuracy <= 2
-					? `Poor (${accuracy})`
-					: accuracy <= 3
-					? `Very Poor (${accuracy})`
-					: accuracy <= 10
-					? `Terrible (${accuracy})`
-					: "Error";
+						? `Good (${accuracy})`
+						: accuracy <= 2
+							? `Poor (${accuracy})`
+							: accuracy <= 3
+								? `Very Poor (${accuracy})`
+								: accuracy <= 10
+									? `Terrible (${accuracy})`
+									: "Error";
 			},
 			damageTypeEffect: () => {
 				const { type } = stats.projectile;
 				return type === "KINETIC"
 					? ["200% vs Shields", "50% vs Armor"]
 					: type === "ENERGY"
-					? ["100% vs Shields", "100% vs Armor"]
-					: type === "HIGH_EXPLOSIVE"
-					? ["50% vs Shields", "200% vs Armor"]
-					: type === "FRAGMENTATION"
-					? ["25% vs Shields", "25% vs Armor"]
-					: "Error with Damage Type Effect";
+						? ["100% vs Shields", "100% vs Armor"]
+						: type === "HIGH_EXPLOSIVE"
+							? ["50% vs Shields", "200% vs Armor"]
+							: type === "FRAGMENTATION"
+								? ["25% vs Shields", "25% vs Armor"]
+								: "Error with Damage Type Effect";
 			},
 		};
 	};
@@ -338,7 +338,7 @@ export default class WeaponPopUp extends ViewModel {
 		WeaponPopUpTableHeaderView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.#weaponTableSorter
+			this.#weaponTableSorter,
 		);
 	}
 	// If user clicks on entries
@@ -346,19 +346,19 @@ export default class WeaponPopUp extends ViewModel {
 		WeaponPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.#addCurrentWeaponToInstalledWeapons
+			this.#addCurrentWeaponToInstalledWeapons,
 		);
 		WeaponPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
 			EVENT_LISTENER_TYPE.HOVER,
-			this.#showAdditionalInformationOnHover
+			this.#showAdditionalInformationOnHover,
 		);
 	}
 	// Close If user clicks outside of container
 	#closeWeaponPopUpHandler() {
 		WeaponPopUpContainerView.closePopUpContainerIfUserClickOutside(
-			`.${CLASS_NAMES.tableContainer}`,
-			WeaponPopUpContainerView._clearRender
+			CLASS_NAMES.tableContainer,
+			WeaponPopUpContainerView._clearRender,
 		);
 	}
 }

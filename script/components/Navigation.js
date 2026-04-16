@@ -26,33 +26,45 @@ export default class Navigation extends ViewModel {
 	// Sub Object, holds additional properties
 	#ADDITIONAL_DATA_PROPERTIES = ["hullSize"];
 
+	#NavigationView;
+	#SearchView;
+
 	constructor(model) {
 		super(model);
 
 		this.#getState = this.getState();
 		this.#allShipHulls = this.#getState.dataState.allShipHulls;
+
+		this.#NavigationView = new NavigationView(
+			model,
+			this.#handleSave.bind(this),
+		);
+
+		this.#SearchView = new SearchView(model, this.#searchInputClick.bind(this));
 	}
 	update() {
 		// Render
-		NavigationView.render(this.getState());
-		// NavigationView.addMouseClickHandler(
-		// 	CLASS_NAMES.NAVIGATION.SAVE_BUILD,
-		// 	this.#saveBuild,
-		// );
-		NavigationView.mouseClick(
-			CLASS_NAMES.NAVIGATION.SAVE_BUILD,
-			this.#saveBuild,
-		);
+		this.#NavigationView.render();
+		this.#NavigationView.setupEventListeners();
 
 		// Search
-		SearchView.render();
-		SearchView.addMouseClickHandler(CLASS_NAMES.SEARCH.INPUT, () => {
-			console.log("user clicked on the input");
-			const allShips = arrayToSortedByName(this.#allShipHulls);
-			this.#renderSearchResults(allShips);
-		});
+		this.#SearchView.render();
+		this.#SearchView.setupEventListeners();
 
 		// SearchView.inputCapture(this.#showFilteredDropdownItems);
+	}
+
+	#searchInputClick() {
+		console.log("user clicked on the input");
+		const allShips = arrayToSortedByName(this.#allShipHulls);
+		this.#renderSearchResults(allShips);
+	}
+
+	// TODO
+	// A way for a user to save their current design
+	#handleSave(btn) {
+		console.log(`Save current Ship functionality`);
+		console.log(btn);
 	}
 
 	#showFilteredDropdownItems = (inputCapture) => {
@@ -167,11 +179,4 @@ export default class Navigation extends ViewModel {
 			new App(this.#currentUserInput.id);
 		}
 	};
-
-	// TODO
-	// A way for a user to save their current design
-	#saveBuild(btn) {
-		console.log(`Save current Ship functionality`);
-		console.log(btn);
-	}
 }

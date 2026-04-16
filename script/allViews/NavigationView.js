@@ -9,8 +9,13 @@ import UI_DATASETS from "../helper/ui/ui_datasets";
 import FONT_ICONS_MARKUP from "../helper/ui/font_icons_markup";
 import { NAV_STRING } from "../helper/ui/ui_strings";
 
-class NavigationView extends View {
+export default class NavigationView extends View {
 	_localParent = `.${CLASS_NAMES.NAVIGATION._BASE}`;
+	#saveBuildCallback;
+	constructor(data, saveBuildCallback) {
+		super(data);
+		this.#saveBuildCallback = saveBuildCallback;
+	}
 
 	generateMarkup() {
 		const markup = `   
@@ -25,5 +30,8 @@ class NavigationView extends View {
 
 		return markup;
 	}
+
+	setupEventListeners() {
+		this.mouseClick(CLASS_NAMES.NAVIGATION.SAVE_BUILD, this.#saveBuildCallback);
+	}
 }
-export default new NavigationView();

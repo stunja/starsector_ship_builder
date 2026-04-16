@@ -6,8 +6,15 @@ import { NAV_STRING } from "../../helper/ui/ui_strings";
 import FONT_ICONS_MARKUP from "../../helper/ui/font_icons_markup";
 
 // UI
-class SearchView extends View {
+export default class SearchView extends View {
 	_localParent = `.${CLASS_NAMES.SEARCH._BASE}`;
+
+	#searchInputCallback;
+	constructor(data, searchInputCallback) {
+		super(data);
+
+		this.#searchInputCallback = searchInputCallback;
+	}
 
 	generateMarkup() {
 		const markup = `   
@@ -61,5 +68,7 @@ class SearchView extends View {
 		input.value = "";
 		input.blur();
 	}
+	setupEventListeners() {
+		this.mouseClick(CLASS_NAMES.SEARCH.INPUT, this.#searchInputCallback);
+	}
 }
-export default new SearchView();

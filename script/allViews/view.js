@@ -1,17 +1,17 @@
 // Helper
-import { EventManager } from "../eventHandlers/EventManager";
+import EventManager from "../eventHandlers/EventManager";
 import CLASS_NAMES from "../helper/ui/class_names";
 import CONFIG from "../helper/ui/configs";
 import { NAV_STRING } from "../helper/ui/ui_strings";
 
 export default class View {
-	//! remove
+	_data;
+	_localParent; // a class
+	_localParentElement; // DOM object
+
 	constructor() {
 		this._targetMap = new Map();
 	}
-	_data;
-	_localParentElement;
-	_localParent;
 
 	_updateText = (target, value) => {
 		document.querySelector(`.${target}`).textContent = `${value}`;
@@ -144,43 +144,43 @@ export default class View {
 	//! add more guarding
 	//! Workable code, just hidden
 	// Mouse Click Handler
-	addMouseClickHandler(targetClass, callbackFunction) {
-		// Create the event listener function
-		const listener = function (e) {
-			const btn = e.target.closest(`.${targetClass}`);
-			if (!btn) return;
+	// addMouseClickHandler(targetClass, callbackFunction) {
+	// 	// Create the event listener function
+	// 	const listener = function (e) {
+	// 		const btn = e.target.closest(`.${targetClass}`);
+	// 		if (!btn) return;
 
-			e.preventDefault();
+	// 		e.preventDefault();
 
-			callbackFunction(btn);
-		};
+	// 		callbackFunction(btn);
+	// 	};
 
-		// If there's an existing listener for this target, remove it first
-		this.removeMouseClickHandler(targetClass);
+	// 	// If there's an existing listener for this target, remove it first
+	// 	this.removeMouseClickHandler(targetClass);
 
-		// Store the new listener in the Map
-		this._targetMap.set(targetClass, listener);
+	// 	// Store the new listener in the Map
+	// 	this._targetMap.set(targetClass, listener);
 
-		// Add the event listener
-		this._localParentElement.addEventListener("click", listener);
+	// 	// Add the event listener
+	// 	this._localParentElement.addEventListener("click", listener);
 
-		// Return the listener for potential external reference
-		return listener;
-	}
-	removeMouseClickHandler(targetClass) {
-		// Get the existing listener if any
-		const existingListener = this._targetMap.get(targetClass);
+	// 	// Return the listener for potential external reference
+	// 	return listener;
+	// }
+	// removeMouseClickHandler(targetClass) {
+	// 	// Get the existing listener if any
+	// 	const existingListener = this._targetMap.get(targetClass);
 
-		if (existingListener) {
-			// Remove the event listener
-			this._localParentElement.removeEventListener("click", existingListener);
-			// Remove from Map
-			this._targetMap.delete(targetClass);
-			return true;
-		}
+	// 	if (existingListener) {
+	// 		// Remove the event listener
+	// 		this._localParentElement.removeEventListener("click", existingListener);
+	// 		// Remove from Map
+	// 		this._targetMap.delete(targetClass);
+	// 		return true;
+	// 	}
 
-		return false;
-	}
+	// 	return false;
+	// }
 	//? I don`t remember this
 	// Captures only Name from Submit Form
 	// inputSubmitHandler(parentElement, targetFunction) {
@@ -258,9 +258,21 @@ export default class View {
 
 	/////
 	mouseClick(targetClass, callbackFunction) {
-		EventManager(this._localParentElement).addMouseClickHandler(
+		new EventManager(this._localParentElement).addMouseClickHandler(
 			targetClass,
 			callbackFunction,
 		);
+	}
+	//! Rework this
+	addMouseClickHandler(targetClass, callbackFunction) {
+		new EventManager(this._localParentElement).addMouseClickHandler(
+			targetClass,
+			callbackFunction,
+		);
+	}
+	closePopUpContainerIfUserClickOutside(targetClass, callbackFunction) {
+		new EventManager(
+			this._localParentElement,
+		).closePopUpContainerIfUserClickOutside(targetClass, callbackFunction);
 	}
 }

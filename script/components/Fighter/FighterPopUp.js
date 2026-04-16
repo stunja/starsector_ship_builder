@@ -78,7 +78,7 @@ export default class FighterPopUp extends ViewModel {
 
 		this.#weaponSlot = weaponSlotIdIntoWeaponSlotObject(
 			this.#weaponsSlots,
-			btn.dataset.fighterId
+			btn.dataset.fighterId,
 		);
 
 		this.#createFighterWeaponArray();
@@ -87,7 +87,7 @@ export default class FighterPopUp extends ViewModel {
 		this.#currentFighterArray = pushTargetWeaponObjectOnTop(
 			this.#userShipBuild.installedWeapons,
 			this.#weaponSlot,
-			this.#currentFighterArray
+			this.#currentFighterArray,
 		);
 
 		this.#renderAndListeners();
@@ -95,7 +95,7 @@ export default class FighterPopUp extends ViewModel {
 
 	#createFighterWeaponArray = () =>
 		(this.#currentFighterArray = this.#state.dataState.allFighterHulls.toSorted(
-			(a, b) => b.opCost - a.opCost
+			(a, b) => b.opCost - a.opCost,
 		));
 
 	// User Clicks to Add Weapon to Installed Weapon Array
@@ -104,7 +104,7 @@ export default class FighterPopUp extends ViewModel {
 
 		new UpdateUserShipBuild(this.getState()).updateWeapons(
 			weaponPopUpId,
-			this.#weaponSlot.id
+			this.#weaponSlot.id,
 		);
 
 		this.#updateData();
@@ -134,7 +134,7 @@ export default class FighterPopUp extends ViewModel {
 		this.#currentFighterArray = pushTargetWeaponObjectOnTop(
 			this.#userShipBuild.installedWeapons,
 			this.#weaponSlot,
-			sorterArray
+			sorterArray,
 		);
 
 		// Render Changes
@@ -149,7 +149,7 @@ export default class FighterPopUp extends ViewModel {
 
 		const hoveredWeaponObject = weaponSlotIdIntoWeaponSlotObject(
 			this.#currentFighterArray,
-			weaponPopUpId
+			weaponPopUpId,
 		);
 
 		FighterPopUpHoverView.render([
@@ -178,7 +178,7 @@ export default class FighterPopUp extends ViewModel {
 					this.#currentFighterArray,
 					this.#weaponSlot,
 				]),
-			FighterPopUpContainerView
+			FighterPopUpContainerView,
 		);
 	}
 	// WeaponPopUp Event Listeners
@@ -192,25 +192,25 @@ export default class FighterPopUp extends ViewModel {
 		FighterPopUpTableHeaderView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_HEADER_ENTRY,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.#fighterPopUpTableSorter
+			this.#fighterPopUpTableSorter,
 		);
 	}
 	#tableEventListener() {
 		FighterPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
 			EVENT_LISTENER_TYPE.CLICK,
-			this.#addCurrentFighterToInstalledWeapons
+			this.#addCurrentFighterToInstalledWeapons,
 		);
 		FighterPopUpTableView.addClickHandler(
 			EVENT_LISTENER_TARGET.TABLE_ENTRIES,
 			EVENT_LISTENER_TYPE.HOVER,
-			this.#showAdditionalInformationOnHover
+			this.#showAdditionalInformationOnHover,
 		);
 	}
 	#closePopUpContainer() {
 		FighterPopUpContainerView.closePopUpContainerIfUserClickOutside(
-			`.${CLASS_NAMES.tableContainer}`,
-			FighterPopUpContainerView._clearRender
+			CLASS_NAMES.tableContainer,
+			FighterPopUpContainerView._clearRender,
 		);
 	}
 }
