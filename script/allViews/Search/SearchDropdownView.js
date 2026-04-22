@@ -5,9 +5,17 @@ import { SHIP_HINTS_STRINGS } from "../../helper/ui/ui_strings";
 // View
 import View from "../view";
 
-class SearchDropdownView extends View {
+export default class SearchDropdownView extends View {
 	_localParent = `.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`;
 
+	#onItemSelectionCallback;
+	#onClickOutsideContainerCallback;
+	//
+	constructor(onItemSelectionCallback, onClickOutsideContainerCallback) {
+		super();
+		this.#onItemSelectionCallback = onItemSelectionCallback;
+		this.#onClickOutsideContainerCallback = onClickOutsideContainerCallback;
+	}
 	generateMarkup() {
 		const markup = this.#dropdownItems(this._data);
 		return markup;
@@ -51,5 +59,15 @@ class SearchDropdownView extends View {
 		];
 		return info.filter(Boolean).join(" / ");
 	}
+
+	setupEventListeners() {
+		this.mouseClick(
+			CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
+			this.#onItemSelectionCallback,
+		);
+		this.closePopUpContainerIfUserClickOutside(
+			CLASS_NAMES.SEARCH.DROPDOWN._BASE,
+			this.#onClickOutsideContainerCallback,
+		);
+	}
 }
-export default new SearchDropdownView();

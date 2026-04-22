@@ -1,5 +1,6 @@
 import App from "../app.js";
 import ViewModel from "../ViewModel.js";
+import SearchDropdown from "./Navigation/SearchDropdown.js";
 // View
 import NavigationView from "../allViews/NavigationView.js";
 import SearchWarningPopUpView from "../allViews/Search/SearchWarningPopUpView.js";
@@ -11,6 +12,8 @@ import CLASS_NAMES from "../helper/ui/class_names.js";
 import UI_DATASETS from "../helper/ui/ui_datasets.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
 import { arrayToSortedByName } from "../helper/helper_functions.js";
+import EventManager from "../eventHandlers/EventManager.js";
+import { UI_ERRORS } from "../helper/Errors.js";
 
 //! make transition
 //! THERE IS NO WAY TO SEARCH FOR SKINS (FOR EXAMPLE ONSLAUGH XIV). I dont see a way to connect them systemically
@@ -22,25 +25,31 @@ export default class Navigation extends ViewModel {
 	#currentUserInput;
 	#allShipHulls;
 
+	#searchInputElement;
+
 	#FILTER_CATEGORIES = ["name", "techManufacturer", "designation", "hints"];
 	// Sub Object, holds additional properties
 	#ADDITIONAL_DATA_PROPERTIES = ["hullSize"];
 
 	#NavigationView;
 	#SearchView;
-
+	#SearchDropdownView;
+	#SearchWarningPopUpView;
+	//
 	constructor(model) {
 		super(model);
 
+		//! bad implementation
 		this.#getState = this.getState();
 		this.#allShipHulls = this.#getState.dataState.allShipHulls;
 
-		this.#NavigationView = new NavigationView(
-			model,
-			this.#handleSave.bind(this),
-		);
+		this.#NavigationView = new NavigationView(model, this.#handleSave);
 
-		this.#SearchView = new SearchView(model, this.#searchInputClick.bind(this));
+		this.#SearchView = new SearchView(
+			model,
+			this.#searchInputClick,
+			this.#searchInputTextEnter,
+		);
 	}
 	update() {
 		// Render
@@ -51,26 +60,25 @@ export default class Navigation extends ViewModel {
 		this.#SearchView.render();
 		this.#SearchView.setupEventListeners();
 
-		// SearchView.inputCapture(this.#showFilteredDropdownItems);
+		// this.#SearchView.inputCapture(this.#searchInputTextEnter);
 	}
 
-	#searchInputClick() {
-		console.log("user clicked on the input");
+	#searchInputClick = (clickInput) => {
+		this.#searchInputElement = clickInput;
 		const allShips = arrayToSortedByName(this.#allShipHulls);
-		this.#renderSearchResults(allShips);
-	}
-
+		this.#renderDropDownSearch(allShips);
+	};
+	#searchInputTextEnter = (inputCapture) => {
+		const filteredShips = this.#filterShipsByQuery(inputCapture);
+		this.#renderDropDownSearch(filteredShips);
+	};
 	// TODO
 	// A way for a user to save their current design
-	#handleSave(btn) {
+	#handleSave = (btn) => {
 		console.log(`Save current Ship functionality`);
 		console.log(btn);
-	}
-
-	#showFilteredDropdownItems = (inputCapture) => {
-		const filteredShips = this.#filterShipsByQuery(inputCapture);
-		this.#renderSearchResults(filteredShips);
 	};
+
 	#filterShipsByQuery = (query) => {
 		const normalziedQuery = query.toLowerCase();
 
@@ -102,35 +110,28 @@ export default class Navigation extends ViewModel {
 		// );
 	};
 
-	#renderSearchResults(matchedItems) {
-		//
-		// const dropdownState = SearchDropdownView._localParentElement
-		// if (isOpen) {
-		// 	this.#closeDropDown();
-		// } else {
-		// 	this.#openDropDown();
-		// }
-		// SearchDropdownView.render(matchedItems);
-		// SearchDropdownView.addMouseClickHandler(
-		// 	CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
-		// 	this.#onDropDownItemSelection,
-		// );
-		// // search_dropdown
-		// SearchDropdownView.closePopUpContainerIfUserClickOutside(
-		// 	CLASS_NAMES.SEARCH.DROPDOWN._BASE,
-		// 	async () => {
-		// 		SearchView.clearInputField();
-		// 		await SearchDropdownView.fadeOutAnimation();
-		// 		SearchDropdownView._clearRender();
-		// 	},
-		// );
+	#renderDropDownSearch(matchedItems) {
+		this.#SearchDropdownView = new SearchDropdownView(
+			this.#onDropDownItemSelection,
+			this.#closeSearchDropdown,
+		);
+
+		this.#SearchDropdownView.render(matchedItems);
+		this.#SearchDropdownView.setupEventListeners();
 	}
-	#openDropDown(btn) {
-		this.#onDropDownItemSelection(btn);
+	async #closeSearchDropdown() {
+		this.#SearchView.clearInputField();
+		await this.#SearchDropdownView.fadeOutAnimation();
+		//! clear  ONCLOSE eventListeners somewhere here
+		this.#SearchDropdownView._clearRender();
 	}
-	#closeDropDown() {}
+	//
 	// user selected one of the ships in dropdown menu
 	#onDropDownItemSelection = (btn) => {
+		if (!btn) {
+			throw new Error(UI_ERRORS.ELEMENT_NOT_FOUND(this.constructor.name, btn));
+		}
+
 		const shipId = btn.getAttribute(UI_DATASETS.NAV.DROPDOWN._BASE);
 		const selectedShip = this.#findShipById(shipId);
 
@@ -139,31 +140,24 @@ export default class Navigation extends ViewModel {
 			return;
 		}
 
-		this.#currentUserInput = selectedShip;
-		this.#warningPopUp();
+		this.#warningPopUp(selectedShip);
 	};
 
 	#findShipById(shipId) {
 		return this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
 	}
 
-	#warningPopUp() {
-		SearchWarningPopUpView.renderAsync(this.#currentUserInput);
+	#warningPopUp(selectedShip) {
+		this.#currentUserInput = selectedShip;
 
-		SearchWarningPopUpView.addMouseClickHandler(
-			CLASS_NAMES.POP_UP.WARNING_BUTTON,
+		this.#SearchWarningPopUpView = new SearchWarningPopUpView(
+			this.#currentUserInput,
 			this.#searchWarningLogic,
-		);
-
-		SearchWarningPopUpView.closePopUpContainerIfUserClickOutside(
-			CLASS_NAMES.POP_UP.WARNING,
 			this.#closePopUpAndClearInput,
 		);
-	}
 
-	async #closePopUpAndClearInput() {
-		await SearchWarningPopUpView.fadeOutAnimation();
-		SearchWarningPopUpView._clearRender();
+		this.#SearchWarningPopUpView.init();
+		// this.#SearchWarningPopUpView.setupEventListeners();
 	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.
@@ -179,4 +173,9 @@ export default class Navigation extends ViewModel {
 			new App(this.#currentUserInput.id);
 		}
 	};
+
+	async #closePopUpAndClearInput() {
+		await this.#SearchWarningPopUpView.fadeOutAnimation();
+		this.#SearchWarningPopUpView._clearRender();
+	}
 }

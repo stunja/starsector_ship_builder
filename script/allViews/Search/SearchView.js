@@ -10,10 +10,13 @@ export default class SearchView extends View {
 	_localParent = `.${CLASS_NAMES.SEARCH._BASE}`;
 
 	#searchInputCallback;
-	constructor(data, searchInputCallback) {
+	#inputCaptureCallback;
+	//
+	constructor(data, searchInputCallback, inputCaptureCallback) {
 		super(data);
 
 		this.#searchInputCallback = searchInputCallback;
+		this.#inputCaptureCallback = inputCaptureCallback;
 	}
 
 	generateMarkup() {
@@ -70,5 +73,6 @@ export default class SearchView extends View {
 	}
 	setupEventListeners() {
 		this.mouseClick(CLASS_NAMES.SEARCH.INPUT, this.#searchInputCallback);
+		this.inputCapture(this.#inputCaptureCallback);
 	}
 }

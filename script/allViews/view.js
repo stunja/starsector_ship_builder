@@ -9,6 +9,8 @@ export default class View {
 	_localParent; // a class
 	_localParentElement; // DOM object
 
+	#eventManager;
+	//! remove later
 	constructor() {
 		this._targetMap = new Map();
 	}
@@ -41,8 +43,16 @@ export default class View {
 		if (data) this._data = data;
 		const markup = this.generateMarkup();
 
+		this.#initEventManager();
 		this._clearRender();
 		this._localParentElement.insertAdjacentHTML("afterbegin", markup);
+	}
+	//! I know it is a terrible implementation.
+	#initEventManager() {
+		this.#eventManager = new EventManager(this._localParentElement);
+	}
+	destroyEventListeners() {
+		this.#eventManager.destroy();
 	}
 	// simple function to give fade out animation
 	async fadeOutAnimation() {
@@ -105,6 +115,7 @@ export default class View {
         </li>`;
 	}
 
+	//! dublicate remove
 	addClickHandler(target, type, callback) {
 		// Create the event listener function
 		const listener = function (e) {
@@ -258,10 +269,10 @@ export default class View {
 
 	/////
 	mouseClick(targetClass, callbackFunction) {
-		new EventManager(this._localParentElement).addMouseClickHandler(
-			targetClass,
-			callbackFunction,
-		);
+		this.#eventManager.addMouseClickHandler(targetClass, callbackFunction);
+	}
+	closePopUpContainerIfUserClickOutside(targetClass, callbackFunction) {
+		this.#eventManager.closePopup(targetClass, callbackFunction);
 	}
 	//! Rework this
 	addMouseClickHandler(targetClass, callbackFunction) {
@@ -270,9 +281,9 @@ export default class View {
 			callbackFunction,
 		);
 	}
-	closePopUpContainerIfUserClickOutside(targetClass, callbackFunction) {
-		new EventManager(
-			this._localParentElement,
-		).closePopUpContainerIfUserClickOutside(targetClass, callbackFunction);
-	}
+	// closePopUpContainerIfUserClickOutside(targetClass, callbackFunction) {
+	// 	new EventManager(
+	// 		this._localParentElement,
+	// 	).closePopUpContainerIfUserClickOutside(targetClass, callbackFunction);
+	// }
 }

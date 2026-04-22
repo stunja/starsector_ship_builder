@@ -42,8 +42,17 @@ export default class EventManager {
 
 		return false;
 	}
+	//? I dont think it works
+	destroy() {
+		this.#targetMap.forEach((listener) => {
+			this.#localParentElement.removeEventListener("click", listener);
+		});
 
-	closePopUpContainerIfUserClickOutside(targetClass, callback) {
+		this.#targetMap.clear();
+	}
+
+	closePopup(targetClass, callback) {
+		console.log(targetClass, callback);
 		if (typeof callback !== "function") return () => {};
 
 		const targetContainer = document.querySelector(`.${targetClass}`);
