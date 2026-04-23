@@ -45,30 +45,37 @@ export default class Navigation extends ViewModel {
 
 		this.#NavigationView = new NavigationView(model, this.#handleSave);
 
-		this.#SearchView = new SearchView(
-			model,
-			this.#searchInputClick,
-			this.#searchInputTextEnter,
-		);
+		// Search
+		// this.#SearchView = new SearchView({
+		// 	model: this.#getState,
+		// 	callback: {
+		// 		click: this.#searchInputClick,
+		// 		input: this.#handleSearchInputText,
+		// 	},
+		// });
 	}
-	update() {
+	async update() {
 		// Render
 		this.#NavigationView.render();
 		this.#NavigationView.setupEventListeners();
 
-		// Search
-		this.#SearchView.render();
-		this.#SearchView.setupEventListeners();
+		this.#SearchView = await SearchView.create({
+			model: this.#getState,
+			callback: {
+				click: this.#handleSearchInputClick,
+				input: this.#handleSearchInputText,
+			},
+		});
 
-		// this.#SearchView.inputCapture(this.#searchInputTextEnter);
+		// this.#SearchView.inputCapture(this.#handleSearchInputText);
 	}
 
-	#searchInputClick = (clickInput) => {
+	#handleSearchInputClick = (clickInput) => {
 		this.#searchInputElement = clickInput;
 		const allShips = arrayToSortedByName(this.#allShipHulls);
 		this.#renderDropDownSearch(allShips);
 	};
-	#searchInputTextEnter = (inputCapture) => {
+	#handleSearchInputText = (inputCapture) => {
 		const filteredShips = this.#filterShipsByQuery(inputCapture);
 		this.#renderDropDownSearch(filteredShips);
 	};
@@ -129,7 +136,7 @@ export default class Navigation extends ViewModel {
 	// user selected one of the ships in dropdown menu
 	#onDropDownItemSelection = (btn) => {
 		if (!btn) {
-			throw new Error(UI_ERRORS.ELEMENT_NOT_FOUND(this.constructor.name, btn));
+			throw new Error(UI_ERRORS.MISSING.ELEMENT(this.constructor.name, btn));
 		}
 
 		const shipId = btn.getAttribute(UI_DATASETS.NAV.DROPDOWN._BASE);
@@ -157,11 +164,12 @@ export default class Navigation extends ViewModel {
 		);
 
 		this.#SearchWarningPopUpView.init();
-		// this.#SearchWarningPopUpView.setupEventListeners();
+		this.#SearchWarningPopUpView.setupEventListeners();
 	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.
 	#searchWarningLogic = (btn) => {
+		console.log(btn);
 		const userAction = btn.dataset.wipeWarning;
 
 		if (userAction === UI_DATASETS.ONLY_ID.RETURN) {

@@ -1,23 +1,22 @@
 // View
-import View from "../view";
+import NewView from "../NewView";
 // Helper
 import CLASS_NAMES from "../../helper/ui/class_names";
 import { NAV_STRING } from "../../helper/ui/ui_strings";
 import FONT_ICONS_MARKUP from "../../helper/ui/font_icons_markup";
 
 // UI
-export default class SearchView extends View {
-	_localParent = `.${CLASS_NAMES.SEARCH._BASE}`;
+export default class SearchView extends NewView {
+	static LOCAL_PARENT = CLASS_NAMES.SEARCH._BASE;
 
-	#searchInputCallback;
-	#inputCaptureCallback;
+	#inputElement;
 	//
-	constructor(data, searchInputCallback, inputCaptureCallback) {
-		super(data);
+	// constructor({ model = {}, callback = {} } = {}) {
+	// 	super(model);
 
-		this.#searchInputCallback = searchInputCallback;
-		this.#inputCaptureCallback = inputCaptureCallback;
-	}
+	// 	this.#searchClick = callback.click;
+	// 	this.#searchInput = callback.input;
+	// }
 
 	generateMarkup() {
 		const markup = `   
@@ -37,42 +36,16 @@ export default class SearchView extends View {
 
 		return markup;
 	}
-	#searchInputSelector() {
-		const localParentElement = document.querySelector(this._localParent);
-		const searchInputElement = localParentElement.querySelector(
-			`.${CLASS_NAMES.SEARCH.INPUT}`,
-		);
 
-		return searchInputElement;
+	_setupEventListeners() {
+		this.#inputElement = this._getElement(CLASS_NAMES.SEARCH.INPUT);
+
+		this._onClick(CLASS_NAMES.SEARCH.INPUT, this._callbacks.click);
+		// this._inputCapture(CLASS_NAMES.SEARCH.INPUT, this.#searchInput);
 	}
-	inputCapture(returnFunc) {
-		// const dropdownElement = localParentElement.querySelector(
-		// 	`.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`,
-		// );
 
-		this.#searchInputSelector().addEventListener("input", (e) => {
-			const query = e.target.value.trim().toLowerCase();
-			// dropdownElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
-
-			// IF empty input, hide dropdown
-			// if (!query) {
-			// 	searchInputElement.value = "";
-			// 	dropdownElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
-			// 	return;
-			// }
-			returnFunc(query);
-		});
-		// 	const matchedItems = this.#filterShipsByQuery(query);
-		// 	this.#renderSearchResults(matchedItems);
-		// });
-	}
 	clearInputField() {
-		const input = this.#searchInputSelector();
-		input.value = "";
-		input.blur();
-	}
-	setupEventListeners() {
-		this.mouseClick(CLASS_NAMES.SEARCH.INPUT, this.#searchInputCallback);
-		this.inputCapture(this.#inputCaptureCallback);
+		this.#inputElement.value = "";
+		this.#inputElement.blur();
 	}
 }

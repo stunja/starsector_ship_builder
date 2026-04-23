@@ -64,9 +64,9 @@ export default class SearchWarningPopUpView extends NewView {
 			CLASS_NAMES.POP_UP.WARNING_BUTTON,
 			this.#searchWarningLogic,
 		);
-		this.closePopUpContainerIfUserClickOutside(
-			CLASS_NAMES.POP_UP.WARNING,
-			this.#closePopUpAndClearInput,
-		);
+		// this.closePopUpContainerIfUserClickOutside(
+		// 	CLASS_NAMES.POP_UP.WARNING,
+		// 	this.#closePopUpAndClearInput,
+		// );
 	}
 }
