@@ -18,7 +18,7 @@ export default class SearchView extends NewView {
 	// 	this.#searchInput = callback.input;
 	// }
 
-	generateMarkup() {
+	_generateMarkup() {
 		const markup = `   
             <div class="${CLASS_NAMES.SEARCH.WRAPPER}">
 					${FONT_ICONS_MARKUP.SEARCH}
@@ -37,12 +37,12 @@ export default class SearchView extends NewView {
 		return markup;
 	}
 
-	_setupEventListeners() {
-		this.#inputElement = this._getElement(CLASS_NAMES.SEARCH.INPUT);
-
-		this._onClick(CLASS_NAMES.SEARCH.INPUT, this._callbacks.click);
-		// this._inputCapture(CLASS_NAMES.SEARCH.INPUT, this.#searchInput);
-	}
+	// _setupEventListeners() {
+	// 	this._onClick(CLASS_NAMES.SEARCH.INPUT, this._callbacks.click);
+	// }
+	//! dont rememenber what this line does
+	// this.#inputElement = this._getElement(CLASS_NAMES.SEARCH.INPUT);
+	// this._inputCapture(CLASS_NAMES.SEARCH.INPUT, this.#searchInput);
 
 	clearInputField() {
 		this.#inputElement.value = "";

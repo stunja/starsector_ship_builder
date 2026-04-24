@@ -45,27 +45,30 @@ export default class Navigation extends ViewModel {
 
 		this.#NavigationView = new NavigationView(model, this.#handleSave);
 
-		// Search
-		// this.#SearchView = new SearchView({
-		// 	model: this.#getState,
-		// 	callback: {
-		// 		click: this.#searchInputClick,
-		// 		input: this.#handleSearchInputText,
-		// 	},
-		// });
+		// this.#SearchView = await SearchView.create({
+		// 		model: this.#getState,
+		// 		callback: {
+		// 			click: this.#handleSearchInputClick,
+		// 			input: this.#handleSearchInputText,
+		// 		},
+		// 	});
 	}
+
 	async update() {
 		// Render
 		this.#NavigationView.render();
 		this.#NavigationView.setupEventListeners();
 
-		this.#SearchView = await SearchView.create({
+		this.#SearchView = await new SearchView({
 			model: this.#getState,
-			callback: {
+			callbacks: {
 				click: this.#handleSearchInputClick,
 				input: this.#handleSearchInputText,
 			},
 		});
+
+		await this.#SearchView.render();
+		this.#SearchView.listen();
 
 		// this.#SearchView.inputCapture(this.#handleSearchInputText);
 	}
