@@ -11,19 +11,7 @@ export default class SearchWarningPopUpView extends NewView {
 
 	#searchWarningLogic;
 	#closePopUpAndClearInput;
-	#data;
 	//
-	constructor(
-		data,
-		searchWarningLogicCallback,
-		closePopUpAndClearInputCallback,
-	) {
-		super();
-		this.#data = data;
-
-		this.#searchWarningLogic = searchWarningLogicCallback;
-		this.#closePopUpAndClearInput = closePopUpAndClearInputCallback;
-	}
 	generateMarkup() {
 		const currentShip = this.#data;
 		const customHeader = `<span class="${CLASS_NAMES.TEXT_DECOR.UNDERLINE}">${currentShip.name}</span>`;

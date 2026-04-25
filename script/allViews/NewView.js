@@ -10,9 +10,10 @@ export default class NewView {
 
 	static LOCAL_PARENT = null;
 	//
-	constructor({ model = {}, callbacks = {} } = {}) {
+	constructor({ model = {}, callbacks = {}, input = {} } = {}) {
 		this.#model = model;
 		this._callbacks = callbacks;
+		this._input = input;
 
 		this.#localParentElement = this.#resolveElement(
 			document,
@@ -69,6 +70,7 @@ export default class NewView {
 			),
 		);
 	}
+	// Private Helper
 	#resolveElement(parent, className) {
 		if (!className)
 			throw new Error(
@@ -99,7 +101,7 @@ export default class NewView {
 		return this.#resolveElement(this.#localParentElement, targetClass);
 	}
 
-	// Event Listeners
+	//? Event Listeners
 	_onClick(targetClass, callback) {
 		this.#eventManager.addMouseClickHandler(targetClass, callback);
 	}

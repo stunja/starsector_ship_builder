@@ -21,9 +21,7 @@ import { UI_ERRORS } from "../helper/Errors.js";
 export default class Navigation extends ViewModel {
 	#searchForm;
 	#searchField;
-	#getState;
 	#currentUserInput;
-	#allShipHulls;
 
 	#searchInputElement;
 
@@ -36,12 +34,16 @@ export default class Navigation extends ViewModel {
 	#SearchDropdownView;
 	#SearchWarningPopUpView;
 	//
+
+	#model;
+	#allShipHulls;
+
 	constructor(model) {
 		super(model);
 
 		//! bad implementation
-		this.#getState = this.getState();
-		this.#allShipHulls = this.#getState.dataState.allShipHulls;
+		this.#model = model;
+		this.#allShipHulls = model.dataState.allShipHulls;
 
 		this.#NavigationView = new NavigationView(model, this.#handleSave);
 
@@ -60,7 +62,7 @@ export default class Navigation extends ViewModel {
 		this.#NavigationView.setupEventListeners();
 
 		this.#SearchView = await new SearchView({
-			model: this.#getState,
+			model: this.#model,
 			callbacks: {
 				click: this.#handleSearchInputClick,
 				input: this.#handleSearchInputText,
@@ -120,14 +122,19 @@ export default class Navigation extends ViewModel {
 		// );
 	};
 
-	#renderDropDownSearch(matchedItems) {
-		this.#SearchDropdownView = new SearchDropdownView(
-			this.#onDropDownItemSelection,
-			this.#closeSearchDropdown,
-		);
+	async #renderDropDownSearch(matchedItems) {
+		this.#SearchDropdownView = await new SearchDropdownView({
+			model: this.#allShipHulls,
+			callbacks: {
+				click: this.#onDropDownItemSelection,
+				close: this.#closeSearchDropdown,
+			},
+		});
+		await this.#SearchDropdownView.render();
+		this.#SearchDropdownView.listen();
 
-		this.#SearchDropdownView.render(matchedItems);
-		this.#SearchDropdownView.setupEventListeners();
+		// this.#SearchDropdownView.render(matchedItems);
+		// this.#SearchDropdownView.setupEventListeners();
 	}
 	async #closeSearchDropdown() {
 		this.#SearchView.clearInputField();
@@ -154,7 +161,7 @@ export default class Navigation extends ViewModel {
 	};
 
 	#findShipById(shipId) {
-		return this.#getState.dataState.allHulls.find((ship) => ship.id === shipId);
+		return this.#allShipHulls.find((ship) => ship.id === shipId);
 	}
 
 	#warningPopUp(selectedShip) {

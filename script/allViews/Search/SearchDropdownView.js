@@ -3,36 +3,26 @@ import UI_DATASETS from "../../helper/ui/ui_datasets";
 import FONT_ICONS_MARKUP from "../../helper/ui/font_icons_markup";
 import { SHIP_HINTS_STRINGS } from "../../helper/ui/ui_strings";
 // View
-import View from "../view";
+import NewView from "../NewView";
 
-export default class SearchDropdownView extends View {
-	_localParent = `.${CLASS_NAMES.SEARCH.DROPDOWN._BASE}`;
+export default class SearchDropdownView extends NewView {
+	static LOCAL_PARENT = CLASS_NAMES.SEARCH.DROPDOWN._BASE;
 
-	#onItemSelectionCallback;
-	#onClickOutsideContainerCallback;
-	//
-	constructor(onItemSelectionCallback, onClickOutsideContainerCallback) {
-		super();
-		this.#onItemSelectionCallback = onItemSelectionCallback;
-		this.#onClickOutsideContainerCallback = onClickOutsideContainerCallback;
-	}
-	generateMarkup() {
-		const markup = this.#dropdownItems(this._data);
-		return markup;
-	}
-
-	#dropdownItems(data) {
-		const markup = data
+	_generateMarkup() {
+		const allShipHulls = this.model;
+		const markup = allShipHulls
 			.map((ship) => {
 				const hullSize = ship.additionalData.hullSize;
+				const shipId = ship.id;
+				const shipName = ship.name;
 				const shipInfo = this.#formatShipInfo(ship);
 				const markup = `
 								<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM} ${hullSize.toLowerCase()}" 
-									${UI_DATASETS.NAV.DROPDOWN.FUNC(ship.id)}
+									${UI_DATASETS.NAV.DROPDOWN.FUNC(shipId)}
 								>
 									${FONT_ICONS_MARKUP[hullSize]}
 									<div class="${CLASS_NAMES.SEARCH.DROPDOWN.ITEM_INFO}">
-										<p>${ship.name}</p>
+										<p>${shipName}</p>
 										<p>${shipInfo}</p>
 									</div>
 									${FONT_ICONS_MARKUP.SWAP_ICON}
@@ -41,7 +31,6 @@ export default class SearchDropdownView extends View {
 				return markup;
 			})
 			.join("");
-
 		return markup;
 	}
 
@@ -60,14 +49,15 @@ export default class SearchDropdownView extends View {
 		return info.filter(Boolean).join(" / ");
 	}
 
-	setupEventListeners() {
-		this.mouseClick(
-			CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
-			this.#onItemSelectionCallback,
-		);
-		this.closePopUpContainerIfUserClickOutside(
-			CLASS_NAMES.SEARCH.DROPDOWN._BASE,
-			this.#onClickOutsideContainerCallback,
-		);
+	_setupEventListeners() {
+		this._onClick(CLASS_NAMES.SEARCH.DROPDOWN.ITEM, this._callbacks.click);
+		// this.mouseClick(
+		// 	CLASS_NAMES.SEARCH.DROPDOWN.ITEM,
+		// 	this.#onItemSelectionCallback,
+		// );
+		// this.closePopUpContainerIfUserClickOutside(
+		// 	CLASS_NAMES.SEARCH.DROPDOWN._BASE,
+		// 	this.#onClickOutsideContainerCallback,
+		// );
 	}
 }
