@@ -1,5 +1,8 @@
 import EventManager from "../eventHandlers/EventManager";
 import { UI_ERRORS } from "../helper/Errors";
+
+import CLASS_NAMES from "../helper/ui/class_names";
+import CONFIG from "../helper/ui/configs";
 ///
 export default class NewView {
 	// I need ParentElement, as a parent of current element So i can target Lower than Document
@@ -10,10 +13,10 @@ export default class NewView {
 
 	static LOCAL_PARENT = null;
 	//
-	constructor({ model = {}, callbacks = {}, input = {} } = {}) {
+	constructor({ model = {}, callbacks = {}, inputs = {} } = {}) {
 		this.#model = model;
 		this._callbacks = callbacks;
-		this._input = input;
+		this._inputs = inputs;
 
 		this.#localParentElement = this.#resolveElement(
 			document,
@@ -106,8 +109,18 @@ export default class NewView {
 		this.#eventManager.addMouseClickHandler(targetClass, callback);
 	}
 
-	//? Event Listener
+	//? Animation
 
+	async fadeOutAnimation() {
+		this.#localParentElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
+
+		return new Promise((resolve) =>
+			setTimeout(() => {
+				this.#localParentElement.classList.remove(CLASS_NAMES.ANIM.FADE_OUT);
+				resolve();
+			}, CONFIG.ANIM.FADEOUT_MS),
+		);
+	}
 	// _inputCapture(targetClass, callbackFunction) {
 	// 	const input = this.#getAndValidateDomElement({
 	// 		parent: this.#localParentElement,

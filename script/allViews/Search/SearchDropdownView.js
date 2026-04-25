@@ -9,8 +9,9 @@ export default class SearchDropdownView extends NewView {
 	static LOCAL_PARENT = CLASS_NAMES.SEARCH.DROPDOWN._BASE;
 
 	_generateMarkup() {
-		const allShipHulls = this.model;
-		const markup = allShipHulls
+		const shipHullArray = this._inputs.shipHullArray;
+		//
+		const markup = shipHullArray
 			.map((ship) => {
 				const hullSize = ship.additionalData.hullSize;
 				const shipId = ship.id;

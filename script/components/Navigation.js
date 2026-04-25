@@ -123,8 +123,12 @@ export default class Navigation extends ViewModel {
 	};
 
 	async #renderDropDownSearch(matchedItems) {
+		//! matchedItems, I need to input them
 		this.#SearchDropdownView = await new SearchDropdownView({
 			model: this.#allShipHulls,
+			inputs: {
+				shipHullArray: matchedItems,
+			},
 			callbacks: {
 				click: this.#onDropDownItemSelection,
 				close: this.#closeSearchDropdown,
@@ -151,7 +155,7 @@ export default class Navigation extends ViewModel {
 
 		const shipId = btn.getAttribute(UI_DATASETS.NAV.DROPDOWN._BASE);
 		const selectedShip = this.#findShipById(shipId);
-
+		console.log(selectedShip);
 		if (!selectedShip) {
 			console.warn(`Ship with ID "${shipId}" not found`);
 			return;
@@ -164,17 +168,22 @@ export default class Navigation extends ViewModel {
 		return this.#allShipHulls.find((ship) => ship.id === shipId);
 	}
 
-	#warningPopUp(selectedShip) {
+	async #warningPopUp(selectedShip) {
 		this.#currentUserInput = selectedShip;
 
-		this.#SearchWarningPopUpView = new SearchWarningPopUpView(
-			this.#currentUserInput,
-			this.#searchWarningLogic,
-			this.#closePopUpAndClearInput,
-		);
+		this.#SearchWarningPopUpView = new SearchWarningPopUpView({
+			model: this.#model,
+			inputs: {
+				currentUserInput: this.#currentUserInput,
+			},
+			callbacks: {
+				click: this.#searchWarningLogic,
+				close: this.#closePopUpAndClearInput,
+			},
+		});
 
-		this.#SearchWarningPopUpView.init();
-		this.#SearchWarningPopUpView.setupEventListeners();
+		await this.#SearchWarningPopUpView.render();
+		this.#SearchWarningPopUpView.listen();
 	}
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.

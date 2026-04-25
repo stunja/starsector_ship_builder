@@ -7,38 +7,31 @@ import { SEARCH_WARNING_POPUP_STRING } from "../../helper/ui/ui_strings";
 import FONT_ICONS_MARKUP from "../../helper/ui/font_icons_markup";
 //
 export default class SearchWarningPopUpView extends NewView {
-	_localParent = CLASS_NAMES.POP_UP._BASE;
+	static LOCAL_PARENT = CLASS_NAMES.POP_UP._BASE;
 
-	#searchWarningLogic;
-	#closePopUpAndClearInput;
-	//
-	generateMarkup() {
-		const currentShip = this.#data;
-		const customHeader = `<span class="${CLASS_NAMES.TEXT_DECOR.UNDERLINE}">${currentShip.name}</span>`;
+	_generateMarkup() {
+		const currentShip = this._inputs.currentUserInput;
+		const currentShipName = currentShip.name;
 
 		const markup = `
 					<div class="${CLASS_NAMES.POP_UP.WARNING_WRAPPER}">
 						<div class="${CLASS_NAMES.POP_UP.OVERLAY}">
 							<div class="${CLASS_NAMES.POP_UP.WARNING}">
-								<h3>${SEARCH_WARNING_POPUP_STRING.HEADER(customHeader)}</h3>
+								${this.#customHeader(currentShipName)}
 								<p>${SEARCH_WARNING_POPUP_STRING.TEXT}</p>
 								${this.#warningBar()}
-								<div class="${CLASS_NAMES.POP_UP.WARNING_WRAPPER_BUTTONS}">
-									<button class="${CLASS_NAMES.button} 
-									${CLASS_NAMES.BUTTON.SECONDARY} ${CLASS_NAMES.POP_UP.WARNING_BUTTON}"
-									${UI_DATASETS.MAIN_POPUP.WIPE_WARNING.RETURN}
-									>
-										${SEARCH_WARNING_POPUP_STRING.BUTTONS.RETURN}
-									</button>
-									<button class="${CLASS_NAMES.button} ${CLASS_NAMES.POP_UP.WARNING_BUTTON}" 
-									${UI_DATASETS.MAIN_POPUP.WIPE_WARNING.CONTINUE}>
-										${SEARCH_WARNING_POPUP_STRING.BUTTONS.CONTINUE}
-									</button>
-								</div>
+								${this.#buttons()}
 							</div>
 						</div>
 					</div>`;
 		return markup;
+	}
+	#customHeader(currentShipName) {
+		return `<h3>
+					${SEARCH_WARNING_POPUP_STRING.HEADER(
+						`<span class="${CLASS_NAMES.TEXT_DECOR.UNDERLINE}">${currentShipName}</span>`,
+					)}
+				</h3>`;
 	}
 	#warningBar() {
 		return `<div class="${CLASS_NAMES.POP_UP.WARNING_BAR}">
@@ -47,11 +40,29 @@ export default class SearchWarningPopUpView extends NewView {
 				</div>`;
 	}
 
-	setupEventListeners() {
-		this.mouseClick(
-			CLASS_NAMES.POP_UP.WARNING_BUTTON,
-			this.#searchWarningLogic,
-		);
+	#buttons() {
+		return `<div class="${CLASS_NAMES.POP_UP.WARNING_WRAPPER_BUTTONS}">
+					<button class="${CLASS_NAMES.button} 
+					${CLASS_NAMES.BUTTON.SECONDARY} ${CLASS_NAMES.POP_UP.WARNING_BUTTON}"
+					${UI_DATASETS.MAIN_POPUP.WIPE_WARNING.RETURN}
+					>
+						${SEARCH_WARNING_POPUP_STRING.BUTTONS.RETURN}
+					</button>
+
+					<button class="${CLASS_NAMES.button} ${CLASS_NAMES.POP_UP.WARNING_BUTTON}" 
+					${UI_DATASETS.MAIN_POPUP.WIPE_WARNING.CONTINUE}>
+						${SEARCH_WARNING_POPUP_STRING.BUTTONS.CONTINUE}
+					</button>
+
+				</div>`;
+	}
+
+	_setupEventListeners() {
+		this._onClick(CLASS_NAMES.POP_UP.WARNING_BUTTON, this._callbacks.click);
+		// this.mouseClick(
+		// 	CLASS_NAMES.POP_UP.WARNING_BUTTON,
+		// 	this.#searchWarningLogic,
+		// );
 		// this.closePopUpContainerIfUserClickOutside(
 		// 	CLASS_NAMES.POP_UP.WARNING,
 		// 	this.#closePopUpAndClearInput,
