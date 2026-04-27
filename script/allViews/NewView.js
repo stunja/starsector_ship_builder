@@ -1,8 +1,8 @@
 import EventManager from "../eventHandlers/EventManager";
-import { UI_ERRORS } from "../helper/Errors";
 
 import CLASS_NAMES from "../helper/ui/class_names";
 import CONFIG from "../helper/ui/configs";
+import { findAndResolveDomElement } from "../helper/helper_functions";
 ///
 export default class NewView {
 	// I need ParentElement, as a parent of current element So i can target Lower than Document
@@ -18,7 +18,8 @@ export default class NewView {
 		this._callbacks = callbacks;
 		this._inputs = inputs;
 
-		this.#localParentElement = this.#resolveElement(
+		this.#localParentElement = findAndResolveDomElement(
+			this.constructor.name,
 			document,
 			this.constructor.LOCAL_PARENT,
 		);
@@ -74,25 +75,27 @@ export default class NewView {
 		);
 	}
 	// Private Helper
-	#resolveElement(parent, className) {
-		if (!className)
-			throw new Error(
-				UI_ERRORS.MISSING.CLASS(this.constructor.name, className),
-			);
+	// #resolveElement(parent, className) {
+	// 	if (!className)
+	// 		throw new Error(
+	// 			UI_ERRORS.MISSING.CLASS(this.constructor.name, className),
+	// 		);
 
-		const targetElement = parent.querySelector(`.${className}`);
+	// 	const targetElement = parent.querySelector(`.${className}`);
 
-		if (!targetElement)
-			throw new Error(
-				UI_ERRORS.MISSING.ELEMENT(this.constructor.name, targetElement),
-			);
+	// 	if (!targetElement)
+	// 		throw new Error(
+	// 			UI_ERRORS.MISSING.ELEMENT(this.constructor.name, targetElement),
+	// 		);
 
-		return targetElement;
-	}
+	// 	return targetElement;
+	// }
 	//
+	//! replace error
 	#validateMarkup(markup) {
 		if (!markup || typeof markup !== "string")
-			throw new Error(UI_ERRORS.ISSUE.MARKUP(this.constructor.name));
+			console.log(this.constructor.name, "replace me");
+		// throw new Error(UI_ERRORS.ISSUE.MARKUP(this.constructor.name));
 	}
 
 	//? Getters
@@ -101,16 +104,38 @@ export default class NewView {
 	}
 
 	_getElement(targetClass) {
-		return this.#resolveElement(this.#localParentElement, targetClass);
+		return findAndResolveDomElement(
+			this.constructor.name,
+			this.#localParentElement,
+			targetClass,
+		);
 	}
 
 	//? Event Listeners
-	_onClick(targetClass, callback) {
-		this.#eventManager.addMouseClickHandler(targetClass, callback);
+	_onClick(selectorClass, callback) {
+		this.#eventManager.addMouseClickHandler({
+			selectorClass,
+			callback,
+		});
+	}
+	_onClose(selectorClass, callback) {
+		this.#eventManager.clickOutsideParent({
+			selectorClass,
+			callback,
+		});
+	}
+	// function to destroy and delete eventListeners
+	destroy() {
+		this.#eventManager.destroy();
+		// remove eventListeners
+		this.#localParentElement.textContent = "";
+		// unmount
+		this.#mounted = false;
+		return this;
 	}
 
 	//? Animation
-
+	//! rework a bit
 	async fadeOutAnimation() {
 		this.#localParentElement.classList.add(CLASS_NAMES.ANIM.FADE_OUT);
 

@@ -268,19 +268,26 @@ export default class View {
 	// }
 
 	/////
-	mouseClick(targetClass, callbackFunction) {
-		this.#eventManager.addMouseClickHandler(targetClass, callbackFunction);
+	mouseClick(selectorClass, callback) {
+		this.#eventManager.addMouseClickHandler({
+			selectorClass,
+			callback,
+		});
 	}
-	closePopUpContainerIfUserClickOutside(targetClass, callbackFunction) {
-		this.#eventManager.closePopup(targetClass, callbackFunction);
-	}
+	// closePopUpContainerIfUserClickOutside(targetClass, callbackFunction) {
+	// 	this.#eventManager.closePopup(
+	// 		this.constructor.name,
+	// 		targetClass,
+	// 		callbackFunction,
+	// 	);
+	// }
 	//! Rework this
-	addMouseClickHandler(targetClass, callbackFunction) {
-		new EventManager(this._localParentElement).addMouseClickHandler(
-			targetClass,
-			callbackFunction,
-		);
-	}
+	// addMouseClickHandler(targetClass, callbackFunction) {
+	// 	new EventManager(this._localParentElement).addMouseClickHandler(
+	// 		targetClass,
+	// 		callbackFunction,
+	// 	);
+	// }
 	// closePopUpContainerIfUserClickOutside(targetClass, callbackFunction) {
 	// 	new EventManager(
 	// 		this._localParentElement,

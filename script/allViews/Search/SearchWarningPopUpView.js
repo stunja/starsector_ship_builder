@@ -59,6 +59,8 @@ export default class SearchWarningPopUpView extends NewView {
 
 	_setupEventListeners() {
 		this._onClick(CLASS_NAMES.POP_UP.WARNING_BUTTON, this._callbacks.click);
+		this._onClose(CLASS_NAMES.POP_UP.WARNING, this._callbacks.close);
+
 		// this.mouseClick(
 		// 	CLASS_NAMES.POP_UP.WARNING_BUTTON,
 		// 	this.#searchWarningLogic,

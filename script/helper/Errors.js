@@ -1,4 +1,9 @@
-export const UI_ERRORS = {
+// Class Name => Javascript Class
+// Method Name => function name
+
+//
+export const ERROR_MSG = {
+	//
 	ISSUE: {
 		MARKUP: (file) => `[${file}.js] - Markup issue`,
 	},
@@ -14,5 +19,10 @@ export const UI_ERRORS = {
 	NOT_IMPLEMENTED: {
 		METHOD: (file, methodName) =>
 			`[${file}.js] - method [${methodName}()] was not implemented`,
+	},
+	EVENT_MANAGER: {
+		DOM_TARGET_CLASS: (options = {}) =>
+			`${errorLocationMarkup(options)} DOM Target Class is Missing`,
+		CALLBACK: "callback is Missing",
 	},
 };

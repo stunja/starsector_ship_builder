@@ -243,6 +243,23 @@ export const arrayToSortedByName = function (array) {
 		a.name.localeCompare(b.name, SORT_LOCALE, SORT_OPTIONS),
 	);
 };
+
+// Private Helper
+export const findAndResolveDomElement = function (
+	constructorName,
+	parentElement,
+	className,
+) {
+	if (!className) console.log("replace me", constructorName);
+	// throw new Error(UI_ERRORS.MISSING.CLASS(constructorName, className));
+
+	const targetElement = parentElement.querySelector(`.${className}`);
+
+	if (!targetElement) console.log("replace me", constructorName);
+	// throw new Error(UI_ERRORS.MISSING.ELEMENT(constructorName, targetElement));
+
+	return targetElement;
+};
 /////
 //! Probably Remove Later
 // Why do I even need these? too simple to even keep, just need to rework original

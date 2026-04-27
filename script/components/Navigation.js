@@ -13,7 +13,6 @@ import UI_DATASETS from "../helper/ui/ui_datasets.js";
 import { GENERIC_STRING, EVENT_LISTENER_TYPE } from "../helper/ui/ui_main.js";
 import { arrayToSortedByName } from "../helper/helper_functions.js";
 import EventManager from "../eventHandlers/EventManager.js";
-import { UI_ERRORS } from "../helper/Errors.js";
 
 //! make transition
 //! THERE IS NO WAY TO SEARCH FOR SKINS (FOR EXAMPLE ONSLAUGH XIV). I dont see a way to connect them systemically
@@ -188,7 +187,6 @@ export default class Navigation extends ViewModel {
 
 	// user selected correct ship from a dropdown, and they see a warning pop up.
 	#searchWarningLogic = (btn) => {
-		console.log(btn);
 		const userAction = btn.dataset.wipeWarning;
 
 		if (userAction === UI_DATASETS.ONLY_ID.RETURN) {
@@ -202,7 +200,8 @@ export default class Navigation extends ViewModel {
 	};
 
 	async #closePopUpAndClearInput() {
+		console.log("test");
 		await this.#SearchWarningPopUpView.fadeOutAnimation();
-		this.#SearchWarningPopUpView._clearRender();
+		this.#SearchWarningPopUpView.destroy();
 	}
 }

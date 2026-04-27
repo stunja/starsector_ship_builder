@@ -1,3 +1,10 @@
+import {
+	MissingInputSelectorClassError,
+	MissingInputMethodError,
+} from "../helper/Error/ErrorHandler";
+
+import { findAndResolveDomElement } from "../helper/helper_functions";
+
 export default class EventManager {
 	#targetMap = new Map();
 	#localParentElement;
@@ -5,22 +12,33 @@ export default class EventManager {
 	constructor(localParentElement) {
 		this.#localParentElement = localParentElement;
 	}
-	addMouseClickHandler(targetClass, callbackFunction) {
+
+	/* 
+	constructorName is to get a location of Error Throw
+	callback is fn
+	selectorClass class I use to target eventListener??
+	*/
+	addMouseClickHandler({ callback, selectorClass }) {
+		if (!selectorClass) {
+			new MissingInputSelectorClassError();
+		}
+
+		if (!callback) new MissingInputMethodError();
 		// Create the event listener function
 		const listener = function (e) {
-			const btn = e.target.closest(`.${targetClass}`);
+			const btn = e.target.closest(`.${selectorClass}`);
 			if (!btn) return;
 
 			e.preventDefault();
 
-			callbackFunction(btn);
+			callback(btn);
 		};
 
 		// If there's an existing listener for this target, remove it first
-		this.#removeMouseClickHandler(targetClass);
+		this.#removeMouseClickHandler(selectorClass);
 
 		// Store the new listener in the Map
-		this.#targetMap.set(targetClass, listener);
+		this.#targetMap.set(selectorClass, listener);
 
 		// Add the event listener
 		this.#localParentElement.addEventListener("click", listener);
@@ -28,36 +46,47 @@ export default class EventManager {
 		// Return the listener for potential external reference
 		return listener;
 	}
-	#removeMouseClickHandler(targetClass) {
+	#removeMouseClickHandler(selectorClass) {
 		// Get the existing listener if any
-		const existingListener = this.#targetMap.get(targetClass);
+		const existingListener = this.#targetMap.get(selectorClass);
 
 		if (existingListener) {
 			// Remove the event listener
 			this.#localParentElement.removeEventListener("click", existingListener);
 			// Remove from Map
-			this.#targetMap.delete(targetClass);
+			this.#targetMap.delete(selectorClass);
 			return true;
 		}
 
 		return false;
 	}
-	//? I dont think it works
+	//? maybe overkill, but better to also manually remove all eventListeners
 	destroy() {
+		console.log(this.#targetMap);
 		this.#targetMap.forEach((listener) => {
 			this.#localParentElement.removeEventListener("click", listener);
 		});
 
 		this.#targetMap.clear();
+		this.#localParentElement = null;
+		console.log(this.#targetMap);
 	}
 
-	closePopup(targetClass, callback) {
-		console.log(targetClass, callback);
+	clickOutsideParent({
+		constructorName: constructorName,
+		selectorClass: selectorClass,
+		callback: callback,
+	}) {
+		console.log(constructorName, selectorClass, callback);
 		if (typeof callback !== "function") return () => {};
 
-		const targetContainer = document.querySelector(`.${targetClass}`);
+		// const targetContainer = document.querySelector(`.${selectorClass}`);
+
+		const test = findAndResolveDomElement("test", document, selectorClass);
+		console.log(test);
+		const targetContainer = document.querySelector(`.${selectorClass}`);
 		if (!targetContainer) {
-			console.warn(`Target .${targetClass} not found`);
+			console.warn(`Target .${selectorClass} not found`);
 			return () => {};
 		}
 		const controller = new AbortController();
